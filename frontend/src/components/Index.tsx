@@ -1,10 +1,9 @@
-import Header from "../components/Header";
 import BreadcrumbNav from "../components/BreadcrumbNav";
 import CourseHero from "../components/CourseHero";
 import CourseOverview from "../components/CourseOverview";
 import CourseCurriculum from "../components/CourseCurriculum";
 import PricingCard from "../components/PricingCard";
-import Footer from "../components/Footer";
+
 
 const Index = () => {
   const breadcrumbs = [
@@ -15,7 +14,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+     
       
       <main className="container mx-auto px-4">
         <BreadcrumbNav items={breadcrumbs} />
@@ -35,7 +34,7 @@ const Index = () => {
         </div>
       </main>
       
-      <Footer />
+     
     </div>
   );
 };

@@ -25,8 +25,8 @@ const navigate = useNavigate();
 
       {/* Pricing */}
       <div className="flex items-baseline gap-2 mb-6">
-        <span className="text-4xl font-serif font-bold text-foreground">$299</span>
-        <span className="text-lg text-muted-foreground line-through">$549</span>
+        <span className="text-4xl font-serif font-bold text-foreground">₹299</span>
+        <span className="text-lg text-muted-foreground line-through">₹549</span>
         <span className="text-sm font-semibold text-primary">45% OFF</span>
       </div>
 
