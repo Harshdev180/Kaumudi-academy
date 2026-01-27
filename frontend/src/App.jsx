@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./App.css";
+<<<<<<< HEAD
 // import Sidebar, { SidebarItem } from "./pages/AdminDashboard/Sidebar";
 import { BrowserRouter as Navigate, Route,  Routes } from "react-router-dom";
 import Dashboard from "./pages/AdminDashboard/Dashboard";
@@ -37,6 +38,22 @@ function App() {
       </Routes> */}
       {/* <LeadsPage /> */}
     </>
+=======
+import AllCoursesPage from "./pages/CourseListing";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* <Route path="/" element={<Home />}> */}
+        {/* <Route index element={<Home />} /> */}
+        <Route path="/courselisting" element={<AllCoursesPage />} />
+
+        {/* </Route> */}
+      </Routes>
+    </BrowserRouter>
+>>>>>>> 6f702dec30365a6460be01740a880aafcb32e4ee
   );
 }
 

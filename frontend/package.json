@@ -14,7 +14,10 @@
     "lucide-react": "^0.563.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+<<<<<<< HEAD
     "react-icons": "^5.5.0",
+=======
+>>>>>>> 6f702dec30365a6460be01740a880aafcb32e4ee
     "react-router-dom": "^7.13.0"
   },
   "devDependencies": {
