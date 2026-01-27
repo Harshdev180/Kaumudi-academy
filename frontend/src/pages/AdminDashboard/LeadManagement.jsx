@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
-import {
-    X,
-    Phone,
-    Mail,
-    Search,
-} from 'lucide-react';
+import { X, Phone, Mail, Search, } from 'lucide-react';
 
 const LeadManagement = () => {
     const [selectedLead, setSelectedLead] = useState(null);
@@ -135,7 +130,7 @@ const ContactInfo = ({ icon, label, value }) => (
 
 const TimelineItem = ({ date, title, desc, isLast }) => (
     <div className="relative pl-6 pb-6">
-        {!isLast && <div className="absolute left-[3px] top-2 w-[2px] h-full bg-zinc-100"></div>}
+        {!isLast && <div className="absolute left-[3px] top-2 w-0.5 h-full bg-zinc-100"></div>}
         <div className="absolute left-0 top-1.5 w-2 h-2 rounded-full bg-orange-300 ring-4 ring-white"></div>
         <p className="text-[10px] text-zinc-400 font-bold mb-1">{date}</p>
         <h6 className="text-xs font-bold">{title}</h6>
