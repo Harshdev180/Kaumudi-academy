@@ -1,11 +1,19 @@
 import { useState } from "react";
 import "./App.css";
+import AllCoursesPage from "./pages/CourseListing";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 function App() {
   return (
-    <>
-      <div className="text-4xl text-red-600">Welcome</div>
-    </>
+    <BrowserRouter>
+      <Routes>
+        {/* <Route path="/" element={<Home />}> */}
+        {/* <Route index element={<Home />} /> */}
+        <Route path="/courselisting" element={<AllCoursesPage />} />
+
+        {/* </Route> */}
+      </Routes>
+    </BrowserRouter>
   );
 }
 
