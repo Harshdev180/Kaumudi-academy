@@ -1,0 +1,41 @@
+@import "tailwindcss/index.css";
+
+@theme{
+  /* Brand Colors */
+  --color-primary: #800000;         /* Maroon */
+  --color-primary-foreground: #ffffff;
+  
+  --color-secondary: #fdfaf3;       /* Light Cream */
+  --color-background: #ffffff;
+  --color-foreground: #1a1a1a;
+  
+  --color-muted: #f4f4f5;
+  --color-muted-foreground: #71717a;
+  
+  --color-accent: #f59e0b;          /* Amber */
+  --color-border: #e4e4e7;
+  
+  /* Academy Specifics */
+  --color-maroon-dark: #600000;
+  --color-cream-dark: #f5f1e6;
+  --color-green-check: #10b981;
+  --color-success: #15803d;
+  --color-success-light: #f0fdf4;
+  
+  /* Fonts */
+  --font-serif: "Crimson Text", "Georgia", serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+@utility badge-red {
+  @apply bg-red-100 text-red-700 text-xs font-bold px-2 py-1 rounded;
+}
+
+/* Optional: Add a nice font for that Academy feel */
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap');
+
+:root {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
