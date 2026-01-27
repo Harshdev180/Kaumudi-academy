@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
-
-
 import {
     X,
     Phone,
     Mail,
     Search,
 } from 'lucide-react';
-import SideBar from './Sidebar';
 
 const LeadManagement = () => {
     const [selectedLead, setSelectedLead] = useState(null);
@@ -20,37 +17,7 @@ const LeadManagement = () => {
 
     return (
         <div className="flex min-h-screen bg-[#FFFDF8] font-sans text-[#201412]">
-
-            {/* 1. Sidebar (Responsive) */}
-            {/* <SideBar /> */}
-
-            {/* <aside className="w-64 bg-[#641e16] text-white hidden md:flex flex-col p-6 fixed h-full shadow-2xl">
-                <div className="mb-10 flex items-center gap-3">
-                    <div className="bg-white/10 p-2 rounded-lg">
-                        <BookOpen className="text-orange-300" />
-                    </div>
-                    <div>
-                        <h1 className="font-bold tracking-tight">Kaumudi Academy</h1>
-                        <p class="text-[10px] text-orange-200/60 uppercase tracking-widest">Sanskrit Admin</p>
-                    </div>
-                </div>
-
-                <nav className="space-y-2 flex-1">
-                    <NavItem icon={<LayoutDashboard size={20} />} label="Dashboard" />
-                    <NavItem icon={<MessageSquare size={20} />} label="Leads" active />
-                    <NavItem icon={<BookOpen size={20} />} label="Courses" />
-                    <NavItem icon={<Users size={20} />} label="Students" />
-                </nav>
-
-                <div className="pt-6 border-t border-white/10 space-y-2">
-                    <NavItem icon={<Settings size={20} />} label="Settings" />
-                    <button className="w-full mt-4 bg-[#4a1610] hover:bg-black py-3 rounded-xl text-xs font-bold transition-all shadow-lg">
-                        Support Portal
-                    </button>
-                </div>
-            </aside> */}
-
-            {/* 2. Main Content Area */}
+            {/*  Main Content Area */}
             <main className="flex-1 md:ml-64 p-4 md:p-10">
 
                 {/* Header */}
@@ -104,9 +71,9 @@ const LeadManagement = () => {
                         ))}
                     </div>
 
-                    {/* 3. Lead Details Panel (Conditional Sidebar) */}
+                    {/* Lead Details Panel (Conditional Sidebar) */}
                     {selectedLead && (
-                        <div className="w-full lg:w-[400px] bg-white rounded-3xl border border-zinc-100 shadow-2xl p-6 animate-in slide-in-from-right duration-300">
+                        <div className="w-full lg:w-100 bg-white rounded-3xl border border-zinc-100 shadow-2xl p-6 animate-in slide-in-from-right duration-300">
                             <div className="flex justify-between items-center mb-8">
                                 <h3 className="font-black text-xl text-[#641e16]">Lead Details</h3>
                                 <button onClick={() => setSelectedLead(null)} className="p-2 hover:bg-zinc-100 rounded-full transition-colors">
