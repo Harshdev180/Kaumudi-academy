@@ -1,38 +1,12 @@
 import { useState } from "react";
 import "./App.css";
-// import Sidebar, { SidebarItem } from "./pages/AdminDashboard/Sidebar";
-import { BrowserRouter as Navigate, Route, Routes } from "react-router-dom";
-import Dashboard from "./pages/AdminDashboard/Dashboard";
-import AdminLayout from "./pages/AdminDashboard/AdminLayout";
-import LeadManagement from "./pages/AdminDashboard/LeadManagement";
-import AdminLogin from "./pages/AdminDashboard/AdminLogin";
 
 function App() {
   return (
     <>
-
-      <Routes>
-        {/* <Route path='/' element={<Navigate to='/dashboard' />} /> */}
-
-        <Route path='/dashboard' element={
-          <AdminLayout>
-            <Dashboard />
-          </AdminLayout>
-        } />
-
-        <Route path='/admin/lead' element={
-          <AdminLayout>
-            <LeadManagement />
-          </AdminLayout>
-        } />
-        <Route path='/login' element={<AdminLogin />} />
-        {/* <Route path="/courselisting" element={<AllCoursesPage />} /> */}
-
-      </Routes>
-
+      <div className="text-4xl text-red-600">Welcome</div>
     </>
-
-  )
+  );
 }
 
 export default App;
