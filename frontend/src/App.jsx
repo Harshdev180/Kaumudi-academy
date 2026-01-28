@@ -1,12 +1,13 @@
 import { useState } from "react";
 import "./App.css";
 // import Sidebar, { SidebarItem } from "./pages/AdminDashboard/Sidebar";
-import { BrowserRouter as Navigate, Route,  Routes } from "react-router-dom";
+import { BrowserRouter as Navigate, Route, Routes } from "react-router-dom";
 import Dashboard from "./pages/AdminDashboard/Dashboard";
 import AdminLayout from "./pages/AdminDashboard/AdminLayout";
 import LeadManagement from "./pages/AdminDashboard/LeadManagement";
 import AdminLogin from "./pages/AdminDashboard/AdminLogin";
 import CourseManagement from "./pages/AdminDashboard/CourseManagement";
+
 
 function App() {
   return (
