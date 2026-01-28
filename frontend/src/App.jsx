@@ -1,12 +1,15 @@
-import { useState } from "react";
-import "./App.css";
+import { Routes, Route } from "react-router-dom";
+import CourseDetail from "./pages/CourseDetail";
+import Signup from './component/Auth/signup';
+import Signin from './component/Auth/login';
 
-function App() {
-  return (
-    <>
-      <div className="text-4xl text-red-600">Welcome</div>
-    </>
-  );
+
+export default function App() {
+return (
+<Routes>
+<Route path="/coursedetails" element={<CourseDetail />} />
+<Route path="/Signup" element={<Signup />} />
+<Route path="/login" element={<Signin />} />
+</Routes>
+);
 }
-
-export default App;
