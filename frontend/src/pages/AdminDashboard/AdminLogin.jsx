@@ -23,10 +23,10 @@ const AdminLogin = () => {
         {/* Academy Branding [cite: 10] */}
         <div className="flex flex-col items-center mb-8">
           <div className="w-20 h-20 rounded-full border-2 border-[#800000] p-1 mb-4 flex items-center justify-center bg-orange-50">
-            <img src="/logo.png" alt="Academy Logo" className="w-16 h-16 object-contain" />
+            <img src="https://i.pinimg.com/1200x/25/4c/d4/254cd406e7942239d413a61b8dbdfddb.jpg" alt="Academy Logo" className="w-16 h-16 object-contain" />
           </div>
           <h2 className="text-2xl font-bold text-[#800000] tracking-tight">Admin Secure Login</h2>
-          <p className="text-sm text-gray-500 italic mt-1 font-sans">Preserving Tradition through Technology</p>
+          <p className="text-sm text-gray-500 italic mt-1  tracking-widest font-sans">Preserving Tradition through Technology</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">

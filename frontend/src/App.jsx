@@ -6,6 +6,7 @@ import Dashboard from "./pages/AdminDashboard/Dashboard";
 import AdminLayout from "./pages/AdminDashboard/AdminLayout";
 import LeadManagement from "./pages/AdminDashboard/LeadManagement";
 import AdminLogin from "./pages/AdminDashboard/AdminLogin";
+import CourseManagement from "./pages/AdminDashboard/CourseManagement";
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
       <Routes>
         {/* <Route path='/' element={<Navigate to='/dashboard' />} /> */}
 
-        <Route path='/dashboard' element={
+        <Route path='/admin/dashboard' element={
           <AdminLayout>
             <Dashboard />
           </AdminLayout>
@@ -23,6 +24,11 @@ function App() {
         <Route path='/admin/lead' element={
           <AdminLayout>
             <LeadManagement />
+          </AdminLayout>
+        } />
+        <Route path='/admin/courses' element={
+          <AdminLayout>
+            <CourseManagement />
           </AdminLayout>
         } />
         <Route path='/login' element={<AdminLogin />} />
