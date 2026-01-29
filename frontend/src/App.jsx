@@ -11,6 +11,7 @@ import AdminLogin from "./pages/AdminDashboard/AdminLogin";
 import CourseManagement from "./pages/AdminDashboard/CourseManagement";
 import AllCoursesPage from "./pages/CourseListing";
 import CourseDetail from "./pages/CourseDetail";
+import Home from "./pages/Home";
 
 // Auth
 import Signup from "./component/Auth/signup";
@@ -24,6 +25,7 @@ function App() {
       <Route path="/coursedetail" element={<CourseDetail />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Signin />} />
+      <Route path="/" element={<Home />} />
 
       {/* Redirect Example */}
       {/* <Route path="/" element={<Navigate to="/allcourses" />} /> */}
