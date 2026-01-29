@@ -1,26 +1,34 @@
-import { useState } from "react";
 import "./App.css";
-// import Sidebar, { SidebarItem } from "./pages/AdminDashboard/Sidebar";
-import { BrowserRouter as Navigate, Route, Routes } from "react-router-dom";
+
+// React Router
+import { Route, Routes, Navigate } from "react-router-dom";
+
+// Pages
 import Dashboard from "./pages/AdminDashboard/Dashboard";
 import AdminLayout from "./pages/AdminDashboard/AdminLayout";
 import LeadManagement from "./pages/AdminDashboard/LeadManagement";
 import AdminLogin from "./pages/AdminDashboard/AdminLogin";
 import CourseManagement from "./pages/AdminDashboard/CourseManagement";
-
-// import Sidebar, { SidebarItem } from "./pages/AdminDashboard/Sidebar";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AllCoursesPage from "./pages/CourseListing";
-import CourseDetailPage from "./pages/CourseDetail";
+import CourseDetail from "./pages/CourseDetail";
+
+// Auth
+import Signup from "./component/Auth/signup";
+import Signin from "./component/Auth/login";
 
 function App() {
   return (
     <Routes>
+      {/* Public Routes */}
       <Route path="/allcourses" element={<AllCoursesPage />} />
-      <Route path="/course/:id" element={<CourseDetailPage />} />
+      <Route path="/coursedetail" element={<CourseDetail />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/login" element={<Signin />} />
 
-      {/* <Route path='/' element={<Navigate to='/dashboard' />} /> */}
+      {/* Redirect Example */}
+      {/* <Route path="/" element={<Navigate to="/allcourses" />} /> */}
 
+      {/* Admin Routes */}
       <Route
         path="/admin/dashboard"
         element={
@@ -38,6 +46,7 @@ function App() {
           </AdminLayout>
         }
       />
+
       <Route
         path="/admin/courses"
         element={
@@ -46,7 +55,8 @@ function App() {
           </AdminLayout>
         }
       />
-      <Route path="/login" element={<AdminLogin />} />
+
+      <Route path="/admin/login" element={<AdminLogin />} />
     </Routes>
   );
 }
