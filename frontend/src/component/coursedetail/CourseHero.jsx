@@ -1,23 +1,56 @@
 import React from 'react';
-import { Clock, Video, BarChart2, Languages, ShieldCheck } from 'lucide-react'; 
+import { motion } from 'framer-motion';
+import { ShieldCheck } from 'lucide-react'; 
+
+const slowReveal = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { 
+      duration: 1.2, 
+      ease: [0.22, 1, 0.36, 1] 
+    } 
+  }
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.3,
+      delayChildren: 0.2
+    }
+  }
+};
 
 export default function CourseHero() {
   return (
-    /* Main wrapper updated with the requested background color */
     <section className="space-y-6 rounded-3xl">
-      {/* HERO CARD */}
-      <div className="relative overflow-hidden rounded-2xl h-[400px] group">
-        <img
+      <motion.div 
+        initial="hidden"
+        animate="visible"
+        variants={staggerContainer}
+        className="relative overflow-hidden rounded-2xl h-[520px] group shadow-2xl"
+      >
+        {/* Background Image */}
+        <motion.img
+          initial={{ scale: 1.2, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 2, ease: "easeOut" }}
           src="src/assets/image1.jpeg"
           alt="Sanskrit Manuscript"
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          className="absolute inset-0 w-full h-full object-cover"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+        {/* 🔥 FIX: Shadow ab Neeche se Upar ki taraf hai (Bottom-to-Top Gradient) */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
 
-        <div className="relative h-full p-10 flex flex-col justify-end max-w-4xl">
-          {/* Badges */}
-          <div className="flex items-center gap-3 mb-6">
+        <div className="relative h-full p-10 flex flex-col justify-end">
+          
+          {/* STEP 1: Badges */}
+          <motion.div variants={slowReveal} className="flex items-center gap-3 mb-6">
             <span className="bg-[#6b1d14] text-white text-[10px] uppercase font-bold px-3 py-1 rounded-md tracking-widest shadow-lg">
               Advanced
             </span>
@@ -25,61 +58,28 @@ export default function CourseHero() {
               <ShieldCheck className="w-3.5 h-3.5" />
               Verified Certificate
             </div>
-          </div>
+          </motion.div>
 
-          <h1 className="text-4xl md:text-5xl leading-[1.1] font-bold text-white drop-shadow-md">
+          {/* STEP 2: Main Heading */}
+          <motion.h1 
+            variants={slowReveal}
+            className="text-4xl md:text-5xl leading-[1.1] font-bold text-white drop-shadow-lg max-w-3xl"
+          >
             Mastering Paninian Grammar:
             <br />
             <span className="text-white/90">The Ashtadhyayi Framework</span>
-          </h1>
+          </motion.h1>
 
-          <p className="mt-4 text-white/80 text-lg max-w-xl leading-relaxed border-l-2 border-[#6b1d14] pl-4">
+          {/* STEP 3: Description */}
+          <motion.p 
+            variants={slowReveal}
+            className="mt-6 text-white/80 text-lg max-w-xl leading-relaxed border-l-4 border-[#6b1d14] pl-5"
+          >
             A comprehensive journey through the structural brilliance of
             classical Sanskrit linguistics.
-          </p>
+          </motion.p>
         </div>
-      </div>
-
-      {/* INFO STRIP */}
-      <div className="bg-[#FFF8F0]  rounded-2xl border border-gray-100 shadow-sm px-8 py-5 grid grid-cols-2 md:grid-cols-4 gap-8">
-        
-        {/* Duration */}
-        <div className="flex flex-col gap-1 text-center md:text-left">
-          <div className="flex items-center justify-center md:justify-start gap-2 text-[#6b1d14]">
-            <Clock className="w-4 h-4" />
-            <span className="text-[11px] uppercase font-extrabold tracking-widest">Duration</span>
-          </div>
-          <span className="text-gray-500 font-bold text-base ml-0 md:ml-6">12 Weeks</span>
-        </div>
-
-        {/* Mode */}
-        <div className="flex flex-col gap-1 text-center md:text-left">
-          <div className="flex items-center justify-center md:justify-start gap-2 text-[#6b1d14]">
-            <Video className="w-4 h-4" />
-            <span className="text-[11px] uppercase font-extrabold tracking-widest">Mode</span>
-          </div>
-          <span className="text-gray-500 font-bold text-base ml-0 md:ml-6">Live + Recorded</span>
-        </div>
-
-        {/* Level */}
-        <div className="flex flex-col gap-1 text-center md:text-left">
-          <div className="flex items-center justify-center md:justify-start gap-2 text-[#6b1d14]">
-            <BarChart2 className="w-4 h-4" />
-            <span className="text-[11px] uppercase font-extrabold tracking-widest">Level</span>
-          </div>
-          <span className="text-gray-500 font-bold text-base ml-0 md:ml-6">Advanced</span>
-        </div>
-
-        {/* Language */}
-        <div className="flex flex-col gap-1 text-center md:text-left">
-          <div className="flex items-center justify-center md:justify-start gap-2 text-[#6b1d14]">
-            <Languages className="w-4 h-4" />
-            <span className="text-[11px] uppercase font-extrabold tracking-widest">Language</span>
-          </div>
-          <span className="text-gray-500 font-bold text-base ml-0 md:ml-6">Sanskrit & English</span>
-        </div>
-
-      </div>
+      </motion.div>
     </section>
   );
 }
