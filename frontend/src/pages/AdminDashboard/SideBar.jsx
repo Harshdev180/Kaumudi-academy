@@ -78,7 +78,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                                 onClick={() => { if (window.innerWidth < 768) toggleSidebar(); }}
                                 className={`flex items-center justify-between p-4 rounded-r-2xl transition-all duration-300 group ${isActive
                                     ? 'bg-[#D4AF37]/70 border border-[#6b1d14] text-[#6b1d14] font-bold shadow-lg translate-x-2'
-                                    : 'hover:bg-white/10 text-[#6b1d14] hover:text-[#6b1d14]'
+                                    : 'hover:bg-white/10 text-[#6b1d14]/70 hover:text-[#6b1d14]'
                                     }`}
                             >
                                 <div className="flex items-center gap-4">

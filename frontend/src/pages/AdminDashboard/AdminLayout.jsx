@@ -14,10 +14,10 @@ const AdminLayout = ({ children }) => {
 
             <div className="flex-1 flex flex-col h-full overflow-hidden">
                 {/* Mobile Header: Ye sirf small screens par dikhega */}
-                <header className="md:hidden flex items-center justify-between p-4 bg-[#8B6A21] text-white z-40 shadow-md">
+                <header className="md:hidden flex items-center justify-between p-4 bg-[#fef0c6] text-[#6b1d14] z-40 shadow-md">
                     <div className="flex items-center gap-2">
-                        <div className="bg-[#D4AF37] p-1.5 rounded-lg">
-                            <BookOpen size={18} className="text-[#8B6A21]" />
+                        <div className="bg-[#6b1d14] p-1.5 rounded-lg">
+                            <BookOpen size={18} className="text-[#fef0c6]" />
                         </div>
                         <h1 className="font-serif font-bold text-lg">KAUMUDI</h1>
                     </div>

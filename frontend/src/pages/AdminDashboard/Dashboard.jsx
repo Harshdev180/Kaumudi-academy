@@ -6,9 +6,8 @@ const academyColors = {
     primaryGold: "#b8973d",
     accentDark: "#8B6A21",
     parchment: "#FBF4E2",
-    bgLight: "#f8f7f6",
+    bgLight: "#f1e4c8",
     bgDark: "#1e1b14",
-    // New Muted Palette for Charts
     chartGold: "#D4AF37",
     chartDark: "#2C261D",
     chartMuted: "#A68942",
@@ -48,7 +47,6 @@ const AdminDashboard = () => {
             { id: 4, icon: <Mail />, label: "Inquiries", value: "12", status: "New" }
         ]);
 
-        // Updated with UI-Matched Theme Colors
         setCampaigns([
             { label: "Google Ads", val: 85, color: academyColors.bgDark },
             { label: "FB / Insta", val: 65, color: academyColors.primaryGold },
@@ -68,14 +66,28 @@ const AdminDashboard = () => {
             initial="hidden"
             animate="visible"
             variants={containerVariants}
-            className="flex-1 md:ml-0 min-h-screen font-sans"
+            className="flex-1 md:ml-0 min-h-screen font-sans relative overflow-hidden" // Added relative & overflow-hidden
             style={{ backgroundColor: academyColors.bgLight }}
         >
+            {/* --- STEP 3: SHLOK WATERMARK IMPLEMENTATION --- */}
+            <div className="absolute inset-0 pointer-events-none select-none z-0 flex flex-col justify-around items-center opacity-[0.03] overflow-hidden">
+                <div className="font-heritage text-[15rem] whitespace-nowrap rotate-[-12deg] text-[#6b1d14]">
+                    विद्या ददाति विनयं
+                </div>
+                <div className="font-heritage text-[12rem] whitespace-nowrap rotate-[-12deg] text-[#6b1d14] ml-96">
+                    ज्ञानं परमं बलम्
+                </div>
+                <div className="font-heritage text-[15rem] whitespace-nowrap rotate-[-12deg] text-[#6b1d14] mr-96">
+                    योगः कर्मसु कौशलम्
+                </div>
+            </div>
+            {/* ----------------------------------------------- */}
+
             {/* Header */}
-            <header className="h-20 flex items-center justify-between px-6 lg:px-10 bg-white/80 backdrop-blur-md border-b sticky top-0 z-40" style={{ borderColor: `${academyColors.primaryGold}20` }}>
+            <header className="h-20 flex items-center justify-between px-6 lg:px-10 bg-[#f1e4c8]/80 backdrop-blur-md border border-b-[#6b1d14] sticky top-0 z-40" style={{ borderColor: `${academyColors.primaryGold}20` }}>
                 <div className="relative w-full max-w-xs md:max-w-md hidden sm:block">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 opacity-40" size={18} />
-                    <input type="text" placeholder="Search insights..." className="w-full border-none rounded-xl pl-10 pr-4 py-2 text-sm bg-zinc-100/50 focus:ring-1 focus:ring-[#b8973d]/20 transition-all outline-none" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 opacity-40 " size={18} />
+                    <input type="text" placeholder="Search insights..." className="w-full rounded-xl pl-10 pr-4 py-2 text-sm bg-zinc-100 border-1 border-[#74271E] focus:ring-1 focus:ring-[#b8973d]/20 transition-all outline-none" />
                 </div>
 
                 <div className="flex items-center gap-4 lg:gap-8 ml-auto">
@@ -93,18 +105,15 @@ const AdminDashboard = () => {
                 </div>
             </header>
 
-            <div className="p-4 lg:p-10 max-w-[1600px] mx-auto">
+            <div className="relative z-10 p-4 lg:p-10 max-w-[1600px] mx-auto"> {/* Added relative z-10 */}
                 {/* Title Section */}
                 <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
                     <div>
-                        <h2 className="text-3xl lg:text-4xl font-black text-zinc-900 tracking-tight">Academy Overview</h2>
-                        <p className="text-sm text-zinc-400 mt-1 italic font-medium">Elevating Sanskrit education with modern tech.</p>
+                        <h2 className="text-3xl lg:text-4xl font-heritage font-black text-[#6b1d14] tracking-tight">Academy Overview</h2>
+                        <p className="text-sm text-[#d6b15c ] mt-1 italic font-medium">Elevating Sanskrit education with modern tech.</p>
                     </div>
                     <div className="flex gap-3">
-                        <button className="flex-1 md:flex-none px-6 py-3 bg-white border border-zinc-200 rounded-xl font-bold text-xs uppercase tracking-widest shadow-sm hover:bg-zinc-50 transition-all"> This Month</button>
-                        <button className="flex-1 md:flex-none px-6 py-3 text-white rounded-xl font-bold shadow-lg bg-zinc-900 hover:bg-zinc-800 transition-all flex items-center gap-2 text-sm">
-                            <Plus size={18} /> New Course
-                        </button>
+                        <button className="flex-1 md:flex-none px-6 py-3 bg-white border border-[#6b1d14] rounded-xl font-bold text-xs uppercase tracking-widest shadow-sm hover:bg-[#6b1d14]/90 hover:text-white transition-all"> This Month</button>
                     </div>
                 </motion.div>
 
@@ -114,12 +123,13 @@ const AdminDashboard = () => {
                         <motion.div
                             key={s.id}
                             whileHover={{ y: -5 }}
-                            className="bg-white p-6 rounded-[1.5rem] border border-zinc-100 shadow-sm relative overflow-hidden group"
+                            className="bg-white/40 backdrop-blur-md p-6 rounded-[1.5rem] border-[0.5px] border-[#b8973d]/20 hadow-[0_8px_30px_rgba(107,29,20,0.04)] relative overflow-hidden group"
                         >
                             <div className="relative z-10">
                                 <div className="flex justify-between items-start mb-4">
                                     <div className="p-2.5 rounded-xl" style={{ backgroundColor: academyColors.parchment, color: academyColors.primaryGold }}>{s.icon}</div>
                                     {s.trend && <span className={`text-[10px] font-black px-2 py-0.5 rounded-md ${s.up ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>{s.trend}</span>}
+                                    {s.status && <span className="text-[9px] font-black px-2 py-1 bg-orange-50 text-[#8B6A21] rounded-md uppercase border border-orange-100">{s.status}</span>}
                                 </div>
                                 <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{s.label}</p>
                                 <p className="text-3xl font-black mt-1 text-zinc-900">{s.value}</p>
@@ -130,9 +140,8 @@ const AdminDashboard = () => {
 
                 {/* Charts Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-                    {/* Enrollment Growth */}
-                    <motion.div variants={itemVariants} className="bg-white p-8 rounded-[2rem] border border-zinc-100 shadow-sm">
-                        <h3 className="font-bold text-lg mb-6 text-zinc-800 flex items-center gap-2">
+                    <motion.div variants={itemVariants} className="bg-white/90 backdrop-blur-sm p-8 rounded-[2rem] border border-zinc-100 shadow-sm">
+                        <h3 className="font-bold text-lg mb-6 text-zinc-800 flex items-center gap-2 font-heritage uppercase tracking-wider">
                             <TrendingUp size={20} className="text-[#b8973d]" /> Enrollment Growth
                         </h3>
                         <div className="h-48 w-full bg-zinc-50/50 rounded-2xl relative overflow-hidden border border-zinc-100">
@@ -148,10 +157,9 @@ const AdminDashboard = () => {
                         </div>
                     </motion.div>
 
-                    {/* Modern Campaign Pillar Chart - FIXED DATA DISPLAY */}
-                    <motion.div variants={itemVariants} className="bg-white p-8 rounded-[2.5rem] border border-zinc-100 shadow-sm">
+                    <motion.div variants={itemVariants} className="bg-white/90 backdrop-blur-sm p-8 rounded-[2.5rem] border border-zinc-100 shadow-sm">
                         <div className="flex justify-between mb-10">
-                            <h3 className="font-bold text-lg text-zinc-800">Campaign Analytics</h3>
+                            <h3 className="font-bold text-lg text-zinc-800 font-heritage uppercase tracking-wider">Campaign Analytics</h3>
                             <div className="flex items-center gap-1.5 px-3 py-1 bg-green-50 rounded-full border border-green-100 text-green-600 text-[10px] font-black">LIVE</div>
                         </div>
                         <div className="flex items-end justify-between h-48 gap-3 px-2">
@@ -176,9 +184,9 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Recent Inquiries */}
-                <motion.div variants={itemVariants} className="bg-white rounded-[2rem] border border-zinc-100 shadow-sm overflow-hidden">
+                <motion.div variants={itemVariants} className="bg-white/90 backdrop-blur-sm rounded-[2rem] border border-zinc-100 shadow-sm overflow-hidden">
                     <div className="p-8 border-b flex justify-between items-center bg-zinc-50/30">
-                        <h3 className="font-bold text-lg text-zinc-800">Recent Inquiries</h3>
+                        <h3 className="font-bold text-lg text-zinc-800 font-heritage uppercase tracking-wider">Recent Inquiries</h3>
                         <button className="text-[10px] font-black uppercase tracking-widest text-[#b8973d] hover:underline transition-all">Refresh List</button>
                     </div>
                     <div className="overflow-x-auto">
@@ -194,7 +202,7 @@ const AdminDashboard = () => {
                                 {inquiries.map((inq, idx) => (
                                     <tr key={idx} className="hover:bg-zinc-50/50 transition-colors">
                                         <td className="px-10 py-6 font-bold text-zinc-800">{inq.name}</td>
-                                        <td className="px-10 py-6 italic text-zinc-500 text-sm">{inq.course}</td>
+                                        <td className="px-10 py-6 italic text-zinc-500 text-sm font-sans">{inq.course}</td>
                                         <td className="px-10 py-6">
                                             <span className={`px-3 py-1 rounded-md text-[9px] font-black uppercase ${inq.color}`}>{inq.status}</span>
                                         </td>

@@ -1,1 +1,17 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+@theme {
+    /* 2. Yahan apni custom font family define karein */
+    --font-heritage: "Cinzel", serif;
+    --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui;
+    --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+    --font-heritage: "Cinzel", serif;
+    --color-primary-maroon: #641e16;
+    --color-brand-cream: #f3e6c9;
+
+    /* 3. Aap apne custom colors bhi yahi add kar sakte hain */
+    /* --color-primary-maroon: #641e16;
+    --color-accent-gold: #c5a059;*/
+}

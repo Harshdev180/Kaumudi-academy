@@ -78,9 +78,9 @@ const CourseManagement = () => {
   };
 
   return (
-    <main className="flex-1 md:ml-0 min-h-screen bg-[#f8f7f6] flex flex-col transition-all duration-300">
+    <main className="flex-1 md:ml-0 min-h-screen bg-[#F3E6C9] flex flex-col transition-all duration-300">
       {/* HEADER */}
-      <header className="h-16 border-b bg-white flex items-center justify-between px-8 sticky top-0 z-10" style={{ borderColor: palette.goldDivider + '30' }}>
+      <header className="h-16 border border-b-[#6b1d14] bg-[#F3E6C9] flex items-center justify-between px-8 sticky top-0 z-10" style={{ borderColor: palette.goldDivider + '30' }}>
         <div className="flex items-center gap-4 flex-1 max-w-xl">
           <div className="relative w-full">
             <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-xl" style={{ color: palette.textMuted }} />
