@@ -1,7 +1,7 @@
 import "./App.css";
 
 // React Router
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
 // Pages
 import Dashboard from "./pages/AdminDashboard/Dashboard";
@@ -20,17 +20,14 @@ import Signin from "./component/Auth/login";
 function App() {
   return (
     <Routes>
-      {/* Public Routes */}
+      {/* ---------------- Public Routes ---------------- */}
+      <Route path="/" element={<Home />} />
       <Route path="/allcourses" element={<AllCoursesPage />} />
       <Route path="/coursedetail" element={<CourseDetail />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Signin />} />
-      <Route path="/" element={<Home />} />
 
-      {/* Redirect Example */}
-      {/* <Route path="/" element={<Navigate to="/allcourses" />} /> */}
-
-      {/* Admin Routes */}
+      {/* ---------------- Admin Routes ---------------- */}
       <Route
         path="/admin/dashboard"
         element={
