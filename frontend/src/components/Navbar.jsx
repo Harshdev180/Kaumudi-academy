@@ -21,7 +21,7 @@ export default function Navbar() {
 
       {/* MENU */}
       <ul style={styles.menu}>
-        {["Courses", "Home", "About Us", "Resources", "Contact"].map((item) => (
+        {["Home", "Courses", "About Us", "Resources", "Contact"].map((item) => (
           <li
             key={item}
             style={{

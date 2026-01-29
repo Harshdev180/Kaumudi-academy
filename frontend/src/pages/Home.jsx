@@ -47,42 +47,42 @@ const testimonials = [
     name: "Michael Brown",
     role: "Business Owner",
     text: "Solid craftsmanship. Will order again for my office.",
-    image: "https://randomuser.me/api/portraits/men/32.jpg",
+    image: "https://i.pinimg.com/736x/67/90/1b/67901b87579417a7c7395023d82f2764.jpg",
     rating: 5,
   },
   {
     name: "Donald Jackman",
     role: "Content Creator",
     text: "The chair quality is excellent and delivery was quick. Great value.",
-    image: "https://randomuser.me/api/portraits/men/44.jpg",
+    image: "https://i.pinimg.com/736x/95/8f/00/958f0083a5adefa5cda7e44e902db20e.jpg",
     rating: 5,
   },
   {
     name: "Richard Nelson",
     role: "Instagram Influencer",
     text: "Loved the sofa design. Cushioning could be a bit softer.",
-    image: "https://randomuser.me/api/portraits/men/65.jpg",
+    image: "https://i.pinimg.com/736x/7c/b4/ed/7cb4edc16cee1aaf3bf09fb98f0821c6.jpg",
     rating: 4,
   },
   {
     name: "Sophia Lee",
     role: "Interior Designer",
     text: "Elegant designs and premium feel. Clients loved it.",
-    image: "https://randomuser.me/api/portraits/women/47.jpg",
+    image: "https://i.pinimg.com/1200x/47/55/66/475566c67fb5c444e31a98e722f2dfeb.jpg",
     rating: 5,
   },
   {
     name: "James Carter",
     role: "Entrepreneur",
     text: "Very sturdy furniture. Packaging was excellent.",
-    image: "https://randomuser.me/api/portraits/men/52.jpg",
+    image: "https://i.pinimg.com/736x/cd/59/08/cd5908096c03ef59efb4ca1a4378c72d.jpg",
     rating: 4,
   },
   {
     name: "Ava Wilson",
     role: "Architect",
     text: "Minimalistic and classy. Fits modern interiors perfectly.",
-    image: "https://randomuser.me/api/portraits/women/65.jpg",
+    image: "https://i.pinimg.com/736x/5c/3d/9c/5c3d9cb7663b62be2d469a32aef71ceb.jpg",
     rating: 5,
   },
 ];
@@ -195,6 +195,20 @@ useEffect(() => {
             <p style={styles.courseDesc}>Master the intricate structure of the Sanskrit language.</p>
             <strong style={styles.courseLink}>LEARN MORE →</strong>
           </div>
+
+           <div style={styles.courseCard}>
+            <div
+              style={{
+                ...styles.courseImage,
+                backgroundImage:
+                  "url(https://thumbs.dreamstime.com/b/antique-literature-collection-old-fashioned-wisdom-preserved-generative-ai-antique-literature-collection-old-fashioned-wisdom-274867858.jpg)",
+              }}
+            />
+            <h3 style={styles.courseTitle}>Vyakarana (Grammar)</h3>
+            <p style={styles.courseDesc}>Master the intricate structure of the Sanskrit language.</p>
+            <strong style={styles.courseLink}>LEARN MORE →</strong>
+          </div>
+
 
           <div style={styles.courseCard}>
             <div
@@ -452,9 +466,10 @@ useEffect(() => {
   </div>
 
   <div style={styles.footerBottom}>
-    © 2024 Kaumudi Sanskrit Academy. All Wisdom Reserved.
-  </div>
+  © {new Date().getFullYear()} Kaumudi Sanskrit Academy. All Wisdom Reserved.
+</div>
 </footer>
+
 
 
     </>
@@ -682,6 +697,7 @@ missionRight: {
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  widthRight: "200px",
 },
 
 imageFrame: {
@@ -691,8 +707,8 @@ imageFrame: {
 },
 
 missionImage: {
-  width: "100%",
-  maxWidth: "520px",
+  width: "900px",
+  maxWidth: "620px",
   height: "auto",
   borderRadius: "22px",
   display: "block",
@@ -761,7 +777,7 @@ featureDesc: {
 /* ================= LEARNING PATHS ================= */
 
 learningWrapper: {
-  padding: "120px 90px",
+  padding: "15px 500px",
   background: "#f1e4c8",
   textAlign: "center",
 },
@@ -771,6 +787,7 @@ learningTitle: {
   fontWeight: "900",
   color: "#74271E",
   fontFamily: FONT_SERIF,
+
 },
 
 learningSubtitle: {
@@ -789,7 +806,7 @@ learningCards: {
 },
 
 onlineCard: {
-  background: "#ffffff",
+  background: "#f4efdf",
   padding: "36px",
   width: "420px",
   borderRadius: "16px",
@@ -936,7 +953,7 @@ testimonialWrapper: {
 },
 
 testimonialTag: {
-  fontSize: "13px",
+  fontSize: "25px",
   letterSpacing: "3px",
   color: "#d6b15c",
   fontWeight: "700",
@@ -976,8 +993,8 @@ testimonialCard: {
 },
 
 testimonialAvatar: {
-  width: "90px",
-  height: "90px",
+  width: "100px",
+  height: "100px",
   borderRadius: "50%",
   objectFit: "cover",
   marginBottom: "20px",
@@ -985,15 +1002,15 @@ testimonialAvatar: {
 },
 
 testimonialName: {
-  fontSize: "20px",
+  fontSize: "25px",
   fontWeight: "800",
   color: "#74271E",
-  marginTop: "50px",
+  marginTop: "35px",
   fontFamily: FONT_SERIF,
 },
 
 testimonialRole: {
-  fontSize: "14px",
+  fontSize: "18px",
   color: "#6f6f6f",
   display: "block",
   marginBottom: "18px",
@@ -1001,7 +1018,7 @@ testimonialRole: {
 },
 
 testimonialText: {
-  fontSize: "15px",
+  fontSize: "20px",
   lineHeight: "1.8",
   color: "#4b4b4b",
   marginBottom: "26px",
