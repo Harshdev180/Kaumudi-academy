@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import CourseDetail from "./pages/CourseDetail";
+import CourseDetail from "./pages/CourseDetailsUp";
 import Signup from './component/Auth/signup';
 import Signin from './component/Auth/login';
 
