@@ -28,12 +28,14 @@ const inquirySchema = new mongoose.Schema(
 
     preferredLevel: {
       type: String,
+      enum: ["BEGINNER", "INTERMEDIATE", "ADVANCED"],
       required: true
     },
 
     message: {
       type: String,
-      required: true
+      required: true,
+      trim: true
     },
 
     status: {
