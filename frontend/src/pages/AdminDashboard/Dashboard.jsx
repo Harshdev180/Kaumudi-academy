@@ -18,7 +18,8 @@ const Dashboard = () => {
         chartDark: "#2C261D",
         chartMuted: "#A68942",
         chartSlate: "#4A453E",
-        chartSage: "#6B705C"
+        chartSage: "#6B705C",
+        textDark: "#6b1d14"
     };
 
     const stats = [
@@ -88,10 +89,10 @@ const Dashboard = () => {
                                 {stat.change}
                             </span>
                         </div>
-                        <div className="size-10 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform" style={{ backgroundColor: theme.parchment, color: theme.primary }}>
+                        <div className="size-10 rounded-xl flex items-center justify-center text-xl text[#6b1d14] mb-4 group-hover:scale-110 transition-transform" style={{ backgroundColor: theme.parchment,  }}>
                             {stat.icon}
                         </div>
-                        <p className="text-[10px] font-black tracking-widest uppercase opacity-60 mb-1">{stat.title}</p>
+                        <p className="text-[10px] text-[#6b1d14] font-black tracking-widest uppercase opacity-60 mb-1">{stat.title}</p>
                         <h3 className="text-3xl font-bold" style={{ color: theme.textDark }}>{stat.value}</h3>
                     </motion.div>
                 ))}
@@ -143,73 +144,73 @@ const Dashboard = () => {
             </div>
 
             {/* 5. RECENT INQUIRIES TABLE */}
-           <div className="bg-[#fcf8f0]/30 rounded-[2.5rem]  overflow-hidden border border-white/40">
-  {/* Header Section */}
-  <div className="px-10 py-7 border-b border-[#D1B062]/20 flex justify-between items-center">
-    <h4 className="text-[13px] font-black uppercase tracking-[0.2em] text-[#6b1d14]/70">Recent Inquiries</h4>
-    <button className="text-[10px] font-black uppercase tracking-widest text-[#433629]/50 flex items-center gap-2 hover:text-[#b8973d] transition-colors bg-white/40 px-4 py-2 rounded-xl shadow-sm">
-      Refresh List <span className="text-lg">›</span>
-    </button>
-  </div>
-
-  <div className="overflow-x-auto">
-    <table className="w-full text-left border-separate border-spacing-0">
-      <thead>
-        <tr className="text-xs   uppercase text-[#6b1d14] tracking-[0.45em]">
-          <th className="px-12 py-6">Student</th>
-          <th className="px-12 py-6">Course</th>
-          <th className="px-12 py-6">Status</th> {/* Matching the double status column in your image */}
-          <th className="px-12 py-6 text-right">Action</th>
-        </tr>
-      </thead>
-      <tbody className="divide-y divide-[#D1B062]/10">
-        {[
-          { name: "Rahul Deshpande", initial: "RD", course: "Panini Vyakarana", status: "NEW" },
-          { name: "Ananya Iyer", initial: "AI", course: "Advanced Upanishad", status: "IN REVIEW" },
-        ].map((row, i) => (
-          <tr key={i} className="hover:bg-white/50 transition-all duration-300">
-            {/* Student Cell with Badge */}
-            <td className="px-12 py-8">
-              <div className="flex items-center gap-5">
-                <div className="relative">
-                  <div className="size-12 rounded-full flex items-center justify-center text-[13px] font-bold bg-[#6b1d14] text-white shadow-[inset_2px_2px_5px_rgba(0,0,0,0.05),_2px_2px_8px_rgba(255,255,255,0.8)] border border-white/50">
-                    {row.initial}
-                  </div>
+            <div className="bg-[#fcf8f0]/30 rounded-[2.5rem]  overflow-hidden border border-white/40">
+                {/* Header Section */}
+                <div className="px-10 py-7 border-b border-[#D1B062]/20 flex justify-between items-center">
+                    <h4 className="text-[13px] font-black uppercase tracking-[0.2em] text-[#6b1d14]/70">Recent Inquiries</h4>
+                    <button className="text-[10px] font-black uppercase tracking-widest text-[#433629]/50 flex items-center gap-2 hover:text-[#b8973d] transition-colors bg-white/40 px-4 py-2 rounded-xl shadow-sm">
+                        Refresh List <span className="text-lg">›</span>
+                    </button>
                 </div>
-                <span className="text-[15px] font-bold text-[#6b1d14]">{row.name}</span>
-              </div>
-            </td>
 
-            {/* Course Cell */}
-            <td className="px-12 py-8 text-sm italic text-[#6b1d14]/70 font-medium">
-              {row.course}
-            </td>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left border-separate border-spacing-0">
+                        <thead>
+                            <tr className="text-xs   uppercase text-[#6b1d14] tracking-[0.45em]">
+                                <th className="px-12 py-6">Student</th>
+                                <th className="px-12 py-6">Course</th>
+                                <th className="px-12 py-6">Status</th> {/* Matching the double status column in your image */}
+                                <th className="px-12 py-6 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#D1B062]/10">
+                            {[
+                                { name: "Rahul Deshpande", initial: "RD", course: "Panini Vyakarana", status: "NEW" },
+                                { name: "Ananya Iyer", initial: "AI", course: "Advanced Upanishad", status: "IN REVIEW" },
+                            ].map((row, i) => (
+                                <tr key={i} className="hover:bg-white/50 transition-all duration-300">
+                                    {/* Student Cell with Badge */}
+                                    <td className="px-12 py-8">
+                                        <div className="flex items-center gap-5">
+                                            <div className="relative">
+                                                <div className="size-12 rounded-full flex items-center justify-center text-[13px] font-bold bg-[#6b1d14] text-white shadow-[inset_2px_2px_5px_rgba(0,0,0,0.05),_2px_2px_8px_rgba(255,255,255,0.8)] border border-white/50">
+                                                    {row.initial}
+                                                </div>
+                                            </div>
+                                            <span className="text-[15px] font-bold text-[#6b1d14]">{row.name}</span>
+                                        </div>
+                                    </td>
 
-            {/* Status Pills */}
-            <td className="px-12 py-8">
-              <span className={`px-4 py-1.5 rounded-xl text-[9px] font-black tracking-widest uppercase bg-[#FBF4E2] border border-[#6b1d14]/30 shadow-sm ${row.status === 'NEW' ? 'text-[#6b1d14]' : 'text-[#6b1d14]/70'}`}>
-                {row.status}
-              </span>
-            </td>
+                                    {/* Course Cell */}
+                                    <td className="px-12 py-8 text-sm italic text-[#6b1d14]/70 font-medium">
+                                        {row.course}
+                                    </td>
 
-            {/* <td className="px-12 py-8">
+                                    {/* Status Pills */}
+                                    <td className="px-12 py-8">
+                                        <span className={`px-4 py-1.5 rounded-xl text-[9px] font-black tracking-widest uppercase bg-[#FBF4E2] border border-[#6b1d14]/30 shadow-sm ${row.status === 'NEW' ? 'text-[#6b1d14]' : 'text-[#6b1d14]/70'}`}>
+                                            {row.status}
+                                        </span>
+                                    </td>
+
+                                    {/* <td className="px-12 py-8">
               <button className="px-6 py-2 rounded-xl text-[10px] font-black text-[#6b1d14]/80 bg-white/40 border border-white shadow-sm hover:shadow-md transition-all">
                 View
               </button>
             </td> */}
 
-            {/* The Main "Pressable" Button */}
-            <td className="px-12 py-8 text-right">
-              <button className="px-10 py-3 rounded-2xl bg-[#fdf9f0] border-b-4 border-[#d1b062]/40 border-x border-t border-[#d1b062]/20 text-[11px] font-black text-[#433629] shadow-md hover:brightness-105 active:border-b-0 active:translate-y-1 transition-all uppercase tracking-widest">
-                View
-              </button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-</div>
+                                    {/* The Main "Pressable" Button */}
+                                    <td className="px-12 py-8 text-right">
+                                        <button className="px-10 py-3 rounded-2xl bg-[#fdf9f0] border-b-4 border-[#d1b062]/40 border-x border-t border-[#d1b062]/20 text-[11px] font-black text-[#433629] shadow-md hover:brightness-105 active:border-b-0 active:translate-y-1 transition-all uppercase tracking-widest">
+                                            View
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     );
 };

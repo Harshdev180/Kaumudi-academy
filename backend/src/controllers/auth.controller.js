@@ -305,7 +305,16 @@ export const resetPassword = async (req, res) => {
         message: "Invalid or expired token"
       });
     }
-
+  
+  const match =await bcrypt.compare(newPassword, account.password)
+  
+  if(match){
+    return res.status(400).json({
+      success:false,
+      message:"New password cant be same as old password"
+    })
+  }
+  
     account.password = await bcrypt.hash(newPassword, 10);
     account.resetPasswordToken = undefined;
     account.resetPasswordExpire = undefined;
@@ -325,4 +334,3 @@ export const resetPassword = async (req, res) => {
     });
   }
 };
-

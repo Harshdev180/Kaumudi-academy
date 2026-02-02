@@ -117,11 +117,11 @@ const CourseManagement = () => {
         </div>
 
         {/* TABLE */}
-        <div className="bg-[#fcf8f0]/30 border rounded-[2rem] overflow-hidden shadow-sm" style={{ borderColor: palette.goldDivider + '20' }}>
+        <div className="bg-[#fcf8f0]/30 border rounded-4xl overflow-hidden shadow-sm" style={{ borderColor: palette.goldDivider + '20' }}>
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[900px]">
+            <table className="w-full text-left border-collapse min-w-225">
               <thead>
-                <tr className="border-b border-[#D1B062]/20" style={{ backgroundColor: palette.parchment + '40' }}>
+                <tr className="border-b border-[#D1B062]/50" style={{ backgroundColor: palette.parchment + '40' }}>
                   <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#856966]">Course Title</th>
                   <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#856966]">Duration</th>
                   <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#856966]">Mode</th>
