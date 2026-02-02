@@ -1,37 +1,24 @@
-import React from "react";
+import React from 'react';
 import { MdSupportAgent } from "react-icons/md";
 import {
-  LayoutDashboard,
-  Users,
-  BookOpen,
-  Settings,
-  ChevronRight,
-  X, // Close icon mobile ke liye
-} from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+  LayoutDashboard, Users, BookOpen, Settings, ChevronRight, X, LucideMessageCircleQuestionMark
+} from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+// import { MdSupportAgent } from "react-icons/md";
 
-// isOpen aur toggleSidebar props layout se aayenge
+
+
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const location = useLocation();
 
   const menuItems = [
-    {
-      path: "/admin/dashboard",
-      label: "Dashboard",
-      icon: <LayoutDashboard size={20} />,
-    },
-    {
-      path: "/admin/lead",
-      label: "Lead Management",
-      icon: <Users size={20} />,
-    },
-    {
-      path: "/admin/courses",
-      label: "Courses Management",
-      icon: <BookOpen size={20} />,
-    },
+    { path: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
+    { path: 'lead', label: 'Lead Management', icon: <Users size={18} /> },
+    { path: 'course', label: 'Courses Management', icon: <BookOpen size={18} /> },
+    // { path: '/admin/inquiry', label: 'Inquiries', icon: <LucideMessageCircleQuestionMark size={18} /> }
   ];
+
 
   return (
     <>
@@ -51,7 +38,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       {/* Sidebar Main Container */}
       <aside
         className={`
-                w-72 bg-[#fef0c6] text-[#6b1d14] flex flex-col fixed inset-y-0 left-0 shadow-2xl z-50 
+                w-72 bg-[#FBF4E2] text-[#6b1d14] flex flex-col fixed inset-y-0 left-0 border-r border-gray-300 z-50 
                 transition-transform duration-300 ease-in-out
                 ${isOpen ? "translate-x-0" : "-translate-x-full"} 
                 md:translate-x-0
@@ -69,7 +56,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         <div className="p-8 flex-shrink-0">
           <div className="flex items-center gap-3 mb-2">
             <div className="bg-[#D4AF37] p-2 rounded-xl shadow-inner">
-              <BookOpen className="text-[#8B6A21]" />
+              <BookOpen className="text-[#6b1d14]" />
             </div>
             <h1 className="font-serif font-extrabold text-2xl tracking-normal text-[#6b1d14]">
               KAUMUDI
@@ -80,35 +67,38 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           </p>
         </div>
 
-        {/* Navigation Links */}
-        <nav className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar py-4">
+
+        {/* Navigation (Scrollable Middle Section) */}
+        <nav className="px-4 py-6 space-y-2 flex-1 overflow-y-auto">
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path;
+
             return (
               <Link
                 key={item.path}
                 to={item.path}
-                onClick={() => {
-                  if (window.innerWidth < 768) toggleSidebar();
-                }}
-                className={`flex items-center justify-between p-4 rounded-r-2xl transition-all duration-300 group ${
-                  isActive
-                    ? "bg-[#D4AF37]/70 border border-[#6b1d14] text-[#6b1d14] font-bold shadow-lg translate-x-2"
-                    : "hover:bg-white/10 text-[#6b1d14] hover:text-[#6b1d14]"
-                }`}
-              >
+                onClick={() => window.innerWidth < 768 && toggleSidebar()}
+                className={` flex items-center justify-between  px-5 py-3  rounded-2xl transition-all duration-300 ${isActive ? 'bg-[#F3E6C9] border border-[#b8973d]/40 shadow-sm' : 'hover:bg-[#F3E6C9]/60 text-[#6b1d14]/70'}`}>
                 <div className="flex items-center gap-4">
-                  {item.icon}
-                  <span className="text-sm tracking-wide">{item.label}</span>
+                  <div
+                    className={` p-2 rounded-xl ${isActive ? 'bg-[#D4AF37] text-[#6b1d14]' : 'bg-white/70 text-[#6b1d14]/70'}`} >
+                    {item.icon}
+                  </div>
+                  <span className="text-sm font-medium tracking-wide">
+                    {item.label}
+                  </span>
                 </div>
-                {isActive && <ChevronRight size={16} />}
+
+                {isActive && (
+                  <ChevronRight size={16} className="text-[#b8973d]" />
+                )}
               </Link>
             );
           })}
         </nav>
 
         {/* Bottom Support Section */}
-        <div className="p-6 mt-auto border-t border-white/10 bg-[#fef0c6] sticky bottom-0">
+        <div className="p-6 mt-auto border-t border-white/10 bg-[#FBF4E2] sticky bottom-0">
           <Link
             to="/admin/settings"
             className="flex items-center gap-4 p-4 text-[#6b1d14] hover:text-black transition-colors text-sm"

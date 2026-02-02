@@ -1,7 +1,4 @@
-
 import "./App.css";
-
-// React Router
 import { Route, Routes } from "react-router-dom";
 
 // Pages
@@ -12,8 +9,7 @@ import AdminLogin from "./pages/AdminDashboard/AdminLogin";
 import CourseManagement from "./pages/AdminDashboard/CourseManagement";
 import AllCoursesPage from "./pages/CourseListing";
 import CourseDetail from "./pages/CourseDetail";
-
-// Auth
+import Inquiry from "./pages/AdminDashboard/Inquiry";
 import Signup from "./component/Auth/signup";
 import Signin from "./component/Auth/login";
 import Home from "./pages/Homepage/Home";
@@ -38,35 +34,22 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Signin />} />
 
-        {/* ---------------- Admin Routes ---------------- */}
-        <Route
-          path="/admin/dashboard"
-          element={
-            <AdminLayout>
-              <Dashboard />
-            </AdminLayout>
-          }
-        />
+        {/* ---------------- Admin Routes (Nested) ---------------- */}
+        {/* Parent Route*/}
+        <Route path="/admin" element={<AdminLayout />}>
+          {/* Default Page */}
+          <Route index element={<Dashboard />} />
 
-        <Route
-          path="/admin/lead"
-          element={
-            <AdminLayout>
-              <LeadManagement />
-            </AdminLayout>
-          }
-        />
+          {/* Primary Path: /admin/dashboard */}
+          <Route path="dashboard" element={<Dashboard />} />
 
-        <Route
-          path="/admin/courses"
-          element={
-            <AdminLayout>
-              <CourseManagement />
-            </AdminLayout>
-          }
-        />
+          {/* Inside Admin Pages */}
+          <Route path="lead" element={<LeadManagement />} />
+          <Route path="course" element={<CourseManagement />} />
+          {/* <Route path="inquiry" element={<Inquiry />} /> */}
+        </Route>
 
-        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin-login" element={<AdminLogin />} />
       </Routes>
       <Footer />
     </>
