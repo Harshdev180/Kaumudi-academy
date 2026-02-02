@@ -226,7 +226,7 @@ const AllCoursesPage = () => {
 
               {/* Header */}
               <div className="flex items-center justify-between pb-2 border-b border-[#E6DDC8]">
-                <h3 className="text-xl font-bold text-[#2D2417] font-serif">Filters</h3>
+                <h3 className="text-xl font-bold text-[#74271E] font-serif">Filters</h3>
                 <button
                   onClick={() => {
                     resetFilters();
@@ -261,7 +261,7 @@ const AllCoursesPage = () => {
                           onChange={() =>
                             setModeFilter(modeFilter === item.value ? "All Modes" : item.value)
                           }
-                          className="peer appearance-none w-5 h-5 border border-[#E2D4A6] rounded bg-[#FDFCF7] checked:bg-[#4A1D1D] checked:border-[#4A1D1D] transition-all cursor-pointer"
+                          className="peer appearance-none w-5 h-5 border border-[#E2D4A6] rounded bg-[#FDFCF7] checked:bg-[#74271E] checked:border-[#74271E] transition-all cursor-pointer"
                         />
                         <Check className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
                       </div>
@@ -295,7 +295,7 @@ const AllCoursesPage = () => {
                           onChange={() => 
                             setDurationFilter(durationFilter === item.value ? "Any" : item.value)
                           }
-                          className="peer appearance-none w-5 h-5 border border-[#E2D4A6] rounded-full bg-[#FDFCF7] checked:border-[5px] checked:border-[#4A1D1D] transition-all cursor-pointer"
+                          className="peer appearance-none w-5 h-5 border border-[#E2D4A6] rounded-full bg-[#FDFCF7] checked:border-[5px] checked:border-[#74271E] transition-all cursor-pointer"
                         />
                       </div>
                       <span className="font-medium">{item.label}</span>
@@ -327,7 +327,7 @@ const AllCoursesPage = () => {
                           onChange={() =>
                             setLevelFilter(levelFilter === lvl.value ? "Any Level" : lvl.value)
                           }
-                          className="peer appearance-none w-5 h-5 border border-[#E2D4A6] rounded bg-[#FDFCF7] checked:bg-[#4A1D1D] checked:border-[#4A1D1D] transition-all cursor-pointer"
+                          className="peer appearance-none w-5 h-5 border border-[#E2D4A6] rounded bg-[#FDFCF7] checked:bg-[#74271E] checked:border-[#74271E] transition-all cursor-pointer"
                         />
                         <Check className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
                       </div>
@@ -359,7 +359,7 @@ const AllCoursesPage = () => {
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     <div className="absolute top-3 left-3 z-10">
-                      <span className="inline-flex items-center justify-center px-3 py-1 bg-[#4A1D1D] text-white text-[10px] font-bold uppercase tracking-wider rounded shadow-md">
+                      <span className="inline-flex items-center justify-center px-3 py-1 bg-[#74271E] text-white text-[10px] font-bold uppercase tracking-wider rounded shadow-md">
                         {course.mode}
                       </span>
                     </div>
@@ -405,7 +405,7 @@ const AllCoursesPage = () => {
                     
                     <div className="mt-auto pt-3 border-t border-[#E2D4A6]/40 flex items-center justify-between">
                       {/* PRICE */}
-                      <span className="text-lg font-bold text-[#4A1D1D] tabular-nums tracking-tight">
+                      <span className="text-lg font-bold text-[#74271E] tabular-nums tracking-tight">
                         ₹{course.price}
                       </span>
 
@@ -428,7 +428,7 @@ const AllCoursesPage = () => {
               </div>
               <h3 className="text-2xl font-bold text-[#2D2417] mb-2">No Shastras Found</h3>
               <p className="text-stone-500 italic mb-8">Try adjusting your filters to find what you seek.</p>
-              <button onClick={resetFilters} className="px-8 py-3 bg-[#4A1D1D] text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all">
+              <button onClick={resetFilters} className="px-8 py-3 bg-[#74271E] text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all">
                 Reset All Filters
               </button>
             </div>
@@ -444,7 +444,7 @@ const AllCoursesPage = () => {
                 <button
                   key={n}
                   className={`w-10 h-10 flex items-center justify-center rounded-full text-sm font-semibold transition-all ${
-                    n === 1 ? "bg-[#4A1D1D] text-white shadow-lg" : "text-[#8B6D31] bg-[#FBF4E2] hover:bg-[#FDFCF7] border border-transparent hover:border-[#B38B3F]"
+                    n === 1 ? "bg-[#74271E] text-white shadow-lg" : "text-[#8B6D31] bg-[#FBF4E2] hover:bg-[#FDFCF7] border border-transparent hover:border-[#B38B3F]"
                   }`}
                 >
                   {n}
