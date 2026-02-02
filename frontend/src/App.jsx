@@ -9,23 +9,24 @@ import AdminLayout from "./pages/AdminDashboard/AdminLayout";
 import LeadManagement from "./pages/AdminDashboard/LeadManagement";
 import AdminLogin from "./pages/AdminDashboard/AdminLogin";
 import CourseManagement from "./pages/AdminDashboard/CourseManagement";
-import AllCoursesPage from "./pages/CourseListing";
-import CourseDetail from "./pages/CourseDetail";
-import Home from "./pages/Home";
+import Inquiry from "./pages/AdminDashboard/Inquiry";
+// import AllCoursesPage from "./pages/CourseListing";
+// import CourseDetail from "./pages/CourseDetail";
+// import Home from "./pages/Home";
 
 // Auth
-import Signup from "./component/Auth/signup";
-import Signin from "./component/Auth/login";
+// import Signup from "./component/Auth/signup";
+// import Signin from "./component/Auth/login";
 
 function App() {
   return (
     <Routes>
       {/* ---------------- Public Routes ---------------- */}
-      <Route path="/" element={<Home />} />
-      <Route path="/allcourses" element={<AllCoursesPage />} />
-      <Route path="/coursedetail" element={<CourseDetail />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/login" element={<Signin />} />
+      {/* <Route path="/" element={<Home />} /> */}
+      {/* <Route path="/allcourses" element={<AllCoursesPage />} /> */}
+      {/* <Route path="/coursedetail" element={<CourseDetail />} /> */}
+      {/* <Route path="/signup" element={<Signup />} /> */}
+      {/* <Route path="/login" element={<Signin />} /> */}
 
       {/* ---------------- Admin Routes ---------------- */}
       <Route
@@ -51,6 +52,14 @@ function App() {
         element={
           <AdminLayout>
             <CourseManagement />
+          </AdminLayout>
+        }
+      />
+      <Route
+        path="/admin/inquiry"
+        element={
+          <AdminLayout>
+            <Inquiry />
           </AdminLayout>
         }
       />

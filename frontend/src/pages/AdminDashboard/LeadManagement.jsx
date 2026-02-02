@@ -43,7 +43,7 @@ const LeadManagement = () => {
     );
 
     return (
-        <div className="flex h-screen w-full bg-[#F3E6C9] overflow-hidden font-sans text-[#201412]">
+        <div className="flex h-screen w-full bg-[#f1e4c8] overflow-hidden font-sans text-[#201412]">
             <main className="flex-1 h-full overflow-y-auto p-4 md:p-10 custom-scrollbar">
 
                 {/* Header */}
@@ -97,7 +97,7 @@ const LeadManagement = () => {
                                         whileHover={{ x: 5 }}
                                         key={lead.id}
                                         onClick={() => setSelectedLead(lead)}
-                                        className={`bg-white p-5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${selectedLead?.id === lead.id ? 'border-[#D4AF37] shadow-lg ring-1 ring-[#D4AF37]' : 'border-zinc-100 shadow-sm'}`}
+                                        className={`bg-[#fcf8f0]/30 p-5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${selectedLead?.id === lead.id ? 'border-[#D4AF37] shadow-lg ring-1 ring-[#D4AF37]' : 'border-zinc-100 shadow-sm'}`}
                                     >
                                         <div className="flex items-center gap-4">
                                             <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-[#D4AF37] font-bold shadow-inner">
@@ -126,7 +126,7 @@ const LeadManagement = () => {
                                 initial={{ x: 300, opacity: 0 }}
                                 animate={{ x: 0, opacity: 1 }}
                                 exit={{ x: 300, opacity: 0 }}
-                                className="w-full lg:w-100 bg-white rounded-3xl border border-zinc-100 shadow-2xl p-6 sticky top-0"
+                                className="w-full lg:w-100 bg-[#fcf8f0]/30 rounded-3xl border border-zinc-100 shadow-2xl p-6 sticky top-0"
                             >
                                 <div className="flex justify-between items-center mb-8">
                                     <h3 className="font-black text-xl text-[#641e16]">Lead Details</h3>
