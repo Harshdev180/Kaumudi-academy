@@ -1,7 +1,12 @@
-import Navbar1 from "./components/Navbar1";
+import Contact from "./pages/Contact";
 import Home from "./pages/Home";
-
-export default function App() {
-  // return <Home />;
-  return <Navbar1/>;
+function App() {
+  return (
+    <div className="App">
+      <Home />
+      <Contact />
+    </div>
+  );
 }
+
+export default App;

@@ -1,9 +1,16 @@
+import { useNavigate } from "react-router-dom";
+
 export default function CourseCard({ title, desc }) {
+  const navigate = useNavigate();
+
   return (
     <div style={styles.card}>
       <h3>{title}</h3>
       <p>{desc}</p>
-      <span style={styles.link}>Learn More →</span>
+
+      <button style={styles.link} onClick={() => navigate("/coursedetail")}>
+        Learn More →
+      </button>
     </div>
   );
 }

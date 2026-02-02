@@ -1,1040 +1,338 @@
-import { useState, useEffect, useRef } from "react";
-import Navbar from "../components/Navbar";
-import heroImg from "../assets/wheel.jpg";
+import { Hourglass } from "lucide-react";
+import { Users } from "lucide-react";
+import { BookOpen } from "lucide-react";
+import { CloudUpload } from "lucide-react";
 
-/* ================= THEME COLORS ================= */
-const BG = "#f1e4c8";
-const MAROON = "#74271E";
-const GOLD = "#d6b15c";
 
-const FONT_DISPLAY = "'Lexend', sans-serif";
-const FONT_SERIF = "'Crimson Pro', serif";
 
 export default function Home() {
-  const [hoverPrimary, setHoverPrimary] = useState(false);
-  const [hoverSecondary, setHoverSecondary] = useState(false);
-  const scrollRef = useRef(null);
-  const [courseIndex, setCourseIndex] = useState(0);
-  /* ================= FONTS ================= */
-
-
-
-  
-
-  /* ================= AUTO SCROLL TEXT ================= */
-  useEffect(() => {
-    let x = window.innerWidth;
-    let animationId;
-    const speed = 0.35;
-
-    const move = () => {
-      if (scrollRef.current) {
-        x -= speed;
-        if (x <= -scrollRef.current.scrollWidth / 2) {
-          x = window.innerWidth;
-        }
-        scrollRef.current.style.transform = `translateX(${x}px)`;
-      }
-      animationId = requestAnimationFrame(move);
-    };
-
-    animationId = requestAnimationFrame(move);
-    return () => cancelAnimationFrame(animationId);
-  }, []);
-  
-const testimonials = [
-  {
-    name: "Michael Brown",
-    role: "Business Owner",
-    text: "Solid craftsmanship. Will order again for my office.",
-    image: "https://i.pinimg.com/736x/67/90/1b/67901b87579417a7c7395023d82f2764.jpg",
-    rating: 5,
-  },
-  {
-    name: "Donald Jackman",
-    role: "Content Creator",
-    text: "The chair quality is excellent and delivery was quick. Great value.",
-    image: "https://i.pinimg.com/736x/95/8f/00/958f0083a5adefa5cda7e44e902db20e.jpg",
-    rating: 5,
-  },
-  {
-    name: "Richard Nelson",
-    role: "Instagram Influencer",
-    text: "Loved the sofa design. Cushioning could be a bit softer.",
-    image: "https://i.pinimg.com/736x/7c/b4/ed/7cb4edc16cee1aaf3bf09fb98f0821c6.jpg",
-    rating: 4,
-  },
-  {
-    name: "Sophia Lee",
-    role: "Interior Designer",
-    text: "Elegant designs and premium feel. Clients loved it.",
-    image: "https://i.pinimg.com/1200x/47/55/66/475566c67fb5c444e31a98e722f2dfeb.jpg",
-    rating: 5,
-  },
-  {
-    name: "James Carter",
-    role: "Entrepreneur",
-    text: "Very sturdy furniture. Packaging was excellent.",
-    image: "https://i.pinimg.com/736x/cd/59/08/cd5908096c03ef59efb4ca1a4378c72d.jpg",
-    rating: 4,
-  },
-  {
-    name: "Ava Wilson",
-    role: "Architect",
-    text: "Minimalistic and classy. Fits modern interiors perfectly.",
-    image: "https://i.pinimg.com/736x/5c/3d/9c/5c3d9cb7663b62be2d469a32aef71ceb.jpg",
-    rating: 5,
-  },
-];
-
-const [testimonialIndex, setTestimonialIndex] = useState(0);
-
-useEffect(() => {
-  const interval = setInterval(() => {
-    setTestimonialIndex((prev) =>
-      prev + 3 >= testimonials.length ? 0 : prev + 3
-    );
-  }, 4000);
-
-  return () => clearInterval(interval);
-}, []);
-
   return (
     <>
-      <Navbar />
+      {/* ============ HERO SECTION ============ */}
+      <section className="py-45 flex items-center justify-center bg-[#f1e4c8] px-4">
+        <div className="max-w-4xl text-center space-y-2">
 
-      {/* ================= HERO ================= */}
-      <section style={styles.page}>
-        <div
-          style={{
-            ...styles.hero,
-            background: `
-              linear-gradient(
-                90deg,
-                rgba(118, 71, 59, 0.88) 0%,
-                rgba(110, 51, 36, 0.75) 48%,
-                rgba(215, 67, 30, 0.35) 100%
-              ),
-              url(${heroImg}) center/cover no-repeat
-            `,
-          }}
-        >
-          <div style={styles.content}>
-            <div style={styles.line}></div>
+          <h1 className="font-serif text-9xl lg:text-8xl leading-[1.15] text-[#7b2d1f] skew-x-[-14deg]">
+            The Soul of Sanskrit <br />
+            in the Heart of the Digital Age
+          </h1>
 
-            <h1 style={styles.heading}>
-              Reviving the <br />
-              Timeless Wisdom <br />
-              of <span style={{ color: GOLD, fontFamily: FONT_SERIF }}>
-  Sanskrit
-</span>
-
-            </h1>
-
-            <p style={styles.text}>
-              Immerse yourself in the profound heritage of classical Sanskrit
-              through our curated traditional and modern learning programs.
-            </p>
-
-            <div style={styles.actions}>
-              <button
-                style={{
-                  ...styles.primary,
-                  background: hoverPrimary ? "#c9a84e" : GOLD,
-                }}
-                onMouseEnter={() => setHoverPrimary(true)}
-                onMouseLeave={() => setHoverPrimary(false)}
-              >
-                Explore Courses
-              </button>
-
-              <button
-                style={{
-                  ...styles.secondary,
-                  background: hoverSecondary
-                    ? "rgba(255,255,255,0.28)"
-                    : styles.secondary.background,
-                }}
-                onMouseEnter={() => setHoverSecondary(true)}
-                onMouseLeave={() => setHoverSecondary(false)}
-              >
-                Contact Academy
-              </button>
-            </div>
-          </div>
+          <p className="text-lg sm:text-xl text-gray-700 max-w-1xl mx-auto leading-loose">
+            From the silent corridors of ancient Gurukuls to the vibrant screens
+            of global learners, we bridge thousands of years with a single
+            mission:
+            <span className="font-medium"> Shastric Integrity</span>.
+          </p>
         </div>
       </section>
 
-      {/* ================= SCROLL TEXT ================= */}
-      <div style={styles.courseScrollWrapper}>
-        <div ref={scrollRef} style={styles.scrollTrack}>
-          {Array(8)
-            .fill("ज्ञानप्रदीपः — Illuminating minds through Sanskrit wisdom 📜")
-            .map((text, i) => (
-              <span key={i}>{text}</span>
-            ))}
+      {/* ============ OUR HERITAGE SECTION ============ */}
+      <section className="w-full py-5 bg-[#7b2d1f]  ">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            
+            {/* LEFT CONTENT */}
+            <div>
+              <h2 className="font-serif text-7xl text-[#d6b25e] mb-8 font-bold">
+                Our Heritage
+              </h2>
+
+              <p className="text-[#d6b25e] leading-relaxed mb-6">
+  Rooted in the classical guru–śiṣya tradition yet responsive to contemporary
+  scholarship, the Academy has carefully bridged ancient wisdom with modern
+  pedagogical practices. Its curriculum is designed not merely to transmit
+  linguistic knowledge, but to cultivate disciplined inquiry, clarity of
+  thought, and reverence for textual authenticity.
+</p>
+
+<p className="text-[#d6b25e] leading-relaxed mb-6">
+  Over the years, Kaumudi Academy has become a meeting ground for traditional
+  scholars and modern researchers, fostering dialogue across generations.
+  Through rigorous textual analysis, oral recitation, and interpretive study,
+  students are guided toward a deeper engagement with Sanskrit as a living
+  intellectual tradition rather than a relic of the past.
+</p>
+
+<p className="text-[#d6b25e] leading-relaxed">
+  Today, the Academy’s digital initiatives extend this timeless heritage beyond
+  geographical boundaries, enabling learners across the world to participate in
+  structured study, guided mentorship, and scholarly exchange—ensuring that the
+  voice of Sanskrit continues to resonate in the modern age.
+</p>
+
+
+              <p className="italic text-[#d6b25e] mb-6 text-1x1">
+                “We do not just teach a language; we awaken a heritage that has
+                pulsed through the Indian subcontinent for millennia.”
+              </p>
+
+              <p className="text-[#d6b25e] font-bold">
+                — Acharya Ramakant Sharma, Founder
+              </p>
+            </div>
+
+            {/* RIGHT IMAGE */}
+              <div className="relative">
+                <div className=" w-100% rounded-4xl overflow-hidden border-4 border-[#f1e4c8] shadow-2xl h-200">
+                  <img
+                    src="https://i.pinimg.com/736x/43/d5/9b/43d59b6ffea25e44cb1092a10e43a78b.jpg"
+                    alt="Sanskrit Scholar"
+                    className="w-full h-full object-cover grayscale"
+                  />
+                </div>
+              </div>
+
+          </div>
+        </div>
+      </section>
+      {/* ============== STATS + MISSION / VISION SECTION ============== */}
+<section className="w-full py-45 bg-[#f1e4c8]">
+  <div className="max-w-7xl mx-auto px-6">
+
+    {/* ===== STATS CARDS ===== */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-24">
+      
+      {/* Card 1 */}
+      <div className="bg-[#7b1f14] rounded-2xl py-10 text-center shadow-xl">
+        {/* <div className="text-[#d6b25e] text-2xl mb-3">⌛</div> */}
+        <Hourglass size={28} className="mx-auto mb-3 text-[#d6b25e]" />
+        <p className="text-sm tracking-widest uppercase text-[#e7d8c6]">
+          Years of Legacy
+        </p>
+        <p className="text-4xl font-serif font-bold text-white mt-2">15+</p>
+      </div>
+
+      {/* Card 2 */}
+      <div className="bg-[#7b1f14] rounded-2xl py-10 text-center shadow-xl">
+        {/* <div className="text-[#d6b25e] text-2xl mb-3">👥</div> */}
+        <Users size={28} className="mx-auto mb-3 text-[#d6b25e]" />
+        <p className="text-sm tracking-widest uppercase text-[#e7d8c6]">
+          Global Scholars
+        </p>
+        <p className="text-4xl font-serif font-bold text-white mt-2">5000+</p>
+      </div>
+
+      {/* Card 3 */}
+      <div className="bg-[#7b1f14] rounded-2xl py-10 text-center shadow-xl">
+        {/* <div className="text-[#d6b25e] text-2xl mb-3">📘</div> */}
+        <BookOpen size={28} className="mx-auto mb-3 text-[#d6b25e]" />
+        <p className="text-sm tracking-widest uppercase text-[#e7d8c6]">
+          Advanced Courses
+        </p>
+        <p className="text-4xl font-serif font-bold text-white mt-2">50+</p>
+      </div>
+
+      {/* Card 4 */}
+      <div className="bg-[#7b1f14] rounded-2xl py-10 text-center shadow-xl">
+        {/* <div className="text-[#d6b25e] text-2xl mb-3">☁️</div> */}
+        <CloudUpload size={28} className="mx-auto mb-3 text-[#d6b25e]" />
+        <p className="text-sm tracking-widest uppercase text-[#e7d8c6]">
+          Manuscripts Saved
+        </p>
+        <p className="text-4xl font-serif font-bold text-white mt-2">100+</p>
+      </div>
+
+    </div>
+
+    {/* ===== MISSION & VISION ===== */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+
+      {/* OUR MISSION */}
+      <div className="relative bg-[#fff9e9] border border-[#7b1f14] rounded-2xl p-10">
+        <h3 className="font-serif text-2xl text-[#7b1f14] mb-4 flex items-center gap-3 font-bold">
+          <span className="h-px w-10 bg-[#7b1f14]"></span>
+          Our Mission
+        </h3>
+
+        <p className="text-base sm:text-lg lg:text-l text-[#6b4b3e] leading-relaxed">
+  To democratize Sanskrit education without diluting its rigor.
+  We aim to provide a structured, accessible path for any seeker
+  to master the “Divine Language” through modern pedagogical tools
+  and traditional guru-shishya intimacy.
+</p>
+
+
+        <div className="absolute right-6 bottom-6 opacity-10 text-7xl">◎</div>
+      </div>
+
+      {/* OUR VISION */}
+      <div className="relative bg-[#fff9e9] border border-[#7b1f14] rounded-2xl p-10">
+        <h3 className="font-serif text-2xl text-[#7b1f14] mb-4 flex items-center gap-3 font-bold">
+          <span className="h-px w-10 bg-[#7b1f14] "></span>
+          Our Vision
+        </h3>
+
+        <p className="text-base sm:text-lg lg:text-l text-[#6b4b3e] leading-relaxed">
+          To see Sanskrit recognized once again as a living language of
+          science, philosophy, and global dialogue, ensuring that the wisdom
+          of the Vedas and Upanishads continues to illuminate modern
+          humanity’s challenges.
+        </p>
+
+        <div className="absolute right-6 bottom-6 opacity-10 text-7xl">◎</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+{/* ============================================================= */}
+{/* ================= GUIDING LIGHTS SECTION ================= */}
+{/* ================= GUIDING LIGHTS CARDS ================= */}
+<section className="w-full py-1 bg-[#f1e4c8]">
+  <div className="max-w-7xl mx-auto px-6">
+
+    {/* HEADING */}
+    <div className="text-center mb-16">
+      <h2 className="font-serif italic text-5xl text-[#7b2d1f] mb-4 font-bold">
+        Guiding Lights of Kaumudi
+      </h2>
+
+      <div className="flex items-center justify-center gap-3 mb-4">
+        <span className="h-[2px] w-10 bg-[#d6b25e]"></span>
+        <span className="h-2 w-2 rounded-full bg-[#d6b25e]"></span>
+        <span className="h-[2px] w-10 bg-[#d6b25e]"></span>
+      </div>
+
+      <p className="text-[#6b4b3e] max-w-l mx-auto">
+        Learn from the lineage of renowned Pandits and modern linguists.
+      </p>
+    </div>
+
+    {/* CARDS GRID */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+
+      {/* CARD 1 */}
+      <div className="bg-[#fff9e9] rounded-2xl shadow-xl overflow-hidden">
+        <div className="p-4">
+          <img
+            src="https://i.pinimg.com/736x/6e/f3/a3/6ef3a3792fc89e992cfdace89b3b887e.jpg"
+            alt="Dr. Ananth Narayan"
+            className="w-full h-72 object-cover rounded-xl"
+          />
+        </div>
+
+        <div className="px-8 pb-10">
+          <h3 className="font-serif text-xl text-[#7b2d1f] mb-1 font-bold">
+            Dr. Ananth Narayan
+          </h3>
+          <p className="text-xs tracking-widest uppercase text-[#d6b25e] mb-4 font-bold"> 
+            Hod · Vyakarana Shastra
+          </p>
+
+          <p className="text-[#6b4b3e] leading-relaxed">
+            A PhD from BHU with 20 years of experience in Paninian Grammar.
+            Expert in the Mahabhashya tradition.
+          </p>
         </div>
       </div>
 
-      {/* ================= EXPLORE COURSES ================= */}
-      <section style={styles.exploreSection}>
-        <div style={styles.exploreHeader}>
-          <h2>Explore Our Courses</h2>
-        </div>
-
-        <div style={styles.courseCards}>
-          <div style={styles.courseCard}>
-            <div
-              style={{
-                ...styles.courseImage,
-                backgroundImage:
-                  "url(https://thumbs.dreamstime.com/b/antique-literature-collection-old-fashioned-wisdom-preserved-generative-ai-antique-literature-collection-old-fashioned-wisdom-274867858.jpg)",
-              }}
-            />
-            <h3 style={styles.courseTitle}>Vyakarana (Grammar)</h3>
-            <p style={styles.courseDesc}>Master the intricate structure of the Sanskrit language.</p>
-            <strong style={styles.courseLink}>LEARN MORE →</strong>
-          </div>
-
-           <div style={styles.courseCard}>
-            <div
-              style={{
-                ...styles.courseImage,
-                backgroundImage:
-                  "url(https://thumbs.dreamstime.com/b/antique-literature-collection-old-fashioned-wisdom-preserved-generative-ai-antique-literature-collection-old-fashioned-wisdom-274867858.jpg)",
-              }}
-            />
-            <h3 style={styles.courseTitle}>Vyakarana (Grammar)</h3>
-            <p style={styles.courseDesc}>Master the intricate structure of the Sanskrit language.</p>
-            <strong style={styles.courseLink}>LEARN MORE →</strong>
-          </div>
-
-
-          <div style={styles.courseCard}>
-            <div
-              style={{
-                ...styles.courseImage,
-                backgroundImage:
-                  "url(https://tse2.mm.bing.net/th/id/OIP.aO6k2XyBjXEcWju-JEOo_QHaE7?pid=Api&P=0&h=180)",
-              }}
-            />
-            <h3 style={styles.courseTitle}>Literature & Kavya</h3>
-            <p style={styles.courseDesc}>Journey through poetic works of Kalidasa swamy and others.</p>
-            <strong style={styles.courseLink}>LEARN MORE →</strong>
-          </div>
-
-          <div style={styles.courseCard}>
-            <div
-              style={{
-                ...styles.courseImage,
-                backgroundImage:
-                  "url(https://i.pinimg.com/736x/aa/99/48/aa994847ffa5d9e4dbfc0fd50384cff2.jpg)",
-              }}
-            />
-            <h3 style={styles.courseTitle}>Spoken Sanskrit</h3>
-            <p style={styles.courseDesc}> Acquire modern fluency and conversational skills for daily life.</p>
-            <strong style={styles.courseLink}>LEARN MORE →</strong>
-          </div>
-        </div>
-      </section>
-       
-
-      {/* ================= OUR MISSION ================= */}
-<section style={styles.missionWrapper}>
-  <div style={styles.missionLeft}>
-    <span style={styles.missionTag}>OUR MISSION</span>
-
-    <h1 style={styles.missionHeading}>
-      A Bridge Between <br />
-      Ancient Gurukuls <br />
-      and Digital Learning
-    </h1>
-
-    <p style={styles.missionParagraph}>
-      Kaumudi Sanskrit Academy was founded to preserve the meticulous scholarly
-      traditions of the past while making them accessible to the global
-      student of today.
-    </p>
-
-    {/* ===== Mission Feature Grid ===== */}
-<div style={styles.missionFeaturesGrid}>
-  {/* Scholarly Heritage */}
-  <div style={styles.featureBox}>
-    <svg viewBox="0 0 24 24" style={styles.featureIcon}>
-      <path d="M4 4h12v2H6v12H4z" />
-      <path d="M8 6h12v14H8z" />
-    </svg>
-    <h4 style={styles.featureTitle}>Scholarly Heritage</h4>
-    <p style={styles.featureDesc}>
-      Preserving centuries of linguistic excellence through verified oral and
-      written lineages.
-    </p>
-  </div>
-
-  {/* Authentic Pedagogy */}
-  <div style={styles.featureBox}>
-    <svg viewBox="0 0 24 24" style={styles.featureIcon}>
-      <path d="M12 3 1 9l11 6 9-4.91V17h2V9z" />
-      <path d="M5 13v4c0 1.66 3.58 3 7 3s7-1.34 7-3v-4" />
-    </svg>
-    <h4 style={styles.featureTitle}>Authentic Pedagogy</h4>
-    <p style={styles.featureDesc}>
-      Traditional methods tailored for modern cognitive learning styles.
-    </p>
-  </div>
-
-  {/* Global Community */}
-  <div style={styles.featureBox}>
-    <svg viewBox="0 0 24 24" style={styles.featureIcon}>
-      <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm7.93 9H16.9a15.5 15.5 0 0 0-1.6-6.17A8.06 8.06 0 0 1 19.93 11ZM12 4c1.2 1.5 2.1 3.85 2.42 7H9.58C9.9 7.85 10.8 5.5 12 4Zm-3.3.83A15.5 15.5 0 0 0 7.1 11H4.07A8.06 8.06 0 0 1 8.7 4.83ZM4.07 13H7.1a15.5 15.5 0 0 0 1.6 6.17A8.06 8.06 0 0 1 4.07 13ZM12 20c-1.2-1.5-2.1-3.85-2.42-7h4.84C14.1 16.15 13.2 18.5 12 20Zm3.3-.83A15.5 15.5 0 0 0 16.9 13h3.03a8.06 8.06 0 0 1-4.63 6.17Z" />
-    </svg>
-    <h4 style={styles.featureTitle}>Global Community</h4>
-    <p style={styles.featureDesc}>
-      Connecting Sanskrit enthusiasts across 50+ countries via digital
-      platforms.
-    </p>
-  </div>
-
-  {/* Rich Archive */}
-  <div style={styles.featureBox}>
-    <svg viewBox="0 0 24 24" style={styles.featureIcon}>
-      <path d="M4 4h12v14H4z" />
-      <path d="M8 8h8v2H8zm0 4h8v2H8z" />
-      <path d="M18 6h2v14H8v-2h10z" />
-    </svg>
-    <h4 style={styles.featureTitle}>Rich Archive</h4>
-    <p style={styles.featureDesc}>
-      Access to rare manuscripts and curated digital study materials.
-    </p>
-  </div>
-</div>
-
-  </div>
-
-  <div style={styles.missionRight}>
-    <div style={styles.imageFrame}>
-      <img
-        src="https://i.pinimg.com/1200x/19/6c/f4/196cf4706012f8407a08c0cf7db51339.jpg"
-        alt="Gurukul Path"
-        style={styles.missionImage}
-      />
-    </div>
-  </div>
-  
-</section>
-{/* ================= TAILORED LEARNING PATHS ================= */}
-<section style={styles.learningWrapper}>
-  <h2 style={styles.learningTitle}>Tailored Learning Paths</h2>
-  <p style={styles.learningSubtitle}>
-    Choose the modality that fits your lifestyle, without compromising on quality.
-  </p>
-
-  <div style={styles.learningCards}>
-    {/* Online */}
-    <div style={styles.onlineCard}>
-      <h3 style={styles.learningCardTitle}>Online Global Academy</h3>
-
-      <ul style={styles.learningList}>
-        <li>Live interactive webinars with master scholars.</li>
-        <li>Lifetime access to recorded session archives.</li>
-        <li>Self-paced digital learning materials.</li>
-        <li>Global peer community for collaborative study.</li>
-      </ul>
-
-      <a
-  href="/courses"
-  style={{
-    ...styles.learningLightBtn,
-  }}
-  onMouseEnter={(e) => {
-    e.currentTarget.style.background = "#e6dccf";
-    e.currentTarget.style.transform = "translateY(-2px)";
-  }}
-  onMouseLeave={(e) => {
-    e.currentTarget.style.background = "#efe7e2";
-    e.currentTarget.style.transform = "translateY(0)";
-  }}
->
-  Browse Online Courses
-</a>
-
-    </div>
-
-    {/* Gurukul */}
-    <div style={styles.gurukulCard}>
-      <h3 style={styles.learningCardTitleDark}>Offline Gurukul Session</h3>
-
-      <ul style={styles.learningListDark}>
-        <li>Traditional classroom setting with direct mentorship.</li>
-        <li>Weekly chanting and pronunciation workshops.</li>
-        <li>Access to physical library of rare texts.</li>
-        <li>Immersive cultural events and guest lectures.</li>
-      </ul>
-
-      <a
-  href="/apply-gurukul"
-  style={{
-    ...styles.learningGoldBtn,
-  }}
-  onMouseEnter={(e) => {
-    e.currentTarget.style.background = "#c9a84e";
-    e.currentTarget.style.transform = "translateY(-2px)";
-  }}
-  onMouseLeave={(e) => {
-    e.currentTarget.style.background = "#d6b15c";
-    e.currentTarget.style.transform = "translateY(0)";
-  }}
->
-  Apply for Gurukul Session
-</a>
-
-    </div>
-  </div>
-</section>
-{/* ================= TESTIMONIALS ================= */}
-<section style={styles.testimonialWrapper}>
-  <span style={styles.testimonialTag}>TESTIMONIALS</span>
-  <h2 style={styles.testimonialTitle}>What Our Students Say</h2>
-  <p style={styles.testimonialSubtitle}>
-    Real experiences from students who love our courses.
-  </p>
-
-  <div style={styles.testimonialGrid}>
-    {testimonials
-      .slice(testimonialIndex, testimonialIndex + 3)
-      .map((item, i) => (
-        <div key={i} style={styles.testimonialCard}>
+      {/* CARD 2 */}
+      <div className="bg-[#fff9e9] rounded-2xl shadow-xl overflow-hidden">
+        <div className="p-4">
           <img
-            src={item.image}
-            alt={item.name}
-            style={styles.testimonialAvatar}
+            src="https://i.pinimg.com/736x/c2/38/f6/c238f6196864b554e23286e972946dc2.jpg"
+            alt="Acharya Meera Iyer"
+            className="w-full h-72 object-cover rounded-xl"
           />
-
-          <h4 style={styles.testimonialName}>{item.name}</h4>
-          <span style={styles.testimonialRole}>{item.role}</span>
-
-          <p style={styles.testimonialText}>{item.text}</p>
-
-          <div style={styles.testimonialStars}>
-            {"★".repeat(item.rating)}
-            {"☆".repeat(5 - item.rating)}
-          </div>
         </div>
-      ))}
+
+        <div className="px-8 pb-10">
+          <h3 className="font-serif text-xl text-[#7b2d1f] mb-1 font-bold">
+            Acharya Meera Iyer
+          </h3>
+          <p className="text-xs tracking-widest uppercase text-[#d6b25e] mb-4 font-bold">
+            Dean · Vedic Studies
+          </p>
+
+          <p className="text-[#6b4b3e] leading-relaxed">
+            Specializes in Rigveda Bhashya and Advaita Vedanta. Renowned
+            for her simplified Sahitya workshops.
+          </p>
+        </div>
+      </div>
+
+      {/* CARD 3 */}
+      <div className="bg-[#fff9e9] rounded-2xl shadow-xl overflow-hidden">
+        <div className="p-4">
+          <img
+            src="https://i.pinimg.com/736x/6e/44/7f/6e447f2168e966bc30049bebe00537dc.jpg"
+            alt="Pandit Rajiv Misra"
+            className="w-full h-72 object-cover rounded-xl"
+          />
+        </div>
+
+        <div className="px-8 pb-10">
+          <h3 className="font-serif text-xl text-[#7b2d1f] mb-1 font-bold">
+            Pandit Rajiv Misra
+          </h3>
+          <p className="text-xs tracking-widest uppercase text-[#d6b25e] mb-4 font-bold">
+            Senior Fellow · Manuscriptology
+          </p>
+
+          <p className="text-[#6b4b3e] leading-relaxed">
+            Leading the academy’s digital archival project. Expert in
+            Sarada and Devanagari script variations.
+          </p>
+        </div>
+      </div>
+
+    </div>
   </div>
 </section>
+{/* ========================================================= */}
+{/* FAQ */}
+<section className="py-20 bg-[#f1e4c8]">
+  <div className="max-w-[900px] mx-auto px-5">
+    <h3 className="text-3xl md:text-4xl font-black text-[#74271E] text-center">
+      Questions & Clarity
+    </h3>
 
-
-
-{/* ================= FOOTER ================= */}
-<footer style={styles.footer}>
-  <div style={styles.footerGrid}>
-    <div>
-      <h4 style={styles.footerTitle}>KAUMUDI</h4>
-      <p style={styles.footerText}>
-        Dedicated to the revival and preservation of Sanskrit scholarly traditions
-        through authentic teaching methods.
-      </p>
-    </div>
-
-    <div>
-      <h4 style={styles.footerTitle}>Quick Links</h4>
-      <a href="/courses" style={styles.footerLink}>Course Catalog</a>
-      <a href="/workshops" style={styles.footerLink}>Upcoming Workshops</a>
-      <a href="/research" style={styles.footerLink}>Research Papers</a>
-      <a href="/faculty" style={styles.footerLink}>Academy Faculty</a>
-    </div>
-
-    <div>
-      <h4 style={styles.footerTitle}>Resources</h4>
-      <a href="/resources/vocabulary" style={styles.footerLink}>Free Vocabulary Lists</a>
-      <a href="/resources/manuscripts" style={styles.footerLink}>Manuscript Digital Archive</a>
-      <a href="/resources/tools" style={styles.footerLink}>Grammar Tools</a>
-      <a href="/blog" style={styles.footerLink}>Blog & News</a>
-    </div>
-
-    <div>
-      <h4 style={styles.footerTitle}>Contact Us</h4>
-      <p style={styles.footerText}>
-        108 Vidya Vihar, Sanskrit Marg<br />
-        Varanasi, Uttar Pradesh, India
-      </p>
-      <a href="mailto:contact@kaumudi.edu.in" style={styles.footerLink}>
-        contact@kaumudi.edu.in
-      </a>
+    <div className="mt-8 space-y-3">
+      {[
+        {
+          q: "Are the courses beginner friendly?",
+          a: "Yes. We offer a dedicated ‘Praveshika’ level crafted for absolute beginners, even for those with no prior familiarity with the Devanagari script or Sanskrit language.",
+        },
+        {
+          q: "Do you provide certification?",
+          a: "Yes. Learners receive academically recognized certificates upon successful completion, evaluated by our internal scholarly board.",
+        },
+        {
+          q: "Can I learn at my own pace?",
+          a: "Absolutely. We support both live guided cohorts and self-paced study tracks, complete with recorded sessions, curated readings, and practice materials.",
+        },
+        {
+          q: "Are the teachings rooted in traditional Shastra?",
+          a: "Yes. Our curriculum is firmly grounded in authentic Shastric traditions while being presented through modern pedagogy for clarity and accessibility.",
+        },
+        {
+          q: "Will I receive guidance from experienced Pandits?",
+          a: "Certainly. Our courses are led by seasoned Pandits and scholars trained in the traditional guru-shishya lineage, ensuring depth, discipline, and authenticity.",
+        },
+      ].map((item, idx) => (
+        <details
+          key={idx}
+          className="group rounded-2xl bg-[#fff9e9] shadow-sm p-4 [&_summary]:cursor-pointer"
+        >
+          <summary className="flex items-center justify-between">
+            <span className="font-semibold text-[#74271E]">
+              {item.q}
+            </span>
+            <span className="text-[#74271E] group-open:hidden">+</span>
+            <span className="text-[#74271E] hidden group-open:inline">
+              −
+            </span>
+          </summary>
+          <p className="mt-2 text-[#7b5a4c] leading-relaxed">
+            {item.a}
+          </p>
+        </details>
+      ))}
     </div>
   </div>
-
-  <div style={styles.footerBottom}>
-  © {new Date().getFullYear()} Kaumudi Sanskrit Academy. All Wisdom Reserved.
-</div>
-</footer>
-
+</section>
 
 
     </>
-    
   );
-  
 }
-
-/* ================= STYLES ================= */
-const styles = {
-  page: {
-    padding: "36px",
-    background: BG,
-    fontFamily: FONT_DISPLAY, 
-  },
-
-  hero: {
-    minHeight: "700px",
-    maxWidth: "1400px",
-    margin: "0 auto",
-    borderRadius: "28px",
-    overflow: "hidden",
-    boxShadow: "0 14px 32px rgba(0,0,0,0.18)",
-  },
-
-  content: {
-    padding: "76px",
-    maxWidth: "650px",
-    color: "#fff",
-    fontFamily: FONT_SERIF,
-  },
-
-  line: {
-    width: "56px",
-    height: "4px",
-    background: GOLD,
-    marginBottom: "22px",
-    fontFamily: FONT_SERIF,
-
-  },
-
-  heading: {
-  fontSize: "75px",
-  fontWeight: "800",
-  lineHeight: "1.12",
-  fontFamily: FONT_DISPLAY,
-},
-
-  text: {
-    fontSize: "18px",
-    marginTop: "32px",
-    maxWidth: "520px",
-    fontFamily: FONT_SERIF,
-    
-  },
-
-  actions: {
-    marginTop: "60px",
-    display: "flex",
-    gap: "18px",
-    
-  },
-
-  primary: {
-    background: GOLD,
-    color: MAROON,
-    padding: "18px 34px",
-    borderRadius: "10px",
-    fontWeight: 900,
-    border: "none",
-    cursor: "pointer",
-    fontFamily: FONT_SERIF,
-    fontSize: "20px",
-  },
-
-  secondary: {
-    background: "rgba(255,255,255,0.18)",
-    border: "1.5px solid rgba(255,255,255,0.6)",
-    color: "#fff",
-    padding: "18px 34px",
-    borderRadius: "10px",
-    cursor: "pointer",
-    fontFamily: FONT_SERIF,
-    fontSize: "20px",
-  },
-
-  courseScrollWrapper: {
-    height: "64px",
-    overflow: "hidden",
-    background: "#74271E",
-    display: "flex",
-    alignItems: "center",
-    borderTop: "1px solid #927341",
-    borderBottom: "1px solid #927341",
-  },
-
-  scrollTrack: {
-    display: "inline-flex",
-    gap: "64px",
-    whiteSpace: "nowrap",
-    fontWeight: 700,
-    fontStyle: "italic",
-    color: "white",
-    fontFamily: FONT_SERIF,
-  },
-
-  exploreSection: {
-    padding: "80px",
-    backgroundColor: "#f1e4c8",
-  },
-
-  exploreHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    fontSize: "28px",
-    fontWeight: 600,
-    color: "#74271E",
-    marginLeft: "180px",
-    fontFamily: FONT_SERIF,
-    
-  },
-
-  courseCards: {
-    display: "flex",
-    gap: "28px",
-    marginTop: "36px",
-    marginLeft: "180px",
-    marginRight: "160px",
-  },
-
-  courseCard: {
-    background: "#fff",
-    borderRadius: "16px",
-    padding: "22px",
-    flex: 1,
-    boxShadow: "0 10px 26px rgba(0,0,0,0.08)",
-    minHeight: "420px",
-  },
-
-  courseCardDark: {
-    background: MAROON,
-    color: "#fff",
-    borderRadius: "16px",
-    padding: "22px",
-    flex: 1,
-    boxShadow: "0 16px 32px rgba(0,0,0,0.3)",
-    fontFamily: FONT_SERIF,
-    
-  },
-
-  courseImage: {
-    height: "170px",
-    borderRadius: "12px",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    marginBottom: "16px",
-    minHeight: "210px",
-  },
-
-  /* ================= MISSION SECTION ================= */
-
-missionWrapper: {
-  background: "#F1e4c8",
-  padding: "100px 90px",
-  display: "flex",
-  gap: "80px",
-},
-
-missionLeft: {
-  flex: 1,
-},
-
-missionTag: {
-  fontSize: "28px",
-  letterSpacing: "4px",
-  fontWeight: "700",
-  color: "#d6b15c",
-  marginLeft: "180px",
-  fontFamily: FONT_SERIF,
-},
-
-missionHeading: {
-  fontSize: "70px",
-  lineHeight: "1.1",
-  fontWeight: "900",
-  color: "#74271E",
-  margin: "22px 0 26px",
-  marginLeft: "180px",
-  fontFamily: FONT_DISPLAY,
-},
-
-missionParagraph: {
-  fontSize: "22px",
-  lineHeight: "1.7",
-  maxWidth: "560px",
-  color: "#7a4a3b",
-  marginBottom: "46px",
-  marginLeft: "180px",
-  fontFamily: FONT_SERIF,
-},
-
-missionFeatures: {
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr",
-  gap: "42px",
-  maxWidth: "580px",
-  marginLeft: "180px",
-},
-
-featureItem: {
-  display: "flex",
-  flexDirection: "column",
-  gap: "10px",
-},
-
-icon: {
-  fontSize: "26px",
-  color: "#641c14",
-},
-
-/* ================= IMAGE ================= */
-
-missionRight: {
-  flex: 1,
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  widthRight: "200px",
-},
-
-imageFrame: {
-  padding: "10px",
-  borderRadius: "28px",
-  background: "#e6d6b8",
-},
-
-missionImage: {
-  width: "900px",
-  maxWidth: "620px",
-  height: "auto",
-  borderRadius: "22px",
-  display: "block",
-},
-
-  courseTitle: {
-  fontSize: "28px",
-  fontWeight: "700",
-  color: "#74271E",
-  marginBottom: "10px",
-  fontFamily: FONT_SERIF,
-},
-
-courseDesc: {
-  fontSize: "19px",
-  lineHeight: "1.6",
-  color: "#74271E",
-  marginBottom: "22px",
-  fontFamily: FONT_SERIF,
-},
-
-courseLink: {
-  fontSize: "16px",
-  fontWeight: "900",
-  letterSpacing: "0.5px",
-  color: "#74271E",
-  cursor: "pointer",
-  textTransform: "uppercase",
-  fontFamily: FONT_SERIF,
-},
-missionFeaturesGrid: {
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr",
-  gap: "56px 80px",
-  maxWidth: "760px",
-  marginLeft: "180px",
-  marginTop: "10px",
-},
-
-featureBox: {
-  display: "flex",
-  flexDirection: "column",
-  gap: "10px",
-},
-
-featureIcon: {
-  width: "36px",
-  height: "36px",
-  fill: "#74271E",   // exact maroon from image
-},
-
-featureTitle: {
-  fontSize: "24px",
-  fontWeight: "800",
-  color: "#74271E",
-  fontFamily: FONT_SERIF,
-},
-
-featureDesc: {
-  fontSize: "17px",
-  lineHeight: "1.7",
-  color: "#8a5f52",
-  maxWidth: "330px",
-  fontFamily: FONT_SERIF,
-},
-/* ================= LEARNING PATHS ================= */
-
-learningWrapper: {
-  padding: "15px 500px",
-  background: "#f1e4c8",
-  textAlign: "center",
-},
-
-learningTitle: {
-  fontSize: "50px",
-  fontWeight: "900",
-  color: "#74271E",
-  fontFamily: FONT_SERIF,
-
-},
-
-learningSubtitle: {
-  fontSize: "18px",
-  color: "#7b5a4c",
-  marginTop: "8px",
-  fontFamily: FONT_SERIF,
-  marginBottom: "60px",
-},
-
-learningCards: {
-  display: "flex",
-  justifyContent: "center",
-  gap: "40px",
-  
-},
-
-onlineCard: {
-  background: "#f4efdf",
-  padding: "36px",
-  width: "420px",
-  borderRadius: "16px",
-  textAlign: "left",
-  boxShadow: "0 18px 40px rgba(59, 54, 54, 0.42)",
-  minHeight: "500px",
-},
-
-gurukulCard: {
-  background: "#74271E",
-  padding: "36px",
-  width: "420px",
-  borderRadius: "16px",
-  textAlign: "left",
-  boxShadow: "0 18px 40px rgba(59, 54, 54, 0.42)",
-},
-
-learningCardTitle: {
-  fontSize: "27px",
-  fontWeight: "800",
-  color: "#74271E",
-  marginBottom: "16px",
-  marginTop: "20px",
-  fontFamily: FONT_SERIF,
-  
-},
-
-learningCardTitleDark: {
-  fontSize: "27px",
-  fontWeight: "800",
-  color: "#d6b15c",
-  marginBottom: "16px",
-  marginTop: "20px",
-  fontFamily: FONT_SERIF,
-},
-
-learningList: {
-  paddingLeft: "18px",
-  lineHeight: "1.8",
-  color: "#6f4d40",
-  marginTop: "50px",
-  fontFamily: FONT_SERIF,
-  fontSize: "18px",
-},
-
-learningListDark: {
-  paddingLeft: "18px",
-  lineHeight: "1.8",fontSize: "18px",
-  color: "#f5e9d1",
-  marginTop: "50px",
-  fontFamily: FONT_SERIF,
-  fontSize: "18px",
-},
-
-learningLightBtn: {
-  display: "block",
-  marginTop: "50px",
-  width: "100%",
-  padding: "15px",
-  borderRadius: "8px",
-  background: "#efe7e2",
-  color: "#74271E",
-  fontWeight: "700",
-  textAlign: "center",
-  textDecoration: "none",
-  cursor: "pointer",
-  transition: "all 0.25s ease",   // 👈 ADD
-  fontFamily: FONT_SERIF,
-  fontSize: "18px",
-},
-
-learningGoldBtn: {
-  display: "block",
-  marginTop: "50px",
-  width: "100%",
-  padding: "15px",
-  borderRadius: "8px",
-  background: "#d6b15c",
-  color: "#74271E",
-  fontWeight: "800",
-  textAlign: "center",
-  textDecoration: "none",
-  cursor: "pointer",
-  transition: "all 0.25s ease",
-  fontFamily: FONT_SERIF,
-  fontSize: "18px",
-},
-
-/* ================= FOOTER ================= */
-
-footer: {
-  background: "#74271E",
-  padding: "80px 90px 40px",
-  color: "#f4e9dc",
-  fontFamily: FONT_SERIF,
-},
-
-footerGrid: {
-  display: "grid",
-  gridTemplateColumns: "repeat(4, 1fr)",
-  gap: "50px",
-  marginBottom: "40px",
-},
-
-footerTitle: {
-  color: "#d6b15c",
-  fontWeight: "900",
-  marginBottom: "14px",
-  fontSize: "24px",
-  fontFamily: FONT_SERIF,
-},
-
-footerText: {
-  fontSize: "16px",
-  lineHeight: "1.7",
-  color: "#e6d0bd",
-  fontFamily: FONT_SERIF,
-},
-
-footerLink: {
-  display: "block",
-  fontSize: "16px",
-  lineHeight: "1.9",
-  color: "#e6d0bd",
-  textDecoration: "none",
-  cursor: "pointer",
-  fontFamily: FONT_SERIF,
-},
-
-footerBottom: {
-  borderTop: "1px solid rgba(255,255,255,0.2)",
-  paddingTop: "20px",
-  fontSize: "15px",
-  textAlign: "center",
-  color: "#d2b9a5",
-  fontFamily: FONT_SERIF,
-},
-/* ================= TESTIMONIALS ================= */
-
-testimonialWrapper: {
-  padding: "120px 90px",
-  background: "#F1e4c8",
-  textAlign: "center",
-},
-
-testimonialTag: {
-  fontSize: "25px",
-  letterSpacing: "3px",
-  color: "#d6b15c",
-  fontWeight: "700",
-  fontFamily: FONT_SERIF,
-},
-
-testimonialTitle: {
-  fontSize: "46px",
-  fontWeight: "900",
-  color: "#74271E",
-  marginTop: "12px",
-  fontFamily: FONT_DISPLAY,
-},
-
-testimonialSubtitle: {
-  fontSize: "16px",
-  color: "#74271E",
-  marginTop: "10px",
-  marginBottom: "70px",
-  fontFamily: FONT_SERIF,
-},
-
-testimonialGrid: {
-  display: "grid",
-  gridTemplateColumns: "repeat(3, 1fr)",
-  gap: "40px",
-  maxWidth: "1200px",
-  margin: "0 auto",
-},
-
-testimonialCard: {
-  background: "#f4efdf",
-  borderRadius: "18px",
-  padding: "50px 36px",
-  boxShadow: "0 14px 34px rgba(0,0,0,0.15)",
-  height: "500px",
-},
-
-testimonialAvatar: {
-  width: "100px",
-  height: "100px",
-  borderRadius: "50%",
-  objectFit: "cover",
-  marginBottom: "20px",
-  marginTop: "30px",
-},
-
-testimonialName: {
-  fontSize: "25px",
-  fontWeight: "800",
-  color: "#74271E",
-  marginTop: "35px",
-  fontFamily: FONT_SERIF,
-},
-
-testimonialRole: {
-  fontSize: "18px",
-  color: "#6f6f6f",
-  display: "block",
-  marginBottom: "18px",
-  fontFamily: FONT_SERIF,
-},
-
-testimonialText: {
-  fontSize: "20px",
-  lineHeight: "1.8",
-  color: "#4b4b4b",
-  marginBottom: "26px",
-  fontFamily: FONT_SERIF,
-},
-
-testimonialStars: {
-  fontSize: "20px",
-  color: "#f03e12",
-  
-},
-text: {
-  fontSize: "18px",
-  marginTop: "32px",
-  maxWidth: "520px",
-  fontFamily: FONT_SERIF,
-},
-
-};
