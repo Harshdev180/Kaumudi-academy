@@ -1,143 +1,180 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Link, useLocation } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 
-const FONT_DISPLAY = "'Lexend', sans-serif";
-const FONT_SERIF = "'Crimson Pro', serif";
+/* ------------------ CONFIG ------------------ */
+
+const NAV_ITEMS = [
+  { label: "Home", to: "/" },
+  { label: "Courses", to: "/allcourses" },
+  { label: "About", to: "/about" },
+  { label: "Faculty", to: "/faculty" },
+  { label: "Contact", to: "/contact" },
+];
+
+/* ------------------ ANIMATIONS ------------------ */
+
+const mobileMenuVariants = {
+  hidden: { opacity: 0, height: 0 },
+  visible: {
+    opacity: 1,
+    height: "auto",
+    transition: { duration: 0.35, ease: "easeOut" },
+  },
+  exit: {
+    opacity: 0,
+    height: 0,
+    transition: { duration: 0.25, ease: "easeIn" },
+  },
+};
+
+const underlineVariants = {
+  hidden: { scaleX: 0 },
+  visible: { scaleX: 1 },
+};
+
+/* ------------------ COMPONENT ------------------ */
 
 export default function Navbar() {
-  const [hoveredItem, setHoveredItem] = useState(null);
-  const [btnHover, setBtnHover] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  const { pathname } = useLocation();
+  const isHome = pathname === "/";
+
+  /* Scroll shadow */
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <nav style={styles.nav}>
-      {/* LEFT LOGO */}
-      <div style={styles.left}>
-        <div style={styles.icon}>🪔</div>
-        <div>
-          <div style={styles.title}>KAUMUDI</div>
-          <div style={styles.subtitle}>SANSKRIT ACADEMY</div>
+    <nav
+      role="navigation"
+      aria-label="Main Navigation"
+      className={`top-0 z-50 w-full transition-all duration-500 border-b ${
+        isHome ? "fixed" : "sticky"
+      } ${
+        isHome && !scrolled
+          ? "bg-transparent border-transparent"
+          : "bg-[#74271E]/95 backdrop-blur-xl border-[#dccbb4]/40 shadow-[0_14px_35px_rgba(0,0,0,0.35)]"
+      }`}
+    >
+      {/* ---------------- CONTAINER ---------------- */}
+      <div className="max-w-[1280px] mx-auto px-5 h-16 md:h-20 flex items-center justify-between">
+        {/* ---------------- BRAND ---------------- */}
+        <Link
+          to="/"
+          className="flex items-center gap-3 group focus:outline-none"
+        >
+          <div className="bg-[#d6b15c] text-[#74271E] h-9 w-9 rounded-xl grid place-items-center text-lg shadow-md">
+            🪔
+          </div>
+
+          <div className="leading-tight">
+            <div className="font-black tracking-widest text-white group-hover:text-[#d6b15c] transition">
+              KAUMUDI
+            </div>
+            <div className="text-[11px] tracking-[0.18em] text-white/80">
+              SANSKRIT ACADEMY
+            </div>
+          </div>
+        </Link>
+
+        {/* ---------------- DESKTOP NAV ---------------- */}
+        <ul className="hidden md:flex items-center gap-10 font-semibold">
+          {NAV_ITEMS.map(({ label, to }) => {
+            const isActive = pathname === to;
+
+            return (
+              <li key={label} className="relative">
+                <Link
+                  to={to}
+                  className={`text-sm tracking-wide transition-colors focus:outline-none ${
+                    isActive
+                      ? "text-[#d6b15c]"
+                      : "text-white hover:text-[#d6b15c]"
+                  }`}
+                >
+                  {label}
+                </Link>
+
+                <motion.span
+                  className="absolute left-0 right-0 -bottom-1 h-[2px] bg-[#d6b15c] rounded"
+                  variants={underlineVariants}
+                  initial="hidden"
+                  animate={isActive ? "visible" : "hidden"}
+                  transition={{ duration: 0.25 }}
+                />
+              </li>
+            );
+          })}
+        </ul>
+
+        {/* ---------------- RIGHT ACTIONS ---------------- */}
+        <div className="flex items-center gap-4">
+          <Link to="/login" className="hidden md:block">
+            <motion.span
+              whileHover={{ scale: 1.06 }}
+              whileTap={{ scale: 0.94 }}
+              className="inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-[#d6b15c] text-[#74271E] font-bold text-sm shadow-lg hover:shadow-xl transition-all"
+            >
+              Student Login
+            </motion.span>
+          </Link>
+
+          {/* ---------------- MOBILE TOGGLE ---------------- */}
+          <button
+            aria-label="Toggle navigation menu"
+            aria-expanded={open}
+            onClick={() => setOpen((v) => !v)}
+            className="md:hidden p-2 rounded-xl bg-[#d6b15c]/15 text-[#d6b15c] hover:bg-[#d6b15c]/25 transition-colors focus:outline-none"
+          >
+            {open ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
       </div>
 
-      {/* MENU */}
-      <ul style={styles.menu}>
-        {["Home", "Courses", "About Us", "Resources", "Contact"].map((item) => (
-          <li
-            key={item}
-            style={{
-              ...styles.menuItem,
-              color: hoveredItem === item ? "#c9a84e" : styles.menuItem.color,
-            }}
-            onMouseEnter={() => setHoveredItem(item)}
-            onMouseLeave={() => setHoveredItem(null)}
+      {/* ---------------- MOBILE MENU ---------------- */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            variants={mobileMenuVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="md:hidden bg-[#74271E] border-t border-[#dccbb4]/25 overflow-hidden"
           >
-            {item}
+            <div className="px-6 py-6 space-y-5">
+              {NAV_ITEMS.map(({ label, to }) => (
+                <Link
+                  key={label}
+                  to={to}
+                  onClick={() => setOpen(false)}
+                  className={`block text-lg font-medium tracking-wide transition-colors ${
+                    pathname === to
+                      ? "text-[#d6b15c]"
+                      : "text-[#e6d0bd] hover:text-[#d6b15c]"
+                  }`}
+                >
+                  {label}
+                </Link>
+              ))}
 
-            {/* FRAMER MOTION UNDERLINE */}
-            <motion.div
-              style={styles.activeBar}
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: hoveredItem === item ? 1 : 0 }}
-              transition={{ duration: 0.35, ease: "easeInOut" }}
-              transformOrigin="center"
-            />
-          </li>
-        ))}
-      </ul>
-
-      {/* BUTTON */}
-      <button
-        style={{
-          ...styles.btn,
-          background: btnHover ? "#c9a84e" : styles.btn.background,
-          transform: btnHover ? "translateY(-1px)" : "translateY(0)",
-        }}
-        onMouseEnter={() => setBtnHover(true)}
-        onMouseLeave={() => setBtnHover(false)}
-      >
-        Student Portal
-      </button>
+              <div className="pt-5 border-t border-[#dccbb4]/25">
+                <Link to="/login" onClick={() => setOpen(false)}>
+                  <span className="block text-center py-3 rounded-xl bg-[#d6b15c] text-[#74271E] font-bold text-lg shadow-lg hover:shadow-xl transition">
+                    Student Login
+                  </span>
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }
-
-/* ================= STYLES ================= */
-
-const styles = {
-  nav: {
-    height: "80px",
-    padding: "0 260px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    background: "#74271E",
-    borderBottom: "1px solid #dccbb4",
-  },
-
-  left: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    color: "#c9a84e",
-  },
-
-  icon: {
-    background: "#c9a84e",
-    color: "white",
-    padding: "10px",
-    borderRadius: "8px",
-    fontSize: "18px",
-  },
-
-  title: {
-    fontWeight: "900",
-    letterSpacing: "1px",
-    fontSize: "25px",
-    fontfamily: FONT_SERIF,
-  },
-
-  subtitle: {
-    fontSize: "13px",
-    letterSpacing: "1.5px",
-    fontfamily: FONT_SERIF,
-  },
-
-  menu: {
-    display: "flex",
-    gap: "60px",
-    listStyle: "none",
-    fontWeight: "900",
-  },
-
-  menuItem: {
-    position: "relative",
-    cursor: "pointer",
-    color: "#e6d0bd",
-    paddingBottom: "8px",
-    fontfamily: FONT_SERIF,
-    fontSize: "15px",
-    textDecoration: "none",
-  },
-
-  activeBar: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: "-6px",
-    height: "2px",
-    backgroundColor: "#c9a84e",
-    borderRadius: "2px",
-  },
-
-  btn: {
-    background: "#c9a84e",
-    color: "#74271E",
-    border: "none",
-    padding: "13px 25px",
-    borderRadius: "10px",
-    cursor: "pointer",
-    fontSize: "18px",
-    transition: "all 0.2s ease",
-    fontfamily: FONT_SERIF,
-  },
-};

@@ -5,7 +5,7 @@ import { CloudUpload } from "lucide-react";
 
 
 
-export default function Home() {
+export default function About() {
   return (
     <>
       {/* ============ HERO SECTION ============ */}

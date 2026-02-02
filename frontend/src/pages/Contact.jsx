@@ -140,60 +140,7 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* FOOTER TOP */}
-      <div className="w-full bg-[#f2e8c8] border-t border-[#e1cfac]">
-        <div className="max-w-7xl mx-auto px-6 py-10">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-14">
-
-            <div>
-              <p className="text-s tracking-[0.2em] text-[#7b2d1f] mb-4 uppercase font-bold">
-                Contact
-              </p>
-              <p className="text-sm text-[#2b2b2b] mb-2 font-bold">
-                +91 542 236 7890
-              </p>
-              <p className="text-sm text-[#2b2b2b] font-bold">
-                info@kaumudi.edu.in
-              </p>
-            </div>
-
-            <div>
-              <p className=" text-s tracking-[0.2em] text-[#7b2d1f] mb-4 uppercase font-bold">
-                Office Hours
-              </p>
-              <p className="text-sm text-[#2b2b2b] mb-2 font-bold">
-                Monday – Friday
-              </p>
-              <p className="text-sm text-[#2b2b2b] font-bold">
-                09:00 AM – 06:00 PM IST
-              </p>
-            </div>
-
-            <div>
-              <p className=" text-s tracking-[0.2em] text-[#7b2d1f] mb-4 uppercase font-bold">
-                Affiliations
-              </p>
-              <p className="text-sm text-[#2b2b2b] mb-2 font-bold">
-                University Grants Commission (UGC)
-              </p>
-              <p className="text-sm text-[#2b2b2b] font-bold">
-                Central Sanskrit University
-              </p>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
-      {/* FOOTER BOTTOM — LAST ELEMENT */}
-      <div className="w-full bg-[#7b2d1f] m-0 p-0">
-        <div className="max-w-7xl mx-auto px-6 py-9">
-          <p className="text-center text-l text-[#f2e8c8] tracking-wide">
-            © {new Date().getFullYear()} Kaumudi Sanskrit Academy. All Rights Reserved.
-            Preserving Knowledge, Shaping Futures.
-          </p>
-        </div>
-      </div>
+      
     </>
   );
 }

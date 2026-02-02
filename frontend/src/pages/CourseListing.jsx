@@ -149,7 +149,7 @@ const AllCoursesPage = () => {
     <div className="min-h-screen bg-[#f1e4c8] font-serif text-[#2D2417] selection:bg-[#B38B3F] selection:text-white antialiased">
       
       {/* --- REFINED HERO SECTION --- */}
-      <header className="px-6 lg:px-10 pt-8 pb-16 max-w-screen-2xl mx-auto">
+      <header id="hero" className="px-6 lg:px-10 pt-8 pb-16 max-w-screen-2xl mx-auto">
         <div className="relative h-[400px] lg:h-[460px] rounded-2xl overflow-hidden shadow-xl">
           <img
             src="https://images.unsplash.com/photo-1544640808-32ca72ac7f37?auto=format&fit=crop&q=80&w=1600"
