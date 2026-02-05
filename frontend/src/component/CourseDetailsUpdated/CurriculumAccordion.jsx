@@ -44,7 +44,7 @@ const CurriculumAccordion = () => {
   return (
     <section className="font-sans-serif">
       <div className="flex items-center gap-3 mb-8 mt-12">
-        <div className="w-1.5 h-8 bg-[#B18E40]"></div>
+        <div className="w-1.5 h-8 bg-[#d6b15c]"></div>
         <h2 className="text-[28px] font-bold text-[#631D11]">Curriculum</h2>
       </div>
 

@@ -20,36 +20,46 @@ const CourseDetails = () => {
   };
 
   return (
+     
     <div className="bg-[#f1e4c8]  min-h-screen font-sans-serif  text-[#e6d0bd]">
-      <div className="max-w-5xl mx-auto p-4 md:p-10 pb-0">
+      
+      <div className="max-w-7xl  mx-auto p-4 md:p-10 ">
         <HeroSection />
       </div>
 
-      <div className="max-w-5xl mx-auto p-4 md:p-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
+      <div className="max-w-7xl mx-auto p-4 md:p-10 grid grid-cols-1 lg:grid-cols-3 gap-5">
         
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-12">
           
           {/* Video Preview Section */}
-          <section>
-            <div className="flex items-center gap-3 mb-6">
-           <div className="w-1.5 h-8 bg-[#B18E40]"></div>
-              <h2 className="text-[28px] font-bold text-[#631D11]">Course Preview</h2>
-            </div>
+          <section >
+             <div className="flex items-center gap-3 mb-4 -mt-14">
+        <div className="w-1.5 h-8 bg-[#d6b15c]"></div>
+        <h2 className="text-[28px] font-bold text-[#631D11]">Course Preview</h2>
+      </div>
             
             <div className="relative group aspect-video bg-black rounded-4xl overflow-hidden shadow-2xl border-[6px] border-white cursor-pointer">
               {/* Actual HTML5 Video Tag */}
-              <video 
-                ref={videoRef}
-                className="w-full h-full object-cover"
-                poster="src/assets/image1.jpeg" // Image as poster
-                onPause={() => setIsPlaying(false)}
-                onPlay={() => setIsPlaying(true)}
-                controls={isPlaying} // Controls tabhi dikhenge jab video chal raha ho
-              >
-                <source src="https://youtu.be/Gi2SAIBdY6s?si=m_KnP3FJAkxDy59F" type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+            <video 
+  ref={videoRef}
+  className="w-full h-full object-cover"
+  poster="src/assets/image1.jpeg" // Aapka poster image
+  onPause={() => setIsPlaying(false)}
+  onPlay={() => setIsPlaying(true)}
+  controls={isPlaying} 
+>
+  {/* Sanskrit Shloka Chanting Sample Video */}
+  <source 
+    src="https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c8/Gayatri_Mantra_chunted_by_a_Pandit.ogv/Gayatri_Mantra_chunted_by_a_Pandit.ogv.480p.vp9.webm" 
+    type="video/webm" 
+  />
+  <source 
+    src="https://www.w3schools.com/html/mov_bbb.mp4" 
+    type="video/mp4" 
+  />
+  Your browser does not support the video tag.
+</video>
 
               {/* Custom Overlay (Only visible when NOT playing) */}
               {!isPlaying && (
@@ -64,27 +74,15 @@ const CourseDetails = () => {
                      </div>
                   </div>
                   
-                  {/* Progress Bar (Static Look like Image) */}
-                  {/* <div className="w-full space-y-2 mb-2">
-                     <div className="flex justify-between text-white text-[12px] font-bold px-1 drop-shadow-md">
-                        <span>00:15</span>
-                        <span>15:40</span>
-                     </div>
-                     <div className="relative h-1.5 w-full bg-white/30 rounded-full overflow-hidden">
-                        <div className="absolute top-0 left-0 h-full w-[35%] bg-[#C4A04D] rounded-full flex items-center justify-end">
-                           <div className="w-3 h-3 bg-white rounded-full shadow-lg"></div>
-                        </div>
-                     </div>
-                  </div> */}
                 </div>
               )}
             </div>
           </section>
 
           {/* Syllabus Download Box */}
-          <div className="flex flex-col sm:flex-row items-center justify-between bg-[#F9F5F0] p-8 rounded-2xl border border-[#E8DFD3] shadow-sm gap-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between bg-[#F9F5F0] p-5 rounded-2xl border border-[#E8DFD3] shadow-sm gap-6">
             <div className="flex items-center gap-5">
-              <div className="bg-[#631D11] p-5 rounded-xl text-white shadow-lg">
+              <div className="bg-[#631D11] p-3 rounded-xl text-white shadow-lg">
                 <FileText size={36} strokeWidth={1.5} />
               </div>
               <div className="space-y-1">
@@ -95,7 +93,7 @@ const CourseDetails = () => {
               </div>
             </div>
             
-            <button className="w-full sm:w-auto  bg-[#631D11] hover:bg-[#B18E40] hover:text-[#631D11] text-white px-5 py-1 rounded-2xl font-bold flex items-center justify-center gap-1 transition-all shadow-xl active:scale-95">
+            <button className="w-full sm:w-auto  bg-[#631D11] hover:bg-[#d6b15c] hover:text-[#631D11] text-white px-3 py-3 rounded-xl font-bold flex items-center justify-center gap-1 transition-all shadow-xl active:scale-95">
                <Download size={22} />
                Download Brochure
             </button>
@@ -109,7 +107,7 @@ const CourseDetails = () => {
 
         {/* Right Column */}
         <div className="lg:col-span-1">
-          <div className="lg:sticky lg:top-10">
+          <div className="lg:sticky lg:top-25">
             <SidebarCard />
           </div>
         </div>
@@ -118,6 +116,7 @@ const CourseDetails = () => {
       </div>
       </div>
     </div>
+    
   );
 };
 

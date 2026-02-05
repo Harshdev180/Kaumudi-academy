@@ -1,37 +1,94 @@
 import Joi from "joi";
 
-export const createCourseSchema = Joi.object({
-  title: Joi.string().min(3).required(),
-  description: Joi.string().required(),
-  syllabus: Joi.string().optional(),
-  duration: Joi.string().required(),
 
-  startDate: Joi.date().required(),
-  endDate: Joi.date().greater(Joi.ref("startDate")).required(),
+const languageSchema = Joi.alternatives().try(
+  Joi.array().items(Joi.string().trim().min(2)),
+  Joi.string() 
+).custom((value, helpers) => {
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value);
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        return helpers.error("any.invalid");
+      }
+      return parsed;
+    } catch {
+      return helpers.error("any.invalid");
+    }
+  }
+  return value;
+}, "Language parser");
 
-  mode: Joi.string().valid("ONLINE", "OFFLINE").required(),
-  price: Joi.number().positive().required(),
-
-  language: Joi.array()
-    .items(Joi.string().trim().min(2))
-    .min(1)
+const dateRange = {
+  startDate: Joi.date()
+    .iso()
     .required()
-});
+    .messages({
+      "date.base": "Start date must be a valid date"
+    }),
+
+  endDate: Joi.date()
+    .greater(Joi.ref("startDate"))
+    .required()
+    .messages({
+      "date.greater": "End date must be after start date"
+    })
+};
+
+
+export const createCourseSchema = Joi.object({
+  title: Joi.string()
+    .trim()
+    .min(3)
+    .max(150)
+    .required(),
+
+  description: Joi.string()
+    .trim()
+    .min(10)
+    .required(),
+
+  syllabus: Joi.string()
+    .trim()
+    .allow("", null)
+    .optional(),
+
+  duration: Joi.string()
+    .trim()
+    .required(),
+
+  mode: Joi.string()
+    .valid("ONLINE", "OFFLINE")
+    .required(),
+
+  price: Joi.number()
+    .min(0)
+    .required(),
+
+  language: languageSchema.required(),
+
+  ...dateRange
+}).unknown(false); 
+
 
 
 export const updateCourseSchema = Joi.object({
-  title: Joi.string().min(3).optional(),
-  description: Joi.string().optional(),
-  syllabus: Joi.string().optional(),
-  duration: Joi.string().optional(),
-  mode: Joi.string().valid("ONLINE", "OFFLINE").optional(),
-  price: Joi.number().positive().optional(),
-  language: Joi.array()
-  .items(Joi.string().trim().min(2))
-  .optional(),
+  title: Joi.string().trim().min(3).max(150),
+  description: Joi.string().trim().min(10),
+  syllabus: Joi.string().trim().allow("", null),
+  duration: Joi.string().trim(),
 
-  status: Joi.string().valid("ACTIVE", "INACTIVE").optional(),
-  startDate: Joi.date().required(),
-endDate: Joi.date().greater(Joi.ref("startDate")).required(),
+  mode: Joi.string().valid("ONLINE", "OFFLINE"),
+  price: Joi.number().min(0),
 
-});
+  language: languageSchema,
+
+  startDate: Joi.date().iso(),
+  endDate: Joi.date().when("startDate", {
+    is: Joi.exist(),
+    then: Joi.date().greater(Joi.ref("startDate")),
+    otherwise: Joi.date()
+  })
+})
+  .min(1)
+  .unknown(false);

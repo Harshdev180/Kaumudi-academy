@@ -1,8 +1,14 @@
 import express from "express";
+import { submitInquiry } from "../controllers/inquiry.controller.js";
+import { validateBody } from "../middlewares/validate.middleware.js";
+import { submitInquirySchema } from "../validators/inquiry.validator.js";
+
 const router = express.Router();
 
-import { submitInquiry } from "../controllers/inquiry.controller.js";
-
-router.post("/inquiry", submitInquiry);
+router.post(
+  "/inquiry",
+  validateBody(submitInquirySchema),
+  submitInquiry
+);
 
 export default router;

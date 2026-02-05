@@ -17,14 +17,14 @@ const ScheduleTable = () => {
   ];
 
   return (
-    <section className="pb-20 font-ssans-serif">
+    <section className="pb-1 font-sans-serif">
       {/* Section Heading matching the style */}
       <div className="flex items-center gap-3 mb-8 mt-12">
-        <div className="w-1.5 h-8 bg-[#B18E40]"></div>
+        <div className="w-1.5 h-8 bg-[#d6b15c]"></div>
         <h2 className="text-[28px] font-bold text-[#631D11]">Batch Schedule</h2>
       </div>
 
-      <div className="bg-white rounded-[20px] overflow-hidden shadow-sm border border-[#E8DFD3]">
+      <div className="bg-white rounded-[20px] overflow-hidden shadow-xl border border-[#E8DFD3]">
         <table className="w-full text-left border-collapse">
           {/* Header with specific beige/tan color */}
           <thead className="bg-[#D9C5B2] text-[#631D11]">

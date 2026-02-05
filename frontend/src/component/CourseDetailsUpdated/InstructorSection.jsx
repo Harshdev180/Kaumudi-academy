@@ -2,15 +2,15 @@ import React from 'react';
 
 const InstructorSection = () => {
   return (
-    <section className="font-sans-serif w-full px-2">
+    <section className="font-sans-serif w-full ">
       {/* Section Heading */}
-      <div className="flex items-center gap-2 mb-6">
-        <div className="w-1 h-7 bg-[#B18E40]"></div>
+      <div className="flex items-center gap-2 mb-8">
+        <div className="w-1.5 h-8 bg-[#d6b15c]"></div>
         <h2 className="text-[22px] md:text-[26px] font-bold text-[#631D11]">Your Instructor</h2>
       </div>
 
       {/* Main Card */}
-      <div className="bg-white p-5 md:p-8 rounded-[24px] shadow-sm border border-stone-100 flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
+      <div className="bg-white h-65 p-5 md:p-10 rounded-3xl shadow-sm border border-stone-100 flex flex-col md:flex-row items-center md:items-start gap-7 md:gap-8">
         
         {/* Profile Image */}
         <div className="relative shrink-0">
@@ -25,15 +25,15 @@ const InstructorSection = () => {
 
         {/* Details Content */}
         <div className="flex-1 min-w-0 text-center md:text-left">
-          <h3 className="text-[22px] md:text-[23px] font-bold text-[#631D11] mb-1">
+          <h3 className="text-[15px] md:text-[25px] font-bold text-[#631D11] mb-1">
             Acharya Dr. Vasudev Shastry
           </h3>
           
-          <p className="text-[#B18E40] text-[12px] md:text-[13px] font-bold uppercase tracking-tight mb-2">
+          <p className="text-[#d6b15c] text-lg md:text-lg font-bold uppercase  mb-1">
             PHD IN VYAKARANA, BANARAS HINDU UNIVERSITY
           </p>
           
-          <p className="text-[#7A5C58] text-[13px] md:text-[14px] leading-relaxed font-medium max-w-2xl mb-5">
+          <p className="text-[#7A5C58] text-[13px] md:text-[14px] leading-relaxed font-medium max-w-2xl mb-2">
             With over 25 years of teaching experience, Acharya Vasudev has guided 
             thousands of students through the complexities of Sanskrit Grammar. 
             Recipient of several national academic awards.

@@ -7,6 +7,9 @@ import couponRoutes from "./routes/coupon.routes.js";
 import inquiryRoutes from "./routes/inquiry.routes.js";
 import enrollmentRoutes from "./routes/enrollment.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
+import testimonialRoutes from "./routes/testimonial.routes.js"
+import mongoSanitize from "express-mongo-sanitize";
+import xss from "xss-clean"
 const app = express()
 
 import cors from "cors"
@@ -14,6 +17,9 @@ import cors from "cors"
 
 app.use(cors())
 app.use(express.json())
+app.use(mongoSanitize())
+app.use(xss())
+
 app.use("/api", authRoutes);
 app.use("/api", courseRoutes);
 app.use("/api", paymentRoutes)
@@ -21,6 +27,8 @@ app.use("/api", couponRoutes);
 app.use("/api", inquiryRoutes);
 app.use("/api", enrollmentRoutes);
 app.use("/api", dashboardRoutes);
+app.use("/api", testimonialRoutes)
+
 app.use("/health",(_,res)=>{
   res.status(200).json({
     success:true,
