@@ -9,15 +9,17 @@ import {
   ArrowUpRight,
   RotateCcw,
   Check,
-  Clock, BarChart3
+  Clock, BarChart3,
+  Filter,
+  BookOpen
 } from "lucide-react";
 
 const AllCoursesPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All Shastras");
-  const [modeFilter, setModeFilter] = useState("All Modes");
-  const [levelFilter, setLevelFilter] = useState("Any Level");
-  const [durationFilter, setDurationFilter] = useState("Any");
+  const [modeFilter, setModeFilter] = useState([]); 
+  const [levelFilter, setLevelFilter] = useState([]);
+  const [durationFilter, setDurationFilter] = useState([]);
 
   const categories = [
     "All Shastras",
@@ -102,8 +104,18 @@ const AllCoursesPage = () => {
   const resetFilters = () => {
     setSearchQuery("");
     setActiveCategory("All Shastras");
-    setModeFilter("All Modes");
-    setLevelFilter("Any Level");
+    setModeFilter([]);
+    setLevelFilter([]);
+    setDurationFilter([]);
+  };
+
+  // Helper to toggle items in an array
+  const handleToggleFilter = (state, setter, value) => {
+    if (state.includes(value)) {
+      setter(state.filter((item) => item !== value));
+    } else {
+      setter([...state, value]);
+    }
   };
 
   const filteredCourses = useMemo(() => {
@@ -115,25 +127,20 @@ const AllCoursesPage = () => {
       const matchesCategory =
         activeCategory === "All Shastras" || course.category === activeCategory;
 
+      // Check if array is empty (all allowed) OR if the course mode is in the array
       const matchesMode =
-        modeFilter === "All Modes" || course.mode === modeFilter.toUpperCase();
+        modeFilter.length === 0 || modeFilter.includes(course.mode);
 
       const matchesLevel =
-        levelFilter === "Any Level" || course.level === levelFilter;
+        levelFilter.length === 0 || levelFilter.includes(course.level);
 
       const matchesDuration =
-        durationFilter === "Any" ||
-        (durationFilter === "<3m" && course.duration.toLowerCase().includes("week")) ||
-        (durationFilter === "6m" && course.duration.includes("6")) ||
-        (durationFilter === "1y+" && course.duration.toLowerCase().includes("year"));
+        durationFilter.length === 0 ||
+        (durationFilter.includes("<3m") && course.duration.toLowerCase().includes("week")) ||
+        (durationFilter.includes("6m") && course.duration.includes("6")) ||
+        (durationFilter.includes("1y+") && course.duration.toLowerCase().includes("year"));
 
-      return (
-        matchesSearch &&
-        matchesCategory &&
-        matchesMode &&
-        matchesLevel &&
-        matchesDuration
-      );
+      return matchesSearch && matchesCategory && matchesMode && matchesLevel && matchesDuration;
     });
   }, [searchQuery, activeCategory, modeFilter, levelFilter, durationFilter]);
 
@@ -147,39 +154,32 @@ const AllCoursesPage = () => {
     <div className="min-h-screen bg-[#f1e4c8] font-serif text-[#2D2417] selection:bg-[#B38B3F] selection:text-white antialiased">
       
       {/* --- REFINED HERO SECTION --- */}
-      <header className="px-6 lg:px-10 pt-8 pb-16 max-w-screen-2xl mx-auto">
-        <div className="relative h-[360px] lg:h-[400px] rounded-2xl overflow-hidden shadow-xl">
+      <header className="px-4 lg:px-10 pt-6 pb-14 max-w-screen-2xl mx-auto">
+        <div className="relative h-[420px] rounded-3xl overflow-hidden shadow-2xl border border-[#E2D4A6]/50">
           <img
             src="https://images.unsplash.com/photo-1544640808-32ca72ac7f37?auto=format&fit=crop&q=80&w=1600"
             alt="Ancient Sanskrit Manuscripts"
             className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#1E2A1E]/90 via-[#1E2A1E]/60 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-[#1E2A1E] via-[#1E2A1E]/70 to-transparent"></div>
 
-          <div className="relative z-10 h-full flex items-center px-10 lg:px-20 pt-8">
-            <div className="max-w-2xl">
-              <div className="flex items-center gap-3 mb-5">
+          <div className="relative z-10 h-full flex flex-col justify-center px-8 lg:px-16">
+            <div className="flex items-center gap-3 mb-5">
                 <div className="h-[1px] w-6 bg-[#c9a84e]"></div>
-                <span className="text-[11px] font-semibold uppercase tracking-widest text-[#c9a84e]">
+                <span className="text-[13px] font-semibold uppercase tracking-widest text-[#c9a84e]">
                   The Digital Gurukul
                 </span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight font-serif">
-                Master the <span className="text-[#c9a84e]">Shastras</span> <br /> 
-                with Living Traditions
-              </h1>
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
+              Master the <span className="text-[#c9a84e] italic">Shastras</span> <br /> 
+              with Living Traditions
+            </h1>
 
-              <p className="text-sm sm:text-base text-[#E6E2D3] leading-relaxed max-w-lg mb-8 opacity-80 font-normal">
-                Explore the depths of Vedic wisdom and Paninian logic. 
-                Bridge ancient heritage with modern structural analysis 
-                through our curated Shastra archives.
-              </p>
-            </div>
-
-            <div className="hidden lg:block absolute right-24 top-1/2 -translate-y-1/2 opacity-5">
-              <span className="text-[200px] font-serif text-white select-none">ॐ</span>
-            </div>
+            <p className="text-base md:text-lg text-[#E6E2D3] leading-relaxed max-w-xl opacity-90 font-light">
+              Bridge ancient heritage with modern structural analysis 
+              through our curated Shastra archives and expert-led pathways.
+            </p>
           </div>
         </div>
       </header>
@@ -195,227 +195,163 @@ const AllCoursesPage = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search for courses (e.g. Vyakarana, Gita, Panini)..."
+              placeholder="Search for courses"
               className="w-full pl-12 pr-4 py-3 rounded-xl bg-[#FBF8F2] border border-[#E6DDC8] text-sm outline-none focus:border-[#B38B3F]"
             />
           </div>
 
-          {/* Grid/List + Count */}
           <div className="flex items-center gap-3 justify-between lg:justify-end">
-            {/* <div className="flex rounded-xl overflow-hidden border border-[#E6DDC8]">
-              <button className="px-4 py-2 bg-[#4A1D1D] text-white text-sm font-semibold">
-                Grid
-              </button>
-              <button className="px-4 py-2 text-sm text-[#6B5A3E] bg-[#FBF8F2]">
-                List
-              </button>
-            </div> */}
-            <span className="text-sm text-stone-500">
-              {filteredCourses.length} courses found
-            </span>
+            {/* Quick Category Chips */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 px-2 no-scrollbar">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`whitespace-nowrap px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                    activeCategory === cat 
+                    ? "bg-[#74271E] text-white shadow-md shadow-[#74271E]/20" 
+                    : "bg-white text-[#6B5A3E] border border-[#E6DDC8] hover:border-[#B38B3F]"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-
-      <div className="px-10 max-w-screen-2xl mx-auto mt-8 grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-12">
+      <div className="px-4 lg:px-10 max-w-screen-2xl mx-auto mt-12 grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-10">
+      
         {/* ================= FILTER SECTION ================= */}
-        <section className="relative z-20">
-          <div className="sticky top-24">
-            <div className="bg-[#FBF4E2] rounded-2xl border border-[#E2D4A6]/60 p-7 shadow-sm space-y-8">
-
-              {/* Header */}
-              <div className="flex items-center justify-between pb-2 border-b border-[#E6DDC8]">
-                <h3 className="text-xl font-bold text-[#74271E] font-serif">Filters</h3>
-                <button
-                  onClick={() => {
-                    resetFilters();
-                    setDurationFilter("Any");
-                  }}
-                  className="text-[10px] font-bold tracking-widest text-[#7A2E1D] hover:text-[#4A1D1D] transition-colors uppercase"
-                >
-                  Clear All
-                </button>
+        <aside className="space-y-6 pb-5">
+          <div className="sticky top-24 bg-[#FBF4E2] rounded-3xl border border-[#E2D4A6]/60 p-8 shadow-sm">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-[#74271E]" />
+                <h3 className="text-lg font-bold text-[#2D2417]">Refine Search</h3>
               </div>
+              <button
+                onClick={resetFilters}
+                className="text-[10px] font-bold tracking-widest text-[#74271E] hover:underline uppercase"
+              >
+                Reset
+              </button>
+            </div>
 
-              {/* COURSE MODE */}
-              <div>
-                <p className="text-[10px] font-black tracking-[0.2em] text-[#8B6D31] mb-5 uppercase opacity-80">
-                  Course Mode
-                </p>
-
-                <div className="space-y-3">
-                  {[
-                    { label: "Online Live", value: "LIVE" },
-                    { label: "Self-paced", value: "RECORDED" },
-                    { label: "Physical Class", value: "PHYSICAL" },
-                  ].map((item) => (
-                    <label
-                      key={item.value}
-                      className="group flex items-center gap-3 text-sm cursor-pointer text-[#4A4135] hover:text-[#2D2417] transition-colors"
-                    >
-                      <div className="relative flex items-center justify-center">
-                        <input
-                          type="checkbox"
-                          checked={modeFilter === item.value}
-                          onChange={() =>
-                            setModeFilter(modeFilter === item.value ? "All Modes" : item.value)
-                          }
-                          className="peer appearance-none w-5 h-5 border border-[#E2D4A6] rounded bg-[#FDFCF7] checked:bg-[#74271E] checked:border-[#74271E] transition-all cursor-pointer"
-                        />
-                        <Check className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
-                      </div>
-                      <span className="font-medium">{item.label}</span>
-                    </label>
-                  ))}
+            {/* Filter Groups */}
+            <div className="space-y-10">
+              {[
+                { title: "Mode of Study", state: modeFilter, setter: setModeFilter, options: [
+                  { label: "Online Live", val: "LIVE" },
+                  { label: "Self-paced", val: "RECORDED" },
+                  { label: "Physical Class", val: "PHYSICAL" }
+                ]},
+                { title: "Duration", state: durationFilter, setter: setDurationFilter, options: [
+                  { label: "Short-term", val: "<3m" },
+                  { label: "6 Months", val: "6m" },
+                  { label: "1 Year+", val: "1y+" },
+                ]},
+                { title: "Difficulty Level", state: levelFilter, setter: setLevelFilter, options: [
+                  { label: "Prathama (Beginner)", val: "Beginner" },
+                  { label: "Madhyama (Intermediate)", val: "Intermediate" },
+                  { label: "Kovida (Advanced)", val: "Advanced" }
+                ]}
+              ].map((group, i) => (
+                <div key={i}>
+                  <p className="text-[10px] font-black tracking-[0.15em] text-[#8B6D31] mb-5 uppercase opacity-70">
+                    {group.title}
+                  </p>
+                  <div className="space-y-3">
+                    {group.options.map((opt) => (
+                      <label key={opt.val} className="flex items-center gap-3 group cursor-pointer">
+                        <div className="relative flex items-center justify-center">
+                          <input
+                            type="checkbox"
+                            // Check if this specific value is in the state array
+                            checked={group.state.includes(opt.val)}
+                            onChange={() => handleToggleFilter(group.state, group.setter, opt.val)}
+                            className="peer appearance-none w-5 h-5 border-2 border-[#E2D4A6] rounded-md checked:bg-[#74271E] checked:border-[#74271E] transition-all"
+                          />
+                          <Check className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
+                        </div>
+                        <span className="text-sm font-medium text-[#4A4135] group-hover:text-[#74271E] transition-colors">
+                          {opt.label}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
-              </div>
-
-              <div className="h-px bg-gradient-to-r from-[#E6DDC8] via-transparent to-transparent" />
-
-              {/* DURATION */}
-              <div>
-                <p className="text-[10px] font-black tracking-[0.2em] text-[#8B6D31] mb-5 uppercase opacity-80">Duration</p>
-
-                <div className="space-y-3">
-                  {[
-                    { label: "Short-term (< 3m)", value: "<3m" },
-                    { label: "6 Months", value: "6m" },
-                    { label: "1 Year+", value: "1y+" },
-                  ].map((item) => (
-                    <label
-                      key={item.value}
-                      className="group flex items-center gap-3 text-sm cursor-pointer text-[#4A4135] hover:text-[#2D2417] transition-colors"
-                    >
-                      <div className="relative flex items-center justify-center">
-                        <input
-                          type="checkbox"
-                          name="duration"
-                          checked={durationFilter.includes(item.value)}
-                          onChange={() => 
-                            setDurationFilter(durationFilter === item.value ? "Any" : item.value)
-                          }
-                          className="peer appearance-none w-5 h-5 border border-[#E2D4A6] rounded-full bg-[#FDFCF7] checked:border-[5px] checked:border-[#74271E] transition-all cursor-pointer"
-                        />
-                      </div>
-                      <span className="font-medium">{item.label}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div className="h-px bg-gradient-to-r from-[#E6DDC8] via-transparent to-transparent" />
-
-              {/* LEVEL */}
-              <div>
-                <p className="text-[10px] font-black tracking-[0.2em] text-[#8B6D31] mb-5 uppercase opacity-80">Level</p>
-
-                <div className="space-y-3">
-                  {[
-                    { label: "Prathama (Beginner)", value: "Beginner" },
-                    { label: "Madhyama (Intermediate)", value: "Intermediate" },
-                    { label: "Kovida (Advanced)", value: "Advanced" },
-                  ].map((lvl) => (
-                    <label
-                      key={lvl.value}
-                      className="group flex items-center gap-3 text-sm cursor-pointer text-[#4A4135] hover:text-[#2D2417] transition-colors"
-                    >
-                      <div className="relative flex items-center justify-center">
-                        <input
-                          type="checkbox"
-                          checked={levelFilter === lvl.value}
-                          onChange={() =>
-                            setLevelFilter(levelFilter === lvl.value ? "Any Level" : lvl.value)
-                          }
-                          className="peer appearance-none w-5 h-5 border border-[#E2D4A6] rounded bg-[#FDFCF7] checked:bg-[#74271E] checked:border-[#74271E] transition-all cursor-pointer"
-                        />
-                        <Check className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
-                      </div>
-                      <span className="font-medium">{lvl.label}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
+              ))}
             </div>
           </div>
-        </section>
+        </aside>
 
 
         {/* --- GRID OF KNOWLEDGE --- */}
-        <main className="py-2">
+        <main className="py-4">
 
           {filteredCourses.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredCourses.map((course) => (
                 <div
                   key={course.id}
-                  className="group relative bg-[#FBF4E2] rounded-xl p-4 shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-2 border border-[#E2D4A6]/30 flex flex-col h-full"
+                  className="group bg-white rounded-2xl overflow-hidden shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-2 border border-[#E2D4A6]/40 flex flex-col h-full"
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-lg mb-3">
+                  <div className="relative aspect-[16/10] overflow-hidden">
                     <img
                       src={course.image}
                       alt={course.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
                     />
-                    <div className="absolute top-3 left-3 z-10">
-                      <span className="inline-flex items-center justify-center px-3 py-1 bg-[#74271E] text-white text-[10px] font-bold uppercase tracking-wider rounded shadow-md">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
+                    <div className="absolute top-4 left-4">
+                      <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-[#74271E] text-[10px] font-bold uppercase tracking-wider rounded-lg shadow-sm">
                         {course.mode}
                       </span>
                     </div>
-                    <div className="absolute inset-0 bg-[#4A1D1D]/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-center items-center text-center p-6 translate-y-4 group-hover:translate-y-0">
-                      <span className="text-[#B38B3F] text-[8px] font-black uppercase tracking-[0.2em] mb-2">Level: {course.level}</span>
-                      <p className="text-white text-[11px] italic leading-relaxed">{course.duration} intensive study led by {course.instructor}.</p>
-                      <div className="mt-4 w-8 h-[1px] bg-[#B38B3F]"></div>
-                    </div>
                   </div>
 
-                  <div className="flex flex-col flex-grow">
-                    <div className="flex items-center gap-2 mb-1.5">
+                  <div className="p-6 flex flex-col flex-grow bg-[#FDFCF7]/50 group-hover:bg-white transition-colors">
+                    {/* <div className="flex items-center gap-2 mb-1.5">
                       <div className="w-1 h-1 rounded-full bg-[#B38B3F]"></div>
                       <span className="text-[11px] font-semibold text-stone-500">{course.instructor}</span>
+                    </div> */}
+                    <div className="flex items-center gap-2 mb-3">
+                      <BookOpen className="w-3.5 h-3.5 text-[#B38B3F]" />
+                      <span className="text-[11px] font-bold text-[#8B6D31] uppercase tracking-wide">{course.category}</span>
                     </div>
-                    <h3 className="font-bold text-lg text-[#2D2417] leading-tight mb-4 group-hover:text-[#4A1D1D] transition-colors line-clamp-2">
+                    <h3 className="text-xl font-bold text-[#2D2417] leading-snug mb-3 group-hover:text-[#74271E] transition-colors">
                       {course.title}
                     </h3>
                     <p className="text-sm text-stone-600 leading-relaxed mb-2 line-clamp-3">
                       Deep study into {course.category}. A {course.duration} immersive journey for {course.level} seekers.
                     </p>
 
-                    <div className="grid grid-cols-2 gap-4 pt-4 mb-4 border-t border-[#E2D4A6]/30">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-7 rounded-lg bg-[#FDFCF7] flex items-center justify-center border border-[#E2D4A6]/40 shadow-sm">
-                          <Clock className="w-3.5 h-3.5 text-[#8B6D31]" />
+                    <div className="mt-auto">
+                      <div className="flex items-center justify-between py-4 border-y border-[#E2D4A6]/30 mb-5">
+                        <div className="flex items-center gap-1.5">
+                          <Clock className="w-4 h-4 text-[#B38B3F]" />
+                          <span className="text-xs font-bold text-[#4A4135]">{course.duration}</span>
                         </div>
-                        <div className="flex flex-col">
-                          <span className="text-[11px] font-bold text-[#4A4135]">{course.duration}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2.5 pl-4 border-l border-[#E2D4A6]/30">
-                        <div className="w-8 h-7 rounded-lg bg-[#FDFCF7] flex items-center justify-center border border-[#E2D4A6]/40 shadow-sm">
-                          <BarChart3 className="w-3.5 h-3.5 text-[#8B6D31]" />
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-[11px] font-bold text-[#4A4135]">{course.level}</span>
+                        <div className="flex items-center gap-1.5">
+                          <BarChart3 className="w-4 h-4 text-[#B38B3F]" />
+                          <span className="text-xs font-bold text-[#4A4135]">{course.level}</span>
                         </div>
                       </div>
-                    </div>
-
-                    
-                    
-                    <div className="mt-auto pt-3 border-t border-[#E2D4A6]/40 flex items-center justify-between">
-                      {/* PRICE */}
-                      <span className="text-lg font-bold text-[#74271E] tabular-nums tracking-tight">
-                        ₹{course.price}
-                      </span>
-
-                      <Link 
-                        to={`/course/${course.id}`} 
-                        className="inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-[#c9a84e] text-white text-[10px] font-bold uppercase tracking-wider rounded-md transition-all duration-300 hover:bg-[#b38b3f] shadow-sm active:scale-95 group/link"
-                      >
-                        Learn More 
-                        <ArrowUpRight className="w-3 h-3 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
-                      </Link>
+                      <div className="flex items-center justify-between">
+                        <span className="text-lg font-bold text-[#74271E] tabular-nums tracking-tight">
+                          ₹{course.price}
+                        </span>
+                        <Link 
+                          to={`/course/${course.id}`} 
+                          className="flex items-center  gap-2 px-3 py-2 bg-[#c9a84e] text-white text-[10px] font-bold uppercase tracking-wider rounded-md transition-all duration-300 hover:bg-[#b38b3f] shadow-sm active:scale-95 group/link"
+                        >
+                          Learn More 
+                          <ArrowUpRight className="w-3 h-3 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
+                        </Link>
+                      </div>
+                      
                     </div>
                   </div>
                 </div>
@@ -435,24 +371,22 @@ const AllCoursesPage = () => {
           )}
 
           {/* --- REFINED PAGINATION --- */}
-          <div className="flex justify-center items-center gap-2 mt-20 pb-10">
-            <button className="w-10 h-10 flex items-center justify-center rounded-full border border-[#E2D4A6] text-[#8B6D31] hover:bg-[#4A1D1D] hover:text-white transition-all group">
-              <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
+          <div className="flex justify-center items-center gap-3 mt-16">
+            <button className="p-3 rounded-xl border border-[#E2D4A6] text-[#8B6D31] hover:bg-white transition-all disabled:opacity-30">
+              <ChevronLeft className="w-5 h-5" />
             </button>
-            <div className="flex items-center gap-2 px-2">
-              {[1, 2, 3].map((n) => (
-                <button
-                  key={n}
-                  className={`w-10 h-10 flex items-center justify-center rounded-full text-sm font-semibold transition-all ${
-                    n === 1 ? "bg-[#74271E] text-white shadow-lg" : "text-[#8B6D31] bg-[#FBF4E2] hover:bg-[#FDFCF7] border border-transparent hover:border-[#B38B3F]"
-                  }`}
-                >
-                  {n}
-                </button>
-              ))}
-            </div>
-            <button className="w-10 h-10 flex items-center justify-center rounded-full border border-[#E2D4A6] text-[#8B6D31] hover:bg-[#4A1D1D] hover:text-white transition-all group">
-              <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+            {[1, 2, 3].map((n) => (
+              <button
+                key={n}
+                className={`w-11 h-11 flex items-center justify-center rounded-xl text-sm font-bold transition-all ${
+                  n === 1 ? "bg-[#74271E] text-white shadow-xl shadow-[#74271E]/20" : "text-[#8B6D31] bg-white border border-[#E2D4A6] hover:border-[#B38B3F]"
+                }`}
+              >
+                {n}
+              </button>
+            ))}
+            <button className="p-3 rounded-xl border border-[#E2D4A6] text-[#8B6D31] hover:bg-white transition-all">
+              <ChevronRight className="w-5 h-5" />
             </button>
           </div>
         </main>
