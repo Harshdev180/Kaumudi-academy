@@ -78,9 +78,9 @@ const CourseManagement = () => {
   };
 
   return (
-    <main className="flex-1 md:ml-0 min-h-screen bg-[#f8f7f6] flex flex-col transition-all duration-300">
+    <main className="flex-1 md:ml-0 min-h-screen bg-[#F3E6C9] flex flex-col transition-all duration-300">
       {/* HEADER */}
-      <header className="h-16 border-b bg-white flex items-center justify-between px-8 sticky top-0 z-10" style={{ borderColor: palette.goldDivider + '30' }}>
+      <header className="h-1 border border-b-[#6b1d14] bg-[#F3E6C9] flex items-center justify-between px-8 mt-8 sticky top-0 z-10 " style={{ borderColor: palette.goldDivider + '30' }}>
         <div className="flex items-center gap-4 flex-1 max-w-xl">
           <div className="relative w-full">
             <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-xl" style={{ color: palette.textMuted }} />
@@ -117,17 +117,17 @@ const CourseManagement = () => {
         </div>
 
         {/* TABLE */}
-        <div className="bg-white border rounded-[2rem] overflow-hidden shadow-sm" style={{ borderColor: palette.goldDivider + '20' }}>
+        <div className="bg-[#fcf8f0]/30 border rounded-4xl overflow-hidden shadow-sm" style={{ borderColor: palette.goldDivider + '20' }}>
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[900px]">
+            <table className="w-full text-left border-collapse min-w-225">
               <thead>
-                <tr className="border-b" style={{ backgroundColor: palette.parchment + '40' }}>
+                <tr className="border-b border-[#D1B062]/50" style={{ backgroundColor: palette.parchment + '40' }}>
                   <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#856966]">Course Title</th>
                   <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#856966]">Duration</th>
                   <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#856966]">Mode</th>
                   <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#856966]">Status</th>
-                  <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-center">Visibility</th>
-                  <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-right">Actions</th>
+                  <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-center text-[#856966]">Visibility</th>
+                  <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-right text-[#856966]">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y" style={{ divideColor: palette.goldDivider + '10' }}>
@@ -138,7 +138,7 @@ const CourseManagement = () => {
                         <div className="flex items-center gap-4">
                           <div className="size-11 rounded-2xl flex items-center justify-center text-xl" style={{ backgroundColor: palette.parchment, color: palette.primary }}>{course.icon}</div>
                           <div className="flex flex-col">
-                            <span className="text-sm font-black text-[#171212]">{course.title}</span>
+                            <span className="text-sm font-black text-[#641e16]">{course.title}</span>
                             <span className="text-[10px] font-bold text-[#856966]">{course.level}</span>
                           </div>
                         </div>
@@ -161,8 +161,8 @@ const CourseManagement = () => {
                         </div>
                       </td>
                       <td className="px-8 py-5 text-right">
-                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button className="p-2 hover:bg-blue-50 text-blue-600 rounded-lg"><MdEdit size={18} /></button>
+                        <div className="flex justify-end gap-2 opacity-100 transition-opacity">
+                          {/* <button className="p-2 hover:bg-blue-50 text-blue-600 rounded-lg"><MdEdit size={18} /></button> */}
                           <button onClick={() => deleteCourse(course.id)} className="p-2 hover:bg-red-50 text-red-600 rounded-lg"><MdDelete size={18} /></button>
                         </div>
                       </td>

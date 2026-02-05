@@ -13,7 +13,7 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FFFDF8] p-4 font-serif relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-[#f1e4c8] p-4 font-serif relative overflow-hidden">
       {/* Background Texture Overlay */}
       <div className="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]"></div>
 

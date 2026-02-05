@@ -8,7 +8,9 @@ import LeadManagement from "./pages/AdminDashboard/LeadManagement";
 import AdminLogin from "./pages/AdminDashboard/AdminLogin";
 import CourseManagement from "./pages/AdminDashboard/CourseManagement";
 import AllCoursesPage from "./pages/CourseListing";
+
 import CourseDetail from "./pages/CourseDetailsUp";
+import Inquiry from "./pages/AdminDashboard/Inquiry";
 
 import Signup from "./component/Auth/signup";
 import Signin from "./component/Auth/login";
@@ -16,6 +18,8 @@ import Home from "./pages/Homepage/Home";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 
 function App() {
   return (
@@ -27,38 +31,27 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/allcourses" element={<AllCoursesPage />} />
         <Route path="/coursedetail" element={<CourseDetail />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Signin />} />
+        <Route path="/inquiry" element={<Inquiry />} />
 
-        {/* ---------------- Admin Routes ---------------- */}
-        <Route
-          path="/admin/dashboard"
-          element={
-            <AdminLayout>
-              <Dashboard />
-            </AdminLayout>
-          }
-        />
+        {/* ---------------- Admin Routes (Nested) ---------------- */}
+        {/* Parent Route*/}
+        <Route path="/admin" element={<AdminLayout />}>
+          {/* Default Page */}
+          <Route index element={<Dashboard />} />
 
-        <Route
-          path="/admin/lead"
-          element={
-            <AdminLayout>
-              <LeadManagement />
-            </AdminLayout>
-          }
-        />
+          {/* Primary Path: /admin/dashboard */}
+          <Route path="dashboard" element={<Dashboard />} />
 
-        <Route
-          path="/admin/courses"
-          element={
-            <AdminLayout>
-              <CourseManagement />
-            </AdminLayout>
-          }
-        />
+          {/* Inside Admin Pages */}
+          <Route path="lead" element={<LeadManagement />} />
+          <Route path="course" element={<CourseManagement />} />
+        </Route>
 
-        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin-login" element={<AdminLogin />} />
       </Routes>
       <Footer />
     </>

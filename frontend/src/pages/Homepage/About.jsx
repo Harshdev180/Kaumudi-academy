@@ -106,7 +106,7 @@ const About = () => {
                 variants={bulletItem}
                 className="flex items-start gap-3 text-[#7b5a4c]"
               >
-                <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-[#d6b15c]" />
+                <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-[#7b2d1f]" />
                 {item}
               </motion.li>
             ))}
@@ -116,7 +116,7 @@ const About = () => {
           <motion.button
             whileHover={{ y: -4, scale: 1.05 }}
             whileTap={{ scale: 0.96 }}
-            className="mt-8 inline-flex items-center gap-2 rounded-xl bg-[#74271E] px-7 py-3 font-semibold text-white shadow-lg transition hover:bg-[#5e1f18] focus:outline-none focus:ring-2 focus:ring-[#d6b15c]"
+            className="mt-0 inline-flex items-center gap-2 rounded-xl bg-[#74271E] px-7 py-3 font-semibold text-white shadow-lg transition hover:bg-[#5e1f18] focus:outline-none focus:ring-2 focus:ring-[#d6b15c]"
           >
             Learn Our Story →
           </motion.button>

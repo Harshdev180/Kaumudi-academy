@@ -1,223 +1,220 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, Users, Ticket, Mail, Search, Bell, Plus, MoreVertical, Calendar, MessageSquare, ChevronDown, TrendingUp } from 'lucide-react';
+import {
+    MdSearch, MdNotifications, MdChatBubbleOutline, MdKeyboardArrowDown,
+    MdMenuBook, MdPeopleOutline, MdConfirmationNumber, MdMailOutline,
+    MdTrendingUp, MdBarChart, MdChevronLeft, MdChevronRight
+} from 'react-icons/md';
 
-const academyColors = {
-    primaryGold: "#b8973d",
-    accentDark: "#8B6A21",
-    parchment: "#FBF4E2",
-    bgLight: "#f8f7f6",
-    bgDark: "#1e1b14",
-    // New Muted Palette for Charts
-    chartGold: "#D4AF37",
-    chartDark: "#2C261D",
-    chartMuted: "#A68942",
-    chartSlate: "#4A453E",
-    chartSage: "#6B705C"
-};
+const Dashboard = () => {
+    // EXACT COLOR PALETTE
+    const theme = {
+        primaryGold: "#b8973d",
+        accentDark: "#8B6A21",
+        parchment: "#FBF4E2",
+        bgLight: "#f1e4c8",
+        bgDark: "#1e1b14",
+        chartGold: "#D4AF37",
+        chartDark: "#2C261D",
+        chartMuted: "#A68942",
+        chartSlate: "#4A453E",
+        chartSage: "#6B705C",
+        textDark: "#6b1d14"
+    };
 
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: { staggerChildren: 0.1 }
-    }
-};
-
-const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: "easeOut" } }
-};
-
-const AdminDashboard = () => {
-    const [user] = useState({
-        name: "Acharya Sharma",
-        role: "Head Administrator",
-        avatar: "https://ui-avatars.com/api/?name=Acharya+Sharma&background=b8973d&color=fff"
-    });
-
-    const [stats, setStats] = useState([]);
-    const [campaigns, setCampaigns] = useState([]);
-    const [inquiries, setInquiries] = useState([]);
-
-    useEffect(() => {
-        setStats([
-            { id: 1, icon: <BookOpen />, label: "Total Courses", value: "42", trend: "+5%", up: true },
-            { id: 2, icon: <Users />, label: "Active Students", value: "1,280", trend: "-2%", up: false },
-            { id: 3, icon: <Ticket />, label: "Coupons", value: "156", trend: "+12%", up: true },
-            { id: 4, icon: <Mail />, label: "Inquiries", value: "12", status: "New" }
-        ]);
-
-        // Updated with UI-Matched Theme Colors
-        setCampaigns([
-            { label: "Google Ads", val: 85, color: academyColors.bgDark },
-            { label: "FB / Insta", val: 65, color: academyColors.primaryGold },
-            { label: "WhatsApp", val: 92, color: academyColors.accentDark },
-            { label: "YouTube", val: 45, color: academyColors.chartMuted },
-            { label: "Referrals", val: 30, color: "#C5B358" }
-        ]);
-
-        setInquiries([
-            { id: 1, name: "Rahul Deshpande", course: "Panini Vyakarana", status: "New", color: "bg-orange-50 text-[#8B6A21] border border-orange-100" },
-            { id: 2, name: "Ananya Iyer", course: "Advanced Upanishad", status: "In Review", color: "bg-zinc-100 text-zinc-600 border border-zinc-200" }
-        ]);
-    }, []);
+    const stats = [
+        { title: "TOTAL COURSES", value: "42", change: "+5%", icon: <MdMenuBook /> },
+        { title: "ACTIVE STUDENTS", value: "1,280", change: "-2%", icon: <MdPeopleOutline /> },
+        { title: "COUPONS", value: "156", change: "+12%", icon: <MdConfirmationNumber /> },
+        { title: "INQUIRIES", value: "12", change: "NEW", icon: <MdMailOutline /> },
+    ];
 
     return (
-        <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-            className="flex-1 md:ml-0 min-h-screen font-sans"
-            style={{ backgroundColor: academyColors.bgLight }}
-        >
-            {/* Header */}
-            <header className="h-20 flex items-center justify-between px-6 lg:px-10 bg-white/80 backdrop-blur-md border-b sticky top-0 z-40" style={{ borderColor: `${academyColors.primaryGold}20` }}>
-                <div className="relative w-full max-w-xs md:max-w-md hidden sm:block">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 opacity-40" size={18} />
-                    <input type="text" placeholder="Search insights..." className="w-full border-none rounded-xl pl-10 pr-4 py-2 text-sm bg-zinc-100/50 focus:ring-1 focus:ring-[#b8973d]/20 transition-all outline-none" />
+        <div className="min-h-screen p-4 sm:p-8 font-serif" style={{ backgroundColor: theme.bgLight, backgroundImage: `url('https://www.transparenttextures.com/patterns/natural-paper.png')` }}>
+            {/* 1. TOP NAVIGATION BAR */}
+            <header className="flex items-center justify-between mb-10 bg-white/40 backdrop-blur-md p-4 rounded-2xl border border-white/60 shadow-sm">
+                <div className="relative w-full max-w-md">
+                    <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-xl" style={{ color: theme.textMuted }} />
+                    <input
+                        type="text"
+                        placeholder="Search insights..."
+                        className="w-full bg-[#FBF4E2]/40 border-none rounded-xl pl-10 pr-4 py-2 text-sm outline-none focus:ring-1 transition-all"
+                        style={{ focusRingColor: theme.primary }}
+                    />
                 </div>
 
-                <div className="flex items-center gap-4 lg:gap-8 ml-auto">
-                    <div className="flex gap-2 border-r pr-4 border-zinc-200">
-                        <IconButton icon={<Bell size={20} />} hasBadge />
-                        <IconButton icon={<MessageSquare size={20} />} />
+                <div className="flex items-center gap-6">
+                    <div className="flex gap-2">
+                        <button className="p-2 rounded-xl bg-white border border-[#D1B062]/30 shadow-sm"><MdNotifications className="text-xl" /></button>
+                        <button className="p-2 rounded-xl bg-white border border-[#D1B062]/30 shadow-sm"><MdChatBubbleOutline className="text-xl" /></button>
                     </div>
-                    <div className="flex items-center gap-3 cursor-pointer group">
+                    <div className="flex items-center gap-3 border-l pl-6" style={{ borderColor: theme.goldDivider + '40' }}>
                         <div className="text-right hidden md:block">
-                            <p className="text-sm font-black text-zinc-800">{user.name}</p>
-                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-tight">{user.role}</p>
+                            <p className="text-xs font-bold leading-none" style={{ color: theme.textDark }}>Acharya Sharma</p>
+                            <p className="text-[10px] font-medium mt-1 uppercase" style={{ color: theme.textMuted }}>Head Administrator</p>
                         </div>
-                        <img src={user.avatar} className="w-10 h-10 rounded-xl border-2 shadow-sm" style={{ borderColor: academyColors.primaryGold }} alt="avatar" />
+                        <div className="size-10 rounded-full border-2 p-0.5 shadow-md" style={{ borderColor: theme.primary }}>
+                            <img src="https://ui-avatars.com/api/?name=Acharya+Sharma&background=b8973d&color=fff" className="rounded-full" alt="profile" />
+                        </div>
                     </div>
                 </div>
             </header>
 
-            <div className="p-4 lg:p-10 max-w-[1600px] mx-auto">
-                {/* Title Section */}
-                <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
-                    <div>
-                        <h2 className="text-3xl lg:text-4xl font-black text-zinc-900 tracking-tight">Academy Overview</h2>
-                        <p className="text-sm text-zinc-400 mt-1 italic font-medium">Elevating Sanskrit education with modern tech.</p>
-                    </div>
-                    <div className="flex gap-3">
-                        <button className="flex-1 md:flex-none px-6 py-3 bg-white border border-zinc-200 rounded-xl font-bold text-xs uppercase tracking-widest shadow-sm hover:bg-zinc-50 transition-all"> This Month</button>
-                        <button className="flex-1 md:flex-none px-6 py-3 text-white rounded-xl font-bold shadow-lg bg-zinc-900 hover:bg-zinc-800 transition-all flex items-center gap-2 text-sm">
-                            <Plus size={18} /> New Course
-                        </button>
-                    </div>
-                </motion.div>
+            {/* 2. PAGE HEADING & ACTION */}
+            <div className="flex justify-between items-start mb-8">
+                <div>
+                    <h1 className="text-4xl font-bold tracking-tight mb-2" style={{ color: theme.accentDark }}>Academy Overview</h1>
+                    <p className="text-sm italic" style={{ color: theme.textMuted }}>Elevating Sanskrit education with modern tech.</p>
+                </div>
+                <div className="flex gap-3">
+                    <button className="px-5 py-2 rounded-xl bg-white border text-xs font-bold flex items-center gap-2 shadow-sm" style={{ borderColor: theme.goldDivider }}>
+                        THIS MONTH <MdKeyboardArrowDown />
+                    </button>
+                    <button className="px-5 py-2 rounded-xl text-white text-xs font-bold flex items-center gap-2 shadow-lg hover:opacity-90 transition-all" style={{ backgroundColor: theme.textDark }}>
+                        + New Course
+                    </button>
+                </div>
+            </div>
 
-                {/* Animated Stats Grid */}
-                <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-                    {stats.map(s => (
-                        <motion.div
-                            key={s.id}
-                            whileHover={{ y: -5 }}
-                            className="bg-white p-6 rounded-[1.5rem] border border-zinc-100 shadow-sm relative overflow-hidden group"
-                        >
-                            <div className="relative z-10">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className="p-2.5 rounded-xl" style={{ backgroundColor: academyColors.parchment, color: academyColors.primaryGold }}>{s.icon}</div>
-                                    {s.trend && <span className={`text-[10px] font-black px-2 py-0.5 rounded-md ${s.up ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>{s.trend}</span>}
-                                </div>
-                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{s.label}</p>
-                                <p className="text-3xl font-black mt-1 text-zinc-900">{s.value}</p>
-                            </div>
-                        </motion.div>
-                    ))}
-                </motion.div>
-
-                {/* Charts Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-                    {/* Enrollment Growth */}
-                    <motion.div variants={itemVariants} className="bg-white p-8 rounded-[2rem] border border-zinc-100 shadow-sm">
-                        <h3 className="font-bold text-lg mb-6 text-zinc-800 flex items-center gap-2">
-                            <TrendingUp size={20} className="text-[#b8973d]" /> Enrollment Growth
-                        </h3>
-                        <div className="h-48 w-full bg-zinc-50/50 rounded-2xl relative overflow-hidden border border-zinc-100">
-                            <svg className="w-full h-full" viewBox="0 0 400 150" preserveAspectRatio="none">
-                                <motion.path
-                                    initial={{ pathLength: 0, opacity: 0 }}
-                                    animate={{ pathLength: 1, opacity: 1 }}
-                                    transition={{ duration: 1.5, delay: 0.5 }}
-                                    d="M0,120 C80,130 150,40 250,60 C350,80 380,20 400,10"
-                                    stroke={academyColors.primaryGold} strokeWidth="3" fill="none" strokeLinecap="round"
-                                />
-                            </svg>
+            {/* 3. STAT CARDS */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                {stats.map((stat, idx) => (
+                    <motion.div
+                        whileHover={{ y: -5 }}
+                        key={idx}
+                        className="p-6 rounded-[2rem] bg-white/10 border border-[#6b1d14]/20 shadow-xl shadow-[#D1B062]/5 relative overflow-hidden group"
+                    >
+                        <div className="absolute top-0 right-0 p-4">
+                            <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${stat.change === 'NEW' ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600'}`}>
+                                {stat.change}
+                            </span>
                         </div>
+                        <div className="size-10 rounded-xl flex items-center justify-center text-xl text[#6b1d14] mb-4 group-hover:scale-110 transition-transform" style={{ backgroundColor: theme.parchment,  }}>
+                            {stat.icon}
+                        </div>
+                        <p className="text-[10px] text-[#6b1d14] font-black tracking-widest uppercase opacity-60 mb-1">{stat.title}</p>
+                        <h3 className="text-3xl font-bold" style={{ color: theme.textDark }}>{stat.value}</h3>
                     </motion.div>
+                ))}
+            </div>
 
-                    {/* Modern Campaign Pillar Chart - FIXED DATA DISPLAY */}
-                    <motion.div variants={itemVariants} className="bg-white p-8 rounded-[2.5rem] border border-zinc-100 shadow-sm">
-                        <div className="flex justify-between mb-10">
-                            <h3 className="font-bold text-lg text-zinc-800">Campaign Analytics</h3>
-                            <div className="flex items-center gap-1.5 px-3 py-1 bg-green-50 rounded-full border border-green-100 text-green-600 text-[10px] font-black">LIVE</div>
-                        </div>
-                        <div className="flex items-end justify-between h-48 gap-3 px-2">
-                            {campaigns.map((item, i) => (
-                                <div key={i} className="flex-1 flex flex-col items-center group/bar relative h-full justify-end">
-                                    <motion.div
-                                        initial={{ height: 0 }}
-                                        animate={{ height: `${item.val}%` }}
-                                        transition={{ duration: 1, delay: i * 0.1 }}
-                                        className="w-full max-w-[32px] rounded-t-xl relative cursor-pointer shadow-sm"
-                                        style={{ backgroundColor: item.color }}
-                                    >
-                                        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/bar:opacity-100 transition-opacity" />
-                                    </motion.div>
-                                    <span className="mt-4 text-[9px] font-black text-zinc-400 uppercase tracking-tighter text-center whitespace-nowrap">
-                                        {item.label}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                    </motion.div>
+            {/* 4. ANALYTICS SECTION */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                {/* Enrollment Growth Card */}
+                <div className="bg-white/20 p-8 rounded-[2.5rem] border border-white shadow-xl">
+                    <div className="flex justify-between items-center mb-6">
+                        <h4 className="text-xs text-[#6b1d14] font-bold uppercase tracking-widest flex items-center gap-2">
+                            <MdTrendingUp className="text-lg " style={{ color: theme.primaryGold }} /> ENROLLMENT GROWTH
+                        </h4>
+                        <span className="text-[10px] font-bold px-2 py-1 bg-orange-50 text-orange-600 rounded-lg">+18%</span>
+                    </div>
+                    <div className="h-48 w-full flex items-end gap-1">
+                        {/* Dummy SVG Chart to match screenshot style */}
+                        <svg viewBox="0 0 400 100" className="w-full h-full">
+                            <path d="M0,80 Q50,90 100,70 T200,40 T300,60 T400,20" fill="none" stroke={theme.primaryGold} strokeWidth="3" />
+                            <path d="M0,80 Q50,90 100,70 T200,40 T300,60 T400,20 V100 H0 Z" fill={`url(#goldGrad)`} opacity="0.6" />
+                            <defs>
+                                <linearGradient id="goldGrad" x1="0" x2="0" y1="0" y2="1">
+                                    <stop offset="0%" stopColor={theme.primaryGold} />
+                                    <stop offset="100%" stopColor="#6b1d14" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
                 </div>
 
-                {/* Recent Inquiries */}
-                <motion.div variants={itemVariants} className="bg-white rounded-[2rem] border border-zinc-100 shadow-sm overflow-hidden">
-                    <div className="p-8 border-b flex justify-between items-center bg-zinc-50/30">
-                        <h3 className="font-bold text-lg text-zinc-800">Recent Inquiries</h3>
-                        <button className="text-[10px] font-black uppercase tracking-widest text-[#b8973d] hover:underline transition-all">Refresh List</button>
+                {/* Campaign Analytics Card */}
+                <div className="bg-white/20 p-8 rounded-[2.5rem] border border-white shadow-xl relative">
+                    <div className="flex justify-between items-center mb-6">
+                        <h4 className="text-xs font-black uppercase tracking-widest">CAMPAIGN ANALYTICS</h4>
+                        <span className="text-[10px] font-bold px-2 py-1 bg-green-50 text-green-600 rounded-lg">LIVE</span>
                     </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead className="bg-white text-[10px] font-black text-zinc-400 uppercase tracking-widest border-b border-zinc-100">
-                                <tr>
-                                    <th className="px-10 py-5">Student</th>
-                                    <th className="px-10 py-5">Course</th>
-                                    <th className="px-10 py-5">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-zinc-50">
-                                {inquiries.map((inq, idx) => (
-                                    <tr key={idx} className="hover:bg-zinc-50/50 transition-colors">
-                                        <td className="px-10 py-6 font-bold text-zinc-800">{inq.name}</td>
-                                        <td className="px-10 py-6 italic text-zinc-500 text-sm">{inq.course}</td>
-                                        <td className="px-10 py-6">
-                                            <span className={`px-3 py-1 rounded-md text-[9px] font-black uppercase ${inq.color}`}>{inq.status}</span>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    <div className="flex justify-around items-end h-40 pt-4">
+                        {[80, 50, 90, 40].map((h, i) => (
+                            <div key={i} className="flex flex-col items-center gap-3">
+                                <motion.div initial={{ height: 0 }} animate={{ height: `${h}%` }} className="w-8 rounded-t-lg" style={{ backgroundColor: i % 2 === 0 ? theme.textDark : theme.primary, opacity: 1 - i * 0.2 }}></motion.div>
+                                <span className="text-[8px] font-bold uppercase opacity-50">{['Google Ads', 'FB/Insta', 'WhatsApp', 'YouTube'][i]}</span>
+                            </div>
+                        ))}
                     </div>
-                </motion.div>
+                    {/* <div className="absolute bottom-6 right-8 flex items-center gap-2 bg-[#FBF4E2] px-3 py-1 rounded-full text-[9px] font-bold">
+                        Top performing channel <MdChevronRight />
+                    </div> */}
+                </div>
             </div>
-        </motion.div>
+
+            {/* 5. RECENT INQUIRIES TABLE */}
+            <div className="bg-[#fcf8f0]/30 rounded-[2.5rem]  overflow-hidden border border-white/40">
+                {/* Header Section */}
+                <div className="px-10 py-7 border-b border-[#D1B062]/20 flex justify-between items-center">
+                    <h4 className="text-[13px] font-black uppercase tracking-[0.2em] text-[#6b1d14]/70">Recent Inquiries</h4>
+                    <button className="text-[10px] font-black uppercase tracking-widest text-[#433629]/50 flex items-center gap-2 hover:text-[#b8973d] transition-colors bg-white/40 px-4 py-2 rounded-xl shadow-sm">
+                        Refresh List <span className="text-lg">›</span>
+                    </button>
+                </div>
+
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left border-separate border-spacing-0">
+                        <thead>
+                            <tr className="text-xs   uppercase text-[#6b1d14] tracking-[0.45em]">
+                                <th className="px-12 py-6">Student</th>
+                                <th className="px-12 py-6">Course</th>
+                                <th className="px-12 py-6">Status</th> {/* Matching the double status column in your image */}
+                                <th className="px-12 py-6 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#D1B062]/10">
+                            {[
+                                { name: "Rahul Deshpande", initial: "RD", course: "Panini Vyakarana", status: "NEW" },
+                                { name: "Ananya Iyer", initial: "AI", course: "Advanced Upanishad", status: "IN REVIEW" },
+                            ].map((row, i) => (
+                                <tr key={i} className="hover:bg-white/50 transition-all duration-300">
+                                    {/* Student Cell with Badge */}
+                                    <td className="px-12 py-8">
+                                        <div className="flex items-center gap-5">
+                                            <div className="relative">
+                                                <div className="size-12 rounded-full flex items-center justify-center text-[13px] font-bold bg-[#6b1d14] text-white shadow-[inset_2px_2px_5px_rgba(0,0,0,0.05),_2px_2px_8px_rgba(255,255,255,0.8)] border border-white/50">
+                                                    {row.initial}
+                                                </div>
+                                            </div>
+                                            <span className="text-[15px] font-bold text-[#6b1d14]">{row.name}</span>
+                                        </div>
+                                    </td>
+
+                                    {/* Course Cell */}
+                                    <td className="px-12 py-8 text-sm italic text-[#6b1d14]/70 font-medium">
+                                        {row.course}
+                                    </td>
+
+                                    {/* Status Pills */}
+                                    <td className="px-12 py-8">
+                                        <span className={`px-4 py-1.5 rounded-xl text-[9px] font-black tracking-widest uppercase bg-[#FBF4E2] border border-[#6b1d14]/30 shadow-sm ${row.status === 'NEW' ? 'text-[#6b1d14]' : 'text-[#6b1d14]/70'}`}>
+                                            {row.status}
+                                        </span>
+                                    </td>
+
+                                    {/* <td className="px-12 py-8">
+              <button className="px-6 py-2 rounded-xl text-[10px] font-black text-[#6b1d14]/80 bg-white/40 border border-white shadow-sm hover:shadow-md transition-all">
+                View
+              </button>
+            </td> */}
+
+                                    {/* The Main "Pressable" Button */}
+                                    <td className="px-12 py-8 text-right">
+                                        <button className="px-10 py-3 rounded-2xl bg-[#fdf9f0] border-b-4 border-[#d1b062]/40 border-x border-t border-[#d1b062]/20 text-[11px] font-black text-[#433629] shadow-md hover:brightness-105 active:border-b-0 active:translate-y-1 transition-all uppercase tracking-widest">
+                                            View
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     );
 };
 
-const IconButton = ({ icon, hasBadge }) => (
-    <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="relative p-2.5 bg-white rounded-xl border border-zinc-100 shadow-sm hover:border-zinc-300 transition-colors"
-    >
-        {icon}
-        {hasBadge && <span className="absolute top-2 right-2 w-2 h-2 bg-[#b8973d] rounded-full border-2 border-white" />}
-    </motion.button>
-);
+export default Dashboard;
 
-export default AdminDashboard;
+
