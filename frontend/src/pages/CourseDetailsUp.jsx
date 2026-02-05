@@ -36,7 +36,7 @@ const CourseDetails = () => {
           <section >
              <div className="flex items-center gap-3 mb-4 -mt-14">
         <div className="w-1.5 h-8 bg-[#d6b15c]"></div>
-        <h2 className="text-[28px] font-bold text-[#631D11]">Course Preview</h2>
+        <h2 className="text-[28px] font-bold text-[#74271E]">Course Preview</h2>
       </div>
             
             <div className="relative group aspect-video bg-black rounded-4xl overflow-hidden shadow-2xl border-[6px] border-white cursor-pointer">
@@ -69,7 +69,7 @@ const CourseDetails = () => {
                 >
                   {/* Play Button matching your image */}
                   <div className="flex justify-center items-center h-full">
-                     <div className="w-20 h-20 bg-[#631D11] rounded-full flex items-center justify-center border-2 border-white/20 shadow-2xl transform transition-transform group-hover:scale-110">
+                     <div className="w-20 h-20 bg-[#74271E] rounded-full flex items-center justify-center border-2 border-white/20 shadow-2xl transform transition-transform group-hover:scale-110">
                         <div className="ml-1 w-0 h-0 border-t-[14px] border-t-transparent border-l-[24px] border-l-white border-b-[14px] border-b-transparent"></div>
                      </div>
                   </div>
@@ -82,7 +82,7 @@ const CourseDetails = () => {
           {/* Syllabus Download Box */}
           <div className="flex flex-col sm:flex-row items-center justify-between bg-[#F9F5F0] p-5 rounded-2xl border border-[#E8DFD3] shadow-sm gap-6">
             <div className="flex items-center gap-5">
-              <div className="bg-[#631D11] p-3 rounded-xl text-white shadow-lg">
+              <div className="bg-[#74271E] p-3 rounded-xl text-white shadow-lg">
                 <FileText size={36} strokeWidth={1.5} />
               </div>
               <div className="space-y-1">
@@ -93,7 +93,7 @@ const CourseDetails = () => {
               </div>
             </div>
             
-            <button className="w-full sm:w-auto  bg-[#631D11] hover:bg-[#d6b15c] hover:text-[#631D11] text-white px-3 py-3 rounded-xl font-bold flex items-center justify-center gap-1 transition-all shadow-xl active:scale-95">
+            <button className="w-full sm:w-auto  bg-[#74271E] hover:bg-[#d6b15c] hover:text-[#631D11] text-white px-3 py-3 rounded-xl font-bold flex items-center justify-center gap-1 transition-all shadow-xl active:scale-95">
                <Download size={22} />
                Download Brochure
             </button>

@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { motion } from "framer-motion";
+import { motion } from "framer-motion"; // Framer motion import kiya
 import {
   ChevronLeft,
   ChevronRight,
@@ -11,36 +11,38 @@ import {
 import { useNavigate } from "react-router-dom";
 
 const courses = [
-  { id: 1, title: "Foundations of Sanskrit Vyakaran...", description: "Learn core Paninian grammar and sentence construction from basics.", language: "Hindi & Sanskrit", price: "4,999", duration: "12 Weeks", level: "Beginner", image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=500", type: "ONLINE" },
-  { id: 2, title: "Mastering Vedic Chanting &...", description: "Explore the precise art of Swara and Akshara in Vedic recitation.", language: "Sanskrit", price: "7,500", duration: "8 Weeks", level: "Intermediate", image: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=500", type: "IN-PERSON" },
-  { id: 3, title: "Upanishad Darshanam: Deep...", description: "Journey through the metaphysical teachings of ancient Upanishads.", language: "Hindi & English", price: "12,000", duration: "6 Months", level: "Advanced", image: "https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?w=500", type: "ONLINE" },
-  { id: 4, title: "Introduction to Bhagavad Gita", description: "Understanding the essential values and teachings for modern life.", language: "English", price: "3,500", duration: "4 Weeks", level: "Beginner", image: "https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?w=500", type: "ONLINE" },
-  { id: 5, title: "Patanjali Yoga Sutras", description: "Deep dive into the philosophy and practice of classical yoga.", language: "Sanskrit & Hindi", price: "8,999", duration: "16 Weeks", level: "Intermediate", image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500", type: "IN-PERSON" },
-  { id: 6, title: "Sanskrit Conversation Mastery", description: "Speak Sanskrit fluently with our immersive speaking program.", language: "Sanskrit", price: "6,000", duration: "10 Weeks", level: "Intermediate", image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=500", type: "ONLINE" },
+  { id: 1, title: "Vyakaran Shastra", description: "Learn core Paninian grammar and sentence construction from basics.", language: "Hindi & Sanskrit", price: "9,599", duration: "1 Year", level: "Beginner", image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=500", type: "ONLINE" },
+  { id: 2, title: "Shlok", description: "Explore the precise art of Swara and Akshara in Vedic recitation.", language: "Sanskrit", price: "699", duration: "6 Weeks", level: "Intermediate", image: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=500", type: "IN-PERSON" },
+  { id: 3, title: "Spoken Sanskrit (Level-1)", description: "Journey through the metaphysical teachings of ancient Upanishads.", language: "Hindi & English", price: "2,499", duration: "3 Months", level: "Advanced", image: "https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?w=500", type: "ONLINE" },
+  { id: 4, title: "UGC NET", description: "Understanding the essential values and teachings for modern life.", language: "English", price: "1,499", duration: "- Weeks", level: "Beginner", image: "https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?w=500", type: "ONLINE" },
+  { id: 5, title: "BA", description: "Deep dive into the philosophy and practice of classical yoga.", language: "Sanskrit & Hindi", price: "3,999", duration: "- Weeks", level: "Intermediate", image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500", type: "IN-PERSON" },
+  { id: 6, title: "shlok", description: "Speak Sanskrit fluently with our immersive speaking program.", language: "Sanskrit", price: "699", duration: "6 Weeks", level: "Intermediate", image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=500", type: "ONLINE" },
 ];
 
 const CourseCard = ({ course, index }) => {
   const navigate = useNavigate();
 
   return (
-    // Padding px-2 wahi rakha hai jo aapke original code mein tha
     <motion.div 
-      initial={{ opacity: 0, y: 15 }}
+      // Slide-in animation jab view mein aaye
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.4, delay: index * 0.05 }}
-      className="w-full sm:w-1/2 lg:w-1/4 flex-shrink-0 px-2"
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      className="w-full sm:w-1/2 lg:w-1/4 flex-shrink-0 px-3"
     >
-      {/* Animation wrap kiya hai bina classes change kiye */}
       <motion.div 
-        whileHover={{ y: -5 }} 
-        className="bg-white rounded-3xl overflow-hidden flex flex-col h-full shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md"
+        // Hover animation: Card halka sa upar uthega
+        whileHover={{ y: -10 }}
+        className="bg-white rounded-3xl overflow-hidden flex flex-col h-full shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-xl"
       >
         <div className="relative h-48 overflow-hidden">
           <motion.img 
-            whileHover={{ scale: 1.08 }}
-            transition={{ duration: 0.5 }}
-            src={course.image} className="w-full h-full object-cover" alt={course.title} 
+            whileHover={{ scale: 1.1 }}
+            transition={{ duration: 0.6 }}
+            src={course.image} 
+            className="w-full h-full object-cover" 
+            alt={course.title} 
           />
           <div className="absolute top-4 left-4">
             <span className="bg-white text-[#6b1d14] text-[10px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 uppercase">
@@ -48,12 +50,12 @@ const CourseCard = ({ course, index }) => {
             </span>
           </div>
           <div className="absolute top-4 right-4">
-            <span className="bg-[#6b1d14] text-white text-[10px] font-bold px-3 py-1 rounded-md shadow-sm">{course.type}</span>
+            <span className="bg-[#74271E] text-white text-[10px] font-bold px-3 py-1 rounded-md shadow-sm">{course.type}</span>
           </div>
         </div>
 
         <div className="p-5 flex flex-col flex-grow text-left">
-          <h3 className="text-[#631D11] font-bold text-lg leading-tight mb-3 font-serif line-clamp-1">{course.title}</h3>
+          <h3 className="text-[#74271E] font-bold text-lg leading-tight mb-3 font-serif line-clamp-1">{course.title}</h3>
           <p className="text-gray-500 text-sm leading-relaxed mb-6 line-clamp-2">{course.description}</p>
           
           <div className="flex items-center justify-between text-gray-600 mb-6">
@@ -68,15 +70,15 @@ const CourseCard = ({ course, index }) => {
           </div>
 
           <div className="mt-auto flex justify-between items-center">
-            <span className="text-xl font-bold text-[#6b1d14]">₹{course.price}</span>
+            <span className="text-xl font-bold text-[#74271E]">₹{course.price}</span>
             <motion.button 
-             whileHover={{ scale: 1.05 }}
-             whileTap={{ scale: 0.95 }}
-             onClick={() => {
-               navigate("/coursedetail");
-               window.scrollTo({ top: 0, behavior: 'smooth' }); 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                navigate("/coursedetail");
+                window.scrollTo({ top: 0, behavior: 'smooth' }); 
               }}
-              className="bg-[#6b1d14] text-white text-[12px] font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 hover:bg-[#d6b15c] transition-all active:scale-95"
+              className="bg-[#74271E] text-white text-[12px] font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 hover:bg-[#d6b15c] transition-colors"
             >
               View Details <ArrowRight size={14} />
             </motion.button>
@@ -101,32 +103,43 @@ export default function CourseCarousel() {
   };
 
   return (
-    // Saari spacing aur margins aapke original code wali hi hain
-    <section className="w-full py-2 font-sans-serif min-h-screen">
-      <div className="max-w-[1200px] mx-auto -px-6">
+    // py-8 add kiya taaki card ke animation ko space mile aur shake na ho
+    <section className="w-full py-8 font-sans-serif pb-2 overflow-hidden"> 
+      <div className="max-w-[1190px] mx-auto px-1">
         <div className="flex items-center justify-between mb-4">
-           <div className="flex items-center gap-3 mb-2 mt-4">
+           <div className="flex items-center gap-3 mb-1 mt-2">
             <div className="w-1.5 h-8 bg-[#d6b15c]"></div>
-            <h2 className="text-[28px] font-bold text-[#631D11]">Recommended Courses</h2>
+            <h2 className="text-[28px] font-bold text-[#74271E]">Recommended Courses</h2>
           </div>
 
-          <div className="flex pr-10 gap-5">
-            <motion.button whileTap={{ scale: 0.9 }} onClick={() => scroll("left")} className="bg-white p-3 rounded-full shadow-md text-[#6b1d14] hover:text-[#d6b15c] hover:bg-[#631D11] transition-all border border-gray-100">
+          <div className="flex pr-4 sm:pr-10 gap-3">
+            <motion.button 
+              whileTap={{ scale: 0.9 }}
+              onClick={() => scroll("left")} 
+              className="bg-white p-3 rounded-full shadow-md text-[#6b1d14] hover:text-white hover:bg-[#631D11] border border-gray-100"
+            >
               <ChevronLeft size={20} />
             </motion.button>
-            <motion.button whileTap={{ scale: 0.9 }} onClick={() => scroll("right")} className="bg-white p-3 rounded-full shadow-md text-[#6b1d14] hover:text-[#d6b15c] hover:bg-[#631D11] transition-all border border-gray-100">
+            <motion.button 
+              whileTap={{ scale: 0.9 }}
+              onClick={() => scroll("right")} 
+              className="bg-white p-3 rounded-full shadow-md text-[#6b1d14] hover:text-white hover:bg-[#631D11] border border-gray-100"
+            >
               <ChevronRight size={20} />
             </motion.button>
           </div>
         </div>
 
-        <div className="relative pr-3 overflow-hidden">
+        {/* overflow-visible zaroori hai animation smooth rakhne ke liye */}
+        <div className="relative overflow-visible"> 
           <div 
             ref={scrollRef} 
-            className="flex overflow-x-hidden no-scrollbar scroll-smooth mx-1"
+            className="flex overflow-x-hidden no-scrollbar scroll-smooth py-4"
             style={{ scrollbarWidth: 'none' }}
           >
-            {courses.map((course, index) => <CourseCard key={course.id} course={course} index={index} />)}
+            {courses.map((course, index) => (
+              <CourseCard key={course.id} course={course} index={index} />
+            ))}
           </div>
         </div>
       </div>

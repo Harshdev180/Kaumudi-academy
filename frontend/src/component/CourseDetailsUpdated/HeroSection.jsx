@@ -13,7 +13,7 @@ const HeroSection = () => {
       </div>
       
       <div className="relative p-6 md:p-25 space-y-4">
-        <span className="bg-[#7A2B1E] text-[10px] font-bold tracking-[0.2em] px-3 py-1 rounded-full uppercase border border-[#944335]">
+        <span className="bg-[#74271E] text-[10px] font-bold tracking-[0.2em] px-3 py-1 rounded-full uppercase border border-[#944335]">
           Advanced Certification
         </span>
         <h1 className="text-3xl text-white  md:text-5xl font-bold leading-tight max-w-2xl">
