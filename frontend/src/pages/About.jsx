@@ -1,46 +1,96 @@
 import { Hourglass, Users, BookOpen, CloudUpload } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import CountUp from "react-countup";
 
 export default function About() {
+  const stats = [
+    {
+      value: 5000,
+      label: "Students Enrolled",
+    },
+    {
+      value: 50,
+      label: "Courses",
+    },
+    {
+      value: 20,
+      label: "Acharyas",
+    },
+    {
+      value: 10,
+      label: "Countries",
+    },
+  ];
   return (
     <>
       {/* ============ HERO SECTION ============ */}
 
-      <section className="py-24 flex items-center justify-center bg-[#f1e4c8] px-4">
-        <div className="max-w-4xl text-center space-y-2">
-          <span className="text-[#7b2d1f] text-lg uppercase tracking-[0.35em] font-bold block mb-3 pb-16">
+      <section
+        id="hero"
+        className="py-16 flex items-center justify-center bg-[#f1e4c8] px-4 relative overflow-hidden min-h-screen"
+      >
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-5">
+          <div className="absolute top-10 left-10 text-9xl text-[#7b2d1f] font-serif">
+            ॐ
+          </div>
+          <div className="absolute bottom-10 right-10 text-9xl text-[#7b2d1f] font-serif">
+            श्री
+          </div>
+        </div>
+        <div className="max-w-4xl text-center space-y-3 relative z-10">
+          <motion.span
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-[#7b2d1f] text-lg uppercase tracking-[0.35em] font-bold block mb-3 py-6"
+          >
             About Us
-          </span>
-          <h1 className="font-serif text-5xl lg:text-5xl leading-[1.15] text-[#7b2d1f] skew-x-[-14deg]">
+          </motion.span>
+          <motion.h1
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="font-serif text-5xl lg:text-5xl leading-[1.1] text-[#7b2d1f] skew-x-[-14deg]"
+          >
             Stashed changes The Soul of Sanskrit <br />
             in the Heart of the Digital Age
-          </h1>
+          </motion.h1>
 
-          <p
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
             className="text-base sm:text-lg md:text-xl text-[#7b2d1f]
-          max-w-4xl mx-auto leading-relaxed sm:leading-loose font-serif py-16"
+          max-w-4xl mx-auto leading-relaxed sm:leading-loose font-serif py-10"
           >
             From the silent corridors of ancient Gurukuls to the vibrant screens
             of global learners, we bridge thousands of years with a single
             mission:
             <span className="font-medium"> Shastric Integrity</span>.
-          </p>
+          </motion.p>
         </div>
       </section>
 
       {/* ============ OUR HERITAGE SECTION ============ */}
 
-      <section className="w-full py-5 bg-[#7b2d1f]  ">
-        <div className="max-w-7xl mx-auto px-6 py-24">
+      <section className="w-full bg-[#7b2d1f] py-24">
+        <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            {/* LEFT CONTENT */}
-            <div>
-              <h2
-                className="font-serif text-4xl sm:text-5xl lg:text-6xl
-              text-white mb-8 sm:mb-10 font-bold"
-              >
+            <motion.div
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-white mb-6 font-bold">
                 Our Heritage
               </h2>
+              <div className="flex items-center gap-3 mb-8">
+                <span className="h-[2px] w-12 bg-[#d6b25e]"></span>
+                <span className="h-2 w-2 rounded-full bg-[#d6b25e]"></span>
+                <span className="h-[2px] w-10 bg-[#d6b25e]"></span>
+              </div>
 
               <p className="text-[#d6b25e] leading-relaxed mb-6">
                 Rooted in the classical guru–śiṣya tradition yet responsive to
@@ -60,7 +110,7 @@ export default function About() {
                 tradition rather than a relic of the past.
               </p>
 
-              <p className="text-[#d6b25e] leading-relaxed">
+              <p className="text-[#d6b25e] leading-relaxed mb-6">
                 Today, the Academy’s digital initiatives extend this timeless
                 heritage beyond geographical boundaries, enabling learners
                 across the world to participate in structured study, guided
@@ -68,103 +118,62 @@ export default function About() {
                 Sanskrit continues to resonate in the modern age.
               </p>
 
-              <p className="italic text-[#d6b25e] mb-6 text-1x1">
+              <p className="italic text-[#d6b25e] mb-6">
                 “We do not just teach a language; we awaken a heritage that has
                 pulsed through the Indian subcontinent for millennia.”
               </p>
 
-              <p className="text-[#7b1f14] leading-relaxed mb-6">
-                Over the years, Kaumudi Academy has become a meeting ground for
-                traditional scholars and modern researchers, fostering dialogue
-                across generations. Through rigorous textual analysis, oral
-                recitation, and interpretive study, students are guided toward a
-                deeper engagement with Sanskrit as a living intellectual
-                tradition rather than a relic of the past.
-              </p>
-
-              <p className="text-[#7b1f14] leading-relaxed mb-8 sm:mb-10">
-                Today, the Academy’s digital initiatives extend this timeless
-                heritage beyond geographical boundaries, enabling learners
-                across the world to participate in structured study, guided
-                mentorship, and scholarly exchange—ensuring that the voice of
-                Sanskrit continues to resonate in the modern age.
-              </p>
-
-              <p className="italic text-[#7b1f14] mb-3">
-                “We do not just teach a language; we awaken a heritage that has
-                pulsed through the Indian subcontinent for millennia.”
-              </p>
-
-              <p className="text-[#7b1f14] font-bold">
+              <p className="text-white font-bold">
                 — Acharya Ramakant Sharma, Founder
               </p>
-            </div>
+            </motion.div>
 
-            {/* RIGHT IMAGE */}
-            <div className="relative">
-              <div className=" w-100% rounded-4xl overflow-hidden border-4 border-[#f1e4c8] shadow-2xl h-200">
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="relative group"
+            >
+              <div className="relative w-full h-[300px] sm:h-[380px] md:h-[500px] rounded-3xl overflow-hidden border-4 border-[#f1e4c8] shadow-2xl">
                 <img
                   src="https://i.pinimg.com/736x/43/d5/9b/43d59b6ffea25e44cb1092a10e43a78b.jpg"
                   alt="Sanskrit Scholar"
-                  className="w-full h-full object-cover grayscale"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#7b2d1f]/50 via-transparent to-transparent"></div>
+                <div className="absolute -bottom-6 -right-6 h-24 w-24 rounded-full bg-[#d6b25e]/20 blur-xl"></div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
       {/* ============== STATS + MISSION / VISION SECTION ============== */}
-      <section className="w-full py-45 bg-[#f1e4c8]">
+      <section className="w-full py-32 bg-[#f1e4c8]">
         <div className="max-w-7xl mx-auto px-6">
           {/* ===== STATS CARDS ===== */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-24">
-            {/* Card 1 */}
-            <div className="bg-[#7b1f14] rounded-2xl py-10 text-center shadow-xl">
-              {/* <div className="text-[#d6b25e] text-2xl mb-3">⌛</div> */}
-              <Hourglass size={28} className="mx-auto mb-3 text-[#d6b25e]" />
-              <p className="text-sm tracking-widest uppercase text-[#e7d8c6]">
-                Years of Legacy
-              </p>
-              <p className="text-4xl font-serif font-bold text-white mt-2">
-                15+
-              </p>
-            </div>
+          <div className="max-w-[1200px] mx-auto px-5 grid grid-cols-2 md:grid-cols-4 gap-4 pb-24">
+            {stats.map((item, i) => (
+              <motion.div
+                key={i}
+                whileHover={{ y: -3 }}
+                className="rounded-2xl bg-[#74271E] shadow-md px-6 py-6 text-center"
+              >
+                <div className="text-2xl md:text-3xl font-bold text-white">
+                  <CountUp
+                    end={item.value}
+                    duration={2}
+                    enableScrollSpy
+                    scrollSpyDelay={200}
+                  />
+                  +
+                </div>
 
-            {/* Card 2 */}
-            <div className="bg-[#7b1f14] rounded-2xl py-10 text-center shadow-xl">
-              {/* <div className="text-[#d6b25e] text-2xl mb-3">👥</div> */}
-              <Users size={28} className="mx-auto mb-3 text-[#d6b25e]" />
-              <p className="text-sm tracking-widest uppercase text-[#e7d8c6]">
-                Global Scholars
-              </p>
-              <p className="text-4xl font-serif font-bold text-white mt-2">
-                5000+
-              </p>
-            </div>
-
-            {/* Card 3 */}
-            <div className="bg-[#7b1f14] rounded-2xl py-10 text-center shadow-xl">
-              {/* <div className="text-[#d6b25e] text-2xl mb-3">📘</div> */}
-              <BookOpen size={28} className="mx-auto mb-3 text-[#d6b25e]" />
-              <p className="text-sm tracking-widest uppercase text-[#e7d8c6]">
-                Advanced Courses
-              </p>
-              <p className="text-4xl font-serif font-bold text-white mt-2">
-                50+
-              </p>
-            </div>
-
-            {/* Card 4 */}
-            <div className="bg-[#7b1f14] rounded-2xl py-10 text-center shadow-xl">
-              {/* <div className="text-[#d6b25e] text-2xl mb-3">☁️</div> */}
-              <CloudUpload size={28} className="mx-auto mb-3 text-[#d6b25e]" />
-              <p className="text-sm tracking-widest uppercase text-[#e7d8c6]">
-                Manuscripts Saved
-              </p>
-              <p className="text-4xl font-serif font-bold text-white mt-2">
-                100+
-              </p>
-            </div>
+                <div className="uppercase tracking-wide text-white text-xs mt-1 font-bold">
+                  {item.label}
+                </div>
+              </motion.div>
+            ))}
           </div>
 
           {/* ===== MISSION & VISION ===== */}

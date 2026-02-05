@@ -3,247 +3,318 @@ import {
   Landmark,
   GraduationCap,
   Facebook,
-  Youtube,
-  Instagram
+  Instagram,
+  Linkedin,
+  Twitter,
+  Mail,
+  Phone,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
+/* ---------------------------------- */
+/* Animation Variants */
+/* ---------------------------------- */
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.7, ease: "easeOut" },
+  },
+};
+
+const fadeLeft = {
+  hidden: { opacity: 0, x: -50 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.7 },
+  },
+};
+
+const fadeRight = {
+  hidden: { opacity: 0, x: 50 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.7 },
+  },
+};
+
+const stagger = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.15 },
+  },
+};
+
 export default function Contact() {
   return (
-    <>
-      {/* MAIN CONTACT SECTION */}
-      <section className="w-full bg-[#f1e4c8] py-16 sm:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <section className="relative w-full bg-gradient-to-b from-[#f6edd7] to-[#ead9b8] py-24 overflow-hidden">
+      {/* FLOATING ORBS */}
+      <motion.div
+        animate={{ y: [0, 30, 0] }}
+        transition={{ duration: 9, repeat: Infinity }}
+        className="absolute -top-40 -left-40 w-[520px] h-[520px]
+                   bg-[#7b2d1f]/15 rounded-full blur-[140px]"
+      />
 
-          {/* HEADER */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-12 sm:mb-14"
+      <motion.div
+        animate={{ y: [0, -25, 0] }}
+        transition={{ duration: 11, repeat: Infinity }}
+        className="absolute bottom-0 right-0 w-[420px] h-[420px]
+                   bg-[#d4b77a]/25 rounded-full blur-[120px]"
+      />
+
+      <div className="relative max-w-7xl mx-auto px-6">
+        {/* HEADER */}
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className="mb-20 max-w-3xl"
+        >
+          <motion.h1
+            variants={fadeUp}
+            className="font-serif text-4xl md:text-6xl font-bold text-[#7b2d1f]"
           >
-            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl
-                           lg:text-6xl font-bold text-[#7b2d1f] mb-3">
-              Contact & Location Details
-            </h1>
-            <p className="max-w-3xl text-sm sm:text-base text-black/80 leading-relaxed">
-              Connect with Kaumudi Sanskrit Academy for scholarly inquiries, admissions,
-              and comprehensive support in your Vedic learning journey.
-            </p>
+            Contact & Location Details
+          </motion.h1>
+
+          <motion.p
+            variants={fadeUp}
+            className="mt-5 text-black/70 leading-relaxed"
+          >
+            Connect with Kaumudi Sanskrit Academy for scholarly inquiries,
+            admissions, and comprehensive support in your Vedic learning
+            journey.
+          </motion.p>
+        </motion.div>
+
+        {/* MAIN GRID */}
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-16"
+        >
+          {/* LEFT — FORM */}
+          <motion.div
+            variants={fadeLeft}
+            whileHover={{ y: -8 }}
+            className="relative bg-gradient-to-br from-[#fff8e5] to-[#ead9b8]
+                       rounded-[3rem] border border-[#7b2d1f]/70
+                       p-10 lg:p-14 shadow-[0_40px_120px_rgba(0,0,0,0.25)]
+                       overflow-hidden"
+          >
+            <h2 className="text-[#7b2d1f] font-bold mb-10 text-3xl">
+              Send us a Message
+            </h2>
+
+            <motion.form variants={stagger} className="space-y-14">
+              {[
+                { label: "FULL NAME", placeholder: "Enter your full name" },
+                { label: "EMAIL ADDRESS", placeholder: "your@email.com" },
+                { label: "SUBJECT", placeholder: "Course inquiry, support" },
+              ].map((item, i) => (
+                <motion.div key={i} variants={fadeUp}>
+                  <label className="block text-xs tracking-[0.3em] font-bold text-[#7b2d1f] mb-2">
+                    {item.label}
+                  </label>
+                  <motion.input
+                    whileFocus={{ scale: 1.02 }}
+                    className="w-full rounded-xl border border-[#dcc7a1]
+                               px-4 py-4 bg-white shadow-lg
+                               focus:ring-2 focus:ring-[#7b2d1f]"
+                    placeholder={item.placeholder}
+                  />
+                </motion.div>
+              ))}
+
+              <motion.div variants={fadeUp}>
+                <label className="block text-xs tracking-[0.3em] font-bold text-[#7b2d1f] mb-2">
+                  MESSAGE
+                </label>
+                <motion.textarea
+                  rows={5}
+                  whileFocus={{ scale: 1.02 }}
+                  className="w-full rounded-xl border border-[#dcc7a1]
+                             px-4 py-4 bg-white shadow-lg resize-none
+                             focus:ring-2 focus:ring-[#7b2d1f]"
+                  placeholder="Write your message..."
+                />
+              </motion.div>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full bg-gradient-to-r from-[#7b2d1f] to-[#5f1f14]
+                           text-white py-4 rounded-2xl font-bold tracking-[0.25em]"
+              >
+                SEND MESSAGE
+              </motion.button>
+            </motion.form>
           </motion.div>
 
-          {/* FORM + MAP */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-stretch">
-
-            {/* LEFT — CONTACT FORM */}
+          {/* RIGHT — MAP + INFO */}
+          <div className="space-y-12">
+            {/* MAP */}
             <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              className="relative bg-gradient-to-br from-[#fffbec] to-[#efe1c2]
-                         rounded-[2.5rem] border border-[#7b2d1f]
-                         p-8 sm:p-10 lg:p-12 h-full shadow-2xl overflow-hidden"
+              variants={fadeRight}
+              whileHover={{ y: -8, scale: 1.01 }}
+              className="bg-white rounded-[2.5rem] border border-[#7b2d1f]/70
+                         p-6 shadow-xl flex flex-col min-h-[520px]"
             >
-              {/* DECORATIVE ELEMENTS */}
-              <div className="absolute -top-28 -left-28 w-80 sm:w-96 h-80 sm:h-96
-                              bg-[#7b2d1f]/15 rounded-full blur-3xl" />
-              <div className="absolute bottom-10 right-10 w-20 sm:w-24 h-20 sm:h-24
-                              border-2 border-[#7b2d1f]/30 rounded-full" />
-
-              <h2 className="relative text-[#7b2d1f] font-bold mb-8 sm:mb-10
-                             text-2xl sm:text-3xl tracking-wide">
-                Send us a Message
-              </h2>
-
-              <form className="relative space-y-6 sm:space-y-8">
-                {[
-                  { label: "FULL NAME", placeholder: "Enter your full name" },
-                  { label: "EMAIL ADDRESS", placeholder: "yourname@email.com" },
-                  { label: "SUBJECT", placeholder: "Course inquiry, support, etc." }
-                ].map((item, i) => (
-                  <div key={i}>
-                    <label className="block text-[10px] sm:text-xs font-bold text-[#7b2d1f]
-                                      mb-2 tracking-[0.25em]">
-                      {item.label}
-                    </label>
-
-                    <input
-                      type="text"
-                      placeholder={item.placeholder}
-                      className="w-full rounded-xl border border-[#dcc7a1]
-                                 px-4 py-3 sm:py-4 text-sm bg-white
-                                 shadow-lg
-                                 focus:outline-none focus:ring-2 focus:ring-[#7b2d1f]
-                                 focus:shadow-xl
-                                 transition-all"
-                    />
-                  </div>
-                ))}
-
-                {/* MESSAGE */}
-                <div>
-                  <label className="block text-[10px] sm:text-xs font-bold text-[#7b2d1f]
-                                    mb-2 tracking-[0.25em]">
-                    MESSAGE
-                  </label>
-
-                  <textarea
-                    rows="5"
-                    placeholder="Write your message here..."
-                    className="w-full rounded-xl border border-[#dcc7a1]
-                               px-4 py-3 sm:py-4 text-sm bg-white
-                               shadow-lg resize-none
-                               focus:outline-none focus:ring-2 focus:ring-[#7b2d1f]
-                               focus:shadow-xl
-                               transition-all"
-                  />
-                </div>
-
-                {/* SUBMIT */}
-                <motion.button
-                  whileHover={{ scale: 1.06 }}
-                  whileTap={{ scale: 0.95 }}
-                  type="submit"
-                  className="w-full bg-[#7b2d1f] text-white py-3 sm:py-4
-                             rounded-2xl font-bold
-                             tracking-[0.2em]
-                             shadow-2xl hover:bg-[#682418]
-                             transition-all"
-                >
-                  SEND MESSAGE
-                </motion.button>
-              </form>
-            </motion.div>
-
-            {/* RIGHT — MAP */}
-            <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              className="bg-white rounded-2xl border border-[#7b2d1f]
-                         p-4 sm:p-5 h-[420px] sm:h-auto
-                         flex flex-col shadow-xl"
-            >
-              <h3 className="flex items-center gap-2 text-[#7b2d1f]
-                             font-bold mb-1 text-xl sm:text-2xl">
-                <MapPin size={22} />
-                Main Campus Office
+              <h3 className="flex items-center gap-2 text-[#7b2d1f] font-bold text-2xl">
+                <MapPin size={22} /> Main Campus Office
               </h3>
 
-              <p className="text-xs sm:text-sm text-black/70 mb-4 leading-relaxed">
-                108 Vidya Vihar, Sanskrit Marg,<br />
-                Varanasi, Uttar Pradesh 221001, India
+              <p className="mt-3 text-lg text-black/70">
+                108 Vidya Vihar, Sanskrit Marg, Varanasi, Uttar Pradesh 221001
               </p>
 
               <iframe
                 title="Kaumudi Academy Map"
                 src="https://www.google.com/maps?q=Varanasi%20Uttar%20Pradesh&output=embed"
-                className="w-full flex-1 rounded-lg border"
+                className="mt-6 w-full flex-1 rounded-xl border"
                 loading="lazy"
               />
             </motion.div>
-          </div>
 
-          {/* INFO CARDS */}
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: { staggerChildren: 0.2 }
-              }
-            }}
-            className="mt-16 sm:mt-20 grid grid-cols-1 sm:grid-cols-2
-                       gap-6 sm:gap-8 max-w-4xl"
-          >
-            {[
-              {
-                icon: Landmark,
-                title: "Institutional Inquiries",
-                text:
-                  "For university partnerships and academic collaborations.",
-                footer: "admin@kaumudi.edu"
-              },
-              {
-                icon: GraduationCap,
-                title: "Student Support",
-                text:
-                  "Technical issues, course access, and certification help.",
-                footer: "Mon–Fri, 9am–6pm IST"
-              }
-            ].map((item, i) => {
-              const Icon = item.icon;
-              return (
-                <motion.div
-                  key={i}
-                  variants={{
-                    hidden: { opacity: 0, y: 30 },
-                    visible: { opacity: 1, y: 0 }
-                  }}
-                  whileHover={{ y: -8 }}
-                  className="relative group"
-                >
-                  <div className="relative bg-[#ead9b8] border border-[#7b2d1f]
-                                  rounded-2xl p-6 shadow-md overflow-hidden
-                                  transition-all duration-300">
-                    <div className="absolute -top-10 -right-10 w-32 h-32
-                                    bg-[#7b2d1f]/10 rounded-full" />
+            {/* INFO CARDS */}
+            <motion.div
+              variants={stagger}
+              className="grid sm:grid-cols-2 gap-10"
+            >
+              {[
+                {
+                  icon: Landmark,
+                  title: "Institutional Inquiries",
+                  text: "For university partnerships and academic collaborations.",
+                  footer: "admin@kaumudi.edu",
+                },
+                {
+                  icon: GraduationCap,
+                  title: "Student Support",
+                  text: "Technical issues, course access, and certification help.",
+                  footer: "Mon–Fri, 9am–6pm IST",
+                },
+              ].map((item, i) => {
+                const Icon = item.icon;
 
-                    <div className="flex items-center justify-center h-14 w-14
-                                    rounded-xl bg-[#7b2d1f] text-white
-                                    shadow-md mb-5">
-                      <Icon size={26} />
+                return (
+                  <motion.div
+                    key={i}
+                    variants={fadeUp}
+                    whileHover={{ y: -12, scale: 1.03 }}
+                    className="bg-gradient-to-br from-[#f5e9cd] to-[#e6d1a5]
+                               border border-[#7b2d1f]/50 rounded-3xl
+                               p-9 shadow-xl"
+                  >
+                    <div
+                      className="h-16 w-16 rounded-xl bg-[#7b2d1f] text-white
+                                    flex items-center justify-center mb-6"
+                    >
+                      <Icon size={28} />
                     </div>
 
-                    <h4 className="text-[#7b2d1f] font-bold mb-2
-                                   text-xl sm:text-2xl">
+                    <h4 className="text-[#7b2d1f] font-bold text-2xl">
                       {item.title}
                     </h4>
 
-                    <p className="text-sm text-[#7b2d1f]/80 mb-5 leading-relaxed">
+                    <p className="mt-3 text-sm text-[#7b2d1f]/80">
                       {item.text}
                     </p>
 
-                    <div className="pt-4 border-t border-[#7b2d1f]/30">
-                      <p className="text-sm font-bold text-[#7b2d1f]">
-                        {item.footer}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </motion.div>
+                    <p className="mt-6 font-bold text-[#7b2d1f]">
+                      {item.footer}
+                    </p>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          </div>
+        </motion.div>
 
-          {/* FOLLOW US */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="flex flex-wrap items-center gap-4 mt-10 sm:mt-12"
-          >
-            <p className="text-xs tracking-widest text-[#7b2d1f] font-bold">
-              FOLLOW US
-            </p>
+        {/* SOCIALS */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="mt-24 flex items-center gap-6"
+        >
+          <p className="text-lg tracking-[0.3em] text-[#7b2d1f] font-bold">
+            FOLLOW US
+          </p>
 
-            <div className="flex gap-3">
-              {[Facebook, Youtube, Instagram].map((Icon, i) => (
-                <motion.div
-                  key={i}
-                  whileHover={{ scale: 1.15 }}
-                  className="h-8 w-8 rounded-full bg-[#7b2d1f] text-white
-                             flex items-center justify-center shadow-md transition"
-                >
-                  <Icon size={16} />
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+          {[Facebook, Linkedin, Twitter, Instagram].map((Icon, i) => (
+            <motion.div
+              key={i}
+              whileHover={{
+                scale: 1.25,
+                rotate: 8,
+                boxShadow: "0 0 30px rgba(123,45,31,0.6)",
+              }}
+              whileTap={{ scale: 0.9 }}
+              className="h-14 w-14 bg-gradient-to-br from-[#7b2d1f] to-[#5f1f14]
+                         text-white rounded-full flex items-center justify-center
+                         shadow-xl cursor-pointer"
+            >
+              <Icon size={24} />
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+      {/* CONTACT STRIP BELOW CARDS */}
+      <motion.div
+        variants={stagger}
+        className="grid md:grid-cols-3 gap-10 py-18 mx-auto max-w-7xl"
+      >
+        {[
+          {
+            icon: Phone,
+            title: "Call Us",
+            value: "+91 98765 43210",
+          },
+          {
+            icon: Mail,
+            title: "Email",
+            value: "info@kaumudi.edu",
+          },
+          {
+            icon: MapPin,
+            title: "Visit Campus",
+            value: "Varanasi, Uttar Pradesh",
+          },
+        ].map((item, i) => {
+          const Icon = item.icon;
 
-        </div>
-      </section>
-    </>
+          return (
+            <motion.div
+              key={i}
+              variants={fadeUp}
+              whileHover={{ y: -10, scale: 1.04 }}
+              className="bg-gradient-to-br from-[#f5e9cd] to-[#e6d1a5] border border-[#7b2d1f]/40
+                     rounded-3xl p-8 text-center shadow-xl"
+            >
+              <div
+                className="mx-auto mb-6 h-16 w-16 rounded-full
+                       bg-[#7b2d1f] text-white
+                       flex items-center justify-center"
+              >
+                <Icon size={26} />
+              </div>
+
+              <h4 className="text-xl font-bold text-[#7b2d1f]">{item.title}</h4>
+
+              <p className="mt-3 font-semibold text-black/70">{item.value}</p>
+            </motion.div>
+          );
+        })}
+      </motion.div>
+    </section>
   );
 }

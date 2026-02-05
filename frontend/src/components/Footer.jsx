@@ -71,7 +71,7 @@ export default function Footer() {
               </div>
             </motion.div>
 
-            <p className="text-[#ecd9c5] text-sm leading-relaxed max-w-xs">
+            <p className="text-white font-bold text-sm leading-relaxed max-w-xs tracking-wider">
               Reviving Sanskrit’s timeless wisdom through scholarly rigor,
               authentic pedagogy, and global access.
             </p>
@@ -144,8 +144,8 @@ export default function Footer() {
                 <li key={link.label}>
                   <Link
                     to={link.to}
-                    className="group flex items-center gap-2 text-sm text-[#ecd9c5]
-                      hover:text-[#d6b15c] transition"
+                    className="group flex items-center gap-2 text-sm text-white
+                      hover:text-[#d6b15c] transition font-bold"
                   >
                     <span className="w-0 overflow-hidden group-hover:w-4 transition-all duration-300">
                       <ArrowRight size={12} />
@@ -164,9 +164,9 @@ export default function Footer() {
               <span className="w-8 h-[2px] bg-[#d6b15c] rounded-full" />
             </h4>
 
-            <div className="space-y-4 text-sm text-[#ecd9c5]">
+            <div className="space-y-4 text-sm text-white font-bold">
               <div className="flex items-start gap-3">
-                <MapPin size={16} className="text-[#d6b15c] mt-[2px]" />
+                <MapPin size={16} className="text-white mt-[2px]" />
                 <p>
                   108 Vidya Vihar, Sanskrit Marg,
                   <br />

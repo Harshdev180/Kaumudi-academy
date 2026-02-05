@@ -1,6 +1,6 @@
 import "./App.css";
 
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Outlet } from "react-router-dom";
 
 import Dashboard from "./pages/AdminDashboard/Dashboard";
 import AdminLayout from "./pages/AdminDashboard/AdminLayout";
@@ -19,42 +19,68 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import About from "./pages/About";
+import FacultyPage from "./pages/FacultyPage";
 import Contact from "./pages/Contact";
 
-function App() {
+// Public site layout with shared navbar/footer
+function PublicLayout() {
   return (
     <>
       <ScrollToTop />
       <Navbar />
-      <Routes>
-        {/* ---------------- Public Routes ---------------- */}
+      <Outlet />
+      <Footer />
+    </>
+  );
+}
+
+// Simple 404 page (inline, no new file)
+function NotFound() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#f1e4c8] px-6">
+      <div className="text-center">
+        <div className="text-[#7b2d1f] text-sm uppercase tracking-[0.35em] font-bold mb-3">
+          Page Not Found
+        </div>
+        <h1 className="font-serif text-4xl text-[#7b2d1f] mb-4">404</h1>
+        <p className="text-[#6b4b3e]">
+          The page you’re looking for doesn’t exist.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <Routes>
+      {/* Public routes under shared layout */}
+      <Route element={<PublicLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/allcourses" element={<AllCoursesPage />} />
         <Route path="/coursedetail" element={<CourseDetail />} />
         <Route path="/about" element={<About />} />
+        <Route path="/faculty" element={<FacultyPage />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Signin />} />
         <Route path="/inquiry" element={<Inquiry />} />
+      </Route>
 
-        {/* ---------------- Admin Routes (Nested) ---------------- */}
-        {/* Parent Route*/}
-        <Route path="/admin" element={<AdminLayout />}>
-          {/* Default Page */}
-          <Route index element={<Dashboard />} />
+      {/* Admin nested routes */}
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<Dashboard />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="lead" element={<LeadManagement />} />
+        <Route path="course" element={<CourseManagement />} />
+      </Route>
 
-          {/* Primary Path: /admin/dashboard */}
-          <Route path="dashboard" element={<Dashboard />} />
+      {/* Admin login outside admin layout */}
+      <Route path="/admin-login" element={<AdminLogin />} />
 
-          {/* Inside Admin Pages */}
-          <Route path="lead" element={<LeadManagement />} />
-          <Route path="course" element={<CourseManagement />} />
-        </Route>
-
-        <Route path="/admin-login" element={<AdminLogin />} />
-      </Routes>
-      <Footer />
-    </>
+      {/* Fallback */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
 
