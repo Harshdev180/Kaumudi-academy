@@ -1,19 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 
 export default function Typewriter({
   text,
-  speed = 60, // ms per character
+  speed = 60,
   className = "",
-  startDelay = 500, // ms
+  startDelay = 500,
   onComplete,
 }) {
   const count = useMotionValue(0);
   const rounded = useTransform(count, (latest) => Math.round(latest));
   const [displayIndex, setDisplayIndex] = useState(0);
 
+  const hasStarted = useRef(false);
+
   useEffect(() => {
-    // Reset if text changes
+    if (hasStarted.current) return;
+
+    hasStarted.current = true;
+
     count.set(0);
     setDisplayIndex(0);
 
@@ -23,7 +28,7 @@ export default function Typewriter({
       ease: "linear",
       delay: startDelay / 1000,
       onComplete: () => {
-        if (onComplete) onComplete();
+        onComplete?.();
       },
     });
 
@@ -32,21 +37,12 @@ export default function Typewriter({
     });
 
     return () => {
+      // ✅ reset so second StrictMode mount can run
+      hasStarted.current = false;
       controls.stop();
       unsubscribe();
     };
-  }, [text, speed, startDelay, onComplete, count, rounded]);
+  }, []);
 
-  return (
-    <span className={className}>
-      {text.slice(0, displayIndex)}
-      <motion.span
-        animate={{ opacity: [0, 1, 0] }}
-        transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}
-        className="inline-block ml-[1px] text-[#d6b15c]"
-      >
-        |
-      </motion.span>
-    </span>
-  );
+  return <span className={className}>{text.slice(0, displayIndex)}</span>;
 }

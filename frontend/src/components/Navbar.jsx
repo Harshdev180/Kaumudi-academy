@@ -60,7 +60,7 @@ export default function Navbar() {
       } ${
         isHome && !scrolled
           ? "bg-transparent border-transparent"
-          : "bg-[#74271E]/95 backdrop-blur-xl border-[#dccbb4]/40 shadow-[0_14px_35px_rgba(0,0,0,0.35)]"
+          : "bg-gradient-to-t from-[#3b120e]/95 via-[#5a1e17]/90 to-[#2a0b08]/95 backdrop-blur-xl border-[#dccbb4]/40 shadow-[0_14px_35px_rgba(0,0,0,0.35)]"
       }`}
     >
       {/* ---------------- CONTAINER ---------------- */}

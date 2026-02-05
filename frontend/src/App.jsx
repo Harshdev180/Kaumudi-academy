@@ -33,6 +33,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Signin />} />
+        <Route path="/inquiry" element={<Inquiry />} />
 
         {/* ---------------- Admin Routes (Nested) ---------------- */}
         {/* Parent Route*/}
@@ -46,7 +47,6 @@ function App() {
           {/* Inside Admin Pages */}
           <Route path="lead" element={<LeadManagement />} />
           <Route path="course" element={<CourseManagement />} />
-          {/* <Route path="inquiry" element={<Inquiry />} /> */}
         </Route>
 
         <Route path="/admin-login" element={<AdminLogin />} />
