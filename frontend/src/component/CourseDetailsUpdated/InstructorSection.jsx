@@ -6,7 +6,7 @@ const InstructorSection = () => {
       {/* Section Heading */}
       <div className="flex items-center gap-2 mb-8">
         <div className="w-1.5 h-8 bg-[#d6b15c]"></div>
-        <h2 className="text-[22px] md:text-[26px] font-bold text-[#631D11]">Your Instructor</h2>
+        <h2 className="text-[22px] md:text-[26px] font-bold text-[#74271E]">Your Instructor</h2>
       </div>
 
       {/* Main Card */}
@@ -24,12 +24,12 @@ const InstructorSection = () => {
         </div>
 
         {/* Details Content */}
-        <div className="flex-1 min-w-0 text-center md:text-left">
-          <h3 className="text-[15px] md:text-[25px] font-bold text-[#631D11] mb-1">
+        <div className="flex-2 min-w-0 text-center md:text-left">
+          <h3 className="text-[16px] md:text-[25px] font-bold text-[#74271E] mb-1">
             Acharya Dr. Vasudev Shastry
           </h3>
           
-          <p className="text-[#d6b15c] text-lg md:text-lg font-bold uppercase  mb-1">
+          <p className="text-[#d6b15c] text-xl md:text-xl font-bold uppercase  mb-1">
             PHD IN VYAKARANA, BANARAS HINDU UNIVERSITY
           </p>
           
@@ -40,7 +40,7 @@ const InstructorSection = () => {
           </p>
 
           {/* Tags - Now Below the Paragraph in One Line */}
-          <div className="flex items-center gap-2 justify-center md:justify-start overflow-x-auto no-scrollbar pb-1">
+          <div className="flex items-center gap-3 justify-center md:justify-start overflow-x-auto no-scrollbar pb-3">
             {[
               "25+ Yrs Exp", 
               "100+ Publications", 
@@ -48,7 +48,7 @@ const InstructorSection = () => {
             ].map((tag) => (
               <span 
                 key={tag} 
-                className="px-3 py-1.5 bg-[#F9F5F0] text-[#631D11] text-[11px] md:text-[10px] font-bold rounded-full border border-[#E8DFD3] whitespace-nowrap shadow-sm"
+                className="px-3 py-2 bg-[#F9F5F0] text-[#74271E] text-[11px] md:text-[12px] font-bold rounded-full border border-[#E8DFD3] whitespace-nowrap shadow-sm"
               >
                 {tag}
               </span>

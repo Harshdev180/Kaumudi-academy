@@ -21,7 +21,7 @@ const ScheduleTable = () => {
       {/* Section Heading matching the style */}
       <div className="flex items-center gap-3 mb-8 mt-12">
         <div className="w-1.5 h-8 bg-[#d6b15c]"></div>
-        <h2 className="text-[28px] font-bold text-[#631D11]">Batch Schedule</h2>
+        <h2 className="text-[28px] font-bold text-[#74271E]">Batch Schedule</h2>
       </div>
 
       <div className="bg-white rounded-[20px] overflow-hidden shadow-xl border border-[#E8DFD3]">
