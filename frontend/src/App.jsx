@@ -98,6 +98,8 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Signin />} />
         <Route path="/inquiry" element={<Inquiry />} />
+        <Route path="/Auth" element={<Sign />} />
+        <Route path="/details" element={<CourseView />} />
       </Route>
 
       {/* Admin nested routes */}
