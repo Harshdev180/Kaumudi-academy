@@ -16,7 +16,7 @@ const courses = [
   { id: 3, title: "Spoken Sanskrit (Level-1)", description: "Journey through the metaphysical teachings of ancient Upanishads.", language: "Hindi & English", price: "2,499", duration: "3 Months", level: "Advanced", image: "https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?w=500", type: "ONLINE" },
   { id: 4, title: "UGC NET", description: "Understanding the essential values and teachings for modern life.", language: "English", price: "1,499", duration: "- Weeks", level: "Beginner", image: "https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?w=500", type: "ONLINE" },
   { id: 5, title: "BA", description: "Deep dive into the philosophy and practice of classical yoga.", language: "Sanskrit & Hindi", price: "3,999", duration: "- Weeks", level: "Intermediate", image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500", type: "IN-PERSON" },
-  { id: 6, title: "shlok", description: "Speak Sanskrit fluently with our immersive speaking program.", language: "Sanskrit", price: "699", duration: "6 Weeks", level: "Intermediate", image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=500", type: "ONLINE" },
+  { id: 6, title: "Shlok", description: "Speak Sanskrit fluently with our immersive speaking program.", language: "Sanskrit", price: "699", duration: "6 Weeks", level: "Intermediate", image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=500", type: "ONLINE" },
 ];
 
 const CourseCard = ({ course, index }) => {
@@ -75,7 +75,7 @@ const CourseCard = ({ course, index }) => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => {
-                navigate("/coursedetail");
+                navigate("/details", { state: { course } });
                 window.scrollTo({ top: 0, behavior: 'smooth' }); 
               }}
               className="bg-[#74271E] text-white text-[12px] font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 hover:bg-[#d6b15c] transition-colors"
