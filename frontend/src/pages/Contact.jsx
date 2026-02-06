@@ -1,0 +1,320 @@
+import {
+  MapPin,
+  Landmark,
+  GraduationCap,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Twitter,
+  Mail,
+  Phone,
+} from "lucide-react";
+import { motion } from "framer-motion";
+
+/* ---------------------------------- */
+/* Animation Variants */
+/* ---------------------------------- */
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.7, ease: "easeOut" },
+  },
+};
+
+const fadeLeft = {
+  hidden: { opacity: 0, x: -50 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.7 },
+  },
+};
+
+const fadeRight = {
+  hidden: { opacity: 0, x: 50 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.7 },
+  },
+};
+
+const stagger = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.15 },
+  },
+};
+
+export default function Contact() {
+  return (
+    <section className="relative w-full bg-gradient-to-b from-[#f6edd7] to-[#ead9b8] py-24 overflow-hidden">
+      {/* FLOATING ORBS */}
+      <motion.div
+        animate={{ y: [0, 30, 0] }}
+        transition={{ duration: 9, repeat: Infinity }}
+        className="absolute -top-40 -left-40 w-[520px] h-[520px]
+                   bg-[#7b2d1f]/15 rounded-full blur-[140px]"
+      />
+
+      <motion.div
+        animate={{ y: [0, -25, 0] }}
+        transition={{ duration: 11, repeat: Infinity }}
+        className="absolute bottom-0 right-0 w-[420px] h-[420px]
+                   bg-[#d4b77a]/25 rounded-full blur-[120px]"
+      />
+
+      <div className="relative max-w-7xl mx-auto px-6">
+        {/* HEADER */}
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className="mb-20 max-w-3xl"
+        >
+          <motion.h1
+            variants={fadeUp}
+            className="font-serif text-4xl md:text-6xl font-bold text-[#7b2d1f]"
+          >
+            Contact & Location Details
+          </motion.h1>
+
+          <motion.p
+            variants={fadeUp}
+            className="mt-5 text-black/70 leading-relaxed"
+          >
+            Connect with Kaumudi Sanskrit Academy for scholarly inquiries,
+            admissions, and comprehensive support in your Vedic learning
+            journey.
+          </motion.p>
+        </motion.div>
+
+        {/* MAIN GRID */}
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-16"
+        >
+          {/* LEFT — FORM */}
+          <motion.div
+            variants={fadeLeft}
+            whileHover={{ y: -8 }}
+            className="relative bg-gradient-to-br from-[#fff8e5] to-[#ead9b8]
+                       rounded-[3rem] border border-[#7b2d1f]/70
+                       p-10 lg:p-14 shadow-[0_40px_120px_rgba(0,0,0,0.25)]
+                       overflow-hidden"
+          >
+            <h2 className="text-[#7b2d1f] font-bold mb-10 text-3xl">
+              Send us a Message
+            </h2>
+
+            <motion.form variants={stagger} className="space-y-14">
+              {[
+                { label: "FULL NAME", placeholder: "Enter your full name" },
+                { label: "EMAIL ADDRESS", placeholder: "your@email.com" },
+                { label: "SUBJECT", placeholder: "Course inquiry, support" },
+              ].map((item, i) => (
+                <motion.div key={i} variants={fadeUp}>
+                  <label className="block text-xs tracking-[0.3em] font-bold text-[#7b2d1f] mb-2">
+                    {item.label}
+                  </label>
+                  <motion.input
+                    whileFocus={{ scale: 1.02 }}
+                    className="w-full rounded-xl border border-[#dcc7a1]
+                               px-4 py-4 bg-white shadow-lg
+                               focus:ring-2 focus:ring-[#7b2d1f]"
+                    placeholder={item.placeholder}
+                  />
+                </motion.div>
+              ))}
+
+              <motion.div variants={fadeUp}>
+                <label className="block text-xs tracking-[0.3em] font-bold text-[#7b2d1f] mb-2">
+                  MESSAGE
+                </label>
+                <motion.textarea
+                  rows={5}
+                  whileFocus={{ scale: 1.02 }}
+                  className="w-full rounded-xl border border-[#dcc7a1]
+                             px-4 py-4 bg-white shadow-lg resize-none
+                             focus:ring-2 focus:ring-[#7b2d1f]"
+                  placeholder="Write your message..."
+                />
+              </motion.div>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full bg-gradient-to-r from-[#7b2d1f] to-[#5f1f14]
+                           text-white py-4 rounded-2xl font-bold tracking-[0.25em]"
+              >
+                SEND MESSAGE
+              </motion.button>
+            </motion.form>
+          </motion.div>
+
+          {/* RIGHT — MAP + INFO */}
+          <div className="space-y-12">
+            {/* MAP */}
+            <motion.div
+              variants={fadeRight}
+              whileHover={{ y: -8, scale: 1.01 }}
+              className="bg-white rounded-[2.5rem] border border-[#7b2d1f]/70
+                         p-6 shadow-xl flex flex-col min-h-[520px]"
+            >
+              <h3 className="flex items-center gap-2 text-[#7b2d1f] font-bold text-2xl">
+                <MapPin size={22} /> Main Campus Office
+              </h3>
+
+              <p className="mt-3 text-lg text-black/70">
+                108 Vidya Vihar, Sanskrit Marg, Varanasi, Uttar Pradesh 221001
+              </p>
+
+              <iframe
+                title="Kaumudi Academy Map"
+                src="https://www.google.com/maps?q=Varanasi%20Uttar%20Pradesh&output=embed"
+                className="mt-6 w-full flex-1 rounded-xl border"
+                loading="lazy"
+              />
+            </motion.div>
+
+            {/* INFO CARDS */}
+            <motion.div
+              variants={stagger}
+              className="grid sm:grid-cols-2 gap-10"
+            >
+              {[
+                {
+                  icon: Landmark,
+                  title: "Institutional Inquiries",
+                  text: "For university partnerships and academic collaborations.",
+                  footer: "admin@kaumudi.edu",
+                },
+                {
+                  icon: GraduationCap,
+                  title: "Student Support",
+                  text: "Technical issues, course access, and certification help.",
+                  footer: "Mon–Fri, 9am–6pm IST",
+                },
+              ].map((item, i) => {
+                const Icon = item.icon;
+
+                return (
+                  <motion.div
+                    key={i}
+                    variants={fadeUp}
+                    whileHover={{ y: -12, scale: 1.03 }}
+                    className="bg-gradient-to-br from-[#f5e9cd] to-[#e6d1a5]
+                               border border-[#7b2d1f]/50 rounded-3xl
+                               p-9 shadow-xl"
+                  >
+                    <div
+                      className="h-16 w-16 rounded-xl bg-[#7b2d1f] text-white
+                                    flex items-center justify-center mb-6"
+                    >
+                      <Icon size={28} />
+                    </div>
+
+                    <h4 className="text-[#7b2d1f] font-bold text-2xl">
+                      {item.title}
+                    </h4>
+
+                    <p className="mt-3 text-sm text-[#7b2d1f]/80">
+                      {item.text}
+                    </p>
+
+                    <p className="mt-6 font-bold text-[#7b2d1f]">
+                      {item.footer}
+                    </p>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* SOCIALS */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="mt-24 flex items-center gap-6"
+        >
+          <p className="text-lg tracking-[0.3em] text-[#7b2d1f] font-bold">
+            FOLLOW US
+          </p>
+
+          {[Facebook, Linkedin, Twitter, Instagram].map((Icon, i) => (
+            <motion.div
+              key={i}
+              whileHover={{
+                scale: 1.25,
+                rotate: 8,
+                boxShadow: "0 0 30px rgba(123,45,31,0.6)",
+              }}
+              whileTap={{ scale: 0.9 }}
+              className="h-14 w-14 bg-gradient-to-br from-[#7b2d1f] to-[#5f1f14]
+                         text-white rounded-full flex items-center justify-center
+                         shadow-xl cursor-pointer"
+            >
+              <Icon size={24} />
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+      {/* CONTACT STRIP BELOW CARDS */}
+      <motion.div
+        variants={stagger}
+        className="grid md:grid-cols-3 gap-10 py-18 mx-auto max-w-7xl"
+      >
+        {[
+          {
+            icon: Phone,
+            title: "Call Us",
+            value: "+91 98765 43210",
+          },
+          {
+            icon: Mail,
+            title: "Email",
+            value: "info@kaumudi.edu",
+          },
+          {
+            icon: MapPin,
+            title: "Visit Campus",
+            value: "Varanasi, Uttar Pradesh",
+          },
+        ].map((item, i) => {
+          const Icon = item.icon;
+
+          return (
+            <motion.div
+              key={i}
+              variants={fadeUp}
+              whileHover={{ y: -10, scale: 1.04 }}
+              className="bg-gradient-to-br from-[#f5e9cd] to-[#e6d1a5] border border-[#7b2d1f]/40
+                     rounded-3xl p-8 text-center shadow-xl"
+            >
+              <div
+                className="mx-auto mb-6 h-16 w-16 rounded-full
+                       bg-[#7b2d1f] text-white
+                       flex items-center justify-center"
+              >
+                <Icon size={26} />
+              </div>
+
+              <h4 className="text-xl font-bold text-[#7b2d1f]">{item.title}</h4>
+
+              <p className="mt-3 font-semibold text-black/70">{item.value}</p>
+            </motion.div>
+          );
+        })}
+      </motion.div>
+    </section>
+  );
+}

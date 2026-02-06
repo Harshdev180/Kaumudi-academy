@@ -1,57 +1,86 @@
 import "./App.css";
-import { Route, Routes } from "react-router-dom";
 
-// Pages
+import { Route, Routes, Outlet } from "react-router-dom";
+
 import Dashboard from "./pages/AdminDashboard/Dashboard";
 import AdminLayout from "./pages/AdminDashboard/AdminLayout";
 import LeadManagement from "./pages/AdminDashboard/LeadManagement";
 import AdminLogin from "./pages/AdminDashboard/AdminLogin";
 import CourseManagement from "./pages/AdminDashboard/CourseManagement";
 import AllCoursesPage from "./pages/CourseListing";
-import CourseDetail from "./pages/CourseDetail";
+
+import CourseDetail from "./pages/CourseDetailsUp";
 import Inquiry from "./pages/AdminDashboard/Inquiry";
+
 import Signup from "./component/Auth/signup";
 import Signin from "./component/Auth/login";
 import Home from "./pages/Homepage/Home";
-// import Navbar from "./components/Navbar";
-// import Footer from "./components/Footer";
-// import ScrollToTop from "./components/ScrollToTop";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
+import About from "./pages/About";
+import FacultyPage from "./pages/FacultyPage";
+import Contact from "./pages/Contact";
+
+// Public site layout with shared navbar/footer
+function PublicLayout() {
+  return (
+    <>
+      <ScrollToTop />
+      <Navbar />
+      <Outlet />
+      <Footer />
+    </>
+  );
+}
+
+// Simple 404 page (inline, no new file)
+function NotFound() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#f1e4c8] px-6">
+      <div className="text-center">
+        <div className="text-[#7b2d1f] text-sm uppercase tracking-[0.35em] font-bold mb-3">
+          Page Not Found
+        </div>
+        <h1 className="font-serif text-4xl text-[#7b2d1f] mb-4">404</h1>
+        <p className="text-[#6b4b3e]">
+          The page you’re looking for doesn’t exist.
+        </p>
+      </div>
+    </div>
+  );
+}
 
 function App() {
   return (
-    <>
-      {/* <ScrollToTop /> */}
-      {/* <Navbar /> */}
-      <Routes>
-        {/* ---------------- Public Routes ---------------- */}
+    <Routes>
+      {/* Public routes under shared layout */}
+      <Route element={<PublicLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/allcourses" element={<AllCoursesPage />} />
         <Route path="/coursedetail" element={<CourseDetail />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/faculty" element={<FacultyPage />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Signin />} />
+        <Route path="/inquiry" element={<Inquiry />} />
+      </Route>
 
-        {/* ---------------- Admin Routes (Nested) ---------------- */}
-        {/* Parent Route*/}
-        <Route path="/admin" element={<AdminLayout />}>
+      {/* Admin nested routes */}
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<Dashboard />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="lead" element={<LeadManagement />} />
+        <Route path="course" element={<CourseManagement />} />
+      </Route>
 
-          {/* Default Page */}
-          <Route index element={<Dashboard />} />
+      {/* Admin login outside admin layout */}
+      <Route path="/admin-login" element={<AdminLogin />} />
 
-          {/* Primary Path: /admin/dashboard */}
-          <Route path="dashboard" element={<Dashboard />} />
-
-          {/* Inside Admin Pages */}
-          <Route path="lead" element={<LeadManagement />} />
-          <Route path="course" element={<CourseManagement />} />
-          {/* <Route path="inquiry" element={<Inquiry />} /> */}
-        </Route>
-
-        
-        <Route path="/admin-login" element={<AdminLogin />} />
-
-    </Routes >
-      {/* <Footer /> */ }
-    </>
+      {/* Fallback */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
 

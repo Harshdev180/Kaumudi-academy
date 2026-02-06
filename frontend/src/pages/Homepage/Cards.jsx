@@ -5,34 +5,29 @@ import { Link } from "react-router-dom";
 
 const courses = [
   {
-    title: "Vyakarana (Grammar)",
+    title: "Shlok",
     desc: "Train the mind in classical systems of reasoning and debate.",
     img: "https://thumbs.dreamstime.com/b/antique-literature-collection-old-fashioned-wisdom-preserved-generative-ai-antique-literature-collection-old-fashioned-wisdom-274867858.jpg",
   },
   {
-    title: "Literature & Kavya",
+    title: "Spoken Sanskrit (Level-1)",
     desc: "Journey through poetic masterpieces of Kalidasa and other sages.",
     img: "https://tse2.mm.bing.net/th/id/OIP.aO6k2XyBjXEcWju-JEOo_QHaE7?pid=Api&P=0&h=180",
   },
   {
-    title: "Spoken Sanskrit",
+    title: "Vyakarana Shastra",
     desc: "Build fluency through immersive conversational practice.",
     img: "https://i.pinimg.com/736x/6a/3a/3c/6a3a3c4378419743ff09e29c6d4796bc.jpg",
   },
   {
-    title: "Vedanta Philosophy",
+    title: "UGC NET",
     desc: "Explore metaphysics through Upanishadic and Brahma Sutra texts.",
     img: "https://i.pinimg.com/736x/19/6c/f4/196cf4706012f8407a08c0cf7db51339.jpg",
   },
   {
-    title: "Jyotisha",
+    title: "BA",
     desc: "Journey through poetic masterpieces of Kalidasa and other sages.",
     img: "https://i.pinimg.com/736x/63/74/4f/63744f0c869b1b9b3095eccdb91daa1d.jpg",
-  },
-  {
-    title: "Nyaya Logic",
-    desc: "Train the mind in classical systems of reasoning and debate.",
-    img: "https://i.pinimg.com/736x/4f/27/0c/4f270c7e09a3fcb1c15dfc6724131a2e.jpg",
   },
 ];
 
@@ -187,7 +182,7 @@ export default function Cards() {
                 </p>
 
                 <a
-                  href="#"
+                  href="/coursedetail"
                   className="inline-flex items-center bg-[#74271E] p-3 rounded-3xl text-white font-bold text-sm hover:gap-2 transition-all"
                 >
                   View Details <ArrowRight size={14} className="ml-1" />
@@ -210,7 +205,10 @@ export default function Cards() {
               className="group mt-10 inline-flex items-center justify-center gap-2 rounded-full bg-[#74271E] px-8 py-4 font-bold text-white shadow-lg transition hover:bg-[#5e1f18] focus:outline-none focus:ring-2 focus:ring-[#d6b15c]"
             >
               <span>View All Courses</span>
-              <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+              <ArrowRight
+                size={16}
+                className="transition-transform group-hover:translate-x-1"
+              />
             </motion.a>
           </Link>
         </motion.div>
