@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import CountUp from "react-countup";
 
 export default function About() {
+const [openIndex, setOpenIndex] = useState(null);
   const stats = [
     {
       value: 5000,
@@ -321,52 +322,65 @@ export default function About() {
       </section>
       {/* ========================================================= */}
       {/* FAQ */}
-      <section className="py-20 bg-[#f1e4c8]">
-        <div className="max-w-[900px] mx-auto px-5">
-          <h3 className="text-3xl md:text-4xl font-black text-[#74271E] text-center">
-            Questions & Clarity
-          </h3>
+     <section className="py-20 bg-[#f1e4c8]">
+  <div className="max-w-[900px] mx-auto px-5">
+    <h3 className="text-3xl md:text-4xl font-black text-[#74271E] text-center">
+      Questions & Clarity
+    </h3>
 
-          <div className="mt-8 space-y-3">
-            {[
-              {
-                q: "Are the courses beginner friendly?",
-                a: "Yes. We offer a dedicated ‘Praveshika’ level crafted for absolute beginners, even for those with no prior familiarity with the Devanagari script or Sanskrit language.",
-              },
-              {
-                q: "Do you provide certification?",
-                a: "Yes. Learners receive academically recognized certificates upon successful completion, evaluated by our internal scholarly board.",
-              },
-              {
-                q: "Can I learn at my own pace?",
-                a: "Absolutely. We support both live guided cohorts and self-paced study tracks, complete with recorded sessions, curated readings, and practice materials.",
-              },
-              {
-                q: "Are the teachings rooted in traditional Shastra?",
-                a: "Yes. Our curriculum is firmly grounded in authentic Shastric traditions while being presented through modern pedagogy for clarity and accessibility.",
-              },
-              {
-                q: "Will I receive guidance from experienced Pandits?",
-                a: "Certainly. Our courses are led by seasoned Pandits and scholars trained in the traditional guru-shishya lineage, ensuring depth, discipline, and authenticity.",
-              },
-            ].map((item, idx) => (
-              <details
-                key={idx}
-                className="group rounded-2xl bg-[#fff9e9] shadow-sm p-4 [&_summary]:cursor-pointer"
-              >
-                <summary className="flex items-center justify-between">
-                  <span className="font-semibold text-[#74271E]">{item.q}</span>
-                  <span className="text-[#74271E] group-open:hidden">+</span>
-                  <span className="text-[#74271E] hidden group-open:inline">
-                    −
-                  </span>
-                </summary>
-                <p className="mt-2 text-[#7b5a4c] leading-relaxed">{item.a}</p>
-              </details>
-            ))}
+    <div className="mt-8 space-y-3">
+      {[
+        {
+          q: "Are the courses beginner friendly?",
+          a: "Yes. We offer a dedicated ‘Praveshika’ level crafted for absolute beginners, even for those with no prior familiarity with the Devanagari script or Sanskrit language.",
+        },
+        {
+          q: "Do you provide certification?",
+          a: "Yes. Learners receive academically recognized certificates upon successful completion, evaluated by our internal scholarly board.",
+        },
+        {
+          q: "Can I learn at my own pace?",
+          a: "Absolutely. We support both live guided cohorts and self-paced study tracks, complete with recorded sessions, curated readings, and practice materials.",
+        },
+        {
+          q: "Are the teachings rooted in traditional Shastra?",
+          a: "Yes. Our curriculum is firmly grounded in authentic Shastric traditions while being presented through modern pedagogy for clarity and accessibility.",
+        },
+        {
+          q: "Will I receive guidance from experienced Pandits?",
+          a: "Certainly. Our courses are led by seasoned Pandits and scholars trained in the traditional guru-shishya lineage, ensuring depth, discipline, and authenticity.",
+        },
+      ].map((item, idx) => {
+        const isOpen = openIndex === idx;
+
+        return (
+          <div
+            key={idx}
+            className="rounded-2xl bg-[#fff9e9] shadow-sm p-4 cursor-pointer"
+            onClick={() =>
+              setOpenIndex(isOpen ? null : idx)
+            }
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-[#74271E]">
+                {item.q}
+              </span>
+              <span className="text-[#74271E] text-xl">
+                {isOpen ? "−" : "+"}
+              </span>
+            </div>
+
+            {isOpen && (
+              <p className="mt-2 text-[#7b5a4c] leading-relaxed">
+                {item.a}
+              </p>
+            )}
           </div>
-        </div>
-      </section>
+        );
+      })}
+    </div>
+  </div>
+</section>
     </>
   );
 }

@@ -9,6 +9,7 @@ import AdminLogin from "./pages/AdminDashboard/AdminLogin";
 import CourseManagement from "./pages/AdminDashboard/CourseManagement";
 import AllCoursesPage from "./pages/CourseListing";
 
+
 import CourseDetail from "./pages/CourseDetailsUp";
 import Inquiry from "./pages/AdminDashboard/Inquiry";
 
@@ -21,6 +22,10 @@ import ScrollToTop from "./components/ScrollToTop";
 import About from "./pages/About";
 import FacultyPage from "./pages/FacultyPage";
 import Contact from "./pages/Contact";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsConditions from "./pages/TermsConditions";
+import CookiePolicy from "./pages/CookiePolicy.jsx";
+
 
 // Public site layout with shared navbar/footer
 function PublicLayout() {
@@ -65,6 +70,10 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Signin />} />
         <Route path="/inquiry" element={<Inquiry />} />
+         <Route path="/privacy" element={<PrivacyPolicy/>} />
+         <Route path="/terms" element={<TermsConditions />} />
+         <Route path="/cookies" element={<CookiePolicy />} />
+         
       </Route>
 
       {/* Admin nested routes */}
