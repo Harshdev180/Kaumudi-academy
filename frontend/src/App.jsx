@@ -22,7 +22,7 @@ import About from "./pages/About";
 import FacultyPage from "./pages/FacultyPage";
 import Contact from "./pages/Contact";
 import Sign from "./component/Auth/loginSignup";
-import CourseView from "./component/CourseDetailsUpdated/courseView";
+
 
 
 // Public site layout with shared navbar/footer
@@ -43,7 +43,7 @@ function PublicLayout() {
         <Route path="/login" element={<Signin />} />
         <Route path="/inquiry" element={<Inquiry />} />
         <Route path="/Auth" element={<Sign />} />
-        <Route path="/details" element={<CourseView />} />
+        
 
         {/* ---------------- Admin Routes (Nested) ---------------- */}
         {/* Parent Route*/}
@@ -99,7 +99,6 @@ function App() {
         <Route path="/login" element={<Signin />} />
         <Route path="/inquiry" element={<Inquiry />} />
         <Route path="/Auth" element={<Sign />} />
-        <Route path="/details" element={<CourseView />} />
       </Route>
 
       {/* Admin nested routes */}

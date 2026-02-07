@@ -157,3 +157,37 @@ export const sendInquiryMailToAdmin = async (inquiry) => {
     }
   );
 };
+
+export const sendContactMailToAdmin = async (contact) => {
+  const html = `
+    <div style="font-family: Arial, sans-serif; line-height:1.6;">
+      <h2>📩 New Contact Form Submission</h2>
+
+      <p><b>Full Name:</b> ${contact.fullName}</p>
+      <p><b>Email:</b> ${contact.email}</p>
+      <p><b>Subject:</b> ${contact.subject}</p>
+
+      <p><b>Message:</b></p>
+      <p>${contact.message}</p>
+
+      <hr />
+      <p>
+        <small>
+          Submitted on ${new Date(contact.createdAt).toLocaleString()}
+        </small>
+      </p>
+
+      <br/>
+      <p>
+        Regards,<br/>
+        <b>Kaumudi Sanskrit Academy</b>
+      </p>
+    </div>
+  `;
+
+  await sendEmail({
+    to: config.ADMIN_EMAIL,
+    subject: "📨 New Contact Form Submission",
+    html
+  });
+};
