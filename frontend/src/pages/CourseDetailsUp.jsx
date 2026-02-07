@@ -8,6 +8,7 @@ import CurriculumAccordion from '../component/CourseDetailsUpdated/CurriculumAcc
 import ScheduleTable from '../component/CourseDetailsUpdated/ScheduleTable';
 import Suggetion from '../component/CourseDetailsUpdated/suggetion';
 
+
 const CourseDetails = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef(null);

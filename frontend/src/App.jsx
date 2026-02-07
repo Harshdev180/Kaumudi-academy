@@ -21,6 +21,9 @@ import ScrollToTop from "./components/ScrollToTop";
 import About from "./pages/About";
 import FacultyPage from "./pages/FacultyPage";
 import Contact from "./pages/Contact";
+import Sign from "./component/Auth/loginSignup";
+import CourseView from "./component/CourseDetailsUpdated/courseView";
+
 
 // Public site layout with shared navbar/footer
 function PublicLayout() {
@@ -28,7 +31,37 @@ function PublicLayout() {
     <>
       <ScrollToTop />
       <Navbar />
-      <Outlet />
+
+      <Routes>
+        {/* ---------------- Public Routes ---------------- */}
+        <Route path="/" element={<Home />} />
+        <Route path="/allcourses" element={<AllCoursesPage />} />
+        <Route path="/coursedetail" element={<CourseDetail />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Signin />} />
+        <Route path="/inquiry" element={<Inquiry />} />
+        <Route path="/Auth" element={<Sign />} />
+        <Route path="/details" element={<CourseView />} />
+
+        {/* ---------------- Admin Routes (Nested) ---------------- */}
+        {/* Parent Route*/}
+        <Route path="/admin" element={<AdminLayout />}>
+          {/* Default Page */}
+          <Route index element={<Dashboard />} />
+
+          {/* Primary Path: /admin/dashboard */}
+          <Route path="dashboard" element={<Dashboard />} />
+
+          {/* Inside Admin Pages */}
+          <Route path="lead" element={<LeadManagement />} />
+          <Route path="course" element={<CourseManagement />} />
+        </Route>
+
+        <Route path="/admin-login" element={<AdminLogin />} />
+      </Routes>
+
       <Footer />
     </>
   );
@@ -65,6 +98,8 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Signin />} />
         <Route path="/inquiry" element={<Inquiry />} />
+        <Route path="/Auth" element={<Sign />} />
+        <Route path="/details" element={<CourseView />} />
       </Route>
 
       {/* Admin nested routes */}
