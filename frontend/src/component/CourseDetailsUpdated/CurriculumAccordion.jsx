@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const CurriculumAccordion = () => {
-  // openIndex ko -1 set kiya hai taaki initially sab band rahein
+const CurriculumAccordion = ({ curriculumData }) => {
   const [openIndex, setOpenIndex] = useState(-1); 
   const navigate = useNavigate();
 
-  const modules = [
+  // Props se data aayega, warna default show hoga
+  const modules = curriculumData || [
     {
       title: "Introduction to Paspashahnika",
       isLocked: false,
@@ -84,7 +84,7 @@ const CurriculumAccordion = () => {
               {isOpen && !module.isLocked && (
                 <div className="bg-[#EFE3C8] p-8 border-t border-[#D9C5B2]">
                   <ul className="space-y-4">
-                    {module.content.map((item, i) => (
+                    {module.content && module.content.map((item, i) => (
                       <li key={i} className="flex items-start gap-3 text-[#631D11] font-medium text-[16px]">
                         <div className="w-1.5 h-1.5 rounded-full bg-[#631D11] mt-2 shrink-0"></div>
                         {item}
