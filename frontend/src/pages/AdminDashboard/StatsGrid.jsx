@@ -6,7 +6,6 @@ import {
   Ticket,
   Users,
 } from "lucide-react";
-import React from "react";
 import { motion } from "framer-motion";
 
 function StatsGrid() {
@@ -98,16 +97,14 @@ function StatsGrid() {
                     stat.trend === "up"
                       ? "text-emerald-500"
                       : stat.trend === "down"
-                      ? "text-red-500"
-                      : "text-slate-400"
+                        ? "text-red-500"
+                        : "text-slate-400"
                   }`}
                 >
                   {stat.change}
                 </span>
 
-                <span className="text-sm text-slate-500">
-                  vs last month
-                </span>
+                <span className="text-sm text-slate-500">vs last month</span>
               </div>
             </div>
 
@@ -129,8 +126,8 @@ function StatsGrid() {
                   stat.trend === "up"
                     ? "75%"
                     : stat.trend === "down"
-                    ? "45%"
-                    : "60%",
+                      ? "45%"
+                      : "60%",
               }}
               transition={{ duration: 0.8, ease: "easeOut" }}
               className={`h-full bg-gradient-to-r ${stat.color} rounded-full`}

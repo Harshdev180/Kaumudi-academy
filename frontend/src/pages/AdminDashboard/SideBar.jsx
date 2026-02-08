@@ -4,13 +4,10 @@
 
 // import { useLocation } from 'react-router-dom';
 
-
-
 // function Sidebar({ collapsed, onToggle, currentPage, onPageChange }) {
 
 //   const toggle = (itemid)=>{
 //     const newExpanded = new Set(expandedItems);
-
 
 //   }
 //   // const location = useLocation();
@@ -126,26 +123,33 @@
 
 // export default Sidebar
 
-
-
-import React from 'react';
-import { BookOpen, LayoutDashboard, Settings, Users, ChevronRight } from 'lucide-react';
+import React from "react";
+import {
+  BookOpen,
+  LayoutDashboard,
+  Settings,
+  Users,
+  ChevronRight,
+} from "lucide-react";
 import { MdSupportAgent } from "react-icons/md";
-import { useLocation, Link } from 'react-router-dom'; 
+import { useLocation, Link } from "react-router-dom";
 
 function Sidebar({ collapsed }) {
-  const location = useLocation(); // URL track karne ke liye active karein
-
+  const location = useLocation();
   const menuItems = [
-    { path: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
-    { path: '/admin/lead', label: 'Lead Management', icon: <Users size={18} /> },
-    { path: '/admin/course', label: 'Courses Management', icon: <BookOpen size={18} /> },
-    { path: '/admin/setting', label: 'Settings', icon: <Settings size={18} /> }
+    {
+      path: "/admin/dashboard",
+      label: "Dashboard",
+      icon: <LayoutDashboard size={18} />,
+    },
+    { path: "/admin/lead", label: "Lead Management", icon: <Users size={18} /> },
+    { path: "/admin/course", label: "Courses", icon: <BookOpen size={18} /> },
   ];
 
   return (
-    <div className={`${collapsed ? "w-20" : "w-72"} transition-all duration-300 ease-in-out bg-[#FBF4E2] text-[#6b1d14] backdrop-blur-xl border-r border-slate-200/50 flex flex-col h-screen sticky top-0 z-50`}>
-
+    <div
+      className={`${collapsed ? "w-20" : "w-72"} transition-all duration-300 ease-in-out bg-[#FBF4E2] text-[#6b1d14] backdrop-blur-xl border-r border-slate-200/50 flex flex-col h-screen sticky top-0 z-50`}
+    >
       {/* Logo Section */}
       <div className="p-6 border-b border-slate-200/50">
         <div className="flex items-center space-x-3">
@@ -154,36 +158,46 @@ function Sidebar({ collapsed }) {
           </div>
           {!collapsed && (
             <div className="overflow-hidden whitespace-nowrap">
-              <h1 className='font-serif font-extrabold text-2xl text-[#6b1d14] tracking-normal'>KAUMUDI</h1>
-              <p className='text-[10px] text-[#6b1d14]/70 uppercase font-bold tracking-widest'>Sanskrit Academy</p>
+              <h1 className="font-serif font-extrabold text-2xl text-[#6b1d14] tracking-normal">
+                KAUMUDI
+              </h1>
+              <p className="text-[10px] text-[#6b1d14]/70 uppercase font-bold tracking-widest">
+                Sanskrit Academy
+              </p>
             </div>
           )}
         </div>
       </div>
 
       {/* Navigation Area */}
-      <nav className='flex-1 p-4 space-y-2 overflow-y-auto'>
+      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
         {menuItems.map((item) => {
-          // ACTIVE LOGIC: 
           const isActive = location.pathname === item.path;
 
           return (
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center group relative px-4 py-3 rounded-2xl transition-all duration-300 ${isActive
-                  ? 'bg-[#6b1d14] text-white shadow-md shadow-[#6b1d14]/20'
-                  : 'hover:bg-[#F3E6C9] text-[#6b1d14]/70'
-                }`}
+              className={`flex items-center group relative px-4 py-3 rounded-2xl transition-all duration-300 ${
+                isActive
+                  ? "bg-[#6b1d14] text-white shadow-md shadow-[#6b1d14]/20"
+                  : "hover:bg-[#F3E6C9] text-[#6b1d14]/70"
+              }`}
             >
-              <div className={`flex items-center justify-center transition-colors ${isActive ? 'text-[#D4AF37]' : 'group-hover:text-[#6b1d14]'
-                }`}>
+              <div
+                className={`flex items-center justify-center transition-colors ${
+                  isActive ? "text-[#D4AF37]" : "group-hover:text-[#6b1d14]"
+                }`}
+              >
                 {item.icon}
               </div>
 
               {!collapsed && (
-                <span className={`ml-4 text-sm font-semibold transition-opacity duration-300 ${isActive ? 'text-white' : 'text-[#6b1d14]/80'
-                  }`}>
+                <span
+                  className={`ml-4 text-sm font-semibold transition-opacity duration-300 ${
+                    isActive ? "text-white" : "text-[#6b1d14]/80"
+                  }`}
+                >
                   {item.label}
                 </span>
               )}
@@ -199,14 +213,18 @@ function Sidebar({ collapsed }) {
 
       {/* User Profile Section */}
       {!collapsed && (
-        <div className='p-4 border-t border-slate-200/50 bg-[#F3E6C9]/30'>
-          <div className='flex items-center space-x-3 p-2 rounded-xl'>
+        <div className="p-4 border-t border-slate-200/50 bg-[#F3E6C9]/30">
+          <div className="flex items-center space-x-3 p-2 rounded-xl">
             <div className="w-10 h-10 rounded-full bg-[#D4AF37]/20 border-2 border-[#D4AF37] flex items-center justify-center font-bold text-[#6b1d14]">
               AS
             </div>
-            <div className='flex-1 min-w-0'>
-              <p className='text-sm font-bold text-[#6b1d14] truncate'>Ajay Sharma</p>
-              <p className='text-[10px] text-[#6b1d14]/60 uppercase font-black'>Administrator</p>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-[#6b1d14] truncate">
+                Ajay Sharma
+              </p>
+              <p className="text-[10px] text-[#6b1d14]/60 uppercase font-black">
+                Administrator
+              </p>
             </div>
           </div>
         </div>

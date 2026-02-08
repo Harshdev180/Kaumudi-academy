@@ -46,7 +46,7 @@ const About = () => {
           className="rounded-[2.5rem] bg-[#e6d6b8] p-3 shadow-2xl relative z-10"
         >
           <img
-            src={aboutImg}
+            src="https://i.pinimg.com/736x/a9/a2/6b/a9a26bb6a20c90ba9a475714db4525ba.jpg"
             alt="Kaumudi Academy campus"
             className="w-full h-[340px] md:h-[350px] lg:h-[460px] object-cover rounded-[2rem]"
           />

@@ -166,7 +166,10 @@ export default function Footer() {
 
             <div className="space-y-4 text-sm text-white font-bold">
               <div className="flex items-start gap-3">
-                <MapPin size={16} className="text-white mt-[2px]" />
+                <MapPin
+                  size={16}
+                  className="text-white mt-[2px] hover:text-[#d6b15c]"
+                />
                 <p>
                   108 Vidya Vihar, Sanskrit Marg,
                   <br />
@@ -175,14 +178,20 @@ export default function Footer() {
               </div>
 
               <div className="flex items-center gap-3">
-                <Mail size={16} className="text-[#d6b15c]" />
+                <Mail
+                  size={16}
+                  className="text-white hover:text-[#d6b15c] font-bold"
+                />
                 <a href="mailto:contact@kaumudi.edu.in">
                   contact@kaumudi.edu.in
                 </a>
               </div>
 
               <div className="flex items-center gap-3">
-                <Phone size={16} className="text-[#d6b15c]" />
+                <Phone
+                  size={16}
+                  className="text-white hover:text-[#d6b15c] font-bold"
+                />
                 <a href="tel:+919876543210">+91 98765 43210</a>
               </div>
             </div>
@@ -231,13 +240,13 @@ export default function Footer() {
 
         {/* BOTTOM BAR */}
         <div
-          className="pt-8 border-t border-[#d6b15c]/20
+          className="pt-8 border-t border-white
           flex flex-col md:flex-row items-center justify-between
-          gap-4 text-xs text-[#ecd9c5]/70"
+          gap-4 text-xs text-white font-bold"
         >
           <p>© {year} Kaumudi Sanskrit Academy. All Wisdom Reserved.</p>
 
-          <div className="flex gap-6">
+          <div className="flex gap-6 font-bold text-white">
             {["Privacy Policy", "Terms", "Cookies"].map((t) => (
               <Link key={t} to="/" className="hover:text-[#d6b15c] transition">
                 {t}
