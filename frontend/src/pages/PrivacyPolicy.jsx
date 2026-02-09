@@ -42,7 +42,6 @@ export default function PrivacyPolicy() {
             Table of Contents
           </h3>
 
-          {/* UNDERLINE — ONLY ADDITION */}
           <div className="w-14 h-[2px] bg-[#d6b25e] mb-4"></div>
 
           <ul className="space-y-1 text-s text-[#ebcb82]">
@@ -77,7 +76,7 @@ export default function PrivacyPolicy() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className=" rounded-3xl  p-10 lg:p-6 text-[#6b4b3e] leading-relaxed"
+          className="rounded-3xl p-10 lg:p-6 text-[#6b4b3e] leading-relaxed"
         >
           {/* INTRODUCTION */}
           <h2
@@ -87,11 +86,16 @@ export default function PrivacyPolicy() {
             Welcome to our privacy policy!
           </h2>
 
-          <p className="mb-10">
+          <p className="mb-6">
             At Curely, we take your privacy seriously. This policy outlines how
             we collect, use, and protect your personal information when you
-            interact with our website or services. By using our platform, you
-            agree to the terms described here.
+            interact with our website or services.
+          </p>
+
+          <p className="mb-10">
+            We are committed to maintaining transparency about how data is
+            handled and ensuring that your trust in our platform is respected
+            at every step.
           </p>
 
           {/* DATA COLLECTION */}
@@ -102,6 +106,11 @@ export default function PrivacyPolicy() {
             Data Collection
           </h3>
 
+          <p className="mb-4">
+            We collect information to provide better services, improve user
+            experience, and maintain platform security.
+          </p>
+
           <p className="font-semibold mb-2">
             1. Information You Provide Directly
           </p>
@@ -109,14 +118,16 @@ export default function PrivacyPolicy() {
             <li>Name, email, and contact information</li>
             <li>Feedback and form submissions</li>
             <li>Preferences shared during communication</li>
+            <li>Account-related information if applicable</li>
           </ul>
 
           <p className="font-semibold mb-2">
             2. Automatically Collected Information
           </p>
           <ul className="list-disc pl-6 mb-6">
-            <li>IP address, browser type, and usage data</li>
-            <li>Cookies and tracking technologies</li>
+            <li>IP address, browser type, and device information</li>
+            <li>Pages visited, time spent, and interaction data</li>
+            <li>Cookies and similar tracking technologies</li>
           </ul>
 
           <p className="font-semibold mb-2">
@@ -124,6 +135,7 @@ export default function PrivacyPolicy() {
           </p>
           <ul className="list-disc pl-6 mb-10">
             <li>Social media interactions</li>
+            <li>Analytics and advertising partners</li>
             <li>External service providers</li>
           </ul>
 
@@ -135,10 +147,16 @@ export default function PrivacyPolicy() {
             Use of Data
           </h3>
 
+          <p className="mb-4">
+            Information collected is used strictly to operate, improve, and
+            secure our services.
+          </p>
+
           <ul className="list-disc pl-6 mb-10">
-            <li>Providing and improving services</li>
-            <li>User communication and support</li>
-            <li>Legal and security compliance</li>
+            <li>Providing and personalizing services</li>
+            <li>Responding to queries and support requests</li>
+            <li>Improving website performance and usability</li>
+            <li>Legal and regulatory compliance</li>
           </ul>
 
           {/* CHILDREN */}
@@ -149,9 +167,14 @@ export default function PrivacyPolicy() {
             Children’s Information
           </h3>
 
+          <p className="mb-6">
+            Our services are not directed toward children under the age of 13.
+            We do not knowingly collect personal information from minors.
+          </p>
+
           <p className="mb-10">
-            Our services are not intended for children under the age of 13.
-            Any data collected unintentionally will be deleted promptly.
+            If we become aware that a child has provided personal information,
+            we will take immediate steps to remove such data from our records.
           </p>
 
           {/* CONTACT */}
@@ -162,11 +185,15 @@ export default function PrivacyPolicy() {
             Contact Information
           </h3>
 
-          <div className="pt-5  border-[#d6b25e]">
+          <div className="pt-5 border-[#d6b25e]">
+            <p className="text-sm text-[#7b5a4c] mb-3">
+              If you have any questions, concerns, or requests related to this
+              Privacy Policy, please contact our support team.
+            </p>
+
             <p className="text-sm text-[#7b5a4c]">
-              If you have any questions regarding this Privacy Policy, please
-              contact our support team. Continued use of our services indicates
-              acceptance of these terms.
+              Continued use of our services indicates acceptance of this Privacy
+              Policy and any future updates made to it.
             </p>
           </div>
         </motion.div>
