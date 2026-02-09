@@ -22,6 +22,7 @@ import Sign from "./component/Auth/loginSignup";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions";
 import CookiePolicy from "./pages/CookiePolicy.jsx";
+import StudentProfile from "./pages/StudentProfile";
 
 // Public site layout with shared navbar/footer
 function PublicLayout() {
@@ -29,37 +30,6 @@ function PublicLayout() {
     <>
       <ScrollToTop />
       <Navbar />
-
-      <Routes>
-        {/* ---------------- Public Routes ---------------- */}
-        <Route path="/" element={<Home />} />
-        <Route path="/allcourses" element={<AllCoursesPage />} />
-        <Route path="/coursedetail" element={<CourseDetail />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/inquiry" element={<Inquiry />} />
-        <Route path="/Auth" element={<Sign />} />
-        <Route path="/privacy" element={<PrivacyPolicy />} />
-        <Route path="/terms" element={<TermsConditions />} />
-        <Route path="/cookies" element={<CookiePolicy />} />
-
-        {/* ---------------- Admin Routes (Nested) ---------------- */}
-        {/* Parent Route*/}
-        <Route path="/admin" element={<AdminLayout />}>
-          {/* Default Page */}
-          <Route index element={<Dashboard />} />
-
-          {/* Primary Path: /admin/dashboard */}
-          <Route path="dashboard" element={<Dashboard />} />
-
-          {/* Inside Admin Pages */}
-          <Route path="lead" element={<LeadManagement />} />
-          <Route path="course" element={<CourseManagement />} />
-        </Route>
-
-        <Route path="/admin-login" element={<AdminLogin />} />
-      </Routes>
-
       <Outlet />
       <Footer />
     </>
@@ -95,7 +65,7 @@ function App() {
         <Route path="/faculty" element={<FacultyPage />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/inquiry" element={<Inquiry />} />
-        <Route path="/Auth" element={<Sign />} />
+        <Route path="/profile" element={<StudentProfile />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsConditions />} />
         <Route path="/cookies" element={<CookiePolicy />} />

@@ -25,3 +25,18 @@ export async function registerStudent({ firstName, lastName, email, password }) 
   const res = await api.post("/auth/student/register", { name, email, password });
   return res.data;
 }
+
+export async function getStudentProfile() {
+  const res = await api.get("/student/profile");
+  return res.data;
+}
+
+export async function updateStudentProfile(payload) {
+  const res = await api.put("/student/profile", payload);
+  return res.data;
+}
+
+export async function getStudentEnrollments() {
+  const res = await api.get("/student/enrollments");
+  return res.data;
+}

@@ -65,13 +65,13 @@ export default function Footer() {
 
               <div className="leading-tight">
                 <div className="font-black tracking-wide text-lg">KAUMUDI</div>
-                <div className="text-[10px] tracking-widest text-white/70 uppercase">
+                <div className="text-[10px] tracking-widest text-white uppercase">
                   Sanskrit Academy
                 </div>
               </div>
             </motion.div>
 
-            <p className="text-white font-bold text-sm leading-relaxed max-w-xs tracking-wider">
+            <p className="text-white text-sm leading-relaxed max-w-xs tracking-wider">
               Reviving Sanskrit’s timeless wisdom through scholarly rigor,
               authentic pedagogy, and global access.
             </p>
