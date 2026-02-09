@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 export default function TermsCondition() {
   return (
-    <section className="bg-[#f1e4c8] min-h-screen">
+    <section className="bg-[#f1e4c8] min-h-screen py-10">
       {/* HERO SECTION */}
       <div className="flex justify-center">
         <motion.div

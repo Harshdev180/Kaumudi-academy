@@ -247,11 +247,15 @@ export default function Footer() {
           <p>© {year} Kaumudi Sanskrit Academy. All Wisdom Reserved.</p>
 
           <div className="flex gap-6 font-bold text-white">
-            {["Privacy Policy", "Terms", "Cookies"].map((t) => (
-              <Link key={t} to="/" className="hover:text-[#d6b15c] transition">
-                {t}
-              </Link>
-            ))}
+            <Link to="/privacy" className="hover:text-[#d6b15c] transition">
+              Privacy
+            </Link>
+            <Link to="/terms" className="hover:text-[#d6b15c] transition">
+              Terms
+            </Link>
+            <Link to="/cookies" className="hover:text-[#d6b15c] transition">
+              Cookies
+            </Link>
           </div>
         </div>
       </div>
