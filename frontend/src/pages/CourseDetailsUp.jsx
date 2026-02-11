@@ -1,15 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Download, FileText, Play } from 'lucide-react';
-import { useLocation, useParams, useNavigate } from 'react-router-dom'; // useParams add kiya
+import { Download, FileText, Languages, Play } from 'lucide-react';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import HeroSection from '../component/CourseDetailsUpdated/HeroSection';
 import SidebarCard from '../component/CourseDetailsUpdated/SidebarCard';
 import InstructorSection from '../component/CourseDetailsUpdated/InstructorSection';
 import CurriculumAccordion from '../component/CourseDetailsUpdated/CurriculumAccordion';
 import ScheduleTable from '../component/CourseDetailsUpdated/ScheduleTable';
 import Suggetion from '../component/CourseDetailsUpdated/suggetion';
-
-// Ye wahi data array hai jo aapne carousel mein use kiya hai
-
 
 const CourseDetails = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -18,7 +15,7 @@ const CourseDetails = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // 1. Default Data (Jo aapki image mein dikh raha hai)
+  // 1. Default Data (Fallback data)
   const defaultCourse = {
     id: "panini-01",
     title: "Advanced Paninian Grammar: Mahabhashya Study",
@@ -32,17 +29,36 @@ const CourseDetails = () => {
         bio: "With over 25 years of teaching experience, Acharya Vasudev has guided thousands of students through the complexities of Sanskrit Grammar.",
         tags: ["25+ Yrs Exp", "100+ Publications", "Veda Ratna Awardee"]
     }
-    // Baaki curriculum aur schedule data bhi yahan add kar sakte hain
   };
 
-  // 2. Logic: Agar location.state mein data hai toh wo, nahi toh default wala (pic wala)
-  const courseData = location.state?.course || defaultCourse;
+  // 2. NEW LOGIC: Sirf Title, Price, Level, Image aur Description update hoga
+  const incomingData = location.state?.course;
+  
+  const courseData = incomingData ? {
+    ...defaultCourse, // Baaki sab (instructor, curriculum etc.) default rahega
+    title: incomingData.title,
+    price: incomingData.price,
+    level: incomingData.level,
+    duration: incomingData.duration,
+    Languages: incomingData.language,
+   instructor: {
+        name: incomingData.instructorName || incomingData.instructor?.name || defaultCourse.instructor.name,
+        qualification: incomingData.instructorQualification || incomingData.instructor?.qualification || defaultCourse.instructor.qualification,
+        bio: incomingData.instructorBio || incomingData.instructor?.bio || defaultCourse.instructor.bio,
+        tags: incomingData.instructorTags || incomingData.instructor?.tags || defaultCourse.instructor.tags,
+        image: incomingData.instructorImage || incomingData.instructor?.image || defaultCourse.instructor.image
+      },
+    curriculum: incomingData.curriculum || defaultCourse.curriculum,
+    schedule: incomingData.schedule || defaultCourse.schedule,
+    image: incomingData.image,
+    description: `Deep study into ${incomingData.category}. A ${incomingData.duration} immersive journey for ${incomingData.level} seekers.`
+  } : defaultCourse;
 
-  // 3. Scroll to Top Logic: Jab bhi courseData badle (Recommended click hone par)
+  // 3. Scroll to Top Logic
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    setIsPlaying(false); // Naye course par video stop ho jaye
-  }, [courseData]);
+    setIsPlaying(false);
+  }, [courseData.title]); // Jab title change ho tab scroll ho
 
   const handlePlayVideo = () => {
     if (videoRef.current) {
@@ -62,7 +78,7 @@ const CourseDetails = () => {
           <section>
             <div className="flex items-center gap-3 mb-4 -mt-14">
               <div className="w-1.5 h-8 bg-[#d6b15c]"></div>
-              <h2 className="text-[28px] font-bold text-[#74271E]">Course Preview</h2>
+              <h2 className="text-[28px] font-bold text-[#74271E]">Course Demo</h2>
             </div>
             <div className="relative group aspect-video bg-black rounded-4xl overflow-hidden shadow-2xl border-[6px] border-white cursor-pointer">
               <video 
@@ -97,7 +113,7 @@ const CourseDetails = () => {
               <div className="space-y-1">
                 <h3 className="font-bold text-2xl md:text-[20px] text-[#3D1A16]">{courseData.title} Syllabus</h3>
                 <p className="text-[#7A5C58] md:text-[18px] text-xl italic font-small">
-                  Curriculum for {courseData.level} level<br/>
+                  Curriculum for {courseData.level}<br/>
                 </p>
               </div>
             </div>
@@ -122,7 +138,7 @@ const CourseDetails = () => {
 
         <div className="lg:col-span-1">
           <div className="lg:sticky lg:top-25">
-            <SidebarCard price={courseData.price}/>
+            <SidebarCard price={courseData.price} courseData={courseData} />
           </div>
         </div>
         <div className="max-w-7xl mx-auto">

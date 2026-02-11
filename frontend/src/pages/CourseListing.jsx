@@ -388,6 +388,7 @@ const AllCoursesPage = () => {
                         </span>
                         <Link
                           to={`/coursedetail`}
+                          state={{ course: course }}
                           className="flex items-center  gap-2 px-3 py-2 bg-[#c9a84e] text-white text-[10px] font-bold uppercase tracking-wider rounded-md transition-all duration-300 hover:bg-[#b38b3f] shadow-sm active:scale-95 group/link"
                         >
                           Learn More
