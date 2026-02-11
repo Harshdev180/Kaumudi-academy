@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import { CheckCircle, Flame } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const SidebarCard = ({ price }) => {
+// courseFullData prop add kiya gaya hai
+const SidebarCard = ({ price, courseData }) => {
   const [leftSeats, setLeftSeats] = useState(0);
   const totalSeats = 25;
   const targetLeft = 4;
   const [visibleFeatures, setVisibleFeatures] = useState(0);
+  
   const features = [
     "120+ Hours of Live Instruction",
     "Certificate of Completion",
@@ -104,13 +106,37 @@ const SidebarCard = ({ price }) => {
           </ul>
         </div>
 
-        <div className="space-y-11">
-          <Link to="/signup">
+        {/* Buttons Section with Spacing and Data Passing */}
+        <div className="flex flex-col space-y-12 mt-auto"> 
+          <Link to="/courseBuy" 
+          className="w-full"
+          state={{ 
+            courseName: courseData?.title, 
+            price: courseData?.price,
+            duration: courseData?.duration,
+            level: courseData?.level,
+            language: courseData?.language,
+            mode: "Live Online" 
+          }}
+          >
             <button className="w-full bg-[#631D11] text-white py-5 rounded-2xl font-bold text-xl hover:text-[#631D11] hover:bg-[#d6b15c] transition-all flex items-center justify-center gap-2 shadow-lg">
               Enroll Now <span className="text-2xl">→</span>
             </button>
           </Link>
-          <Link to="/inquiry">
+          
+          {/* Inquiry Link with State Data */}
+        
+          <Link 
+            to="/inquiry" 
+            className="w-full"
+            state={{ 
+              // courseData se title, duration aur language uthayega
+              courseName: courseData?.title || "Sanskrit for Beginners", 
+              duration: courseData?.duration || "6 Months", 
+              language: courseData?.language || "Sanskrit/Hindi" ,
+              level: courseData?.level || "Beginner"
+            }}
+          >
             <button className="w-full bg-[#631D11] text-white py-5 rounded-2xl font-bold text-xl hover:text-[#631D11] hover:bg-[#d6b15c] transition-all flex items-center justify-center gap-2 shadow-lg">
               Inquiry <span className="text-2xl">→</span>
             </button>

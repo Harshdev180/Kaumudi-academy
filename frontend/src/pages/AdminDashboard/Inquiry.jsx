@@ -1,96 +1,193 @@
-import { motion } from "framer-motion";
+import React, { useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useLocation } from "react-router-dom";
+import { Send, User, MessageCircle, Mail, BookOpen, Clock, Globe, Award } from "lucide-react";
 
 export default function Inquiry() {
-    const d = new Date();
-    return (
-        <div className="min-h-screen bg-[#f1e4c8] text-[#2b1d1b] font-sans">
+    const location = useLocation();
+    
+    // --- DYNAMIC DATA FIX ---
+    // Hum check kar rahe hain ki data state.course mein hai ya direct state mein
+    const incoming = location.state?.course || location.state;
+    
+    // Course Details page se data receive karna
+    const courseData = {
+        title: incoming?.title || incoming?.courseName || "Sanskrit for Beginners",
+        language: incoming?.language || "Sanskrit/Hindi",
+        duration: incoming?.duration || "6 Months",
+        level: incoming?.level || "Beginner"
+    };
 
-            {/* Hero */}
-            <section className="text-center py-16 px-6">
+    // Scroll to top on load
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
+    const inputStyle = "w-full border-b-2 bg-white/40 backdrop-blur-sm p-4 outline-none border-[#641e16]/20 focus:border-[#641e16] focus:bg-white/60 transition-all duration-300 rounded-t-lg placeholder:text-[#8d6e6a]";
+    const labelStyle = "text-[10px] uppercase tracking-[2px] font-bold text-[#641e16] mb-1 ml-1 flex items-center gap-2";
+
+    return (
+        <div className="min-h-screen bg-[#f1e4c8] text-[#2b1d1b] font-sans-serif relative overflow-hidden">
+            
+            {/* --- Decorative Background Elements --- */}
+            <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+                <div className="absolute -top-24 -left-24 w-96 h-96 bg-[#641e16]/5 rounded-full blur-3xl" />
+                <div className="absolute top-1/2 -right-24 w-80 h-80 bg-[#d6b15c]/10 rounded-full blur-3xl" />
+                <div className="absolute bottom-10 left-10 opacity-5 rotate-12 select-none">
+                    <h1 className="text-[120px] font-sans-serif leading-none">विद्या ददाति विनयं</h1>
+                </div>
+            </div>
+
+            {/* --- Hero Section --- */}
+            <section className="relative text-center pt-9 pb-12 px-6">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8 }}
+                    className="inline-block mb-4 px-4 py-1 rounded-full border border-[#641e16]/20 bg-[#641e16]/5 text-[#641e16] text-lg font-bold tracking-widest uppercase"
+                >
+                    Inquiry Form
+                </motion.div>
                 <motion.h2
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
-                    className="text-4xl md:text-5xl font-bold text-[#641e16]"
+                    className="text-4xl md:text-6xl font-bold text-[#641e16] leading-tight"
                 >
-                    Begin Your Journey with Kaumudi
+                    Begin Your <span className="italic font-sans-serif text-[#b38b3f]">Journey</span> <br /> 
+                    with Kaumudi
                 </motion.h2>
-                <p className="mt-4 max-w-2xl mx-auto text-[#5f4b48]">
-                    Connecting seekers with the wisdom of Sanskrit learning. Fill the form and our scholars will reach out to you.
-                </p>
-            </section>
-
-            {/* Content */}
-            <section className="max-w-6xl mx-auto px-6 grid lg:grid-cols-12 gap-10">
-
-                {/* Form */}
-                <motion.div
-                    initial={{ opacity: 0, x: -40 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                    className="lg:col-span-7 bg-white/30 rounded-xl shadow-xl p-8"
+                <motion.p 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="mt-6 max-w-2xl mx-auto text-[#5f4b48] text-lg leading-relaxed"
                 >
-                    <h3 className="text-2xl font-bold mb-6">Admissions Inquiry</h3>
-                    <form className="grid gap-6">
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <input className="border-b p-3 outline-none" placeholder="Full Name" />
-                            <input className="border-b p-3 outline-none" placeholder="WhatsApp Number" />
-                        </div>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <input className="border-b p-3 outline-none" placeholder="Email Address" />
-                            <select className="border-b p-3 outline-none">
-                                <option>Interested Course</option>
-                                <option>Sanskrit for Beginners</option>
-                                <option>Vedic Studies</option>
-                                <option>Classical Literature</option>
-                            </select>
-                        </div>
-                        <textarea className="border-b p-3 outline-none" rows="4" placeholder="Your Learning Goals" />
-                        <motion.button
-                            whileHover={{ scale: 1.03 }}
-                            whileTap={{ scale: 0.97 }}
-                            className="bg-[#641e16] text-white py-3 rounded-lg font-semibold"
-                        >
-                            Send Inquiry
-                        </motion.button>
-                    </form>
-                </motion.div>
+                    Connecting seekers with the wisdom of Sanskrit learning. Fill the form and our scholars will reach out to you within 24 hours.
+                </motion.p>
+            </section>
 
-                {/* Info */}
+            {/* --- Main Content Section --- */}
+            <section className="max-w-6xl mx-auto px-6 grid lg:grid-cols-12 gap-10 pb-24 relative z-10 justify-center">
+
                 <motion.div
-                    initial={{ opacity: 0, x: 40 }}
-                    whileInView={{ opacity: 1, x: 0 }}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                    className="lg:col-span-5 space-y-6"
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="lg:col-span-8 lg:col-start-3 relative"
                 >
-                    <div className="bg-white/30 backdrop-blur p-6 rounded-xl">
-                        <h4 className="text-xl font-bold text-[#641e16] mb-4">Academy Info</h4>
-                        <p><b>Varanasi Campus</b><br />RSF, Pataudi, Gurgaon, Haryana 122503</p>
-                        <p className="mt-3"><b>Email:</b> acharya@kaumudi.edu.in</p>
-                        <p className="mt-3"><b>Hours:</b> Mon–Sat, 08:00–18:00</p>
-                    </div>
+                    {/* Floating Accent */}
+                    <div className="absolute -top-6 -right-6 w-20 h-20 bg-[#d6b15c] rounded-2xl rotate-12 -z-10 shadow-lg hidden md:block opacity-50" />
+                    
+                    <div className="bg-white/50 backdrop-blur-md rounded-3xl shadow-[0_20px_50px_rgba(100,30,22,0.15)] border border-white/50 p-6 md:p-12 overflow-hidden relative">
+                        
+                        {/* Form Header */}
+                        <div className="flex items-center gap-4 mb-10 border-b border-[#641e16]/10 pb-6">
+                            <div className="w-12 h-12 bg-[#641e16] rounded-xl flex items-center justify-center text-white shadow-lg">
+                                <Send size={24} />
+                            </div>
+                            <div>
+                                <h3 className="text-3xl text-[#641e16] font-bold">Course Inquiry</h3>
+                                <p className="text-sm text-[#7a5c58]">Please provide your details below</p>
+                            </div>
+                        </div>
 
-                    <div className="bg-[#641e16] text-white p-6 rounded-xl">
-                        <h4 className="text-xl font-bold">Need Instant Help?</h4>
-                        <p className="text-sm mt-2">Connect with our admissions counselor on WhatsApp.</p>
-                        <button className="mt-4 w-full bg-white text-[#641e16] py-2 rounded-lg font-semibold">Talk to a Scholar</button>
+                        <form className="grid gap-8">
+                            {/* User Basic Info Group */}
+                            <div className="grid md:grid-cols-2 gap-8">
+                                <div className="space-y-2">
+                                    <label className={labelStyle}><User size={14}/> Full Name</label>
+                                    <input className={inputStyle} placeholder="E.g. Rahul Sharma" required />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className={labelStyle}><MessageCircle size={14}/> WhatsApp Number</label>
+                                    <input className={inputStyle} placeholder="+91 00000 00000" required />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className={labelStyle}><Mail size={14}/> Email Address</label>
+                                <input className={inputStyle} placeholder="rahul@example.com" type="email" required />
+                            </div>
+
+                            {/* Pre-filled Course Details Box */}
+                            <div className="bg-[#641e16]/5 p-6 md:p-8 rounded-2xl border-2 border-dashed border-[#641e16]/90 relative group overflow-hidden">
+                                <div className="absolute top-0 right-0 p-4 opacity-30 group-hover:opacity-40 transition-opacity">
+                                    <BookOpen size={80} />
+                                </div>
+                                
+                                <p className="text-xs font-black text-[#641e16]/80 mb-6 uppercase tracking-[3px] opacity-70">Selected Course Details</p>
+                                
+                                <div className="grid md:grid-cols-2 gap-y-6 gap-x-10">
+                                    <div className="flex flex-col border-l-2 border-[#641e16]/20 pl-4">
+                                        <label className="text-[10px] text-[#8d6e6a] uppercase font-bold">Course Title</label>
+                                        <input 
+                                            className="bg-transparent text-[#641e16] font-bold text-lg outline-none py-1 cursor-default" 
+                                            value={courseData.title} 
+                                            readOnly 
+                                        />
+                                    </div>
+
+                                    <div className="flex flex-col border-l-2 border-[#641e16]/20 pl-4">
+                                        <label className="text-[10px] text-[#8d6e6a] uppercase font-bold flex items-center gap-1"><Clock size={10}/> Duration</label>
+                                        <input 
+                                            className="bg-transparent text-[#641e16] font-bold outline-none py-1 cursor-default" 
+                                            value={courseData.duration} 
+                                            readOnly 
+                                        />
+                                    </div>
+
+                                    <div className="flex flex-col border-l-2 border-[#641e16]/20 pl-4">
+                                        <label className="text-[10px] text-[#8d6e6a] uppercase font-bold flex items-center gap-1"><Globe size={10}/> Language</label>
+                                        <input 
+                                            className="bg-transparent text-[#641e16] font-bold outline-none py-1 cursor-default" 
+                                            value={courseData.language} 
+                                            readOnly 
+                                        />
+                                    </div>
+
+                                    <div className="flex flex-col border-l-2 border-[#641e16]/20 pl-4">
+                                        <label className="text-[10px] text-[#8d6e6a] uppercase font-bold flex items-center gap-1"><Award size={10}/> Level</label>
+                                        <input 
+                                            className="bg-transparent text-[#641e16] font-bold outline-none py-1 cursor-default" 
+                                            value={courseData.level} 
+                                            readOnly 
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Concern Box */}
+                            <div className="space-y-2">
+                                <label className={labelStyle}><MessageCircle size={14}/> Your Message</label>
+                                <textarea 
+                                    className={`${inputStyle} rounded-lg`} 
+                                    rows="4" 
+                                    placeholder="Tell us about your learning goals or any specific concerns..." 
+                                    required
+                                />
+                            </div>
+
+                            {/* Submit Button */}
+                            <motion.button
+                                whileHover={{ scale: 1.02, backgroundColor: "#4d1711" }}
+                                whileTap={{ scale: 0.98 }}
+                                className="relative overflow-hidden group bg-[#641e16] text-white py-5 rounded-2xl font-bold text-lg shadow-2xl transition-all duration-300 flex items-center justify-center gap-3"
+                            >
+                                <span className="relative z-10">Send Inquiry</span>
+                                <Send size={20} className="relative z-10 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                            </motion.button>
+
+                            <p className="text-center text-xs text-[#8d6e6a]">
+                                By clicking send, you agree to our <span className="underline cursor-pointer">Privacy Policy</span>.
+                            </p>
+                        </form>
                     </div>
                 </motion.div>
             </section>
 
-            {/* Map */}
-            <section className="max-w-6xl mx-auto px-6 mt-20">
-                <div className="h-72 bg-gray-300 rounded-xl flex items-center justify-center">
-                    <span className="bg-white px-6 py-3 rounded-full font-semibold">VISIT OUR ACADEMY</span>
-                </div>
-            </section>
-
-            {/* Footer */}
-            <footer className="mt-16 border-t border-[#D1B062]/40 py-8 text-center text-sm text-[#5f4b48]">
-                © {d.getFullYear()} Kaumudi Sanskrit Academy. All rights reserved.
-            </footer>
         </div>
     );
 }
