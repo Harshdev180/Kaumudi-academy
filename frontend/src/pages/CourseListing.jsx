@@ -9,15 +9,16 @@ import {
   ArrowUpRight,
   RotateCcw,
   Check,
-  Clock, BarChart3,
+  Clock,
+  BarChart3,
   Filter,
-  BookOpen
+  BookOpen,
 } from "lucide-react";
 
 const AllCoursesPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All Shastras");
-  const [modeFilter, setModeFilter] = useState([]); 
+  const [modeFilter, setModeFilter] = useState([]);
   const [levelFilter, setLevelFilter] = useState([]);
   const [durationFilter, setDurationFilter] = useState([]);
 
@@ -41,7 +42,8 @@ const AllCoursesPage = () => {
       level: "Beginner",
       mode: "ONLINE",
       price: "4,999",
-      image: "https://images.unsplash.com/photo-1544640808-32ca72ac7f37?auto=format&fit=crop&q=80&w=600",
+      image:
+        "https://images.unsplash.com/photo-1544640808-32ca72ac7f37?auto=format&fit=crop&q=80&w=600",
     },
     {
       id: 2,
@@ -52,7 +54,8 @@ const AllCoursesPage = () => {
       level: "Intermediate",
       mode: "LIVE",
       price: "6,499",
-      image: "https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&q=80&w=600",
+      image:
+        "https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&q=80&w=600",
     },
     {
       id: 3,
@@ -63,7 +66,8 @@ const AllCoursesPage = () => {
       level: "Advanced",
       mode: "ONLINE",
       price: "3,200",
-      image: "https://images.unsplash.com/photo-1516410529446-2c777cb7366d?auto=format&fit=crop&q=80&w=600",
+      image:
+        "https://images.unsplash.com/photo-1516410529446-2c777cb7366d?auto=format&fit=crop&q=80&w=600",
     },
     {
       id: 4,
@@ -74,7 +78,8 @@ const AllCoursesPage = () => {
       level: "Beginner",
       mode: "RECORDED",
       price: "2,999",
-      image: "https://images.unsplash.com/photo-1502136969935-8d8eef54d77b?auto=format&fit=crop&q=80&w=600",
+      image:
+        "https://images.unsplash.com/photo-1502136969935-8d8eef54d77b?auto=format&fit=crop&q=80&w=600",
     },
     {
       id: 5,
@@ -85,7 +90,8 @@ const AllCoursesPage = () => {
       level: "Intermediate",
       mode: "ONLINE",
       price: "5,500",
-      image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=600",
+      image:
+        "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=600",
     },
     {
       id: 6,
@@ -96,9 +102,9 @@ const AllCoursesPage = () => {
       level: "Advanced",
       mode: "LIVE",
       price: "7,800",
-      image: "https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?auto=format&fit=crop&q=80&w=600",
+      image:
+        "https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?auto=format&fit=crop&q=80&w=600",
     },
-    
   ];
 
   const resetFilters = () => {
@@ -136,11 +142,19 @@ const AllCoursesPage = () => {
 
       const matchesDuration =
         durationFilter.length === 0 ||
-        (durationFilter.includes("<3m") && course.duration.toLowerCase().includes("week")) ||
+        (durationFilter.includes("<3m") &&
+          course.duration.toLowerCase().includes("week")) ||
         (durationFilter.includes("6m") && course.duration.includes("6")) ||
-        (durationFilter.includes("1y+") && course.duration.toLowerCase().includes("year"));
+        (durationFilter.includes("1y+") &&
+          course.duration.toLowerCase().includes("year"));
 
-      return matchesSearch && matchesCategory && matchesMode && matchesLevel && matchesDuration;
+      return (
+        matchesSearch &&
+        matchesCategory &&
+        matchesMode &&
+        matchesLevel &&
+        matchesDuration
+      );
     });
   }, [searchQuery, activeCategory, modeFilter, levelFilter, durationFilter]);
 
@@ -152,7 +166,6 @@ const AllCoursesPage = () => {
 
   return (
     <div className="min-h-screen bg-[#f1e4c8] font-serif text-[#2D2417] selection:bg-[#B38B3F] selection:text-white antialiased">
-      
       {/* --- REFINED HERO SECTION --- */}
       <header className="px-4 lg:px-10 pt-6 pb-14 max-w-screen-2xl mx-auto">
         <div className="relative h-[420px] rounded-3xl overflow-hidden shadow-2xl border border-[#E2D4A6]/50">
@@ -165,20 +178,21 @@ const AllCoursesPage = () => {
 
           <div className="relative z-10 h-full flex flex-col justify-center px-8 lg:px-16">
             <div className="flex items-center gap-3 mb-5">
-                <div className="h-[1px] w-6 bg-[#c9a84e]"></div>
-                <span className="text-[13px] font-semibold uppercase tracking-widest text-[#c9a84e]">
-                  The Digital Gurukul
-                </span>
-              </div>
+              <div className="h-[1px] w-6 bg-[#c9a84e]"></div>
+              <span className="text-[13px] font-semibold uppercase tracking-widest text-[#c9a84e]">
+                The Digital Gurukul
+              </span>
+            </div>
 
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
-              Master the <span className="text-[#c9a84e] italic">Shastras</span> <br /> 
+              Master the <span className="text-[#c9a84e] italic">Shastras</span>{" "}
+              <br />
               with Living Traditions
             </h1>
 
             <p className="text-base md:text-lg text-[#E6E2D3] leading-relaxed max-w-xl opacity-90 font-light">
-              Bridge ancient heritage with modern structural analysis 
-              through our curated Shastra archives and expert-led pathways.
+              Bridge ancient heritage with modern structural analysis through
+              our curated Shastra archives and expert-led pathways.
             </p>
           </div>
         </div>
@@ -187,7 +201,6 @@ const AllCoursesPage = () => {
       {/* ================= SEARCH BAR (BELOW HERO) ================= */}
       <div className="px-6 lg:px-10 max-w-screen-2xl mx-auto -mt-10 relative z-30">
         <div className="bg-[#FBF4E2] rounded-2xl shadow-lg border border-[#EDE4CF] p-4 flex flex-col lg:flex-row lg:items-center gap-4">
-
           {/* Search Input */}
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
@@ -208,9 +221,9 @@ const AllCoursesPage = () => {
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
                   className={`whitespace-nowrap px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                    activeCategory === cat 
-                    ? "bg-[#74271E] text-white shadow-md shadow-[#74271E]/20" 
-                    : "bg-white text-[#6B5A3E] border border-[#E6DDC8] hover:border-[#B38B3F]"
+                    activeCategory === cat
+                      ? "bg-[#74271E] text-white shadow-md shadow-[#74271E]/20"
+                      : "bg-white text-[#6B5A3E] border border-[#E6DDC8] hover:border-[#B38B3F]"
                   }`}
                 >
                   {cat}
@@ -222,14 +235,15 @@ const AllCoursesPage = () => {
       </div>
 
       <div className="px-4 lg:px-10 max-w-screen-2xl mx-auto mt-12 grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-10">
-      
         {/* ================= FILTER SECTION ================= */}
         <aside className="space-y-6 pb-5">
           <div className="sticky top-24 bg-[#FBF4E2] rounded-3xl border border-[#E2D4A6]/60 p-8 shadow-sm">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-2">
                 <Filter className="w-4 h-4 text-[#74271E]" />
-                <h3 className="text-lg font-bold text-[#2D2417]">Refine Search</h3>
+                <h3 className="text-lg font-bold text-[#2D2417]">
+                  Refine Search
+                </h3>
               </div>
               <button
                 onClick={resetFilters}
@@ -242,21 +256,36 @@ const AllCoursesPage = () => {
             {/* Filter Groups */}
             <div className="space-y-10">
               {[
-                { title: "Mode of Study", state: modeFilter, setter: setModeFilter, options: [
-                  { label: "Online Live", val: "LIVE" },
-                  { label: "Self-paced", val: "RECORDED" },
-                  { label: "Physical Class", val: "PHYSICAL" }
-                ]},
-                { title: "Duration", state: durationFilter, setter: setDurationFilter, options: [
-                  { label: "Short-term", val: "<3m" },
-                  { label: "6 Months", val: "6m" },
-                  { label: "1 Year+", val: "1y+" },
-                ]},
-                { title: "Difficulty Level", state: levelFilter, setter: setLevelFilter, options: [
-                  { label: "Prathama (Beginner)", val: "Beginner" },
-                  { label: "Madhyama (Intermediate)", val: "Intermediate" },
-                  { label: "Kovida (Advanced)", val: "Advanced" }
-                ]}
+                {
+                  title: "Mode of Study",
+                  state: modeFilter,
+                  setter: setModeFilter,
+                  options: [
+                    { label: "Online Live", val: "LIVE" },
+                    { label: "Self-paced", val: "RECORDED" },
+                    { label: "Physical Class", val: "PHYSICAL" },
+                  ],
+                },
+                {
+                  title: "Duration",
+                  state: durationFilter,
+                  setter: setDurationFilter,
+                  options: [
+                    { label: "Short-term", val: "<3m" },
+                    { label: "6 Months", val: "6m" },
+                    { label: "1 Year+", val: "1y+" },
+                  ],
+                },
+                {
+                  title: "Difficulty Level",
+                  state: levelFilter,
+                  setter: setLevelFilter,
+                  options: [
+                    { label: "Prathama (Beginner)", val: "Beginner" },
+                    { label: "Madhyama (Intermediate)", val: "Intermediate" },
+                    { label: "Kovida (Advanced)", val: "Advanced" },
+                  ],
+                },
               ].map((group, i) => (
                 <div key={i}>
                   <p className="text-[10px] font-black tracking-[0.15em] text-[#8B6D31] mb-5 uppercase opacity-70">
@@ -264,13 +293,22 @@ const AllCoursesPage = () => {
                   </p>
                   <div className="space-y-3">
                     {group.options.map((opt) => (
-                      <label key={opt.val} className="flex items-center gap-3 group cursor-pointer">
+                      <label
+                        key={opt.val}
+                        className="flex items-center gap-3 group cursor-pointer"
+                      >
                         <div className="relative flex items-center justify-center">
                           <input
                             type="checkbox"
                             // Check if this specific value is in the state array
                             checked={group.state.includes(opt.val)}
-                            onChange={() => handleToggleFilter(group.state, group.setter, opt.val)}
+                            onChange={() =>
+                              handleToggleFilter(
+                                group.state,
+                                group.setter,
+                                opt.val,
+                              )
+                            }
                             className="peer appearance-none w-5 h-5 border-2 border-[#E2D4A6] rounded-md checked:bg-[#74271E] checked:border-[#74271E] transition-all"
                           />
                           <Check className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
@@ -287,10 +325,8 @@ const AllCoursesPage = () => {
           </div>
         </aside>
 
-
         {/* --- GRID OF KNOWLEDGE --- */}
         <main className="py-4">
-
           {filteredCourses.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredCourses.map((course) => (
@@ -319,39 +355,45 @@ const AllCoursesPage = () => {
                     </div> */}
                     <div className="flex items-center gap-2 mb-3">
                       <BookOpen className="w-3.5 h-3.5 text-[#B38B3F]" />
-                      <span className="text-[11px] font-bold text-[#8B6D31] uppercase tracking-wide">{course.category}</span>
+                      <span className="text-[11px] font-bold text-[#8B6D31] uppercase tracking-wide">
+                        {course.category}
+                      </span>
                     </div>
                     <h3 className="text-xl font-bold text-[#2D2417] leading-snug mb-3 group-hover:text-[#74271E] transition-colors">
                       {course.title}
                     </h3>
                     <p className="text-sm text-stone-600 leading-relaxed mb-2 line-clamp-3">
-                      Deep study into {course.category}. A {course.duration} immersive journey for {course.level} seekers.
+                      Deep study into {course.category}. A {course.duration}{" "}
+                      immersive journey for {course.level} seekers.
                     </p>
 
                     <div className="mt-auto">
                       <div className="flex items-center justify-between py-4 border-y border-[#E2D4A6]/30 mb-5">
                         <div className="flex items-center gap-1.5">
                           <Clock className="w-4 h-4 text-[#B38B3F]" />
-                          <span className="text-xs font-bold text-[#4A4135]">{course.duration}</span>
+                          <span className="text-xs font-bold text-[#4A4135]">
+                            {course.duration}
+                          </span>
                         </div>
                         <div className="flex items-center gap-1.5">
                           <BarChart3 className="w-4 h-4 text-[#B38B3F]" />
-                          <span className="text-xs font-bold text-[#4A4135]">{course.level}</span>
+                          <span className="text-xs font-bold text-[#4A4135]">
+                            {course.level}
+                          </span>
                         </div>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-lg font-bold text-[#74271E] tabular-nums tracking-tight">
                           ₹{course.price}
                         </span>
-                        <Link 
-                          to={`/course/${course.id}`} 
+                        <Link
+                          to={`/coursedetail`}
                           className="flex items-center  gap-2 px-3 py-2 bg-[#c9a84e] text-white text-[10px] font-bold uppercase tracking-wider rounded-md transition-all duration-300 hover:bg-[#b38b3f] shadow-sm active:scale-95 group/link"
                         >
-                          Learn More 
+                          Learn More
                           <ArrowUpRight className="w-3 h-3 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
                         </Link>
                       </div>
-                      
                     </div>
                   </div>
                 </div>
@@ -362,9 +404,16 @@ const AllCoursesPage = () => {
               <div className="w-16 h-16 bg-[#FDFCF7] rounded-full flex items-center justify-center mb-6 border border-[#E2D4A6]">
                 <Search className="w-6 h-6 text-stone-300" />
               </div>
-              <h3 className="text-2xl font-bold text-[#2D2417] mb-2">No Shastras Found</h3>
-              <p className="text-stone-500 italic mb-8">Try adjusting your filters to find what you seek.</p>
-              <button onClick={resetFilters} className="px-8 py-3 bg-[#74271E] text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all">
+              <h3 className="text-2xl font-bold text-[#2D2417] mb-2">
+                No Shastras Found
+              </h3>
+              <p className="text-stone-500 italic mb-8">
+                Try adjusting your filters to find what you seek.
+              </p>
+              <button
+                onClick={resetFilters}
+                className="px-8 py-3 bg-[#74271E] text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all"
+              >
                 Reset All Filters
               </button>
             </div>
@@ -379,7 +428,9 @@ const AllCoursesPage = () => {
               <button
                 key={n}
                 className={`w-11 h-11 flex items-center justify-center rounded-xl text-sm font-bold transition-all ${
-                  n === 1 ? "bg-[#74271E] text-white shadow-xl shadow-[#74271E]/20" : "text-[#8B6D31] bg-white border border-[#E2D4A6] hover:border-[#B38B3F]"
+                  n === 1
+                    ? "bg-[#74271E] text-white shadow-xl shadow-[#74271E]/20"
+                    : "text-[#8B6D31] bg-white border border-[#E2D4A6] hover:border-[#B38B3F]"
                 }`}
               >
                 {n}

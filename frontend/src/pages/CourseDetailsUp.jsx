@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Download, FileText, Play } from 'lucide-react';
-// Baaki imports wahi rahenge
+import { useLocation, useParams, useNavigate } from 'react-router-dom'; // useParams add kiya
 import HeroSection from '../component/CourseDetailsUpdated/HeroSection';
 import SidebarCard from '../component/CourseDetailsUpdated/SidebarCard';
 import InstructorSection from '../component/CourseDetailsUpdated/InstructorSection';
@@ -8,9 +8,41 @@ import CurriculumAccordion from '../component/CourseDetailsUpdated/CurriculumAcc
 import ScheduleTable from '../component/CourseDetailsUpdated/ScheduleTable';
 import Suggetion from '../component/CourseDetailsUpdated/suggetion';
 
+// Ye wahi data array hai jo aapne carousel mein use kiya hai
+
+
 const CourseDetails = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef(null);
+  const { id } = useParams(); 
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // 1. Default Data (Jo aapki image mein dikh raha hai)
+  const defaultCourse = {
+    id: "panini-01",
+    title: "Advanced Paninian Grammar: Mahabhashya Study",
+    level: "Advanced Certification",
+    description: "A comprehensive deep-dive into the foundational texts of Sanskrit linguistic philosophy under expert guidance.",
+    price: "14,999",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv8HjlPpt0rOT7SHaevW0xmnEg9DCgkEfvrA&s",
+    instructor: {
+        name: "Acharya Dr. Vasudev Shastry",
+        qualification: "PHD IN VYAKARANA, BANARAS HINDU UNIVERSITY",
+        bio: "With over 25 years of teaching experience, Acharya Vasudev has guided thousands of students through the complexities of Sanskrit Grammar.",
+        tags: ["25+ Yrs Exp", "100+ Publications", "Veda Ratna Awardee"]
+    }
+    // Baaki curriculum aur schedule data bhi yahan add kar sakte hain
+  };
+
+  // 2. Logic: Agar location.state mein data hai toh wo, nahi toh default wala (pic wala)
+  const courseData = location.state?.course || defaultCourse;
+
+  // 3. Scroll to Top Logic: Jab bhi courseData badle (Recommended click hone par)
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setIsPlaying(false); // Naye course par video stop ho jaye
+  }, [courseData]);
 
   const handlePlayVideo = () => {
     if (videoRef.current) {
@@ -20,103 +52,84 @@ const CourseDetails = () => {
   };
 
   return (
-     
-    <div className="bg-[#f1e4c8]  min-h-screen font-sans-serif  text-[#e6d0bd]">
-      
-      <div className="max-w-7xl  mx-auto p-4 md:p-10 ">
-        <HeroSection />
+    <div className="bg-[#f1e4c8] min-h-screen font-sans-serif text-[#e6d0bd]">
+      <div className="max-w-7xl mx-auto p-4 md:p-10">
+        <HeroSection data={courseData} />
       </div>
 
       <div className="max-w-7xl mx-auto p-4 md:p-10 grid grid-cols-1 lg:grid-cols-3 gap-5">
-        
-        {/* Left Column */}
         <div className="lg:col-span-2 space-y-12">
-          
-          {/* Video Preview Section */}
-          <section >
-             <div className="flex items-center gap-3 mb-4 -mt-14">
-        <div className="w-1.5 h-8 bg-[#d6b15c]"></div>
-        <h2 className="text-[28px] font-bold text-[#74271E]">Course Preview</h2>
-      </div>
-            
+          <section>
+            <div className="flex items-center gap-3 mb-4 -mt-14">
+              <div className="w-1.5 h-8 bg-[#d6b15c]"></div>
+              <h2 className="text-[28px] font-bold text-[#74271E]">Course Preview</h2>
+            </div>
             <div className="relative group aspect-video bg-black rounded-4xl overflow-hidden shadow-2xl border-[6px] border-white cursor-pointer">
-              {/* Actual HTML5 Video Tag */}
-            <video 
-  ref={videoRef}
-  className="w-full h-full object-cover"
-  poster="src/assets/image1.jpeg" // Aapka poster image
-  onPause={() => setIsPlaying(false)}
-  onPlay={() => setIsPlaying(true)}
-  controls={isPlaying} 
->
-  {/* Sanskrit Shloka Chanting Sample Video */}
-  <source 
-    src="https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c8/Gayatri_Mantra_chunted_by_a_Pandit.ogv/Gayatri_Mantra_chunted_by_a_Pandit.ogv.480p.vp9.webm" 
-    type="video/webm" 
-  />
-  <source 
-    src="https://www.w3schools.com/html/mov_bbb.mp4" 
-    type="video/mp4" 
-  />
-  Your browser does not support the video tag.
-</video>
+              <video 
+                ref={videoRef}
+                className="w-full h-full object-cover"
+                poster={courseData.image}
+                onPause={() => setIsPlaying(false)}
+                onPlay={() => setIsPlaying(true)}
+                controls={isPlaying} 
+              >
+                <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
 
-              {/* Custom Overlay (Only visible when NOT playing) */}
               {!isPlaying && (
-                <div 
-                  onClick={handlePlayVideo}
-                  className="absolute inset-0 z-10 flex flex-col justify-between p-6 bg-black/30 hover:bg-black/40 transition-all duration-300"
-                >
-                  {/* Play Button matching your image */}
+                <div onClick={handlePlayVideo} className="absolute inset-0 z-10 flex flex-col justify-between p-6 bg-black/30 hover:bg-black/40 transition-all duration-300">
                   <div className="flex justify-center items-center h-full">
                      <div className="w-20 h-20 bg-[#74271E] rounded-full flex items-center justify-center border-2 border-white/20 shadow-2xl transform transition-transform group-hover:scale-110">
                         <div className="ml-1 w-0 h-0 border-t-[14px] border-t-transparent border-l-[24px] border-l-white border-b-[14px] border-b-transparent"></div>
                      </div>
                   </div>
-                  
                 </div>
               )}
             </div>
           </section>
 
-          {/* Syllabus Download Box */}
           <div className="flex flex-col sm:flex-row items-center justify-between bg-[#F9F5F0] p-5 rounded-2xl border border-[#E8DFD3] shadow-sm gap-6">
             <div className="flex items-center gap-5">
               <div className="bg-[#74271E] p-3 rounded-xl text-white shadow-lg">
                 <FileText size={36} strokeWidth={1.5} />
               </div>
               <div className="space-y-1">
-                <h3 className="font-bold text-2xl md:text-[20px] text-[#3D1A16]">Full Course Syllabus</h3>
-                <p className="text-[#7A5C58] md:text-[18px] text-xl  italic font-small">
-                  Detailed curriculum, reading lists<br/>
+                <h3 className="font-bold text-2xl md:text-[20px] text-[#3D1A16]">{courseData.title} Syllabus</h3>
+                <p className="text-[#7A5C58] md:text-[18px] text-xl italic font-small">
+                  Curriculum for {courseData.level} level<br/>
                 </p>
               </div>
             </div>
-            
-            <button className="w-full sm:w-auto  bg-[#74271E] hover:bg-[#d6b15c] hover:text-[#631D11] text-white px-3 py-3 rounded-xl font-bold flex items-center justify-center gap-1 transition-all shadow-xl active:scale-95">
-               <Download size={22} />
-               Download Brochure
+
+            <button className="group relative flex items-center justify-center gap-3 overflow-hidden rounded-xl bg-[#74271E] px-8 py-3.5 font-bold text-white shadow-[0_10px_20px_rgba(116,39,30,0.3)] transition-all duration-300 hover:bg-[#d6b15c] hover:text-[#74271E] hover:shadow-[0_15px_30px_rgba(214,177,92,0.4)] active:scale-95 sm:w-max">
+              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
+              <Download 
+                size={22} 
+                className="transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-110" 
+              />
+              <span className="relative whitespace-nowrap text-[16px] tracking-wide">
+                Download Brochure
+              </span>
+              <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#74271E] transition-all duration-300 group-hover:w-full" />
             </button>
           </div>
 
-          <InstructorSection />
-          <CurriculumAccordion />
-          <ScheduleTable />
-          
+          <InstructorSection instructor={courseData.instructor} />
+          <CurriculumAccordion curriculumData={courseData.curriculum} />
+          <ScheduleTable scheduleData={courseData.schedule} />
         </div>
 
-        {/* Right Column */}
         <div className="lg:col-span-1">
           <div className="lg:sticky lg:top-25">
-            <SidebarCard />
+            <SidebarCard price={courseData.price}/>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto ">
-        <Suggetion />
-      </div>
+        <div className="max-w-7xl mx-auto">
+          <Suggetion />
+        </div>
       </div>
     </div>
-    
   );
 };
 

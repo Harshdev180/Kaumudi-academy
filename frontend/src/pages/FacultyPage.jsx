@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { BookOpen, GraduationCap, Award, ScrollText } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const FacultyPage = () => {
   const facultyMembers = [
@@ -73,46 +74,80 @@ const FacultyPage = () => {
 
   return (
     <>
-      {/* ============ HERO SECTION ============ */}
-      <section className="py-32 flex items-center justify-center bg-[#f1e4c8] px-4 relative overflow-hidden min-h-screen">
-        <div className="absolute inset-0 pointer-events-none opacity-5">
-          <div className="absolute top-10 left-10 text-9xl text-[#7b2d1f] font-serif">
-            ॐ
+      <section id="hero" className="relative min-h-[85vh] bg-[#f1e4c8] overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[900px] rounded-full bg-[#d6b15c]/20 blur-3xl" />
+          <div className="absolute inset-0 opacity-[0.06]">
+            <div className="absolute top-10 left-10 text-9xl text-[#7b2d1f] font-serif">ॐ</div>
+            <div className="absolute bottom-10 right-10 text-9xl text-[#7b2d1f] font-serif">श्री</div>
           </div>
-          <div className="absolute bottom-10 right-10 text-9xl text-[#7b2d1f] font-serif">
-            श्री
-          </div>
+          <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#f1e4c8] to-transparent" />
         </div>
-
-        <div className="max-w-4xl text-center space-y-6 relative z-10">
-          <motion.span
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-[#7b2d1f] text-lg uppercase tracking-[0.35em] font-bold block"
-          >
-            Our Mentors
-          </motion.span>
-
-          <motion.h1
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="font-serif text-5xl lg:text-7xl leading-[1.1] text-[#7b2d1f] font-bold"
-          >
-            Guardians of <br />
-            <span className="italic text-[#d6b25e]">Ancient Wisdom</span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-base sm:text-xl text-[#6b4b3e] max-w-2xl mx-auto leading-relaxed font-serif"
-          >
-            Our faculty comprises traditional scholars and modern academicians
-            dedicated to preserving and propagating the sanctity of Sanskrit.
-          </motion.p>
+        <div className="max-w-6xl mx-auto px-6 py-24 relative">
+          <div className="text-center">
+            <motion.span
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="inline-flex items-center gap-2 text-[#7b2d1f] text-xs sm:text-sm uppercase tracking-[0.35em] font-bold"
+            >
+              Our Mentors
+              <span className="inline-block w-8 h-[2px] bg-[#d6b15c]" />
+            </motion.span>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.25 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              className="relative mx-auto mt-6 h-10 w-[320px] sm:w-[420px] rounded-full overflow-hidden"
+            >
+              <motion.div
+                initial={{ x: "-60%" }}
+                animate={{ x: "60%" }}
+                transition={{ repeat: Infinity, repeatType: "mirror", duration: 3.2, ease: "easeInOut" }}
+                className="absolute inset-y-0 w-2/3 bg-gradient-to-r from-[#d6b15c]/40 via-[#d6b15c]/20 to-transparent blur-xl"
+              />
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.15 }}
+              className="mt-6 font-serif text-4xl sm:text-5xl lg:text-6xl leading-tight text-[#7b2d1f] font-extrabold"
+            >
+              Guided by
+              <span className="mx-3 px-3 py-1 rounded-2xl bg-[#d6b15c] text-[#74271E] italic">
+                Tradition
+              </span>
+              and Excellence
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="mt-6 max-w-3xl mx-auto text-[#6b4b3e] text-base sm:text-lg leading-relaxed font-serif"
+            >
+              Learn with scholars rooted in parampara and fluent in modern pedagogy.
+              Engage in authentic, rigorous study under direct guidance.
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.45 }}
+              className="mt-10 flex flex-wrap justify-center gap-4"
+            >
+              <Link
+                to="/allcourses"
+                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-[#74271E] text-white font-bold shadow-lg hover:bg-[#5e1f18] transition"
+              >
+                Explore Courses
+              </Link>
+              <Link
+                to="/contact"
+                className="inline-flex items-center justify-center px-8 py-4 rounded-full border-2 border-[#74271E] text-[#74271E] font-bold bg-white hover:bg-[#f9f4ea] transition"
+              >
+                Contact Academy
+              </Link>
+            </motion.div>
+          </div>
         </div>
       </section>
 

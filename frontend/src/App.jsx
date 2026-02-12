@@ -1,19 +1,15 @@
 import "./App.css";
-
 import { Route, Routes, Outlet } from "react-router-dom";
-
 import Dashboard from "./pages/AdminDashboard/Dashboard";
 import AdminLayout from "./pages/AdminDashboard/AdminLayout";
 import LeadManagement from "./pages/AdminDashboard/LeadManagement";
 import AdminLogin from "./pages/AdminDashboard/AdminLogin";
 import CourseManagement from "./pages/AdminDashboard/CourseManagement";
 import AllCoursesPage from "./pages/CourseListing";
-
 import CourseDetail from "./pages/CourseDetailsUp";
 import Inquiry from "./pages/AdminDashboard/Inquiry";
-
-import Signup from "./component/Auth/signup";
-import Signin from "./component/Auth/login";
+// import Signup from "./component/Auth/signup";
+// import Signin from "./component/Auth/login";
 import Home from "./pages/Homepage/Home";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -21,6 +17,12 @@ import ScrollToTop from "./components/ScrollToTop";
 import About from "./pages/About";
 import FacultyPage from "./pages/FacultyPage";
 import Contact from "./pages/Contact";
+
+import Sign from "./component/Auth/loginSignup";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsConditions from "./pages/TermsConditions";
+import CookiePolicy from "./pages/CookiePolicy.jsx";
+import StudentProfile from "./pages/StudentProfile";
 
 // Public site layout with shared navbar/footer
 function PublicLayout() {
@@ -62,10 +64,15 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/faculty" element={<FacultyPage />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Signin />} />
         <Route path="/inquiry" element={<Inquiry />} />
+        <Route path="/profile" element={<StudentProfile />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsConditions />} />
+        <Route path="/cookies" element={<CookiePolicy />} />
       </Route>
+
+      {/* Auth routes without navbar/footer */}
+      <Route path="/auth" element={<Sign />} />
 
       {/* Admin nested routes */}
       <Route path="/admin" element={<AdminLayout />}>

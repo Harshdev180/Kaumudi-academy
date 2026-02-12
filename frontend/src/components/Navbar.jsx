@@ -116,7 +116,7 @@ export default function Navbar() {
 
         {/* ---------------- RIGHT ACTIONS ---------------- */}
         <div className="flex items-center gap-4">
-          <Link to="/login" className="hidden md:block">
+          <Link to="/auth" className="hidden md:block">
             <motion.span
               whileHover={{ scale: 1.06 }}
               whileTap={{ scale: 0.94 }}
@@ -165,7 +165,7 @@ export default function Navbar() {
               ))}
 
               <div className="pt-5 border-t border-[#dccbb4]/25">
-                <Link to="/login" onClick={() => setOpen(false)}>
+                <Link to="/auth" onClick={() => setOpen(false)}>
                   <span className="block text-center py-3 rounded-xl bg-[#d6b15c] text-[#74271E] font-bold text-lg shadow-lg hover:shadow-xl transition">
                     Student Login
                   </span>
