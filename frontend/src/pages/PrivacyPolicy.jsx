@@ -60,9 +60,9 @@ export default function PrivacyPolicy() {
                     block px-3 py-2 rounded-md border-l-4 border-transparent
                     transition-all duration-200
 
-                    hover:bg-[#7b2d1f]/10
-                    hover:text-[#7b2d1f]
-                    hover:border-[#7b2d1f]
+                    hover:bg-[#d6b25e]/10
+                    hover:text-white
+                    hover:border-[#d6b25e]
                   "
                 >
                   {item.label}
