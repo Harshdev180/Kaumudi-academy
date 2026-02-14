@@ -60,10 +60,16 @@ export default function PrivacyPolicy() {
                     block px-3 py-2 rounded-md border-l-4 border-transparent
                     transition-all duration-200
 
+<<<<<<< HEAD
                     hover:bg-[white]/5
                     hover:text-[white]
                     hover:border-[white]
                     hover:translate-x-1
+=======
+                    hover:bg-[#d6b25e]/10
+                    hover:text-white
+                    hover:border-[#d6b25e]
+>>>>>>> 5c9762aade1f85808f79848e32adde8b091c3031
                   "
                 >
                   {item.label}
