@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import CountUp from "react-countup";
 
 export default function About() {
-const [openIndex, setOpenIndex] = useState(null);
+  const [openIndex, setOpenIndex] = useState(null);
   const stats = [
     {
       value: 5000,
@@ -25,96 +25,47 @@ const [openIndex, setOpenIndex] = useState(null);
   ];
   return (
     <>
-      {/* ============ HERO SECTION ============ */}
-
       <section
         id="hero"
-        className="relative min-h-[85vh] bg-[#f1e4c8] overflow-hidden"
+        className="relative min-h-[85vh] flex items-center justify-center text-center overflow-hidden bg-cover bg-center"
+        style={{
+          backgroundImage:
+            'url("https://i.pinimg.com/1200x/af/ae/dc/afaedc962bf87797dc1c84e79f67a849.jpg")',
+        }}
       >
-        <div className="absolute inset-0">
-          <div
-  className="absolute -top-24 left-1/2 -translate-x-1/2 w-[900px] h-[900px] rounded-full blur-3xl bg-[#d6b15c]/20"
-  style={{
-    backgroundImage: `url("/about.jpg")`,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    backgroundBlendMode: "overlay",
-  }}
-/>
-
-          <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#f1e4c8] to-transparent" />
-        </div>
-        <div className="max-w-6xl mx-auto px-6 py-28 relative">
-          <div className="text-center">
-            <motion.span
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 text-[#7b2d1f] text-xs sm:text-sm uppercase tracking-[0.35em] font-bold"
+        <div className="absolute inset-0 bg-[#2c2820]/60" />
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative max-w-3xl px-6"
+        >
+          <span className="text-[#d6b15c] uppercase tracking-[0.35em] text-sm font-bold">
+            About Us
+          </span>
+          <h1 className="mt-6 font-serif text-4xl md:text-6xl font-extrabold text-white leading-tight">
+            Preserving Heritage <br />
+            <span className="text-[#d6b15c] italic">for Modern Seekers</span>
+          </h1>
+          <p className="mt-6 text-gray-200 text-lg leading-relaxed">
+            Rooted in guru–śiṣya parampara, refined for contemporary learners,
+            we bridge timeless wisdom with professional pedagogy.
+          </p>
+          <div className="mt-10 flex flex-wrap justify-center gap-4">
+            <a
+              className="px-8 py-4 rounded-full bg-[#d6b15c] text-[#74271E] font-bold hover:scale-105 transition"
+              href="/allcourses"
             >
-              About us
-              <span className="inline-block w-8 h-[2px] bg-[#d6b15c]" />
-            </motion.span>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.25 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-              className="relative mx-auto mt-6 h-10 w-[320px] sm:w-[420px] rounded-full overflow-hidden"
+              Explore Courses
+            </a>
+            <a
+              className="px-8 py-4 rounded-full border border-white text-white hover:bg-white hover:text-[#74271E] transition"
+              href="/contact"
             >
-              <motion.div
-                initial={{ x: "-60%" }}
-                animate={{ x: "60%" }}
-                transition={{
-                  repeat: Infinity,
-                  repeatType: "mirror",
-                  duration: 3.2,
-                  ease: "easeInOut",
-                }}
-                className="absolute inset-y-0 w-2/3 bg-gradient-to-r from-[#d6b15c]/40 via-[#d6b15c]/20 to-transparent blur-xl"
-              />
-            </motion.div>
-            <motion.h1
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.15 }}
-              className="mt-6 font-serif text-4xl sm:text-5xl lg:text-6xl leading-tight text-[#7b2d1f] font-extrabold"
-            >
-              Where Heritage Meets
-              <span className="mx-3 px-3 py-1 rounded-2xl bg-[#d6b15c] text-[#74271E] italic">
-                Excellence
-              </span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="mt-6 max-w-3xl mx-auto text-[#6b4b3e] text-base sm:text-lg leading-relaxed font-serif"
-            >
-              Rooted in the guru–śiṣya parampara, refined for modern seekers. We
-              preserve Shastric integrity while crafting an accessible path to
-              mastery.
-            </motion.p>
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.45 }}
-              className="mt-10 flex flex-wrap justify-center gap-4"
-            >
-              <a
-                href="/allcourses"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-[#74271E] text-white font-bold shadow-lg hover:bg-[#5e1f18] transition"
-              >
-                Explore Courses
-              </a>
-              <a
-                href="/faculty"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-full border-2 border-[#74271E] text-[#74271E] font-bold bg-white hover:bg-[#f9f4ea] transition"
-              >
-                Meet Our Faculty
-              </a>
-            </motion.div>
+              Contact Academy
+            </a>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* ============ OUR HERITAGE SECTION ============ */}
@@ -366,65 +317,63 @@ const [openIndex, setOpenIndex] = useState(null);
       </section>
       {/* ========================================================= */}
       {/* FAQ */}
-     <section className="py-20 bg-[#f1e4c8]">
-  <div className="max-w-[900px] mx-auto px-5">
-    <h3 className="text-3xl md:text-4xl font-black text-[#74271E] text-center">
-      Questions & Clarity
-    </h3>
+      <section className="py-20 bg-[#f1e4c8]">
+        <div className="max-w-[900px] mx-auto px-5">
+          <h3 className="text-3xl md:text-4xl font-black text-[#74271E] text-center">
+            Questions & Clarity
+          </h3>
 
-    <div className="mt-8 space-y-3">
-      {[
-        {
-          q: "Are the courses beginner friendly?",
-          a: "Yes. We offer a dedicated ‘Praveshika’ level crafted for absolute beginners, even for those with no prior familiarity with the Devanagari script or Sanskrit language.",
-        },
-        {
-          q: "Do you provide certification?",
-          a: "Yes. Learners receive academically recognized certificates upon successful completion, evaluated by our internal scholarly board.",
-        },
-        {
-          q: "Can I learn at my own pace?",
-          a: "Absolutely. We support both live guided cohorts and self-paced study tracks, complete with recorded sessions, curated readings, and practice materials.",
-        },
-        {
-          q: "Are the teachings rooted in traditional Shastra?",
-          a: "Yes. Our curriculum is firmly grounded in authentic Shastric traditions while being presented through modern pedagogy for clarity and accessibility.",
-        },
-        {
-          q: "Will I receive guidance from experienced Pandits?",
-          a: "Certainly. Our courses are led by seasoned Pandits and scholars trained in the traditional guru-shishya lineage, ensuring depth, discipline, and authenticity.",
-        },
-      ].map((item, idx) => {
-        const isOpen = openIndex === idx;
+          <div className="mt-8 space-y-3">
+            {[
+              {
+                q: "Are the courses beginner friendly?",
+                a: "Yes. We offer a dedicated ‘Praveshika’ level crafted for absolute beginners, even for those with no prior familiarity with the Devanagari script or Sanskrit language.",
+              },
+              {
+                q: "Do you provide certification?",
+                a: "Yes. Learners receive academically recognized certificates upon successful completion, evaluated by our internal scholarly board.",
+              },
+              {
+                q: "Can I learn at my own pace?",
+                a: "Absolutely. We support both live guided cohorts and self-paced study tracks, complete with recorded sessions, curated readings, and practice materials.",
+              },
+              {
+                q: "Are the teachings rooted in traditional Shastra?",
+                a: "Yes. Our curriculum is firmly grounded in authentic Shastric traditions while being presented through modern pedagogy for clarity and accessibility.",
+              },
+              {
+                q: "Will I receive guidance from experienced Pandits?",
+                a: "Certainly. Our courses are led by seasoned Pandits and scholars trained in the traditional guru-shishya lineage, ensuring depth, discipline, and authenticity.",
+              },
+            ].map((item, idx) => {
+              const isOpen = openIndex === idx;
 
-        return (
-          <div
-            key={idx}
-            className="rounded-2xl bg-[#fff9e9] shadow-sm p-4 cursor-pointer"
-            onClick={() =>
-              setOpenIndex(isOpen ? null : idx)
-            }
-          >
-            <div className="flex items-center justify-between">
-              <span className="font-semibold text-[#74271E]">
-                {item.q}
-              </span>
-              <span className="text-[#74271E] text-xl">
-                {isOpen ? "−" : "+"}
-              </span>
-            </div>
+              return (
+                <div
+                  key={idx}
+                  className="rounded-2xl bg-[#fff9e9] shadow-sm p-4 cursor-pointer"
+                  onClick={() => setOpenIndex(isOpen ? null : idx)}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-[#74271E]">
+                      {item.q}
+                    </span>
+                    <span className="text-[#74271E] text-xl">
+                      {isOpen ? "−" : "+"}
+                    </span>
+                  </div>
 
-            {isOpen && (
-              <p className="mt-2 text-[#7b5a4c] leading-relaxed">
-                {item.a}
-              </p>
-            )}
+                  {isOpen && (
+                    <p className="mt-2 text-[#7b5a4c] leading-relaxed">
+                      {item.a}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
           </div>
-        );
-      })}
-    </div>
-  </div>
-</section>
+        </div>
+      </section>
     </>
   );
 }
