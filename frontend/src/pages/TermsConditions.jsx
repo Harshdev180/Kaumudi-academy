@@ -15,13 +15,14 @@ export default function TermsCondition() {
               "url('https://thumbs.dreamstime.com/b/antique-literature-collection-old-fashioned-wisdom-preserved-generative-ai-antique-literature-collection-old-fashioned-wisdom-274867858.jpg')",
           }}
         >
-          <div className="absolute inset-0 bg-black/55" />
+          {/* <div className="absolute inset-0 bg-black/55" /> */}
+          <div className="absolute inset-0 bg-[#7b2d1f]/60 pointer-events-none" />
 
           <div className="relative z-10 h-full flex flex-col items-center justify-center text-white text-center">
             <h1 className="text-4xl md:text-5xl font-serif font-bold mb-2">
               Terms & Conditions
             </h1>
-            <p className="text-sm tracking-wide opacity-90">
+            <p className="text-sm tracking-wide opacity-90 font-bold">
               Please read these terms carefully before using our services
             </p>
           </div>
@@ -36,16 +37,16 @@ export default function TermsCondition() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="bg-[#fff9e9] rounded-2xl p-6 h-fit sticky top-24 shadow-lg"
+          className="bg-[#7b2d1f] rounded-2xl p-6 h-fit sticky top-24 shadow-lg"
         >
-          <h3 className="font-serif font-bold text-[#7b2d1f] mb-2 text-2xl">
+          <h3 className="font-serif font-bold text-[white] mb-2 text-2xl">
             Table of Contents
           </h3>
 
           {/* underline added */}
           <div className="w-12 h-[2px] bg-[#d6b25e] mb-4"></div>
 
-          <ul className="space-y-1 text-sm text-[#6b4b3e]">
+          <ul className="space-y-1 text-sm text-[white]">
             {[
               { label: "Acceptance of Terms", href: "#acceptance" },
               { label: "Use of Services", href: "#use-of-services" },
@@ -65,9 +66,9 @@ export default function TermsCondition() {
                     block px-3 py-2 rounded-md border-l-4 border-transparent
                     transition-all duration-200
 
-                    hover:bg-[#7b2d1f]/10
-                    hover:text-[#7b2d1f]
-                    hover:border-[#7b2d1f]
+                    hover:bg-[white]/5
+                    hover:text-[white]
+                    hover:border-[white]
                     hover:translate-x-1
                   "
                 >
@@ -84,7 +85,7 @@ export default function TermsCondition() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="bg-[#fff9e9] rounded-3xl shadow-xl p-10 lg:p-14 text-[#6b4b3e] leading-relaxed"
+          className="bg-[#f1e4c8] rounded-3xl p-10 lg:p-6 text-[#6b4b3e] leading-relaxed"
         >
           {/* ACCEPTANCE */}
           <h2

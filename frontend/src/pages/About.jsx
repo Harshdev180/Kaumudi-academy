@@ -32,7 +32,16 @@ const [openIndex, setOpenIndex] = useState(null);
         className="relative min-h-[85vh] bg-[#f1e4c8] overflow-hidden"
       >
         <div className="absolute inset-0">
-          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[900px] h-[900px] rounded-full bg-[#d6b15c]/20 blur-3xl" />
+          <div
+  className="absolute -top-24 left-1/2 -translate-x-1/2 w-[900px] h-[900px] rounded-full blur-3xl bg-[#d6b15c]/20"
+  style={{
+    backgroundImage: `url("/about.jpg")`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundBlendMode: "overlay",
+  }}
+/>
+
           <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#f1e4c8] to-transparent" />
         </div>
         <div className="max-w-6xl mx-auto px-6 py-28 relative">

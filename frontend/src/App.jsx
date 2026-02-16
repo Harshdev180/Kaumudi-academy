@@ -8,6 +8,7 @@ import CourseManagement from "./pages/AdminDashboard/CourseManagement";
 import AllCoursesPage from "./pages/CourseListing";
 import CourseDetail from "./pages/CourseDetailsUp";
 import Inquiry from "./pages/AdminDashboard/Inquiry";
+import Buy from "./pages/AdminDashboard/courseBuy";
 // import Signup from "./component/Auth/signup";
 // import Signin from "./component/Auth/login";
 import Home from "./pages/Homepage/Home";
@@ -70,6 +71,7 @@ function App() {
         <Route path="/faculty" element={<FacultyPage />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/inquiry" element={<Inquiry />} />
+        <Route path="/courseBuy" element={<Buy />} />
         <Route path="/profile" element={<StudentProfile />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsConditions />} />

@@ -29,7 +29,7 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="w-full flex items-center justify-center bg-[#f1e4c8] p-4 relative overflow-hidden font-serif">
+    <div className="w-full min-h-screen flex items-center justify-center bg-[#f1e4c8] p-4 relative overflow-hidden font-sans-serif">
       {/* --- BACKGROUND SPIRITUAL ELEMENTS --- */}
       {/* Rotating Mandala Left */}
       <motion.div
@@ -55,12 +55,12 @@ const AuthPage = () => {
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className={`relative bg-[#fffcf5] w-full max-w-[1000px] min-h-[700px] rounded-[50px] shadow-[0_50px_120px_rgba(116,39,30,0.25)] overflow-hidden flex flex-col md:flex-row transition-all duration-1000 ease-in-out ${!isLogin ? "md:flex-row-reverse" : ""}`}
+        className={`relative bg-[#fffcf5] w-full max-w-[1000px] min-h-[600px] rounded-[50px] shadow-[0_50px_120px_rgba(116,39,30,0.25)] overflow-hidden flex flex-col md:flex-row transition-all duration-1000 ease-in-out ${!isLogin ? "md:flex-row-reverse" : ""}`}
       >
         {/* --- LEFT SIDE: THE GURUKUL EXPERIENCE --- */}
         <motion.div
           layout
-          className="relative w-full md:w-[50%] h-[350px] md:h-auto bg-[#74271E] overflow-hidden"
+          className="relative w-full md:w-[50%] h-[320px] md:h-auto bg-[#74271E] overflow-hidden"
         >
           {/* Main Image with Vedic Filter */}
           <motion.img
@@ -76,7 +76,7 @@ const AuthPage = () => {
             className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay"
           />
 
-          <div className="absolute inset-0 bg-gradient-to-t from-[#74271E] via-transparent to-black/40 p-12 flex flex-col justify-between z-10 text-white">
+          <div className="absolute inset-0 bg-gradient-to-t from-[#74271E] via-transparent to-black/40 p-10 flex flex-col justify-between z-10 text-white">
             {/* Logo Section */}
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -91,26 +91,26 @@ const AuthPage = () => {
             </motion.div>
 
             {/* Shloka and Message */}
-            <div className="space-y-6">
+            <div className="space-y-4">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={isLogin ? "msg1" : "msg2"}
                   initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 30 }}
-                  className="space-y-4"
+                  className="space-y-3"
                 >
-                  <div className="inline-block px-3 py-1 bg-[#b8973d] text-[#74271E] text-[10px] font-bold rounded-full mb-2">
+                  <div className="inline-block px-3 py-1 bg-[#b8973d] text-[#74271E] text-[10px] font-bold rounded-full mb-1">
                     {isLogin ? "पुनरागतं स्वागतम्" : "नूतन पञ्जीकरणम्"}
                   </div>
-                  <h2 className="text-4xl md:text-5xl font-black leading-tight">
+                  <h2 className="text-3xl md:text-4xl font-black leading-tight">
                     {isLogin ? "Deepen Your" : "Start Your"} <br />
                     <span className="text-[#b8973d]">Vedic Journey.</span>
                   </h2>
-                  <p className="text-gray-300 text-sm italic font-light leading-relaxed">
+                  <p className="text-gray-300 text-[11px] italic font-light leading-relaxed">
                     {isLogin ? (
                       <>
-                        <span className="text-[#b8973d] font-bold not-italic block mb-1">
+                        <span className="text-[#b8973d] font-bold not-italic block mb-0.5">
                           “सा विद्या या विमुक्तये”
                         </span>
                         <span className="opacity-70">
@@ -119,7 +119,7 @@ const AuthPage = () => {
                       </>
                     ) : (
                       <>
-                        <span className="text-[#b8973d] font-bold not-italic block mb-1">
+                        <span className="text-[#b8973d] font-bold not-italic block mb-0.5">
                           “न हि ज्ञानेन सदृशं पवित्रमिह विद्यते”
                         </span>
                         <span className="opacity-70">
@@ -144,7 +144,7 @@ const AuthPage = () => {
         {/* --- RIGHT SIDE: THE FORM --- */}
         <motion.div
           layout
-          className="w-full md:w-[50%] p-8 md:p-16 flex flex-col justify-center bg-[#fffcf5] relative"
+          className="w-full md:w-[50%] p-6 md:p-12 flex flex-col justify-center bg-[#fffcf5] relative"
         >
           <AnimatePresence mode="wait">
             <motion.div
@@ -154,22 +154,22 @@ const AuthPage = () => {
               animate="animate"
               exit="exit"
               transition={{ duration: 0.5 }}
-              className="w-full"
+              className={`w-full ${isLogin ? "space-y-10" : "space-y-0"}`}
             >
-              <header className="mb-8">
-                <h1 className="text-4xl font-black text-[#74271E] mb-2">
+              <header className={isLogin ? "mb-8" : "mb-4"}>
+                <h1 className="text-3xl font-black text-[#74271E] mb-1">
                   {isLogin ? "Welcome Back" : "Join the Gurukul"}
                 </h1>
-                <p className="text-[#8c7a56] text-sm font-medium">
+                <p className="text-[#8c7a56] text-[12px] font-medium">
                   {isLogin
                     ? "Sign in to access your Vedas and lessons."
                     : "Register yourself for the divine wisdom."}
                 </p>
               </header>
 
-              <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+              <form className={isLogin ? "space-y-6" : "space-y-3"} onSubmit={(e) => e.preventDefault()}>
                 {!isLogin && (
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
                     <InputGroup label="First Name " placeholder="Vikram" />
                     <InputGroup label="Last Name " placeholder="Shastri" />
                   </div>
@@ -183,11 +183,11 @@ const AuthPage = () => {
 
                 <div className="space-y-1.5">
                   <div className="flex justify-between px-1">
-                    <label className="text-[10px] font-bold text-[#8c7a56] uppercase tracking-wider">
+                    <label className="text-[10px] font-bold text-[#74271E] uppercase tracking-wider">
                       Password{" "}
                     </label>
                     {isLogin && (
-                      <button className="text-[10px] font-bold text-[#b8973d] hover:underline transition-all">
+                      <button className="text-[10px] font-bold text-[#74271E] hover:underline transition-all">
                         Forgot?
                       </button>
                     )}
@@ -196,17 +196,33 @@ const AuthPage = () => {
                     <input
                       type={showPass ? "text" : "password"}
                       placeholder="••••••••"
-                      className="w-full px-5 py-3.5 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner"
+                      className="w-full px-5 py-3 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner text-sm"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPass(!showPass)}
-                      className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#b8973d] transition-colors"
+                      className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#74271E] transition-colors"
                     >
                       {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
                 </div>
+
+                {/* --- CONFIRM PASSWORD FIELD (Signup Only) --- */}
+                {!isLogin && (
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-[#74271E] uppercase tracking-wider px-1">
+                      Confirm Password
+                    </label>
+                    <div className="relative group">
+                      <input
+                        type={showPass ? "text" : "password"}
+                        placeholder="••••••••"
+                        className="w-full px-5 py-3 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner text-sm"
+                      />
+                    </div>
+                  </div>
+                )}
 
                 <motion.button
                   whileHover={{
@@ -214,9 +230,9 @@ const AuthPage = () => {
                     boxShadow: "0 20px 40px rgba(116,39,30,0.2)",
                   }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full bg-[#74271E] py-4 rounded-2xl font-bold text-white uppercase tracking-[0.3em] flex items-center justify-center gap-3 mt-4 relative group"
+                  className={`w-full bg-[#74271E] py-4 rounded-2xl font-bold text-white uppercase tracking-[0.3em] flex items-center justify-center gap-3 relative group ${isLogin ? "mt-6" : "mt-2"}`}
                 >
-                  <span className="relative z-10">
+                  <span className="relative z-10 text-xs">
                     {isLogin ? "Enter Gurukul" : "Create Account"}
                   </span>
                   <Sparkles
@@ -227,8 +243,8 @@ const AuthPage = () => {
               </form>
 
               {/* Social Login Section */}
-              <div className="mt-8">
-                <div className="relative flex items-center justify-center mb-6">
+              <div className={isLogin ? "mt-10" : "mt-6"}>
+                <div className="relative flex items-center justify-center mb-5">
                   <div className="w-full h-[1px] bg-gray-200" />
                   <span className="absolute bg-[#fffcf5] px-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">
                     Or Continue With
@@ -241,8 +257,8 @@ const AuthPage = () => {
               </div>
 
               {/* Toggle Switch */}
-              <footer className="mt-10 text-center">
-                <p className="text-sm text-[#8c7a56] font-medium">
+              <footer className={isLogin ? "mt-10 text-center" : "mt-6 text-center"}>
+                <p className="text-xs text-[#8c7a56] font-medium">
                   {isLogin ? "New to the Academy?" : "Already a Vidhyarthi?"}
                   <button
                     onClick={() => setIsLogin(!isLogin)}
@@ -263,14 +279,14 @@ const AuthPage = () => {
 // --- SUB-COMPONENTS ---
 
 const InputGroup = ({ label, placeholder, type = "text" }) => (
-  <div className="space-y-1.5 flex-1">
-    <label className="text-[10px] font-bold text-[#8c7a56] uppercase tracking-wider ml-1">
+  <div className="space-y-1 flex-1">
+    <label className="text-[10px] font-bold text-[#74271E] uppercase tracking-wider ml-1">
       {label}
     </label>
     <input
       type={type}
       placeholder={placeholder}
-      className="w-full px-5 py-3.5 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner text-sm"
+      className="w-full px-5 py-3 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner text-sm"
     />
   </div>
 );
@@ -278,10 +294,10 @@ const InputGroup = ({ label, placeholder, type = "text" }) => (
 const SocialButton = ({ provider }) => (
   <motion.button
     whileHover={{ y: -2, backgroundColor: "#fdfaf2" }}
-    className="flex-1 border border-[#e8dfc4] py-3 rounded-2xl flex items-center justify-center gap-3 text-[11px] font-bold text-[#74271E] transition-all active:scale-95 shadow-sm"
+    className="flex-1 border border-[#e8dfc4] py-3 rounded-2xl flex items-center justify-center gap-3 text-[10px] font-bold text-[#74271E] transition-all active:scale-95 shadow-sm"
   >
     {provider === "Google" ? (
-      <svg width="16" height="16" viewBox="0 0 24 24">
+      <svg width="14" height="14" viewBox="0 0 24 24">
         <path
           d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
           fill="#4285F4"
@@ -300,7 +316,7 @@ const SocialButton = ({ provider }) => (
         />
       </svg>
     ) : (
-      <svg width="16" height="16" fill="#1877F2" viewBox="0 0 24 24">
+      <svg width="14" height="14" fill="#1877F2" viewBox="0 0 24 24">
         <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
       </svg>
     )}

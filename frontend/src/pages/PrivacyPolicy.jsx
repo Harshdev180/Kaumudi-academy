@@ -16,13 +16,13 @@ export default function PrivacyPolicy() {
               "url('https://i.pinimg.com/1200x/19/6c/f4/196cf4706012f8407a08c0cf7db51339.jpg')",
           }}
         >
-          <div className="absolute inset-0 bg-black/55" />
+          <div className="absolute inset-0 bg-[#7b2d1f]/60 pointer-events-none" />
 
           <div className="relative z-10 h-full flex flex-col items-center justify-center text-white text-center">
             <h1 className="text-4xl md:text-5xl font-serif font-bold mb-2">
               Privacy Policy
             </h1>
-            <p className="text-sm tracking-wide opacity-90">
+            <p className="text-sm tracking-wide opacity-90 font-bold">
               How We Collect, Use, and Protect Your Information
             </p>
           </div>
@@ -37,15 +37,15 @@ export default function PrivacyPolicy() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="bg-[#fff9e9] rounded-2xl p-6 h-fit sticky top-24 shadow-lg"
+          className="bg-[#7b2d1f] rounded-2xl p-6 h-fit sticky top-24 shadow-lg"
         >
-          <h3 className="font-serif font-bold text-[#7b2d1f] mb-2 text-2xl">
+          <h3 className="font-serif font-bold text-[white] mb-2 text-2xl">
             Table of Contents
           </h3>
 
           <div className="w-14 h-[2px] bg-[#d6b25e] mb-4"></div>
 
-          <ul className="space-y-1 text-s text-[#6b4b3e]">
+          <ul className="space-y-1 text-s text-[white]">
             {[
               { label: "Introduction", href: "#introduction" },
               { label: "Data Collection", href: "#data-collection" },
@@ -60,9 +60,16 @@ export default function PrivacyPolicy() {
                     block px-3 py-2 rounded-md border-l-4 border-transparent
                     transition-all duration-200
 
-                    hover:bg-[#7b2d1f]/10
-                    hover:text-[#7b2d1f]
-                    hover:border-[#7b2d1f]
+<<<<<<< HEAD
+                    hover:bg-[white]/5
+                    hover:text-[white]
+                    hover:border-[white]
+                    hover:translate-x-1
+=======
+                    hover:bg-[#d6b25e]/10
+                    hover:text-white
+                    hover:border-[#d6b25e]
+>>>>>>> 5c9762aade1f85808f79848e32adde8b091c3031
                   "
                 >
                   {item.label}
