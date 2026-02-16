@@ -23,6 +23,11 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions";
 import CookiePolicy from "./pages/CookiePolicy.jsx";
 import StudentProfile from "./pages/StudentProfile";
+import AdminRegister from "./pages/AdminDashboard/AdminRegister.jsx";
+import NotificationsPage from "./pages/AdminDashboard/NotificationPage.jsx";
+import CouponPage from "./pages/AdminDashboard/CouponPage.jsx";
+import AdminSettings from "./pages/AdminDashboard/AdminSettings.jsx";
+import AdminStaffSalary from "./pages/AdminDashboard/AdminStaffSalary.jsx";
 
 // Public site layout with shared navbar/footer
 function PublicLayout() {
@@ -80,10 +85,16 @@ function App() {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="lead" element={<LeadManagement />} />
         <Route path="course" element={<CourseManagement />} />
+        <Route path="coupon" element={<CouponPage />} />
+        <Route path="/admin/staff-salary" element={<AdminStaffSalary />} />
       </Route>
 
       {/* Admin login outside admin layout */}
       <Route path="/admin-login" element={<AdminLogin />} />
+      <Route path="/admin-register" element={<AdminRegister />} />
+      <Route path="/admin/notifications" element={<NotificationsPage />} />
+      <Route path="/admin/settings" element={<AdminSettings />} />
+
 
       {/* Fallback */}
       <Route path="*" element={<NotFound />} />

@@ -62,7 +62,7 @@ function StatsGrid() {
       }}
       initial="hidden"
       animate="visible"
-      className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4"
+      className="relative z-0 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4"
     >
       {stats.map((stat, index) => (
         <motion.div
@@ -73,7 +73,7 @@ function StatsGrid() {
           }}
           transition={{ duration: 0.5, ease: "easeOut" }}
           whileHover={{ y: -6 }}
-          className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-200/50 hover:shadow-xl hover:shadow-slate-200/20 group"
+          className="relative z-0 bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-200/50 hover:shadow-xl hover:shadow-slate-200/20 group"
         >
           <div className="flex items-start justify-between">
             <div className="flex-1">
@@ -93,13 +93,12 @@ function StatsGrid() {
                 ) : null}
 
                 <span
-                  className={`text-sm font-semibold ${
-                    stat.trend === "up"
+                  className={`text-sm font-semibold ${stat.trend === "up"
                       ? "text-emerald-500"
                       : stat.trend === "down"
                         ? "text-red-500"
                         : "text-slate-400"
-                  }`}
+                    }`}
                 >
                   {stat.change}
                 </span>

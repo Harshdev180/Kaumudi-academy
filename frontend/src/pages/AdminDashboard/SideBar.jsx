@@ -1,141 +1,18 @@
-// import React, { useState } from 'react'
-// import { BookOpen, LayoutDashboard, Link, Settings, Users, Zap } from 'lucide-react'
-// import { MdSupportAgent } from "react-icons/md";
-
-// import { useLocation } from 'react-router-dom';
-
-// function Sidebar({ collapsed, onToggle, currentPage, onPageChange }) {
-
-//   const toggle = (itemid)=>{
-//     const newExpanded = new Set(expandedItems);
-
-//   }
-//   // const location = useLocation();
-
-//   const menuItems = [
-//     { path: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
-//     { path: '/admin/lead', label: 'Lead Management', icon: <Users size={18} /> },
-//     { path: '/admin/course', label: 'Courses Management', icon: <BookOpen size={18} /> },
-//     { path: '/admin/setting', label: 'Settings', icon: <Settings size={18} /> }
-
-//   ];
-
-//   return (
-//     <>
-//       <div className={`${collapsed ? "w-20" : "w-72"} transition duration-300 ease-in-out bg-[#FBF4E2] text-[#6b1d14]
-//       backdrop-blur-xl border-r border-slate-200/50  flex flex-col
-//       relative z-10`}>
-//         {/* Logo */}
-//         <div className="p-6 border-b border-slate-200/50 ">
-//           <div className="flex items-center space-x-3">
-//             <div className="w-10 h-10 bg-[#D4AF37] rounded-xl
-//             flex items-center justify-center shadow-lg">
-//               <BookOpen className="text-[#6b1d14]" />
-//             </div>
-//             {/* Conditinoal Rendering */}
-//             {!collapsed && (
-//               <div>
-//                 <h1 className='font-serif font-extrabold text-2xl text-[#6b1d14] tracking-normal '>KAUMUDI</h1>
-//                 <p className='text-xs text-[#6b1d14] uppercase font-bold ml-1 '>Sanskrit Academy Admin</p>
-//               </div>
-//             )}
-//           </div>
-//         </div>
-//         {/* Navigation */}
-//         <nav className='flex-1 p-4 space-y-2 overflow-y-auto'>
-//           {menuItems.map((item) => {
-//             const isActive = location.pathname === item.path;
-//             return (
-//               <div key={item.path}
-//                 className={` flex items-center justify-between  px-5 py-3  rounded-2xl transition-all duration-300 ${isActive ? 'bg-[#F3E6C9] border border-[#b8973d]/40 shadow-sm' : 'hover:bg-[#F3E6C9]/60 text-[#6b1d14]/70'}`}>
-//                 <button className={`w-full flex items-center justify-between p-2 rounded-xl transition-all duration-200 ${currentPage === item.id || item.active ? 'bg-[#D4AF37] text-[#6b1d14]' : ' text-[#6b1d14]/70'}`}
-//                 onClick={()=>{
-//                   onPageChange(item.id)
-//                 }}
-//                 >
-//                   <div className={`flex items-center space-x-3  rounded-xl`}>
-//                     {item.icon}
-//                     {/* Conditional Rendering */}
-//                     <>
-//                       {!collapsed && (
-//                         <span className="text-md font-medium ">
-//                           {item.label}
-//                         </span>
-//                       )}
-//                     </>
-//                   </div>
-//                 </button>
-//               </div>
-//               // <Link
-//               //   key={item.path}
-//               //   to={item.path}
-//               //   onClick={() => window.innerWidth < 768 && toggleSidebar()}
-//               //   className={` flex items-center justify-between  px-5 py-3  rounded-2xl transition-all duration-300 ${isActive ? 'bg-[#F3E6C9] border border-[#b8973d]/40 shadow-sm' : 'hover:bg-[#F3E6C9]/60 text-[#6b1d14]/70'}`}>
-//               //   <div className="flex items-center gap-4">
-//               //     <div
-//               //       className={` p-2 rounded-xl ${isActive ? 'bg-[#D4AF37] text-[#6b1d14]' : 'bg-white/70 text-[#6b1d14]/70'}`} >
-//               //       {item.icon}
-//               //     </div>
-//               //     <span className="text-sm font-medium tracking-wide">
-//               //       {item.label}
-//               //     </span>
-//               //   </div>
-
-//               //   {isActive && (
-//               //     <ChevronRight size={16} className="text-[#b8973d]" />
-//               //   )}
-//               // </Link>
-//             );
-//           })}
-//         </nav>
-//         {/* Bottom Support Section */}
-//         {/* <div className="p-6 mt-auto border-t border-white/10 bg-[#FBF4E2] sticky bottom-0">
-//           <div
-//             to="/admin/settings"
-//             className="flex items-center gap-4 p-4 text-[#6b1d14] hover:text-black transition-colors text-sm"
-//           >
-//           </div>
-//           <button className="w-full mt-4 flex items-center justify-center gap-2 bg-[#F3E6C9] hover:bg-[#D4AF37] hover:text-black text-[#6b1d14] py-4 rounded-2xl text-xs font-bold transition-all border border-[#D4AF37]/20 shadow-md">
-//             <MdSupportAgent size={18} />
-//             <span>Support</span>
-//           </button>
-//         </div> */}
-
-//         {/* User profile */}
-
-//         {!collapsed && (
-//           <div className='p-4 border-t border-slate-200/50 '>
-//             <div className='flex items-center space-x-3 p-3 rounded-xl bg-slate-50 '>
-//               <img src="" alt="USER" className='w-10 h-10 rounded-full ring-2 ring-blue-500' />
-//               <div className='flex-1 min-w-0'>
-//                 <div className='flex-1 min-w-0'>
-//                   <p className='text-sm font-medium text-slate-800 truncate'>Ajay Sharma</p>
-//                   <p className='text-xs text-slate-500 truncate'>Administrator</p>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//         )}
-//       </div>
-//     </>
-//   )
-// }
-
-// export default Sidebar
-
 import React from "react";
 import {
   BookOpen,
   LayoutDashboard,
-  Settings,
   Users,
+  Tags,
+  ChevronLeft,
   ChevronRight,
+  UserRoundPlus,
 } from "lucide-react";
-import { MdSupportAgent } from "react-icons/md";
 import { useLocation, Link } from "react-router-dom";
 
-function Sidebar({ collapsed }) {
+function Sidebar({ collapsed, setCollapsed }) {
   const location = useLocation();
+
   const menuItems = [
     {
       path: "/admin/dashboard",
@@ -144,32 +21,77 @@ function Sidebar({ collapsed }) {
     },
     { path: "/admin/lead", label: "Lead Management", icon: <Users size={18} /> },
     { path: "/admin/course", label: "Courses", icon: <BookOpen size={18} /> },
+    { path: "/admin/coupon", label: "Coupon", icon: <Tags size={18} /> },
+    { path: "/admin/staff-salary", label: "Staff", icon: <UserRoundPlus size={18} /> },
   ];
 
   return (
     <div
-      className={`${collapsed ? "w-20" : "w-72"} transition-all duration-300 ease-in-out bg-[#FBF4E2] text-[#6b1d14] backdrop-blur-xl border-r border-slate-200/50 flex flex-col h-screen sticky top-0 z-50`}
+      className={`
+        ${collapsed ? "w-20" : "w-72"}
+        transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
+        bg-[#FBF4E2] text-[#6b1d14]
+        backdrop-blur-xl border-r border-slate-200/50
+        flex flex-col h-screen sticky top-0 z-50 relative
+      `}
     >
+      {/* 🔥 Arrow Control */}
+      <div className="absolute top-4 right-3 z-50">
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="text-[#6b1d14]/70 hover:text-[#6b1d14]
+          transition-all duration-300 hover:scale-110"
+        >
+          {collapsed ? (
+            <ChevronRight className="transition-transform duration-500" size={22} />
+          ) : (
+            <ChevronLeft className="transition-transform duration-500" size={22} />
+          )}
+        </button>
+      </div>
+
       {/* Logo Section */}
-      <div className="p-6 border-b border-slate-200/50">
+      <div
+        className={`
+          border-b border-slate-200/50 flex items-center
+          ${collapsed ? "pt-16 pb-6 justify-center" : "p-6"}
+          transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
+        `}
+      >
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-[#D4AF37] rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+          <div
+            className="
+              w-10 h-10 bg-[#D4AF37] rounded-xl
+              flex items-center justify-center shadow-lg
+              flex-shrink-0
+              transition-transform duration-500
+              hover:scale-105
+            "
+          >
             <BookOpen className="text-[#6b1d14]" />
           </div>
-          {!collapsed && (
-            <div className="overflow-hidden whitespace-nowrap">
-              <h1 className="font-serif font-extrabold text-2xl text-[#6b1d14] tracking-normal">
-                KAUMUDI
-              </h1>
-              <p className="text-[10px] text-[#6b1d14]/70 uppercase font-bold tracking-widest">
-                Sanskrit Academy
-              </p>
-            </div>
-          )}
+
+          {/* Smooth fade + slide */}
+          <div
+            className={`
+              overflow-hidden whitespace-nowrap
+              transition-all duration-500
+              ${collapsed
+                ? "opacity-0 translate-x-[-10px] w-0"
+                : "opacity-100 translate-x-0 w-auto"}
+            `}
+          >
+            <h1 className="font-serif font-extrabold text-2xl text-[#6b1d14] tracking-normal">
+              KAUMUDI
+            </h1>
+            <p className="text-[10px] text-[#6b1d14]/70 uppercase font-bold tracking-widest">
+              Sanskrit Academy
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Navigation Area */}
+      {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
@@ -178,31 +100,38 @@ function Sidebar({ collapsed }) {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center group relative px-4 py-3 rounded-2xl transition-all duration-300 ${
-                isActive
+              className={`
+                flex items-center group relative px-4 py-3 rounded-2xl
+                transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
+                ${isActive
                   ? "bg-[#6b1d14] text-white shadow-md shadow-[#6b1d14]/20"
-                  : "hover:bg-[#F3E6C9] text-[#6b1d14]/70"
-              }`}
+                  : "hover:bg-[#F3E6C9] text-[#6b1d14]/70"}
+              `}
             >
               <div
-                className={`flex items-center justify-center transition-colors ${
-                  isActive ? "text-[#D4AF37]" : "group-hover:text-[#6b1d14]"
-                }`}
+                className={`
+                  flex items-center justify-center
+                  transition-all duration-300
+                  ${isActive ? "text-[#D4AF37]" : "group-hover:text-[#6b1d14]"}
+                `}
               >
                 {item.icon}
               </div>
 
-              {!collapsed && (
-                <span
-                  className={`ml-4 text-sm font-semibold transition-opacity duration-300 ${
-                    isActive ? "text-white" : "text-[#6b1d14]/80"
-                  }`}
-                >
-                  {item.label}
-                </span>
-              )}
+              {/* Smooth text animation */}
+              <span
+                className={`
+                  ml-4 text-sm font-semibold
+                  transition-all duration-500
+                  ${collapsed
+                    ? "opacity-0 translate-x-[-8px] w-0"
+                    : "opacity-100 translate-x-0 w-auto"}
+                  ${isActive ? "text-white" : "text-[#6b1d14]/80"}
+                `}
+              >
+                {item.label}
+              </span>
 
-              {/* Active Indicator Dot */}
               {isActive && !collapsed && (
                 <div className="absolute right-4 w-1.5 h-1.5 bg-[#D4AF37] rounded-full shadow-[0_0_8px_#D4AF37]" />
               )}
@@ -211,24 +140,31 @@ function Sidebar({ collapsed }) {
         })}
       </nav>
 
-      {/* User Profile Section */}
-      {!collapsed && (
-        <div className="p-4 border-t border-slate-200/50 bg-[#F3E6C9]/30">
-          <div className="flex items-center space-x-3 p-2 rounded-xl">
-            <div className="w-10 h-10 rounded-full bg-[#D4AF37]/20 border-2 border-[#D4AF37] flex items-center justify-center font-bold text-[#6b1d14]">
-              AS
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-[#6b1d14] truncate">
-                Ajay Sharma
-              </p>
-              <p className="text-[10px] text-[#6b1d14]/60 uppercase font-black">
-                Administrator
-              </p>
+      {/* User Profile */}
+      <div
+        className={`
+          transition-all duration-500
+          ${collapsed ? "opacity-0 translate-y-4 pointer-events-none" : "opacity-100 translate-y-0"}
+        `}
+      >
+        {!collapsed && (
+          <div className="p-4 border-t border-slate-200/50 bg-[#F3E6C9]/30">
+            <div className="flex items-center space-x-3 p-2 rounded-xl">
+              <div className="w-10 h-10 rounded-full bg-[#D4AF37]/20 border-2 border-[#D4AF37] flex items-center justify-center font-bold text-[#6b1d14]">
+                AS
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-[#6b1d14] truncate">
+                  Ajay Sharma
+                </p>
+                <p className="text-[10px] text-[#6b1d14]/60 uppercase font-black">
+                  Administrator
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
