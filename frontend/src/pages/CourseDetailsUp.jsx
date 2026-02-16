@@ -69,7 +69,7 @@ const CourseDetails = () => {
 
   return (
     <div className="bg-[#f1e4c8] min-h-screen font-sans-serif text-[#e6d0bd]">
-      <div className="max-w-7xl mx-auto p-4 md:p-10">
+      <div className="max-w-7xl mx-auto p-10 md:p-10">
         <HeroSection data={courseData} />
       </div>
 
@@ -105,30 +105,45 @@ const CourseDetails = () => {
             </div>
           </section>
 
-          <div className="flex flex-col sm:flex-row items-center justify-between bg-[#F9F5F0] p-5 rounded-2xl border border-[#E8DFD3] shadow-sm gap-6">
-            <div className="flex items-center gap-5">
-              <div className="bg-[#74271E] p-3 rounded-xl text-white shadow-lg">
-                <FileText size={36} strokeWidth={1.5} />
-              </div>
-              <div className="space-y-1">
-                <h3 className="font-bold text-2xl md:text-[20px] text-[#3D1A16]">{courseData.title} Syllabus</h3>
-                <p className="text-[#7A5C58] md:text-[18px] text-xl italic font-small">
-                  Curriculum for {courseData.level}<br/>
-                </p>
-              </div>
-            </div>
+          <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between bg-[#F9F5F0] p-5 sm:p-6 rounded-2xl border border-[#E8DFD3] shadow-sm gap-5 sm:gap-6">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 text-center sm:text-left">
+                {/* Icon Container: Iska size mobile par thoda balance kiya gaya hai */}
+                <div className="bg-[#74271E] p-3 rounded-xl text-white shadow-lg shrink-0">
+                  <FileText size={32} md:size={36} strokeWidth={1.5} />
+                </div>
 
-            <button className="group relative flex items-center justify-center gap-3 overflow-hidden rounded-xl bg-[#74271E] px-8 py-3.5 font-bold text-white shadow-[0_10px_20px_rgba(116,39,30,0.3)] transition-all duration-300 hover:bg-[#d6b15c] hover:text-[#74271E] hover:shadow-[0_15px_30px_rgba(214,177,92,0.4)] active:scale-95 sm:w-max">
+                {/* Text Container: Font sizes ko responsive banaya gaya hai  changr kiya hu px ko % me pahle 15 px tha text*/}
+                <div className="space-y-1">
+                  <h3 className="font-bold text-lg sm:text-xl md:text-[100%] text-[#3D1A16] leading-tight">
+                    {courseData.title} Syllabus
+                  </h3>
+                  <p className="text-[#7A5C58] text-sm sm:text-base md:text-[95%] italic font-medium">
+                    Curriculum for {courseData.level} level course.
+                  </p>
+                </div>
+              </div>
+
+
+           <div className="w-full sm:w-max">
+            <button className="group relative flex w-full sm:w-max items-center justify-center gap-2.5 sm:gap-3 overflow-hidden rounded-xl bg-[#74271E] px-6 sm:px-8 py-3 sm:py-3.5 font-bold text-white shadow-[0_10px_20px_rgba(116,39,30,0.3)] transition-all duration-300 hover:bg-[#d6b15c] hover:text-[#74271E] hover:shadow-[0_15px_30px_rgba(214,177,92,0.4)] active:scale-95">
+              {/* Shine effect - Unchanged */}
               <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
+              
+              {/* Icon - Sizes optimized for mobile */}
               <Download 
-                size={22} 
-                className="transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-110" 
+                size={20} 
+                className="transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-110 shrink-0" 
               />
-              <span className="relative whitespace-nowrap text-[16px] tracking-wide">
+              
+              {/* Text - Responsive font size */}
+              <span className="relative whitespace-nowrap items-center justify-center text-[14px] sm:text-[16px] tracking-wide">
                 Download Brochure
               </span>
+              
+              {/* Bottom border effect - Unchanged */}
               <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#74271E] transition-all duration-300 group-hover:w-full" />
             </button>
+</div>
           </div>
 
           <InstructorSection instructor={courseData.instructor} />

@@ -34,7 +34,7 @@ const AllCoursesPage = () => {
 
   const courses = [
     {
-      id: 1,
+      id: "699041ad4bd713ce144bbc0e",
       title: "Foundations of Sanskrit Vyakaran (Level 1)",
       category: "Vyakarana (Grammar)",
       instructor: "Acharya Sharma",
