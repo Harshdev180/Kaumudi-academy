@@ -31,7 +31,17 @@ const AdminLogin = () => {
       const loginFn = role === 'SUPER_ADMIN' ? loginSuperAdmin : loginAdmin;
       const data = await loginFn(email, password);
       const token = data?.token;
-      if (token) login({ email, role: data?.role || role }, token);
+      if (token) {
+        const userPayload = data?.user || data?.admin || data?.data || {};
+        const firstName = userPayload?.firstName || userPayload?.firstname || null;
+        const lastName = userPayload?.lastName || userPayload?.lastname || null;
+        const name =
+          userPayload?.name ||
+          userPayload?.fullName ||
+          userPayload?.full_name ||
+          (firstName || lastName ? [firstName, lastName].filter(Boolean).join(' ') : null);
+        login({ email, role: data?.role || role, firstName, lastName, name }, token);
+      }
       navigate('/admin/dashboard');
     } catch (err) {
       const msg = err?.response?.data?.message || 'Admin login failed.';

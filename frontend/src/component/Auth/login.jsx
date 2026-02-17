@@ -23,9 +23,23 @@ export default function Login() {
       const data = await loginStudent(email, password);
       const token = data?.token;
       if (token) {
+        const userPayload = data?.user || data?.student || data?.data || {};
+        const firstName = userPayload?.firstName || userPayload?.firstname || null;
+        const lastName = userPayload?.lastName || userPayload?.lastname || null;
+        const name =
+          userPayload?.name ||
+          userPayload?.fullName ||
+          userPayload?.full_name ||
+          (firstName || lastName ? [firstName, lastName].filter(Boolean).join(' ') : null);
         localStorage.setItem('kaumudi_token', token);
         localStorage.setItem('kaumudi_role', 'STUDENT');
         localStorage.setItem('kaumudi_user_email', email);
+        if (firstName) localStorage.setItem('kaumudi_user_first_name', firstName);
+        else localStorage.removeItem('kaumudi_user_first_name');
+        if (lastName) localStorage.setItem('kaumudi_user_last_name', lastName);
+        else localStorage.removeItem('kaumudi_user_last_name');
+        if (name) localStorage.setItem('kaumudi_user_name', name);
+        else localStorage.removeItem('kaumudi_user_name');
         setAuthToken(token);
       }
       navigate('/');
