@@ -76,10 +76,12 @@ function App() {
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsConditions />} />
         <Route path="/cookies" element={<CookiePolicy />} />
+        
       </Route>
 
       {/* Auth routes without navbar/footer */}
       <Route path="/auth" element={<Sign />} />
+      <Route path="/reset-password/:token" element={<Sign />} />
 
       {/* Admin nested routes */}
       <Route path="/admin" element={<AdminLayout />}>

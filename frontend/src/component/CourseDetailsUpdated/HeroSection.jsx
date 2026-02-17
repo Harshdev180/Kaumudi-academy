@@ -11,7 +11,7 @@ const HeroSection = ({ data }) => {
         />
       </div>
       
-      <div className="relative p-6 md:p-25 space-y-4">
+      <div className="relative p-8 md:p-25 space-y-4">
         <span className="bg-[#74271E] text-[10px] font-bold tracking-[0.2em] px-3 py-1 rounded-full uppercase border border-[#944335]">
           {data?.level || "Advanced Certification"}
         </span>

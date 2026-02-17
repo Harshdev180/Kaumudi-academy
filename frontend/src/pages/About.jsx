@@ -27,10 +27,10 @@ export default function About() {
     <>
       <section
         id="hero"
-        className="relative min-h-[85vh] flex items-center justify-center text-center overflow-hidden bg-cover bg-center"
+        className="relative min-h-[90vh] flex items-center justify-center text-center overflow-hidden bg-cover bg-center"
         style={{
           backgroundImage:
-            'url("https://i.pinimg.com/1200x/af/ae/dc/afaedc962bf87797dc1c84e79f67a849.jpg")',
+            'url("https://i.pinimg.com/1200x/03/8a/e7/038ae754aa9442afe56e51560cab8bb6.jpg")',
         }}
       >
         <div className="absolute inset-0 bg-[#2c2820]/60" />
