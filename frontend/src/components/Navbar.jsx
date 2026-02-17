@@ -61,10 +61,13 @@ export default function Navbar() {
   const isHome = pathname === "/";
 
   // --- LOGIN LOGIC ---
-  const isLoggedIn = !!localStorage.getItem("token");
+  const isLoggedIn = !!localStorage.getItem("kaumudi_token");
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("kaumudi_token");
+    localStorage.removeItem("kaumudi_role");
+    localStorage.removeItem("kaumudi_user_email");
+    localStorage.removeItem("kaumudi_user_id");
     setOpen(false);
     navigate("/");
   };

@@ -1,5 +1,5 @@
 import razorpay from "../configs/razorpay.js";
-import Transaction from "../models/Transaction.model.js";
+import Payment from "../models/Transaction.model.js";
 import crypto from "crypto";
 import { config } from "../configs/env.js";
 import Course from "../models/Course.model.js";

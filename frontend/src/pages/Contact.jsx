@@ -10,6 +10,8 @@ import {
   Phone,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { submitContact } from "../lib/api";
 
 /* ---------------------------------- */
 /* Animation Variants */
@@ -50,6 +52,48 @@ const stagger = {
 };
 
 export default function Contact() {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    subject: "",
+    message: ""
+  });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+    
+    if (!formData.fullName || !formData.email || !formData.subject || !formData.message) {
+      setError("Please fill all fields");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await submitContact({
+        fullName: formData.fullName,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message
+      });
+      setSuccess("Message sent successfully! We'll get back to you soon.");
+      setFormData({ fullName: "", email: "", subject: "", message: "" });
+    } catch (err) {
+      setError(err?.response?.data?.message || "Failed to send message");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <section className="relative w-full bg-gradient-to-b from-[#f6edd7] to-[#ead9b8] py-24 overflow-hidden">
       {/* FLOATING ORBS */}
@@ -114,11 +158,11 @@ export default function Contact() {
               Send us a Message
             </h2>
 
-            <motion.form variants={stagger} className="space-y-14">
+            <motion.form variants={stagger} className="space-y-14" onSubmit={handleSubmit}>
               {[
-                { label: "FULL NAME", placeholder: "Enter your full name" },
-                { label: "EMAIL ADDRESS", placeholder: "your@email.com" },
-                { label: "SUBJECT", placeholder: "Course inquiry, support" },
+                { label: "FULL NAME", name: "fullName", placeholder: "Enter your full name" },
+                { label: "EMAIL ADDRESS", name: "email", placeholder: "your@email.com" },
+                { label: "SUBJECT", name: "subject", placeholder: "Course inquiry, support" },
               ].map((item, i) => (
                 <motion.div key={i} variants={fadeUp}>
                   <label className="block text-xs tracking-[0.3em] font-bold text-[#7b2d1f] mb-2">
@@ -126,6 +170,10 @@ export default function Contact() {
                   </label>
                   <motion.input
                     whileFocus={{ scale: 1.02 }}
+                    type={item.name === "email" ? "email" : "text"}
+                    name={item.name}
+                    value={formData[item.name]}
+                    onChange={handleChange}
                     className="w-full rounded-xl border border-[#dcc7a1]
                                px-4 py-4 bg-white shadow-lg
                                focus:ring-2 focus:ring-[#7b2d1f]"
@@ -141,6 +189,9 @@ export default function Contact() {
                 <motion.textarea
                   rows={5}
                   whileFocus={{ scale: 1.02 }}
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
                   className="w-full rounded-xl border border-[#dcc7a1]
                              px-4 py-4 bg-white shadow-lg resize-none
                              focus:ring-2 focus:ring-[#7b2d1f]"
@@ -148,13 +199,19 @@ export default function Contact() {
                 />
               </motion.div>
 
+              {error && <div className="text-red-600 font-semibold">{error}</div>}
+              {success && <div className="text-green-700 font-semibold">{success}</div>}
+
               <motion.button
+                type="submit"
+                disabled={loading}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="w-full bg-gradient-to-r from-[#7b2d1f] to-[#5f1f14]
-                           text-white py-4 rounded-2xl font-bold tracking-[0.25em]"
+                           text-white py-4 rounded-2xl font-bold tracking-[0.25em]
+                           disabled:opacity-60"
               >
-                SEND MESSAGE
+                {loading ? "SENDING..." : "SEND MESSAGE"}
               </motion.button>
             </motion.form>
           </motion.div>

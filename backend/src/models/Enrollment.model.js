@@ -16,8 +16,21 @@ const enrollmentSchema = new mongoose.Schema(
 
     payment: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Transaction",
+      ref: "Payment",
       required: true
+    },
+
+    status: {
+      type: String,
+      enum: ["ACTIVE", "COMPLETED", "DROPPED"],
+      default: "ACTIVE"
+    },
+
+    progress: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100
     },
 
     enrolledAt: {

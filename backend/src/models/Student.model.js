@@ -24,10 +24,6 @@ const studentSchema = new mongoose.Schema(
       required: true,
       select: false
     },
-    address: {
-      type: String,
-      trim: true
-    },
     phoneNumber: {
       type: String,
       trim: true,

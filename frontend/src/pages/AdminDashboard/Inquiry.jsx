@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import { Send, User, MessageCircle, Mail, BookOpen, Clock, Globe, Award } from "lucide-react";
+import { submitInquiry } from "../../lib/api";
 
 export default function Inquiry() {
     const location = useLocation();
@@ -16,6 +17,54 @@ export default function Inquiry() {
         language: incoming?.language || "Sanskrit/Hindi",
         duration: incoming?.duration || "6 Months",
         level: incoming?.level || "Beginner"
+    };
+
+    const [form, setForm] = useState({
+        fullName: "",
+        vedicName: "",
+        phoneNumber: "",
+        email: "",
+        preferredLevel: "BEGINNER",
+        message: ""
+    });
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState("");
+    const [error, setError] = useState("");
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError("");
+        setSuccess("");
+        try {
+            setLoading(true);
+            await submitInquiry({
+                fullName: form.fullName,
+                vedicName: form.vedicName,
+                phoneNumber: form.phoneNumber,
+                email: form.email,
+                preferredLevel: form.preferredLevel,
+                message: form.message
+            });
+            setSuccess("Inquiry submitted successfully. Our team will reach out soon.");
+            setForm({
+                fullName: "",
+                vedicName: "",
+                phoneNumber: "",
+                email: "",
+                preferredLevel: "BEGINNER",
+                message: ""
+            });
+        } catch (err) {
+            const msg = err?.response?.data?.message || "Failed to submit inquiry";
+            setError(msg);
+        } finally {
+            setLoading(false);
+        }
     };
 
     // Scroll to top on load
@@ -93,22 +142,70 @@ export default function Inquiry() {
                             </div>
                         </div>
 
-                        <form className="grid gap-8">
+                        <form className="grid gap-8" onSubmit={handleSubmit}>
                             {/* User Basic Info Group */}
                             <div className="grid md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
                                     <label className={labelStyle}><User size={14}/> Full Name</label>
-                                    <input className={inputStyle} placeholder="E.g. Rahul Sharma" required />
+                                    <input
+                                        className={inputStyle}
+                                        placeholder="E.g. Rahul Sharma"
+                                        name="fullName"
+                                        value={form.fullName}
+                                        onChange={handleChange}
+                                        required
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <label className={labelStyle}><MessageCircle size={14}/> WhatsApp Number</label>
-                                    <input className={inputStyle} placeholder="+91 00000 00000" required />
+                                    <input
+                                        className={inputStyle}
+                                        placeholder="10-digit number"
+                                        name="phoneNumber"
+                                        value={form.phoneNumber}
+                                        onChange={handleChange}
+                                        required
+                                    />
                                 </div>
                             </div>
 
                             <div className="space-y-2">
                                 <label className={labelStyle}><Mail size={14}/> Email Address</label>
-                                <input className={inputStyle} placeholder="rahul@example.com" type="email" required />
+                                <input
+                                    className={inputStyle}
+                                    placeholder="rahul@example.com"
+                                    type="email"
+                                    name="email"
+                                    value={form.email}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-8">
+                                <div className="space-y-2">
+                                    <label className={labelStyle}><Award size={14}/> Preferred Level</label>
+                                    <select
+                                        name="preferredLevel"
+                                        value={form.preferredLevel}
+                                        onChange={handleChange}
+                                        className={inputStyle}
+                                    >
+                                        <option value="BEGINNER">Beginner</option>
+                                        <option value="INTERMEDIATE">Intermediate</option>
+                                        <option value="ADVANCED">Advanced</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className={labelStyle}><User size={14}/> Vedic Name (optional)</label>
+                                    <input
+                                        className={inputStyle}
+                                        placeholder="If any"
+                                        name="vedicName"
+                                        value={form.vedicName}
+                                        onChange={handleChange}
+                                    />
+                                </div>
                             </div>
 
                             {/* Pre-filled Course Details Box */}
@@ -165,17 +262,24 @@ export default function Inquiry() {
                                     className={`${inputStyle} rounded-lg`} 
                                     rows="4" 
                                     placeholder="Tell us about your learning goals or any specific concerns..." 
+                                    name="message"
+                                    value={form.message}
+                                    onChange={handleChange}
                                     required
                                 />
                             </div>
+
+                            {error && <div className="text-red-600 font-semibold">{error}</div>}
+                            {success && <div className="text-green-700 font-semibold">{success}</div>}
 
                             {/* Submit Button */}
                             <motion.button
                                 whileHover={{ scale: 1.02, backgroundColor: "#4d1711" }}
                                 whileTap={{ scale: 0.98 }}
+                                disabled={loading}
                                 className="relative overflow-hidden group bg-[#641e16] text-white py-5 rounded-2xl font-bold text-lg shadow-2xl transition-all duration-300 flex items-center justify-center gap-3"
                             >
-                                <span className="relative z-10">Send Inquiry</span>
+                                <span className="relative z-10">{loading ? "Sending..." : "Send Inquiry"}</span>
                                 <Send size={20} className="relative z-10 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                             </motion.button>

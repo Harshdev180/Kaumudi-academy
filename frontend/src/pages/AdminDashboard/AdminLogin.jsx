@@ -1,46 +1,63 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-
-import {
-  ShieldCheck,
-  User,
-  Lock,
-  Eye,
-  EyeOff,
-  Loader2,
-  Mail,
-  X,
-} from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { ShieldCheck, User, Lock, Eye, EyeOff, Loader2, X, Mail } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { loginAdmin, loginSuperAdmin, forgotPassword } from '../../lib/api';
+import { useAuth } from '../../context/useAuthHook';
 
 const AdminLogin = () => {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState('ADMIN');
+  const [error, setError] = useState('');
   const [openForgot, setOpenForgot] = useState(false);
-  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotEmail, setForgotEmail] = useState('');
   const [forgotLoading, setForgotLoading] = useState(false);
+  const { login } = useAuth();
 
-  // LOGIN
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 1200);
+    setError('');
+    if (!email || !password) {
+      setError('Please enter admin email and password.');
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const loginFn = role === 'SUPER_ADMIN' ? loginSuperAdmin : loginAdmin;
+      const data = await loginFn(email, password);
+      const token = data?.token;
+      if (token) login({ email, role: data?.role || role }, token);
+      navigate('/admin/dashboard');
+    } catch (err) {
+      const msg = err?.response?.data?.message || 'Admin login failed.';
+      setError(msg);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // FORGOT KEY
-  const handleForgotKey = () => {
-    if (!forgotEmail) return;
-    setForgotLoading(true);
-
-    setTimeout(() => {
-      setForgotLoading(false);
-      alert("Reset link sent successfully.");
+  const handleForgotKey = async () => {
+    if (!forgotEmail.trim()) {
+      alert('Please enter your admin email');
+      return;
+    }
+    try {
+      setForgotLoading(true);
+      const response = await forgotPassword(forgotEmail, role);
+      alert(response?.message || 'Reset link sent to your email. Please check your inbox.');
+      setForgotEmail('');
       setOpenForgot(false);
-      setForgotEmail("");
-    }, 1200);
+    } catch (err) {
+      const msg = err?.response?.data?.message || 'Failed to send reset link. Please try again.';
+      alert(msg);
+    } finally {
+      setForgotLoading(false);
+    }
   };
 
   return (
@@ -77,74 +94,65 @@ const AdminLogin = () => {
           </div>
         </div>
 
-        {/* RIGHT PANEL */}
-        <div className="p-8 md:p-10 flex flex-col justify-center">
-
-          {/* HEADER */}
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-[#800000]">
-              Admin Secure Login
-            </h1>
-            <p className="text-sm text-gray-500 italic font-sans">
-              Preserving Tradition through Technology
-            </p>
+        <form onSubmit={handleLogin} className="space-y-6">
+          <div className="flex items-center gap-2">
+            {["ADMIN", "SUPER_ADMIN"].map((item) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setRole(item)}
+                className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
+                  role === item
+                    ? "bg-[#5c1c11] text-white shadow"
+                    : "bg-white text-[#5c1c11] border border-[#d4af37]/40"
+                }`}
+              >
+                {item === "ADMIN" ? "Admin" : "Super Admin"}
+              </button>
+            ))}
           </div>
 
-          {/* FORM */}
-          <form onSubmit={handleLogin} className="space-y-4">
-
-            {/* ADMIN ID */}
-            <div>
-              <label className="text-xs font-bold uppercase text-gray-600">
-                Administrator ID
-              </label>
-
-              <div className="relative mt-1">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                <input
-                  type="text"
-                  placeholder="Enter admin username"
-                  className="w-full pl-10 pr-4 py-3 bg-[#efe3d5] rounded-xl outline-none focus:ring-2 focus:ring-[#800000]/20"
-                  required
-                />
-              </div>
+          {/* Administrator ID Field [cite: 145] */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-600 ml-1">Admin Email</label>
+            <div className="relative group">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#800000] transition-colors" size={18} />
+              <input
+                type="email"
+                placeholder="admin@kaumudi.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800000]/20 focus:border-[#800000] transition-all font-sans"
+                required
+              />
             </div>
+          </div>
 
-            {/* PASSWORD */}
-            <div>
-              <div className="flex justify-between">
-                <label className="text-xs font-bold uppercase text-gray-600">
-                  Access Key
-                </label>
-
-                <button
-                  type="button"
-                  onClick={() => setOpenForgot(true)}
-                  className="text-xs text-[#800000] hover:underline"
-                >
-                  Forgot Key?
-                </button>
-              </div>
-
-              <div className="relative mt-1">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter secure password"
-                  className="w-full pl-10 pr-12 py-3 bg-[#efe3d5] rounded-xl outline-none focus:ring-2 focus:ring-[#800000]/20"
-                  required
-                />
-
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
+          {/* Access Key Field (Password) [cite: 146] */}
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <label className="text-xs font-bold uppercase tracking-wider text-gray-600 ml-1">Access Key</label>
+              <button type="button" onClick={() => setOpenForgot(true)} className="text-xs text-[#800000] hover:underline font-sans">Forgot Key?</button>
             </div>
+            <div className="relative group">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#800000] transition-colors" size={18} />
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter secure password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full pl-10 pr-12 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800000]/20 focus:border-[#800000] transition-all font-sans"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+          </div>
 
             {/* REMEMBER */}
             <div className="flex items-center space-x-2">
@@ -154,23 +162,28 @@ const AdminLogin = () => {
               </span>
             </div>
 
-            {/* LOGIN BUTTON */}
-            <button
-              disabled={isLoading}
-              className="w-full bg-[#6b1f12] hover:bg-[#5c1c11] hover:shadow-lg hover:scale-[1.01] text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-md transition"
-            >
-              {isLoading ? (
-                <Loader2 className="animate-spin" size={20} />
-              ) : (
-                <>
-                  <ShieldCheck size={20} />
-                  Authorize Access
-                </>
-              )}
-            </button>
-          </form>
+          {/* Submit Button [cite: 152] */}
+          {error && (
+            <div className="text-red-600 text-sm font-semibold text-center">
+              {error}
+            </div>
+          )}
 
-          {/* 👉 NEW REGISTER OPTION (SMOOTH UI) */}
+          <button
+            disabled={isLoading}
+            className="w-full bg-[#5c1c11] hover:bg-[#4a1a12] text-white py-3.5 rounded-lg font-bold flex items-center justify-center gap-2 shadow-lg shadow-[#800000]/20 transition-all active:scale-[0.98] disabled:opacity-70"
+          >
+            {isLoading ? (
+              <Loader2 className="animate-spin" size={20} />
+            ) : (
+              <>
+                <ShieldCheck size={20} />
+                <span>Authorize Access</span>
+              </>
+            )}
+          </button>
+        </form>
+        <div>          {/* 👉 NEW REGISTER OPTION (SMOOTH UI) */}
           <p className="text-sm text-center text-[#8D6F61] mt-6">
             Don’t have an admin account?
             <span
@@ -225,3 +238,4 @@ const AdminLogin = () => {
 };
 
 export default AdminLogin;
+

@@ -23,8 +23,16 @@ export default function Signup() {
       setError("Please fill all required fields");
       return;
     }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters");
+      return;
+    }
+    if (!/[A-Za-z]/.test(password)) {
+      setError("Password must contain at least one letter");
+      return;
+    }
+    if (!/\d/.test(password)) {
+      setError("Password must contain at least one number");
       return;
     }
     if (password !== confirm) {
@@ -34,6 +42,8 @@ export default function Signup() {
     try {
       setLoading(true);
       await registerStudent({ firstName, lastName, email, password });
+      localStorage.setItem("kaumudi_user_name", `${firstName} ${lastName}`.trim());
+      localStorage.setItem("kaumudi_user_email", email);
       setSuccess("Account created successfully. Redirecting to login...");
       setTimeout(() => navigate("/login"), 1200);
     } catch (err) {

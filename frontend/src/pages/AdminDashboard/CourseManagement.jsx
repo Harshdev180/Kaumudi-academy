@@ -1,16 +1,13 @@
-import React, { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useMemo, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  MdSearch,
-  MdAdd,
-  MdEdit,
-  MdDelete,
-  MdAutoStories,
-  MdSchool,
-  MdTranslate
-} from "react-icons/md";
-import AddCourse from "./AddCourse";
-import { Plus } from "lucide-react";
+  MdSearch, MdNotifications, MdFileDownload, MdAdd,
+  MdAutoStories, MdSchool, MdTranslate, MdMoreVert,
+  MdFilterList, MdChevronLeft, MdChevronRight, MdDelete, MdEdit,
+  MdClose, MdSave, MdCloudUpload
+} from 'react-icons/md';
+import AddCourse from './AddCourse';
+import { getAllCoursesForAdmin, createCourse, updateCourse, deleteCourse, toggleCourseStatus } from '../../lib/api';
 
 const CourseManagement = () => {
 
@@ -22,53 +19,78 @@ const CourseManagement = () => {
     textMuted: "#856966"
   };
 
-  // ================= STATE =================
-  const [courses, setCourses] = useState([
-    {
-      id: 1,
-      title: "Paninian Grammar Basics",
-      description: "Foundation course of Paninian Sanskrit Grammar",
-      level: "Beginner",
-      dur: "6 Months",
-      mode: "ONLINE",
-      price: "240",
-      status: "Published",
-      image: "",
-      icon: <MdAutoStories />
-    },
-    {
-      id: 2,
-      title: "Advanced Kavya Study",
-      description: "Classical Sanskrit poetry analysis",
-      level: "Advanced",
-      dur: "4 Months",
-      mode: "HYBRID",
-      price: "350",
-      status: "Draft",
-      image: "",
-      icon: <MdSchool />
-    }
-  ]);
-
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState("All");
-
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [editId, setEditId] = useState(null);
-
-  const [form, setForm] = useState({
+  const initialForm = {
     title: "",
     description: "",
-    level: "Beginner",
-    dur: "3 Months",
+    syllabus: "",
+    duration: "",
     mode: "ONLINE",
     price: "",
-    status: "Draft",
-    image: ""
-  });
+    language: "Sanskrit",
+    startDate: "",
+    endDate: "",
+    image: "",
+    imageFile: null,
+    imagePreview: "",
+    videoFile: null,
+    videoName: ""
+  };
+
+  // 2. STATE MANAGEMENT
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("All");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [courses, setCourses] = useState([]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [form, setForm] = useState(initialForm);
+
+  const fetchCourses = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const response = await getAllCoursesForAdmin();
+      const payload = response?.data ?? response;
+      const data = Array.isArray(payload) ? payload : payload?.data || [];
+
+      const formattedCourses = data.map((course, index) => ({
+        id: course._id || course.id || index,
+        title: course.title || "Untitled Course",
+        level: course.level || "Prathama (Beginner)",
+        dur: course.duration || "—",
+        mode: course.mode || "ONLINE",
+        price: course.price ?? 0,
+        status: course.status === "ACTIVE" ? "Published" : "Draft",
+        rawStatus: course.status || "INACTIVE",
+        image: course.image?.url || "",
+        description: course.description || "",
+        syllabus: course.syllabus || "",
+        language: Array.isArray(course.language)
+          ? course.language.join(", ")
+          : course.language || "",
+        startDate: course.startDate ? course.startDate.slice(0, 10) : "",
+        endDate: course.endDate ? course.endDate.slice(0, 10) : "",
+        icon: <MdAutoStories />
+      }));
+
+      setCourses(formattedCourses);
+    } catch (err) {
+      console.error("Failed to fetch courses:", err);
+      setError("Failed to load courses. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 3. Fetch courses from API
+  useEffect(() => {
+    fetchCourses();
+  }, []);
 
   // ================= FILTER =================
-  const filtered = useMemo(() => {
+  const filteredCourses = useMemo(() => {
     return courses.filter(c =>
       c.title.toLowerCase().includes(search.toLowerCase()) &&
       (filter === "All" || c.status === filter)
@@ -85,57 +107,106 @@ const CourseManagement = () => {
   // ================= CRUD =================
   const openAdd = () => {
     setEditId(null);
-    setForm({
-      title: "",
-      description: "",
-      level: "Beginner",
-      dur: "3 Months",
-      mode: "ONLINE",
-      price: "",
-      status: "Draft",
-      image: ""
-    });
+    setForm(initialForm);
     setDrawerOpen(true);
   };
 
   const openEdit = (course) => {
     setEditId(course.id);
-    setForm(course);
+    setForm({
+      title: course.title || "",
+      description: course.description || "",
+      syllabus: course.syllabus || "",
+      duration: course.dur || "",
+      mode: course.mode || "ONLINE",
+      price: course.price ?? "",
+      language: course.language || "Sanskrit",
+      startDate: course.startDate || "",
+      endDate: course.endDate || "",
+      image: course.image || "",
+      imageFile: null,
+      imagePreview: course.image || "",
+      videoFile: null,
+      videoName: ""
+    });
     setDrawerOpen(true);
   };
 
-  const saveCourse = (e) => {
-    e.preventDefault();
+  const saveCourse = async () => {
+    try {
+      setSaving(true);
+      if (!form.title.trim() || !form.description.trim() || !form.duration.trim() || !form.mode || !form.price || !form.startDate || !form.endDate || !form.language.trim()) {
+        alert("Please fill all required fields.");
+        setSaving(false);
+        return;
+      }
+      const payload = new FormData();
+      payload.append("title", form.title);
+      payload.append("description", form.description);
+      if (form.syllabus) payload.append("syllabus", form.syllabus);
+      payload.append("duration", form.duration);
+      payload.append("mode", form.mode);
+      payload.append("price", Number(form.price));
+      const languageList = form.language
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean);
+      payload.append("language", JSON.stringify(languageList));
+      payload.append("startDate", form.startDate);
+      payload.append("endDate", form.endDate);
+      if (form.imageFile) payload.append("image", form.imageFile);
 
-    if (editId) {
-      setCourses(prev =>
-        prev.map(c => c.id === editId ? { ...c, ...form } : c)
-      );
-    } else {
-      setCourses(prev => [
-        { ...form, id: Date.now(), icon: <MdTranslate /> },
-        ...prev
-      ]);
+      if (editId) {
+        await updateCourse(editId, payload);
+      } else {
+        await createCourse(payload);
+      }
+
+      await fetchCourses();
+      setDrawerOpen(false);
+      setEditId(null);
+      setForm(initialForm);
+    } catch (err) {
+      console.error("Failed to save course:", err);
+      alert("Failed to save course. Please try again.");
+    } finally {
+      setSaving(false);
     }
-
-    setDrawerOpen(false);
   };
 
-  const deleteCourse = (id) => {
-    setCourses(prev => prev.filter(c => c.id !== id));
+  const toggleStatus = async (id) => {
+    try {
+      const response = await toggleCourseStatus(id);
+      const nextStatus = response?.status || response?.data?.status;
+      setCourses(courses.map(c => {
+        if (c.id !== id) return c;
+        const isActive = (nextStatus || c.rawStatus) === "ACTIVE"
+          ? "Published"
+          : "Draft";
+        return {
+          ...c,
+          rawStatus: nextStatus || c.rawStatus,
+          status: isActive
+        };
+      }));
+    } catch (err) {
+      console.error("Failed to toggle course status:", err);
+      alert("Failed to update course status.");
+    }
   };
 
-  const toggleStatus = (id) => {
-    setCourses(prev =>
-      prev.map(c =>
-        c.id === id
-          ? { ...c, status: c.status === "Published" ? "Draft" : "Published" }
-          : c
-      )
-    );
+  const deleteCourseItem = async (id) => {
+    if (window.confirm("Are you sure you want to delete this course?")) {
+      try {
+        await deleteCourse(id);
+        setCourses(courses.filter(c => c.id !== id));
+      } catch (err) {
+        console.error("Failed to delete course:", err);
+        alert("Failed to delete course.");
+      }
+    }
   };
 
-  // ================= UI =================
   return (
     <main className="min-h-screen bg-[#F3E6C9] p-8 space-y-8">
 
@@ -192,115 +263,98 @@ const CourseManagement = () => {
             className="w-full pl-10 pr-3 py-3 rounded-xl bg-[#FBF4E2] outline-none"
           />
         </div>
-
-        {/* <button
-          onClick={openAdd}
-          className="flex items-center gap-2 px-6 py-3 text-white rounded-xl shadow-lg"
-          style={{ backgroundColor: palette.primary }}
-        >
-          <MdAdd size={20} /> Add Course
-        </button> */}
       </div>
 
-      {/* FILTER */}
-      <div className="flex gap-4">
-        {["All", "Published", "Draft"].map(tab => (
-          <button
-            key={tab}
-            onClick={() => setFilter(tab)}
-            className={`px-5 py-2 rounded-lg text-sm font-semibold ${filter === tab ? "text-white" : "text-[#856966]"}`}
-            style={{ backgroundColor: filter === tab ? palette.primary : "transparent" }}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+      {/* Loading State */}
+      {loading && (
+        <div className="flex justify-center items-center py-12">
+          <div className="text-center">
+            <div className="w-10 h-10 rounded-full border-4 border-[#E2D4A6] border-t-[#74271E] animate-spin mx-auto mb-4"></div>
+            <p style={{ color: palette.textMuted }}>Loading courses...</p>
+          </div>
+        </div>
+      )}
 
-      {/* PREMIUM COURSE GRID */}
-      <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
-        <AnimatePresence>
-          {filtered.map(course => (
-            <motion.div
-              key={course.id}
-              layout
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="bg-[#FBF4E2] border border-[#D1B062]/60 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all"
-            >
-
-              {/* IMAGE TOP */}
-              <div className="w-full h-[180px] bg-[#EFE3D5] overflow-hidden">
-                {course.image ? (
-                  <img
-                    src={course.image}
-                    alt={course.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="flex items-center justify-center h-full text-[#6b1d14] text-3xl">
-                    {course.icon}
-                  </div>
-                )}
-              </div>
-
-              {/* BODY */}
-              <div className="p-5 space-y-3">
-
-                <h3 className="font-bold text-[#6b1d14]">
-                  {course.title}
-                </h3>
-
-                <p className="text-xs text-[#856966] line-clamp-2">
-                  {course.description}
-                </p>
-
-                <div className="flex flex-wrap gap-2 text-[11px] text-[#856966]">
-                  <span>{course.level}</span>
-                  <span>•</span>
-                  <span>{course.dur}</span>
-                  <span>•</span>
-                  <span>{course.mode}</span>
-                </div>
-
-                <div className="flex justify-between items-center pt-2">
-
-                  <button
-                    onClick={() => toggleStatus(course.id)}
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${course.status === "Published"
-                      ? "bg-green-100 text-green-600"
-                      : "bg-orange-100 text-orange-500"
-                      }`}
-                  >
-                    {course.status}
-                  </button>
-
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => openEdit(course)}
-                      className="p-2 hover:bg-blue-50 text-blue-600 rounded-lg"
-                    >
-                      <MdEdit size={18} />
-                    </button>
-
-                    <button
-                      onClick={() => deleteCourse(course.id)}
-                      className="p-2 hover:bg-red-50 text-red-600 rounded-lg"
-                    >
-                      <MdDelete size={18} />
-                    </button>
-                  </div>
-
-                </div>
-
-              </div>
-
-            </motion.div>
+      {/* Error State */}
+      {error && !loading && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-600">
+          <p>{error}</p>
+        </div>
+      )}
+      
+      {/* Content */}
+      {!loading && !error && (
+        <>
+          {/* FILTERS */}
+        <div className="flex items-center gap-2 border-b" style={{ borderColor: palette.goldDivider + '20' }}>
+          {["All", "Published", "Draft"].map((tab) => (
+            <button key={tab} onClick={() => setFilter(tab)} className="px-6 py-3 text-sm font-bold relative" style={{ color: filter === tab ? palette.primary : palette.textMuted }}>
+              {tab}
+              {filter === tab && <motion.div layoutId="underline" className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: palette.primary }} />}
+            </button>
           ))}
-        </AnimatePresence>
-      </div>
+        </div>
 
-      {/* DRAWER */}
+        {/* TABLE */}
+        <div className="bg-[#fcf8f0]/30 border rounded-4xl overflow-hidden shadow-sm" style={{ borderColor: palette.goldDivider + '20' }}>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-225">
+              <thead>
+                <tr className="border-b border-[#D1B062]/50" style={{ backgroundColor: palette.parchment + '40' }}>
+                  <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#856966]">Course Title</th>
+                  <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#856966]">Duration</th>
+                  <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#856966]">Mode</th>
+                  <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#856966]">Status</th>
+                  <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-center text-[#856966]">Visibility</th>
+                  <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-right text-[#856966]">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y" style={{ divideColor: palette.goldDivider + '10' }}>
+                <AnimatePresence mode="popLayout">
+                  {filteredCourses.map((course) => (
+                    <motion.tr key={course.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, x: -20 }} layout className="group hover:bg-[#FBF4E2]/20 transition-colors">
+                      <td className="px-8 py-5">
+                        <div className="flex items-center gap-4">
+                          <div className="size-11 rounded-2xl flex items-center justify-center text-xl" style={{ backgroundColor: palette.parchment, color: palette.primary }}>{course.icon}</div>
+                          <div className="flex flex-col">
+                            <span className="text-sm font-black text-[#641e16]">{course.title}</span>
+                            <span className="text-[10px] font-bold text-[#856966]">{course.level}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-8 py-5 text-sm font-medium text-[#856966]">{course.dur}</td>
+                      <td className="px-8 py-5">
+                        <span className="px-3 py-1 rounded-full text-[10px] font-black" style={{ backgroundColor: palette.parchment, color: palette.accentDark }}>{course.mode}</span>
+                      </td>
+                      <td className="px-8 py-5">
+                        <span className={`flex items-center gap-2 text-xs font-bold ${course.status === 'Published' ? 'text-green-600' : 'text-orange-400'}`}>
+                          <span className={`size-1.5 rounded-full ${course.status === 'Published' ? 'bg-green-600' : 'bg-orange-400'}`}></span>
+                          {course.status}
+                        </span>
+                      </td>
+                      <td className="px-8 py-5">
+                        <div className="flex justify-center">
+                          <div onClick={() => toggleStatus(course.id)} className="w-10 h-5 rounded-full relative transition-all cursor-pointer" style={{ backgroundColor: course.status === 'Published' ? palette.primary : '#CBD5E1' }}>
+                            <motion.div animate={{ x: course.status === 'Published' ? 20 : 4 }} className="absolute top-0.5 size-4 bg-white rounded-full shadow-sm" />
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-8 py-5 text-right">
+                        <div className="flex justify-end gap-2 opacity-100 transition-opacity">
+                          <button onClick={() => openEdit(course)} className="p-2 hover:bg-blue-50 text-blue-600 rounded-lg"><MdEdit size={18} /></button>
+                          <button onClick={() => deleteCourseItem(course.id)} className="p-2 hover:bg-red-50 text-red-600 rounded-lg"><MdDelete size={18} /></button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        </>
+        )}
+
       <AddCourse
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}

@@ -1,5 +1,7 @@
-import React, { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useMemo, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { useAuth } from "../context/useAuthHook";
 import {
   Search,
   ChevronLeft,
@@ -18,10 +20,11 @@ import {
   X,
   SlidersHorizontal,
 } from "lucide-react";
-import { motion } from "framer-motion";
-import CountUp from "react-countup";
+import { getAllCourses } from "../lib/api";
 
 const AllCoursesPage = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All Shastras");
   const [modeFilter, setModeFilter] = useState([]);
@@ -31,7 +34,64 @@ const AllCoursesPage = () => {
   const [view, setView] = useState("grid");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const itemsPerPage = 6;
+
+  // Fetch courses from backend
+  const fetchCourses = async () => {
+    try {
+      setLoading(true);
+      const response = await getAllCourses();
+
+      // Normalize possible shapes: array, { courses: [...] }, { items: [...] }, { data: [...] }
+      const payload = response;
+      const list = Array.isArray(payload)
+        ? payload
+        : payload?.courses || payload?.items || payload?.data || [];
+
+      const finalList = Array.isArray(list) ? list : [];
+      // Map backend Course model to UI-friendly shape expected by the listing
+      const mapped = finalList.map((c) => {
+        // Handle price formatting - extract numeric value
+        let priceValue = c.price || 0;
+        if (typeof priceValue === "string") {
+          priceValue = parseInt(priceValue.replace(/[^0-9]/g, "")) || 0;
+        }
+
+        return {
+          id: c._id || c.id,
+          title: c.title || c.name || "Untitled Course",
+          instructor: c.instructor || "Faculty",
+          category: c.category || "General",
+          mode: c.mode || "ONLINE",
+          level: c.level || "All Levels",
+          duration: c.duration || "",
+          price: typeof priceValue === "number" ? priceValue : 0,
+          priceFormatted: `₹${(typeof priceValue === "number" ? priceValue : 0).toLocaleString("en-IN")}`,
+          image: c.image?.url || c.image || null,
+          raw: c,
+        };
+      });
+
+      console.debug(
+        "CourseListing: fetched courses count=",
+        mapped.length,
+        mapped[0],
+      );
+      setCourses(mapped);
+    } catch (err) {
+      setError("Failed to load courses");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
 
   const categories = [
     "All Shastras",
@@ -41,69 +101,6 @@ const AllCoursesPage = () => {
     "Darshana (Philosophy)",
     "Sahitya (Literature)",
     "Language",
-  ];
-
-  const courses = [
-    {
-      id: 101,
-      title: "Shlok",
-      category: "Sahitya (Literature)",
-      instructor: "Acharya Sharma",
-      duration: "6 Weeks",
-      level: "Beginner",
-      mode: "ONLINE",
-      price: "2,499",
-      image:
-        "https://thumbs.dreamstime.com/b/antique-literature-collection-old-fashioned-wisdom-preserved-generative-ai-antique-literature-collection-old-fashioned-wisdom-274867858.jpg",
-    },
-    {
-      id: 102,
-      title: "Spoken Sanskrit (Level-1)",
-      category: "Language",
-      instructor: "Vidushi Aruna",
-      duration: "8 Weeks",
-      level: "Beginner",
-      mode: "LIVE",
-      price: "3,999",
-      image:
-        "https://tse2.mm.bing.net/th/id/OIP.aO6k2XyBjXEcWju-JEOo_QHaE7?pid=Api&P=0&h=180",
-    },
-    {
-      id: 103,
-      title: "Vyakarana Shastra",
-      category: "Vyakarana (Grammar)",
-      instructor: "Dr. Meenakshi",
-      duration: "12 Weeks",
-      level: "Intermediate",
-      mode: "ONLINE",
-      price: "5,999",
-      image:
-        "https://i.pinimg.com/736x/6a/3a/3c/6a3a3c4378419743ff09e29c6d4796bc.jpg",
-    },
-    {
-      id: 104,
-      title: "UGC NET",
-      category: "Language",
-      instructor: "Swami Jnananda",
-      duration: "16 Weeks",
-      level: "Advanced",
-      mode: "RECORDED",
-      price: "7,499",
-      image:
-        "https://i.pinimg.com/736x/19/6c/f4/196cf4706012f8407a08c0cf7db51339.jpg",
-    },
-    {
-      id: 105,
-      title: "BA",
-      category: "Language",
-      instructor: "Acharya Raghav",
-      duration: "24 Weeks",
-      level: "Intermediate",
-      mode: "ONLINE",
-      price: "9,999",
-      image:
-        "https://i.pinimg.com/736x/63/74/4f/63744f0c869b1b9b3095eccdb91daa1d.jpg",
-    },
   ];
 
   const resetFilters = () => {
@@ -125,9 +122,16 @@ const AllCoursesPage = () => {
 
   const filteredCourses = useMemo(() => {
     return courses.filter((course) => {
+      const instructorName =
+        typeof course.instructor === "string"
+          ? course.instructor
+          : course.instructor?.name || "";
+
       const matchesSearch =
-        course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.instructor.toLowerCase().includes(searchQuery.toLowerCase());
+        (course.title || "")
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        instructorName.toLowerCase().includes(searchQuery.toLowerCase());
 
       const matchesCategory =
         activeCategory === "All Shastras" || course.category === activeCategory;
@@ -155,7 +159,14 @@ const AllCoursesPage = () => {
         matchesDuration
       );
     });
-  }, [searchQuery, activeCategory, modeFilter, levelFilter, durationFilter]);
+  }, [
+    searchQuery,
+    activeCategory,
+    modeFilter,
+    levelFilter,
+    durationFilter,
+    courses,
+  ]);
 
   const isFiltered =
     searchQuery !== "" ||
@@ -497,12 +508,26 @@ const AllCoursesPage = () => {
             </div>
           </div>
 
-          {paginatedCourses.length > 0 ? (
-            <motion.div
-              key={view}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="w-12 h-12 rounded-full border-4 border-[#E2D4A6] border-t-[#74271E] animate-spin mb-4"></div>
+              <p className="text-[#4A4135] font-semibold">Loading courses...</p>
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center py-16 bg-red-50 rounded-2xl border border-red-200 p-8">
+              <p className="text-red-600 font-semibold text-center">{error}</p>
+              <button
+                onClick={() => {
+                  setLoading(true);
+                  fetchCourses();
+                }}
+                className="mt-4 px-6 py-2 bg-[#74271E] text-white rounded-lg font-bold hover:bg-[#5a1f15] transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          ) : paginatedCourses.length > 0 ? (
+            <div
               className={
                 view === "grid"
                   ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
@@ -604,54 +629,58 @@ const AllCoursesPage = () => {
                       {/* Price and CTA */}
                       <div className="flex items-center justify-between">
                         <span className="text-lg font-bold text-[#74271E] tabular-nums tracking-tight">
-                          ₹{course.price}
+                          {course.priceFormatted || "₹0"}
                         </span>
-                        <Link
-                          to="/coursedetail"
-                          state={{ course }}
+                        <button
                           onClick={() => {
-                            try {
-                              localStorage.setItem(
-                                "course",
-                                JSON.stringify(course),
-                              );
-                            } catch {}
+                            if (isAuthenticated) {
+                              navigate(`/coursedetail/${course.id}`, {
+                                state: { course: course },
+                              });
+                            } else {
+                              navigate("/auth", {
+                                state: { from: `/coursedetail/${course.id}` },
+                              });
+                            }
                           }}
-                          className="flex items-center gap-2 px-4 py-2.5 bg-[#c9a84e] text-white text-xs font-bold uppercase tracking-wider rounded-md transition-all duration-300 hover:bg-[#b38b3f] shadow-sm hover:shadow-md active:scale-95 group/link"
+                          className="flex items-center  gap-2 px-3 py-2 bg-[#c9a84e] text-white text-[10px] font-bold uppercase tracking-wider rounded-md transition-all duration-300 hover:bg-[#b38b3f] shadow-sm active:scale-95 group/link"
                         >
-                          <span>Learn More</span>
-                          <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
-                        </Link>
+                          Learn More
+                          <ArrowUpRight className="w-3 h-3 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
+                        </button>
                       </div>
                     </div>
                   </div>
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
           ) : (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="py-32 flex flex-col items-center justify-center bg-white border border-[#E2D4A6] rounded-2xl text-center px-6"
-            >
-              <div className="w-20 h-20 bg-[#FDFCF7] rounded-full flex items-center justify-center mb-6 border-2 border-[#E2D4A6]">
-                <Search className="w-8 h-8 text-stone-400" />
+            <div className="py-32 flex flex-col items-center justify-center bg-white border border-[#E2D4A6] rounded-2xl text-center">
+              <div className="w-16 h-16 bg-[#FDFCF7] rounded-full flex items-center justify-center mb-6 border border-[#E2D4A6]">
+                <Search className="w-6 h-6 text-stone-300" />
               </div>
-              <h3 className="text-2xl font-bold text-[#2D2417] mb-3">
+              <h3 className="text-2xl font-bold text-[#2D2417] mb-2">
                 No Shastras Found
               </h3>
-              <p className="text-stone-500 mb-8 max-w-md">
-                We couldn't find any courses matching your current filters. Try
-                adjusting your search criteria or explore our other offerings.
+              <p className="text-stone-500 italic mb-3">
+                Try adjusting your filters to find what you seek.
               </p>
+              {courses.length === 0 ? (
+                <p className="text-sm text-stone-400 mb-6">
+                  There are no active courses available on the server right now.
+                </p>
+              ) : (
+                <p className="text-sm text-stone-400 mb-6">
+                  {`Fetched ${courses.length} courses; none match the current filters.`}
+                </p>
+              )}
               <button
                 onClick={resetFilters}
-                className="px-8 py-3.5 bg-[#74271E] text-white rounded-xl text-sm font-bold uppercase tracking-widest transition-all hover:bg-[#5a1f17] hover:shadow-lg active:scale-95"
+                className="px-8 py-3 bg-[#74271E] text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all"
               >
-                Clear All Filters
+                Reset All Filters
               </button>
-            </motion.div>
+            </div>
           )}
 
           {sortedCourses.length > itemsPerPage && (
