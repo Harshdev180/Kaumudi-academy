@@ -16,7 +16,7 @@ export default function StudentFilters({ search, setSearch, filter, setFilter })
             </div>
 
             <div className="flex gap-3 bg-white/40">
-                {["All", "Active", "Pending"].map(tab => (
+                {["All", "Active", "Inactive"].map(tab => (
                     <button
                         key={tab}
                         onClick={() => setFilter(tab)}

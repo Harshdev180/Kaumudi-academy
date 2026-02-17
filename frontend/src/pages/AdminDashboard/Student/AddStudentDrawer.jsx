@@ -6,7 +6,10 @@ const AddStudentDrawer = ({
     onClose,
     form,
     setForm,
-    saveStudent
+    saveStudent,
+    editId,
+    saving,
+    courses
 }) => {
 
     if (!open) return null;
@@ -14,7 +17,11 @@ const AddStudentDrawer = ({
     const handleImage = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setForm({ ...form, image: URL.createObjectURL(file) })
+            setForm({
+                ...form,
+                imageFile: file,
+                imagePreview: URL.createObjectURL(file)
+            })
         }
     }
 
@@ -42,7 +49,7 @@ const AddStudentDrawer = ({
                     {/* HEADER */}
                     <div className="flex justify-between items-center p-6 border-b border-[#D1B062]/30">
                         <h2 className="font-black text-[#6b1d14] text-lg">
-                            Add New Student
+                            {editId ? "Edit Student" : "Add New Student"}
                         </h2>
 
                         <button onClick={onClose}>
@@ -55,27 +62,66 @@ const AddStudentDrawer = ({
 
                         {/* IMAGE */}
                         <label className="h-28 flex items-center justify-center border-2 border-dashed rounded-2xl bg-[#EFE3D5] cursor-pointer">
-                            {form.image
-                                ? <img src={form.image} className="h-full rounded-xl" />
+                            {form.imagePreview
+                                ? <img src={form.imagePreview} className="h-full rounded-xl" />
                                 : <MdImage size={26} />
                             }
                             <input hidden type="file" onChange={handleImage} />
                         </label>
 
                         <input
-                            placeholder="Student Name"
-                            value={form.name}
-                            onChange={e => setForm({ ...form, name: e.target.value })}
+                            placeholder="First Name"
+                            value={form.firstName}
+                            onChange={e => setForm({ ...form, firstName: e.target.value })}
                             className="w-full p-3 rounded-xl bg-[#EFE3D5]"
                             required
                         />
 
                         <input
-                            placeholder="Course Name"
-                            value={form.course}
-                            onChange={e => setForm({ ...form, course: e.target.value })}
+                            placeholder="Last Name"
+                            value={form.lastName}
+                            onChange={e => setForm({ ...form, lastName: e.target.value })}
+                            className="w-full p-3 rounded-xl bg-[#EFE3D5]"
+                            required
+                        />
+
+                        <input
+                            placeholder="Email"
+                            type="email"
+                            value={form.email}
+                            onChange={e => setForm({ ...form, email: e.target.value })}
+                            className="w-full p-3 rounded-xl bg-[#EFE3D5]"
+                            required
+                        />
+
+                        <input
+                            placeholder={editId ? "Password (leave blank to keep unchanged)" : "Password"}
+                            type="password"
+                            value={form.password}
+                            onChange={e => setForm({ ...form, password: e.target.value })}
+                            className="w-full p-3 rounded-xl bg-[#EFE3D5]"
+                            required={!editId}
+                        />
+
+                        <input
+                            placeholder="Phone Number"
+                            value={form.phoneNumber}
+                            onChange={e => setForm({ ...form, phoneNumber: e.target.value })}
                             className="w-full p-3 rounded-xl bg-[#EFE3D5]"
                         />
+
+                        <select
+                            value={form.courseId}
+                            onChange={e => setForm({ ...form, courseId: e.target.value })}
+                            className="w-full p-3 rounded-xl bg-[#EFE3D5]"
+                        >
+                            <option value="">Select Course (optional)</option>
+                            {courses?.map(course => (
+                                <option key={course.id} value={course.id}>
+                                    {course.title}
+                                </option>
+                            ))}
+                        </select>
 
                         <div className="grid grid-cols-2 gap-3">
 
@@ -106,7 +152,6 @@ const AddStudentDrawer = ({
                             className="w-full p-3 rounded-xl bg-[#EFE3D5]"
                         >
                             <option>Active</option>
-                            <option>Pending</option>
                             <option>Inactive</option>
                         </select>
 
@@ -124,9 +169,10 @@ const AddStudentDrawer = ({
 
                         <button
                             onClick={saveStudent}
+                            disabled={saving}
                             className="flex-1 py-3 rounded-xl text-white font-bold bg-[#6b1d14]"
                         >
-                            Add Student
+                            {saving ? "Saving..." : editId ? "Update Student" : "Add Student"}
                         </button>
 
                     </div>

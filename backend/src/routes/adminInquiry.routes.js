@@ -6,11 +6,12 @@ import {
   deleteInquiry
 } from "../controllers/adminInquiry.controller.js";
 
-import { isAuthenticated, isAdmin } from "../middlewares/auth.middleware.js";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
+import { roleMiddleware } from "../middlewares/role.middleware.js";
 
 const router = express.Router();
 
-router.use(isAuthenticated, isAdmin);
+router.use(authMiddleware, roleMiddleware("ADMIN", "SUPER_ADMIN"));
 
 router.get("/admin/inquiries", getAllInquiries);
 router.get("/admin/inquiries/:id", getInquiryById);

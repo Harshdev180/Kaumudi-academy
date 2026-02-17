@@ -20,14 +20,14 @@ const router = express.Router();
 router.get(
   "/admin/students",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("ADMIN", "SUPER_ADMIN"),
   getAllStudents
 );
 
 router.post(
   "/admin/students",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("ADMIN", "SUPER_ADMIN"),
   upload.single("image"),
   createStudentByAdmin
 );
@@ -35,7 +35,7 @@ router.post(
 router.put(
   "/admin/students/:id",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("ADMIN", "SUPER_ADMIN"),
   upload.single("image"),
   updateStudentByAdmin
 );
@@ -43,21 +43,21 @@ router.put(
 router.delete(
   "/admin/students/:id",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("ADMIN", "SUPER_ADMIN"),
   deleteStudentByAdmin
 );
 
 router.patch(
   "/admin/students/:id/status",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("ADMIN", "SUPER_ADMIN"),
   toggleStudentStatus
 );
 
 router.patch(
   "/admin/students/:id/payment",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("ADMIN", "SUPER_ADMIN"),
   toggleStudentPayment
 );
 

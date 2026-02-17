@@ -2,12 +2,12 @@ export default function StudentStats({ students }) {
 
     const total = students.length;
     const active = students.filter(s => s.status === "Active").length;
-    const pending = students.filter(s => s.status === "Pending").length;
+    const inactive = students.filter(s => s.status === "Inactive").length;
 
     const cards = [
         { label: "Total Students", value: total },
         { label: "Active", value: active },
-        { label: "Pending", value: pending },
+        { label: "Inactive", value: inactive },
     ]
 
     return (

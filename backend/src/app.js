@@ -4,7 +4,6 @@ import authRoutes from "./routes/auth.routes.js";
 import courseRoutes from "./routes/course.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
 import couponRoutes from "./routes/coupon.routes.js";
-import inquiryRoutes from "./routes/inquiry.routes.js";
 import enrollmentRoutes from "./routes/enrollment.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import testimonialRoutes from "./routes/testimonial.routes.js"
@@ -43,7 +42,6 @@ app.use("/api", authRoutes);
 app.use("/api", courseRoutes);
 app.use("/api", paymentRoutes)
 app.use("/api", couponRoutes);
-app.use("/api", inquiryRoutes);
 app.use("/api", enrollmentRoutes);
 app.use("/api", dashboardRoutes);
 app.use("/api", testimonialRoutes)
