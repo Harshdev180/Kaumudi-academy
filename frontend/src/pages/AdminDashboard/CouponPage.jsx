@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Clock, Plus, Percent, Copy, Power } from "lucide-react";
-import { createCoupon, toggleCouponStatus } from "../../lib/api";
+import { createCoupon, toggleCouponStatus, getAllCouponsForAdmin } from "../../lib/api";
 
 /* STATUS AUTOMATION */
 const getStatus = (coupon) => {
@@ -18,6 +18,8 @@ const getStatus = (coupon) => {
 function CouponPage() {
     const [coupons, setCoupons] = useState([]);
     const [showForm, setShowForm] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
     const [formData, setFormData] = useState({
         code: "",
@@ -27,6 +29,35 @@ function CouponPage() {
     });
 
     const copyCode = (code) => navigator.clipboard.writeText(code);
+
+    useEffect(() => {
+        const fetchCoupons = async () => {
+            try {
+                setLoading(true);
+                setError("");
+                const response = await getAllCouponsForAdmin();
+                const payload = response?.data ?? response;
+                const list = payload?.data ?? payload ?? [];
+                const mapped = Array.isArray(list)
+                    ? list.map((c) => ({
+                        id: c._id || c.id,
+                        code: c.code,
+                        discount: c.discountPercentage,
+                        startTime: c.startTime,
+                        endTime: c.endTime,
+                        isActive: c.isActive ?? true,
+                    }))
+                    : [];
+                setCoupons(mapped);
+            } catch (err) {
+                console.error("Failed to fetch coupons:", err);
+                setError("Failed to load coupons.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchCoupons();
+    }, []);
 
     const handleSaveCoupon = async () => {
         if (!formData.code || !formData.discount || !formData.startTime || !formData.endTime) return;
@@ -116,7 +147,13 @@ function CouponPage() {
 
             {/* COUPON LIST */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {coupons.length === 0 && (
+                {loading && (
+                    <div className="text-sm text-[#74271E]/70">Loading coupons...</div>
+                )}
+                {!loading && error && (
+                    <div className="text-sm text-red-600">{error}</div>
+                )}
+                {!loading && !error && coupons.length === 0 && (
                     <div className="text-sm text-[#74271E]/70">No coupons yet. Create one to get started.</div>
                 )}
                 {coupons.map((coupon) => {
@@ -199,7 +236,7 @@ function CouponPage() {
                                 onClick={() => setShowForm(false)}
                                 className="absolute right-4 top-4 text-white/80 hover:text-white transition"
                             >
-                                âœ•
+                                x
                             </button>
                         </div>
 

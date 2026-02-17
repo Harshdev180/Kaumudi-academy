@@ -29,10 +29,10 @@ import {
 
 
 // Specific admin routes should come before parameterized routes
-router.get("/course/admin/all", authMiddleware, roleMiddleware("ADMIN"), getAllCoursesForAdmin);
-router.get("/course/admin/active", authMiddleware, roleMiddleware("ADMIN"), getActiveCoursesForAdmin);
-router.get("/course/admin/with-enrollments", authMiddleware, roleMiddleware("ADMIN"), getCoursesWithEnrollmentCount);
-router.get("/course/admin/stats", authMiddleware, roleMiddleware("ADMIN"), getCourseDashboardStats);
+router.get("/course/admin/all", authMiddleware, roleMiddleware("ADMIN", "SUPER_ADMIN"), getAllCoursesForAdmin);
+router.get("/course/admin/active", authMiddleware, roleMiddleware("ADMIN", "SUPER_ADMIN"), getActiveCoursesForAdmin);
+router.get("/course/admin/with-enrollments", authMiddleware, roleMiddleware("ADMIN", "SUPER_ADMIN"), getCoursesWithEnrollmentCount);
+router.get("/course/admin/stats", authMiddleware, roleMiddleware("ADMIN", "SUPER_ADMIN"), getCourseDashboardStats);
 
 // Generic routes
 router.get("/course", getAllCourses);
@@ -42,7 +42,7 @@ router.get("/course/:id", getCourseDetail);
 router.post(
   "/course",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("ADMIN", "SUPER_ADMIN"),
   upload.single("image"),
   validateBody(createCourseSchema),
   createCourse
@@ -51,7 +51,7 @@ router.post(
 router.put(
   "/course/:id",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("ADMIN", "SUPER_ADMIN"),
   upload.single("image"),
   validateBody(updateCourseSchema),
   updateCourse
@@ -60,14 +60,14 @@ router.put(
 router.patch(
   "/course/:id/status",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("ADMIN", "SUPER_ADMIN"),
   toggleCourseStatus
 );
 
 router.delete(
   "/course/:id",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("ADMIN", "SUPER_ADMIN"),
   deleteCourse
 );
 

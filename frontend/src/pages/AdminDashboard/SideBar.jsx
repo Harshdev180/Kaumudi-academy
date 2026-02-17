@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   BookOpen,
   LayoutDashboard,
@@ -10,20 +11,59 @@ import {
   LogOut,
   UserRoundPen,
 } from "lucide-react";
-import { useLocation, Link, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { useLocation, Link } from "react-router-dom";
+import { useAuth } from "../../context/useAuthHook";
 
 function Sidebar({ collapsed, setCollapsed }) {
 
   const location = useLocation();
-  const navigate = useNavigate();
+  const { user, loading, logout } = useAuth();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
+  const displayName = (() => {
+    if (user?.name) return user.name;
+    if (user?.firstName || user?.lastName) {
+      return [user?.firstName, user?.lastName].filter(Boolean).join(" ");
+    }
+    if (user?.email) return user.email;
+    return "Admin";
+  })();
+
+  const displayRole = (() => {
+    if (user?.role === "SUPER_ADMIN") return "Super Admin";
+    if (user?.role === "ADMIN") return "Administrator";
+    if (user?.role) return user.role.replace(/_/g, " ");
+    return "Administrator";
+  })();
+
+  const initials = (() => {
+    if (user?.name) {
+      const parts = user.name.trim().split(/\s+/).filter(Boolean);
+      if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+      if (parts.length === 1 && parts[0]) return parts[0].slice(0, 2).toUpperCase();
+    }
+    if (user?.firstName || user?.lastName) {
+      const first = user?.firstName?.[0] || "";
+      const last = user?.lastName?.[0] || "";
+      const combined = `${first}${last}`.trim();
+      if (combined) return combined.toUpperCase();
+    }
+    if (user?.email) {
+      const base = user.email.split("@")[0] || "";
+      const letters = base.replace(/[^a-zA-Z0-9]/g, "");
+      if (letters.length >= 2) return letters.slice(0, 2).toUpperCase();
+      if (letters.length === 1) return letters.toUpperCase();
+    }
+    return "AD";
+  })();
+
+  const profileName = loading ? "Loading..." : displayName;
+  const profileRole = loading ? "Checking..." : displayRole;
+  const profileInitials = loading ? "--" : initials;
+
   const confirmLogout = () => {
-    localStorage.removeItem("adminToken");
-    localStorage.removeItem("adminData");
-    sessionStorage.clear();
-    navigate("/admin-login", { replace: true });
+    setShowLogoutModal(false);
+    logout("/admin-login");
   };
 
   const menuItems = [
@@ -115,16 +155,17 @@ function Sidebar({ collapsed, setCollapsed }) {
 
         {/* PROFILE + LOGOUT */}
         {!collapsed && (
-          <div className="p-4 border-t border-slate-200/50 bg-[#F3E6C9]/30 space-y-3">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-full bg-[#D4AF37]/20 border-2 border-[#D4AF37] flex items-center justify-center font-bold">
-                AS
+          <div className="p-4 border-t border-slate-200/50 bg-[#F3E6C9]/30">
+            <div className="flex items-center space-x-3 p-2 rounded-xl">
+              <div className="w-10 h-10 rounded-full bg-[#D4AF37]/20 border-2 border-[#D4AF37] flex items-center justify-center font-bold text-[#6b1d14]">
+                {profileInitials}
               </div>
-
-              <div>
-                <p className="text-sm font-bold">Ajay Sharma</p>
-                <p className="text-[10px] uppercase font-black text-[#6b1d14]/60">
-                  Administrator
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-[#6b1d14] truncate">
+                  {profileName}
+                </p>
+                <p className="text-[10px] text-[#6b1d14]/60 uppercase font-black">
+                  {profileRole}
                 </p>
               </div>
             </div>

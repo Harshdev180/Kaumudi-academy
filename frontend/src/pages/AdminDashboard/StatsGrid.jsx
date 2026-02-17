@@ -7,16 +7,14 @@ import {
   Users,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
-import { getDashboardStats } from "../../lib/api";
 
 function StatsGrid() {
-  const [stats, setStats] = useState([
+  const stats = [
     {
       title: "TOTAL COURSES",
-      value: "—",
-      change: "Loading...",
-      trend: "neutral",
+      value: "42",
+      change: "+5%",
+      trend: "up",
       icon: BookOpen,
       color: "from-[#b8973d] to-[#d4af37]",
       bgColor: "bg-[#FBF4E2]",
@@ -24,19 +22,19 @@ function StatsGrid() {
     },
     {
       title: "ACTIVE STUDENTS",
-      value: "—",
-      change: "Loading...",
-      trend: "neutral",
+      value: "1,280",
+      change: "-2%",
+      trend: "down",
       icon: Users,
       color: "from-[#6b1d14] to-[#8a2a1f]",
       bgColor: "bg-[#6b1d14]/5",
       textColor: "text-[#6b1d14]",
     },
     {
-      title: "TOTAL REVENUE",
-      value: "—",
-      change: "Loading...",
-      trend: "neutral",
+      title: "COUPONS REDEEMED",
+      value: "156",
+      change: "+12%",
+      trend: "up",
       icon: Ticket,
       color: "from-[#b8973d] to-[#d4af37]",
       bgColor: "bg-[#FBF4E2]",
@@ -44,72 +42,15 @@ function StatsGrid() {
     },
     {
       title: "NEW INQUIRIES",
-      value: "—",
-      change: "Loading...",
+      value: "12",
+      change: "PENDING",
       trend: "neutral",
       icon: Mail,
       color: "from-purple-500 to-indigo-600",
       bgColor: "bg-purple-50",
       textColor: "text-purple-600",
     },
-  ]);
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const response = await getDashboardStats();
-        const data = response?.data ?? response ?? {};
-
-        setStats([
-          {
-            title: "TOTAL COURSES",
-            value: data.totalCourses || "0",
-            change: "+5%",
-            trend: "up",
-            icon: BookOpen,
-            color: "from-[#b8973d] to-[#d4af37]",
-            bgColor: "bg-[#FBF4E2]",
-            textColor: "text-[#b8973d]",
-          },
-          {
-            title: "TOTAL ENROLLMENTS",
-            value: (data.totalEnrollments || data.activeStudents || 0).toLocaleString(),
-            change: "-2%",
-            trend: "down",
-            icon: Users,
-            color: "from-[#6b1d14] to-[#8a2a1f]",
-            bgColor: "bg-[#6b1d14]/5",
-            textColor: "text-[#6b1d14]",
-          },
-          {
-            title: "TOTAL REVENUE",
-            value: `₹${(data.totalRevenue || 0).toLocaleString()}`,
-            change: "+12%",
-            trend: "up",
-            icon: Ticket,
-            color: "from-[#b8973d] to-[#d4af37]",
-            bgColor: "bg-[#FBF4E2]",
-            textColor: "text-[#b8973d]",
-          },
-          {
-            title: "NEW INQUIRIES",
-            value: data.totalInquiries || "0",
-            change: "PENDING",
-            trend: "neutral",
-            icon: Mail,
-            color: "from-purple-500 to-indigo-600",
-            bgColor: "bg-purple-50",
-            textColor: "text-purple-600",
-          },
-        ]);
-      } catch (error) {
-        console.error("Failed to fetch dashboard stats:", error);
-        // Keep default stats on error
-      }
-    };
-
-    fetchStats();
-  }, []);
+  ];
 
   return (
     <motion.div
@@ -121,7 +62,7 @@ function StatsGrid() {
       }}
       initial="hidden"
       animate="visible"
-      className="relative z-0 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4"
+      className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4"
     >
       {stats.map((stat, index) => (
         <motion.div
@@ -132,7 +73,7 @@ function StatsGrid() {
           }}
           transition={{ duration: 0.5, ease: "easeOut" }}
           whileHover={{ y: -6 }}
-          className="relative z-0 bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-200/50 hover:shadow-xl hover:shadow-slate-200/20 group"
+          className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-200/50 hover:shadow-xl hover:shadow-slate-200/20 group"
         >
           <div className="flex items-start justify-between">
             <div className="flex-1">
@@ -152,12 +93,13 @@ function StatsGrid() {
                 ) : null}
 
                 <span
-                  className={`text-sm font-semibold ${stat.trend === "up"
+                  className={`text-sm font-semibold ${
+                    stat.trend === "up"
                       ? "text-emerald-500"
                       : stat.trend === "down"
                         ? "text-red-500"
                         : "text-slate-400"
-                    }`}
+                  }`}
                 >
                   {stat.change}
                 </span>

@@ -82,7 +82,10 @@ const CourseDetails = () => {
           curriculum: incomingData.curriculum || defaultCourse.curriculum,
           schedule: incomingData.schedule || defaultCourse.schedule,
           image: incomingData.image,
-          description: `Deep study into ${incomingData.category}. A ${incomingData.duration} immersive journey for ${incomingData.level} seekers.`,
+          description:
+            incomingData.description ||
+            defaultCourse.description ||
+            `Deep study into ${incomingData.category}. A ${incomingData.duration} immersive journey for ${incomingData.level} seekers.`,
         };
         setCourseData(merged);
       } else if (id) {

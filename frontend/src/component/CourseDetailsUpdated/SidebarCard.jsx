@@ -122,6 +122,7 @@ const SidebarCard = ({ price, courseData }) => {
           <Link to="/courseBuy" 
           className="w-full"
           state={{ 
+            courseId: courseData?._id || courseData?.id || null,
             courseName: courseData?.title, 
             price: courseData?.price,
             duration: courseData?.duration,

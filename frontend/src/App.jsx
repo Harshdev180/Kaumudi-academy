@@ -87,7 +87,14 @@ function App() {
       <Route path="/reset-password/:token" element={<Sign />} />
 
       {/* Admin nested routes */}
-      <Route path="/admin" element={<AdminLayout />}>
+      <Route
+        path="/admin"
+        element={
+          <RequireAuth roles={["ADMIN", "SUPER_ADMIN"]} redirectTo="/admin-login">
+            <AdminLayout />
+          </RequireAuth>
+        }
+      >
         <Route index element={<Dashboard />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="lead" element={<LeadManagement />} />
@@ -100,8 +107,22 @@ function App() {
       {/* Admin login outside admin layout */}
       <Route path="/admin-login" element={<AdminLogin />} />
       <Route path="/admin-register" element={<AdminRegister />} />
-      <Route path="/admin/notifications" element={<NotificationsPage />} />
-      <Route path="/admin/settings" element={<AdminSettings />} />
+      <Route
+        path="/admin/notifications"
+        element={
+          <RequireAuth roles={["ADMIN", "SUPER_ADMIN"]} redirectTo="/admin-login">
+            <NotificationsPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/admin/settings"
+        element={
+          <RequireAuth roles={["ADMIN", "SUPER_ADMIN"]} redirectTo="/admin-login">
+            <AdminSettings />
+          </RequireAuth>
+        }
+      />
 
 
       {/* Fallback */}

@@ -25,16 +25,29 @@ export function AuthProvider({ children }) {
     const storedEmail = localStorage.getItem('kaumudi_user_email');
     const storedRole = localStorage.getItem('kaumudi_role');
     const storedId = localStorage.getItem('kaumudi_user_id');
+    const storedFirstName = localStorage.getItem('kaumudi_user_first_name');
+    const storedLastName = localStorage.getItem('kaumudi_user_last_name');
+    const storedName = localStorage.getItem('kaumudi_user_name');
 
     if (storedToken) {
       setToken(storedToken);
       setAuthToken(storedToken);
       // derive user from stored values and token payload
       const payload = decodeJwt(storedToken) || {};
+      const firstName = storedFirstName || payload.firstName || payload.firstname || null;
+      const lastName = storedLastName || payload.lastName || payload.lastname || null;
+      const name =
+        storedName ||
+        payload.name ||
+        payload.fullName ||
+        (firstName || lastName ? [firstName, lastName].filter(Boolean).join(' ') : null);
       setUser({
         id: storedId || payload.id || payload._id || null,
         email: storedEmail,
         role: storedRole || payload.role,
+        firstName,
+        lastName,
+        name,
       });
     }
     setLoading(false);
@@ -49,30 +62,47 @@ export function AuthProvider({ children }) {
     const payload = decodeJwt(authToken) || {};
     const id = payload.id || payload._id || null;
     const role = userData.role || payload.role || 'STUDENT';
+    const firstName = userData.firstName || userData.firstname || null;
+    const lastName = userData.lastName || userData.lastname || null;
+    const name =
+      userData.name ||
+      userData.fullName ||
+      (firstName || lastName ? [firstName, lastName].filter(Boolean).join(' ') : null);
 
     const nextUser = {
       id,
       email: userData.email,
       role,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
+      firstName,
+      lastName,
+      name,
     };
 
     setUser(nextUser);
     if (nextUser.email) localStorage.setItem('kaumudi_user_email', nextUser.email);
     if (nextUser.id) localStorage.setItem('kaumudi_user_id', nextUser.id);
+    if (firstName) localStorage.setItem('kaumudi_user_first_name', firstName);
+    else localStorage.removeItem('kaumudi_user_first_name');
+    if (lastName) localStorage.setItem('kaumudi_user_last_name', lastName);
+    else localStorage.removeItem('kaumudi_user_last_name');
+    if (name) localStorage.setItem('kaumudi_user_name', name);
+    else localStorage.removeItem('kaumudi_user_name');
     localStorage.setItem('kaumudi_role', role);
   };
 
-  const logout = () => {
+  const logout = (redirectTo = '/') => {
     setUser(null);
     setToken(null);
     localStorage.removeItem('kaumudi_token');
     localStorage.removeItem('kaumudi_user_email');
+    localStorage.removeItem('kaumudi_user_id');
     localStorage.removeItem('kaumudi_role');
+    localStorage.removeItem('kaumudi_user_first_name');
+    localStorage.removeItem('kaumudi_user_last_name');
+    localStorage.removeItem('kaumudi_user_name');
     setAuthToken(null);
     try {
-      navigate('/');
+      navigate(redirectTo);
     // eslint-disable-next-line no-empty
     } catch {}
   };

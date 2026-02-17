@@ -156,8 +156,13 @@ export async function createCoupon(couponData) {
   return res.data;
 }
 
+export async function getAllCouponsForAdmin() {
+  const res = await api.get("/coupon/admin/all");
+  return res.data;
+}
+
 export async function toggleCouponStatus(couponId) {
-  const res = await api.patch(`/coupon/${couponId}/toggle`);
+  const res = await api.patch(`/coupon/${couponId}/status`);
   return res.data;
 }
 
@@ -185,6 +190,37 @@ export async function deleteTestimonial(testimonialId) {
 // ==================== DASHBOARD APIs ====================
 export async function getDashboardStats() {
   const res = await api.get("/dashboard/stats");
+  return res.data;
+}
+
+// ==================== STAFF APIs ====================
+export async function getAllStaff() {
+  const res = await api.get("/staff");
+  return res.data;
+}
+
+export async function createStaff(staffData) {
+  const res = await api.post("/staff", staffData);
+  return res.data;
+}
+
+export async function updateStaff(staffId, staffData) {
+  const res = await api.put(`/staff/${staffId}`, staffData);
+  return res.data;
+}
+
+export async function deleteStaff(staffId) {
+  const res = await api.delete(`/staff/${staffId}`);
+  return res.data;
+}
+
+export async function toggleStaffPayment(staffId) {
+  const res = await api.patch(`/staff/${staffId}/pay`);
+  return res.data;
+}
+
+export async function toggleStaffStatus(staffId) {
+  const res = await api.patch(`/staff/${staffId}/status`);
   return res.data;
 }
 

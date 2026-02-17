@@ -95,12 +95,21 @@ const AuthPage = () => {
           role: formData.role
         });
         if (res?.data?.token) {
+          const userPayload = res?.data?.user || res?.data?.student || res?.data?.data || {};
+          const firstName = userPayload?.firstName || userPayload?.firstname || formData.firstName || null;
+          const lastName = userPayload?.lastName || userPayload?.lastname || formData.lastName || null;
+          const name =
+            userPayload?.name ||
+            userPayload?.fullName ||
+            userPayload?.full_name ||
+            (firstName || lastName ? [firstName, lastName].filter(Boolean).join(' ') : null);
           login(
             {
               email: formData.email,
               role: res.data.role || formData.role,
-              firstName: formData.firstName,
-              lastName: formData.lastName
+              firstName,
+              lastName,
+              name,
             },
             res.data.token
           );

@@ -72,6 +72,7 @@ const AdminRegister = () => {
                 localStorage.setItem("kaumudi_token", loginRes.token);
                 localStorage.setItem("kaumudi_role", "SUPER_ADMIN");
                 localStorage.setItem("kaumudi_user_email", form.email);
+                localStorage.setItem("kaumudi_user_name", form.name);
                 setAuthToken(loginRes.token);
                 navigate("/admin/dashboard");
             } else {

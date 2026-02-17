@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useMemo, useState } from 'react'
 import { Bell, Filter, Search, Settings, BellRing, X } from 'lucide-react'
 import { AlertTriangle, TicketPercent, CreditCard, Tag, Mail } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion"
@@ -8,7 +8,30 @@ import { useNavigate } from "react-router-dom";
 function Header({ showAlerts, setShowAlerts }) {
 
     const alertRef = useRef(null)
+    const searchRef = useRef(null)
     const navigate = useNavigate();
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchOpen, setSearchOpen] = useState(false);
+
+    const adminSearchItems = useMemo(() => ([
+        { label: "Dashboard", path: "/admin/dashboard", keywords: ["home", "overview", "stats"] },
+        { label: "Lead Management", path: "/admin/lead", keywords: ["lead", "inquiry", "enquiry"] },
+        { label: "Courses", path: "/admin/course", keywords: ["course", "classes"] },
+        { label: "Coupon", path: "/admin/coupon", keywords: ["coupon", "discount", "offer"] },
+        { label: "Staff Management", path: "/admin/staff-salary", keywords: ["staff", "salary", "payroll"] },
+        { label: "Student Management", path: "/admin/student-management", keywords: ["student", "learners"] },
+        { label: "Notifications", path: "/admin/notifications", keywords: ["notification", "alerts"] },
+        { label: "Settings", path: "/admin/settings", keywords: ["settings", "config", "preferences"] },
+    ]), []);
+
+    const searchResults = useMemo(() => {
+        const q = searchQuery.trim().toLowerCase();
+        if (!q) return adminSearchItems;
+        return adminSearchItems.filter((item) => {
+            const haystack = [item.label, ...(item.keywords || [])].join(" ").toLowerCase();
+            return haystack.includes(q);
+        });
+    }, [searchQuery, adminSearchItems]);
 
     // 🔥 Latest 4 alerts only (Newest first)
     const latestAlerts = [...Alert]
@@ -20,6 +43,9 @@ function Header({ showAlerts, setShowAlerts }) {
         const handleClickOutside = (e) => {
             if (alertRef.current && !alertRef.current.contains(e.target)) {
                 setShowAlerts(false)
+            }
+            if (searchRef.current && !searchRef.current.contains(e.target)) {
+                setSearchOpen(false)
             }
         }
         document.addEventListener("mousedown", handleClickOutside)
@@ -54,18 +80,69 @@ function Header({ showAlerts, setShowAlerts }) {
                 </div>
 
                 {/* Center Search */}
-                <div className='flex-1 max-w-md mx-4 md:mx-8 hidden sm:block'>
+                <div className='flex-1 max-w-md mx-4 md:mx-8 hidden sm:block' ref={searchRef}>
                     <div className='relative'>
                         <Search className='w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400' />
                         <input
                             type="text"
                             placeholder='Search Anything'
-                            className='w-full pl-10 pr-4 py-2.5 bg-slate-100 rounded-xl text-slate-800 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                            value={searchQuery}
+                            onChange={(e) => {
+                                setSearchQuery(e.target.value);
+                                setSearchOpen(true);
+                            }}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    const target = searchResults[0];
+                                    if (target) {
+                                        navigate(target.path);
+                                        setSearchOpen(false);
+                                        setSearchQuery("");
+                                    }
+                                }
+                                if (e.key === "Escape") {
+                                    setSearchOpen(false);
+                                }
+                            }}
+                            className='w-full pl-10 pr-10 py-2.5 bg-slate-100 rounded-xl text-slate-800 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500'
                         />
-                        <button className='absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-600'>
+                        <button
+                            onClick={() => setSearchOpen((prev) => !prev)}
+                            className='absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-600'
+                        >
                             <Filter />
                         </button>
                     </div>
+                    <AnimatePresence>
+                        {searchOpen && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -8 }}
+                                className='absolute mt-2 w-full rounded-2xl bg-white shadow-xl border border-slate-200 z-[9999] overflow-hidden'
+                            >
+                                {searchResults.length === 0 && (
+                                    <div className='px-4 py-3 text-sm text-slate-500'>
+                                        No matches found.
+                                    </div>
+                                )}
+                                {searchResults.map((item) => (
+                                    <button
+                                        key={item.path}
+                                        onClick={() => {
+                                            navigate(item.path);
+                                            setSearchOpen(false);
+                                            setSearchQuery("");
+                                        }}
+                                        className='w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 transition'
+                                    >
+                                        {item.label}
+                                    </button>
+                                ))}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
 
                 {/* Right Section */}

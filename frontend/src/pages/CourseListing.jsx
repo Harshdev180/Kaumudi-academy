@@ -68,6 +68,7 @@ const AllCoursesPage = () => {
           mode: c.mode || "ONLINE",
           level: c.level || "All Levels",
           duration: c.duration || "",
+          description: c.description || "",
           price: typeof priceValue === "number" ? priceValue : 0,
           priceFormatted: `₹${(typeof priceValue === "number" ? priceValue : 0).toLocaleString("en-IN")}`,
           image: c.image?.url || c.image || null,
@@ -93,15 +94,16 @@ const AllCoursesPage = () => {
     fetchCourses();
   }, []);
 
-  const categories = [
-    "All Shastras",
-    "Veda & Upanishad",
-    "Vyakarana (Grammar)",
-    "Yoga & Ayurveda",
-    "Darshana (Philosophy)",
-    "Sahitya (Literature)",
-    "Language",
-  ];
+  const categories = useMemo(() => {
+    const unique = Array.from(
+      new Set(
+        courses
+          .map((course) => course.category)
+          .filter((cat) => typeof cat === "string" && cat.trim() !== ""),
+      ),
+    );
+    return ["All Shastras", ...unique];
+  }, [courses]);
 
   const resetFilters = () => {
     setSearchQuery("");
@@ -340,9 +342,8 @@ const AllCoursesPage = () => {
                   state: modeFilter,
                   setter: setModeFilter,
                   options: [
-                    { label: "Online Live", val: "LIVE" },
-                    { label: "Self-paced", val: "RECORDED" },
-                    { label: "Physical Class", val: "PHYSICAL" },
+                    { label: "Online Live", val: "ONLINE" },
+                    { label: "Physical Class", val: "OFFLINE" },
                   ],
                 },
                 {
@@ -360,9 +361,9 @@ const AllCoursesPage = () => {
                   state: levelFilter,
                   setter: setLevelFilter,
                   options: [
-                    { label: "Prathama (Beginner)", val: "Beginner" },
-                    { label: "Madhyama (Intermediate)", val: "Intermediate" },
-                    { label: "Kovida (Advanced)", val: "Advanced" },
+                    { label: "Prathama (Beginner)", val: "Prathama (Beginner)" },
+                    { label: "Madhyama (Intermediate)", val: "Madhyama (Intermediate)" },
+                    { label: "Kovida (Advanced)", val: "Kovida (Advanced)" },
                   ],
                 },
               ].map((group, i) => (
@@ -598,9 +599,8 @@ const AllCoursesPage = () => {
 
                     {/* Description */}
                     <p className="text-sm text-stone-600 leading-relaxed mb-4 line-clamp-3">
-                      Deep study into {course.category}. A {course.duration}{" "}
-                      immersive journey for {course.level} seekers guided by{" "}
-                      {course.instructor}.
+                      {course.description ||
+                        `Deep study into ${course.category}. A ${course.duration} immersive journey for ${course.level} seekers guided by ${course.instructor}.`}
                     </p>
 
                     {/* Instructor (Optional - can be shown if needed) */}
@@ -750,9 +750,8 @@ const AllCoursesPage = () => {
                   state: modeFilter,
                   setter: setModeFilter,
                   options: [
-                    { label: "Online Live", val: "LIVE" },
-                    { label: "Self-paced", val: "RECORDED" },
-                    { label: "Physical Class", val: "PHYSICAL" },
+                    { label: "Online Live", val: "ONLINE" },
+                    { label: "Physical Class", val: "OFFLINE" },
                   ],
                 },
                 {
@@ -770,9 +769,9 @@ const AllCoursesPage = () => {
                   state: levelFilter,
                   setter: setLevelFilter,
                   options: [
-                    { label: "Prathama (Beginner)", val: "Beginner" },
-                    { label: "Madhyama (Intermediate)", val: "Intermediate" },
-                    { label: "Kovida (Advanced)", val: "Advanced" },
+                    { label: "Prathama (Beginner)", val: "Prathama (Beginner)" },
+                    { label: "Madhyama (Intermediate)", val: "Madhyama (Intermediate)" },
+                    { label: "Kovida (Advanced)", val: "Kovida (Advanced)" },
                   ],
                 },
               ].map((group, i) => (
