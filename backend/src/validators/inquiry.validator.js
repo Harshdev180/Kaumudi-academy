@@ -53,3 +53,10 @@ export const submitInquirySchema = Joi.object({
       "string.min": "Message must be at least 10 characters"
     })
 }).unknown(false);
+
+
+export const updateInquiryStatusSchema = Joi.object({
+  status: Joi.string()
+    .valid("NEW", "CONTACTED", "CLOSED")
+    .required()
+});
