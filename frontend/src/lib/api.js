@@ -193,6 +193,37 @@ export async function getDashboardStats() {
   return res.data;
 }
 
+// ==================== STAFF APIs ====================
+export async function getAllStaff() {
+  const res = await api.get("/staff");
+  return res.data;
+}
+
+export async function createStaff(staffData) {
+  const res = await api.post("/staff", staffData);
+  return res.data;
+}
+
+export async function updateStaff(staffId, staffData) {
+  const res = await api.put(`/staff/${staffId}`, staffData);
+  return res.data;
+}
+
+export async function deleteStaff(staffId) {
+  const res = await api.delete(`/staff/${staffId}`);
+  return res.data;
+}
+
+export async function toggleStaffPayment(staffId) {
+  const res = await api.patch(`/staff/${staffId}/pay`);
+  return res.data;
+}
+
+export async function toggleStaffStatus(staffId) {
+  const res = await api.patch(`/staff/${staffId}/status`);
+  return res.data;
+}
+
 // ==================== STUDENT PROFILE APIs ====================
 export async function getStudentProfile() {
   const res = await api.get('/student/me');

@@ -47,6 +47,11 @@ const staffSchema = new mongoose.Schema(
     paid: {
       type: Boolean,
       default: false // false = Pending, true = Paid
+    },
+
+    image: {
+      type: String,
+      default: ""
     }
   },
   {
@@ -55,9 +60,8 @@ const staffSchema = new mongoose.Schema(
 );
 
 // Auto-calculate net salary before save
-staffSchema.pre("save", function (next) {
+staffSchema.pre("save", function () {
   this.netSalary = this.salary + this.bonus - this.deduction;
-  next();
 });
 
 export default mongoose.model("Staff", staffSchema);

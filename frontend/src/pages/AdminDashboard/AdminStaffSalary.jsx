@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     MdAdd,
@@ -9,6 +9,13 @@ import {
     MdPerson,
     MdClose
 } from "react-icons/md";
+import {
+    getAllStaff,
+    createStaff,
+    updateStaff,
+    deleteStaff as deleteStaffApi,
+    toggleStaffPayment
+} from "../../lib/api";
 
 const AdminStaffSalary = () => {
 
@@ -23,19 +30,10 @@ const AdminStaffSalary = () => {
 
     /* ================= STATE ================= */
 
-    const [staff, setStaff] = useState([
-        {
-            id: 1,
-            name: "Ajay Sharma",
-            role: "Sanskrit Teacher",
-            salary: 25000,
-            bonus: 2000,
-            deduction: 0,
-            status: "Active",
-            paid: false,
-            image: ""
-        }
-    ]);
+    const [staff, setStaff] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const [saving, setSaving] = useState(false);
 
     const [search, setSearch] = useState("");
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -50,6 +48,48 @@ const AdminStaffSalary = () => {
         status: "Active",
         image: ""
     });
+
+    const mapStaff = (item) => ({
+        id: item?._id || item?.id,
+        name: item?.name || "",
+        role: item?.role || "",
+        salary: item?.salary ?? 0,
+        bonus: item?.bonus ?? 0,
+        deduction: item?.deduction ?? 0,
+        status: item?.status === "INACTIVE" ? "Inactive" : "Active",
+        paid: !!item?.paid,
+        image: item?.image || ""
+    });
+
+    const buildPayload = (data) => ({
+        name: data.name?.trim(),
+        role: data.role?.trim(),
+        salary: Number(data.salary) || 0,
+        bonus: Number(data.bonus) || 0,
+        deduction: Number(data.deduction) || 0,
+        status: data.status === "Inactive" ? "INACTIVE" : "ACTIVE",
+        image: data.image || ""
+    });
+
+    useEffect(() => {
+        const fetchStaff = async () => {
+            try {
+                setLoading(true);
+                setError("");
+                const response = await getAllStaff();
+                const payload = response?.data ?? response;
+                const list = payload?.data ?? payload ?? [];
+                const mapped = Array.isArray(list) ? list.map(mapStaff) : [];
+                setStaff(mapped);
+            } catch (err) {
+                console.error("Failed to load staff:", err);
+                setError("Failed to load staff. Please try again.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchStaff();
+    }, []);
 
     /* ================= FILTER ================= */
 
@@ -90,33 +130,73 @@ const AdminStaffSalary = () => {
         setDrawerOpen(true);
     };
 
-    const saveStaff = (e) => {
+    const saveStaff = async (e) => {
         e.preventDefault();
-
-        if (editId) {
-            setStaff(prev =>
-                prev.map(s => s.id === editId ? { ...form, id: editId } : s)
-            );
-        } else {
-            setStaff(prev => [
-                { ...form, id: Date.now(), paid: false },
-                ...prev
-            ]);
+        if (!form.name.trim() || !form.role.trim() || !form.salary) {
+            alert("Please fill all required fields.");
+            return;
         }
-
-        setDrawerOpen(false);
+        try {
+            setSaving(true);
+            const payload = buildPayload(form);
+            if (editId) {
+                const response = await updateStaff(editId, payload);
+                const updated = response?.data ?? response;
+                const updatedStaff = updated?.data ?? updated;
+                setStaff(prev =>
+                    prev.map(s => s.id === editId ? mapStaff(updatedStaff) : s)
+                );
+            } else {
+                const response = await createStaff(payload);
+                const created = response?.data ?? response;
+                const createdStaff = created?.data ?? created;
+                if (createdStaff) {
+                    setStaff(prev => [mapStaff(createdStaff), ...prev]);
+                }
+            }
+            setDrawerOpen(false);
+            setEditId(null);
+            setForm({
+                name: "",
+                role: "",
+                salary: "",
+                bonus: "",
+                deduction: "",
+                status: "Active",
+                image: ""
+            });
+        } catch (err) {
+            console.error("Failed to save staff:", err);
+            alert(err?.response?.data?.message || "Failed to save staff.");
+        } finally {
+            setSaving(false);
+        }
     };
 
-    const deleteStaff = (id) => {
-        setStaff(prev => prev.filter(s => s.id !== id));
+    const deleteStaff = async (id) => {
+        if (!window.confirm("Delete this staff member?")) return;
+        try {
+            await deleteStaffApi(id);
+            setStaff(prev => prev.filter(s => s.id !== id));
+        } catch (err) {
+            console.error("Failed to delete staff:", err);
+            alert("Failed to delete staff.");
+        }
     };
 
-    const togglePay = (id) => {
-        setStaff(prev =>
-            prev.map(s =>
-                s.id === id ? { ...s, paid: !s.paid } : s
-            )
-        );
+    const togglePay = async (id) => {
+        try {
+            const response = await toggleStaffPayment(id);
+            const nextPaid = response?.paid ?? response?.data?.paid;
+            setStaff(prev =>
+                prev.map(s =>
+                    s.id === id ? { ...s, paid: typeof nextPaid === "boolean" ? nextPaid : !s.paid } : s
+                )
+            );
+        } catch (err) {
+            console.error("Failed to update payment status:", err);
+            alert("Failed to update payment status.");
+        }
     };
 
     /* ================= UI ================= */
@@ -175,8 +255,16 @@ const AdminStaffSalary = () => {
 
             {/* ================= STAFF CARDS ================= */}
             <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-
-                {filteredStaff.map(s => {
+                {loading && (
+                    <div className="text-sm text-[#74271E]/70">Loading staff...</div>
+                )}
+                {!loading && error && (
+                    <div className="text-sm text-red-600">{error}</div>
+                )}
+                {!loading && !error && filteredStaff.length === 0 && (
+                    <div className="text-sm text-[#74271E]/70">No staff found.</div>
+                )}
+                {!loading && !error && filteredStaff.map(s => {
 
                     const finalSalary =
                         Number(s.salary || 0) +
@@ -315,10 +403,11 @@ const AdminStaffSalary = () => {
 
                                 <button
                                     type="submit"
+                                    disabled={saving}
                                     className="w-full py-3 text-white rounded-xl"
                                     style={{ backgroundColor: palette.primary }}
                                 >
-                                    SAVE STAFF
+                                    {saving ? "Saving..." : "SAVE STAFF"}
                                 </button>
 
                             </form>

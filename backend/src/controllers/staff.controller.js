@@ -1,5 +1,19 @@
 import Staff from "../models/Staff.model.js";
 
+const normalizeStatus = (status) => {
+  if (!status) return status;
+  const upper = String(status).toUpperCase();
+  if (upper === "ACTIVE") return "ACTIVE";
+  if (upper === "INACTIVE") return "INACTIVE";
+  return status;
+};
+
+const parseMoney = (value) => {
+  if (value === undefined || value === null) return NaN;
+  const cleaned = String(value).replace(/[^0-9.-]/g, "");
+  return Number(cleaned);
+};
+
 /**
  * @desc    Create staff member
  * @route   POST /staff
@@ -7,7 +21,45 @@ import Staff from "../models/Staff.model.js";
  */
 export const createStaff = async (req, res) => {
   try {
-    const staff = await Staff.create(req.body);
+    const {
+      name,
+      role,
+      salary,
+      bonus = 0,
+      deduction = 0,
+      status = "ACTIVE",
+      image = ""
+    } = req.body;
+
+    if (!name || !role || salary === undefined || salary === null) {
+      return res.status(400).json({
+        success: false,
+        message: "Name, role and salary are required"
+      });
+    }
+
+    const salaryNum = parseMoney(salary);
+    const bonusNum = parseMoney(bonus);
+    const deductionNum = parseMoney(deduction);
+
+    if (Number.isNaN(salaryNum) || Number.isNaN(bonusNum) || Number.isNaN(deductionNum)) {
+      return res.status(400).json({
+        success: false,
+        message: "Salary, bonus, and deduction must be valid numbers"
+      });
+    }
+
+    const payload = {
+      name: String(name).trim(),
+      role: String(role).trim(),
+      salary: salaryNum,
+      bonus: bonusNum,
+      deduction: deductionNum,
+      status: normalizeStatus(status),
+      image
+    };
+
+    const staff = await Staff.create(payload);
 
     res.status(201).json({
       success: true,
@@ -16,9 +68,21 @@ export const createStaff = async (req, res) => {
     });
   } catch (error) {
     console.error("CREATE STAFF ERROR:", error);
-    res.status(500).json({
+    if (error?.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+    if (error?.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        message: "Staff already exists"
+      });
+    }
+    return res.status(500).json({
       success: false,
-      message: "Failed to create staff"
+      message: error?.message || "Failed to create staff"
     });
   }
 };
@@ -37,7 +101,16 @@ export const getAllStaff = async (req, res) => {
       data: staff
     });
   } catch (error) {
-    res.status(500).json({ success: false });
+    if (error?.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+    return res.status(500).json({
+      success: false,
+      message: error?.message || "Failed to update staff"
+    });
   }
 };
 
@@ -56,7 +129,39 @@ export const updateStaff = async (req, res) => {
       });
     }
 
-    Object.assign(staff, req.body);
+    const payload = { ...req.body };
+    if (payload.status) payload.status = normalizeStatus(payload.status);
+    if (payload.salary !== undefined) {
+      const salaryNum = parseMoney(payload.salary);
+      if (Number.isNaN(salaryNum)) {
+        return res.status(400).json({
+          success: false,
+          message: "Salary must be a valid number"
+        });
+      }
+      payload.salary = salaryNum;
+    }
+    if (payload.bonus !== undefined) {
+      const bonusNum = parseMoney(payload.bonus);
+      if (Number.isNaN(bonusNum)) {
+        return res.status(400).json({
+          success: false,
+          message: "Bonus must be a valid number"
+        });
+      }
+      payload.bonus = bonusNum;
+    }
+    if (payload.deduction !== undefined) {
+      const deductionNum = parseMoney(payload.deduction);
+      if (Number.isNaN(deductionNum)) {
+        return res.status(400).json({
+          success: false,
+          message: "Deduction must be a valid number"
+        });
+      }
+      payload.deduction = deductionNum;
+    }
+    Object.assign(staff, payload);
     await staff.save();
 
     res.json({

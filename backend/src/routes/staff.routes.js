@@ -17,27 +17,27 @@ import { roleMiddleware } from "../middlewares/role.middleware.js";
 /**
  * ADMIN ROUTES
  */
-router.get("/staff", authMiddleware, roleMiddleware("ADMIN"), getAllStaff);
+router.get("/staff", authMiddleware, roleMiddleware("ADMIN", "SUPER_ADMIN"), getAllStaff);
 
-router.get("/staff/stats", authMiddleware, roleMiddleware("ADMIN"), getStaffStats);
+router.get("/staff/stats", authMiddleware, roleMiddleware("ADMIN", "SUPER_ADMIN"), getStaffStats);
 
-router.post("/staff", authMiddleware, roleMiddleware("ADMIN"), createStaff);
+router.post("/staff", authMiddleware, roleMiddleware("ADMIN", "SUPER_ADMIN"), createStaff);
 
-router.put("/staff/:id", authMiddleware, roleMiddleware("ADMIN"), updateStaff);
+router.put("/staff/:id", authMiddleware, roleMiddleware("ADMIN", "SUPER_ADMIN"), updateStaff);
 
-router.delete("/staff/:id", authMiddleware, roleMiddleware("ADMIN"), deleteStaff);
+router.delete("/staff/:id", authMiddleware, roleMiddleware("ADMIN", "SUPER_ADMIN"), deleteStaff);
 
 router.patch(
   "/staff/:id/pay",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("ADMIN", "SUPER_ADMIN"),
   toggleStaffPayment
 );
 
 router.patch(
   "/staff/:id/status",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("ADMIN", "SUPER_ADMIN"),
   toggleStaffStatus
 );
 
