@@ -1,20 +1,19 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Eye,
   EyeOff,
   GraduationCap,
-  Languages,
   Sparkles,
-  ScrollText,
-  Bell,
   Flower2,
 } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { registerStudent, loginStudent } from "../../lib/api";
+import { useAuth } from "../../context/AuthContext";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPass, setShowPass] = useState(false);
-  const [selectedLang, setSelectedLang] = useState("SK");
 
   // Animation Variants
   const fadeUp = {
@@ -167,79 +166,18 @@ const AuthPage = () => {
                 </p>
               </header>
 
-              <form className={isLogin ? "space-y-6" : "space-y-3"} onSubmit={(e) => e.preventDefault()}>
-                {!isLogin && (
-                  <div className="grid grid-cols-2 gap-3">
-                    <InputGroup label="First Name " placeholder="Vikram" />
-                    <InputGroup label="Last Name " placeholder="Shastri" />
-                  </div>
+              <form
+                className={isLogin ? "space-y-6" : "space-y-3"}
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                }}
+              >
+                {/* Controlled fields for login/signup */}
+                {isLogin ? (
+                  <LoginFormFields showPass={showPass} setShowPass={setShowPass} />
+                ) : (
+                  <SignupFormFields showPass={showPass} setShowPass={setShowPass} />
                 )}
-
-                <InputGroup
-                  label="Email Address "
-                  placeholder="shastri@kaumudi.com"
-                  type="email"
-                />
-
-                <div className="space-y-1.5">
-                  <div className="flex justify-between px-1">
-                    <label className="text-[10px] font-bold text-[#74271E] uppercase tracking-wider">
-                      Password{" "}
-                    </label>
-                    {isLogin && (
-                      <button className="text-[10px] font-bold text-[#74271E] hover:underline transition-all">
-                        Forgot?
-                      </button>
-                    )}
-                  </div>
-                  <div className="relative group">
-                    <input
-                      type={showPass ? "text" : "password"}
-                      placeholder="••••••••"
-                      className="w-full px-5 py-3 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner text-sm"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPass(!showPass)}
-                      className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#74271E] transition-colors"
-                    >
-                      {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* --- CONFIRM PASSWORD FIELD (Signup Only) --- */}
-                {!isLogin && (
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-[#74271E] uppercase tracking-wider px-1">
-                      Confirm Password
-                    </label>
-                    <div className="relative group">
-                      <input
-                        type={showPass ? "text" : "password"}
-                        placeholder="••••••••"
-                        className="w-full px-5 py-3 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner text-sm"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                <motion.button
-                  whileHover={{
-                    scale: 1.02,
-                    boxShadow: "0 20px 40px rgba(116,39,30,0.2)",
-                  }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`w-full bg-[#74271E] py-4 rounded-2xl font-bold text-white uppercase tracking-[0.3em] flex items-center justify-center gap-3 relative group ${isLogin ? "mt-6" : "mt-2"}`}
-                >
-                  <span className="relative z-10 text-xs">
-                    {isLogin ? "Enter Gurukul" : "Create Account"}
-                  </span>
-                  <Sparkles
-                    size={18}
-                    className="text-[#b8973d] group-hover:rotate-12 transition-transform"
-                  />
-                </motion.button>
               </form>
 
               {/* Social Login Section */}
@@ -251,8 +189,8 @@ const AuthPage = () => {
                   </span>
                 </div>
                 <div className="flex gap-4">
-                  <SocialButton provider="Google" />
-                  <SocialButton provider="Facebook" />
+                  <SocialLoginButton provider="Google" />
+                  <SocialLoginButton provider="Facebook" />
                 </div>
               </div>
 
@@ -278,50 +216,170 @@ const AuthPage = () => {
 
 // --- SUB-COMPONENTS ---
 
-const InputGroup = ({ label, placeholder, type = "text" }) => (
-  <div className="space-y-1 flex-1">
-    <label className="text-[10px] font-bold text-[#74271E] uppercase tracking-wider ml-1">
-      {label}
-    </label>
-    <input
-      type={type}
-      placeholder={placeholder}
-      className="w-full px-5 py-3 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner text-sm"
-    />
-  </div>
-);
+function InputGroupField({ label, placeholder, type = "text", value, onChange, name }) {
+  return (
+    <div className="space-y-1 flex-1">
+      <label className="text-[10px] font-bold text-[#74271E] uppercase tracking-wider ml-1">
+        {label}
+      </label>
+      <input
+        name={name}
+        value={value}
+        onChange={onChange}
+        type={type}
+        placeholder={placeholder}
+        className="w-full px-5 py-3 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner text-sm"
+      />
+    </div>
+  );
+}
 
-const SocialButton = ({ provider }) => (
-  <motion.button
-    whileHover={{ y: -2, backgroundColor: "#fdfaf2" }}
-    className="flex-1 border border-[#e8dfc4] py-3 rounded-2xl flex items-center justify-center gap-3 text-[10px] font-bold text-[#74271E] transition-all active:scale-95 shadow-sm"
-  >
-    {provider === "Google" ? (
-      <svg width="14" height="14" viewBox="0 0 24 24">
-        <path
-          d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-          fill="#4285F4"
-        />
-        <path
-          d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-          fill="#34A853"
-        />
-        <path
-          d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
-          fill="#FBBC05"
-        />
-        <path
-          d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-          fill="#EA4335"
-        />
-      </svg>
-    ) : (
-      <svg width="14" height="14" fill="#1877F2" viewBox="0 0 24 24">
-        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-      </svg>
-    )}
-    {provider}
-  </motion.button>
-);
+function LoginFormFields({ showPass, setShowPass }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { login } = useAuth();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+    if (!email || !password) return setError("Provide email and password");
+    try {
+      setLoading(true);
+      const data = await loginStudent(email, password);
+      const token = data?.token;
+      const user = data?.user || { email };
+      if (token) {
+        // update central auth context (stores token + user and sets axios header)
+        login({ email: user.email, role: user.role || 'STUDENT' }, token);
+        // persist email immediately to help components that read localStorage
+        try { localStorage.setItem('kaumudi_user_email', user.email); } catch {}
+      }
+      const dest = location.state?.from?.pathname || "/";
+      navigate(dest);
+    } catch (err) {
+      setError(err?.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <InputGroupField label="Email Address " placeholder="you@domain.com" type="email" value={email} onChange={(e)=>setEmail(e.target.value)} />
+
+      <div className="space-y-1.5">
+        <div className="flex justify-between px-1">
+          <label className="text-[10px] font-bold text-[#74271E] uppercase tracking-wider">Password</label>
+          <button type="button" onClick={() => navigate("/forgot-password")} className="text-[10px] font-bold text-[#74271E] hover:underline transition-all">Forgot?</button>
+        </div>
+        <div className="relative group">
+          <input type={showPass?"text":"password"} value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="••••••••" className="w-full px-5 py-3 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner text-sm" />
+          <button type="button" onClick={()=>setShowPass(v=>!v)} className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#74271E] transition-colors">{showPass? <EyeOff size={18}/> : <Eye size={18}/>}</button>
+        </div>
+      </div>
+
+      {error && <div className="text-red-600 text-sm font-semibold">{error}</div>}
+
+      <motion.button onClick={handleLogin} disabled={loading} whileHover={{scale:1.02}} whileTap={{scale:0.98}} className="w-full bg-[#74271E] py-4 rounded-2xl font-bold text-white uppercase tracking-[0.3em] flex items-center justify-center gap-3 relative group mt-6 disabled:opacity-60">
+        <span className="relative z-10 text-xs">{loading? 'Signing in...':'Enter Gurukul'}</span>
+        <Sparkles size={18} className="text-[#b8973d] group-hover:rotate-12 transition-transform" />
+      </motion.button>
+    </>
+  );
+}
+
+function SignupFormFields({ showPass, setShowPass }) {
+  const navigate = useNavigate();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+    if (!firstName || !email || !password || !confirm) return setError("Please fill all required fields");
+    if (password.length < 8) return setError("Password must be at least 8 characters");
+    if (!/[A-Za-z]/.test(password)) return setError("Password must contain at least one letter");
+    if (!/\d/.test(password)) return setError("Password must contain at least one number");
+    if (!/^[a-zA-Z0-9@$!%*#?&]+$/.test(password)) return setError("Password can only contain letters, numbers, and @$!%*#?&");
+    if (password !== confirm) return setError("Passwords do not match");
+    try {
+      setLoading(true);
+      await registerStudent({ firstName, lastName, email, password });
+      localStorage.setItem("kaumudi_user_name", `${firstName} ${lastName}`.trim());
+      localStorage.setItem("kaumudi_user_email", email);
+      setSuccess("Account created successfully. Redirecting to login...");
+      setTimeout(()=> navigate('/login'), 1000);
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-3">
+        <InputGroupField label="First Name " placeholder="Vikram" value={firstName} onChange={(e)=>setFirstName(e.target.value)} />
+        <InputGroupField label="Last Name " placeholder="Shastri" value={lastName} onChange={(e)=>setLastName(e.target.value)} />
+      </div>
+
+      <InputGroupField label="Email Address " placeholder="name@example.com" type="email" value={email} onChange={(e)=>setEmail(e.target.value)} />
+
+      <div className="space-y-1.5">
+        <label className="text-[10px] font-bold text-[#74271E] uppercase tracking-wider px-1">Create Password</label>
+        <div className="relative">
+          <input type={showPass?"text":"password"} placeholder="••••••••" value={password} onChange={(e)=>setPassword(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white border border-[#e8dfc4] focus:ring-2 focus:ring-[#b8973d]/20 outline-none transition text-gray-700 text-sm shadow-sm" />
+          <button type="button" onClick={()=>setShowPass(v=>!v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#b8973d]">{showPass? <EyeOff size={18}/> : <Eye size={18}/>}</button>
+        </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-[10px] font-bold text-[#74271E] uppercase tracking-wider px-1">Confirm Password</label>
+        <input type="password" placeholder="••••••••" value={confirm} onChange={(e)=>setConfirm(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white border border-[#e8dfc4] focus:ring-2 focus:ring-[#b8973d]/20 outline-none transition text-gray-700 text-sm shadow-sm" />
+      </div>
+
+      {error && <div className="text-red-600 text-sm font-semibold">{error}</div>}
+      {success && <div className="text-green-700 text-sm font-semibold">{success}</div>}
+
+      <motion.button onClick={handleSignup} disabled={loading} whileHover={{scale:1.02}} whileTap={{scale:0.98}} className="w-full bg-[#74271E] py-4 rounded-2xl font-bold text-white uppercase tracking-widest shadow-lg flex items-center justify-center gap-2 mt-4 disabled:opacity-60">
+        {loading? 'Creating...':'Create Account'}
+      </motion.button>
+    </>
+  );
+}
+
+function SocialLoginButton({ provider }) {
+  return (
+    <motion.button
+      whileHover={{ y: -2, backgroundColor: "#fdfaf2" }}
+      className="flex-1 border border-[#e8dfc4] py-3 rounded-2xl flex items-center justify-center gap-3 text-[10px] font-bold text-[#74271E] transition-all active:scale-95 shadow-sm"
+    >
+      {provider === "Google" ? (
+        <svg width="14" height="14" viewBox="0 0 24 24">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05" />
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+        </svg>
+      ) : (
+        <svg width="14" height="14" fill="#1877F2" viewBox="0 0 24 24">
+          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+        </svg>
+      )}
+      {provider}
+    </motion.button>
+  );
+}
 
 export default AuthPage;

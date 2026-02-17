@@ -24,6 +24,8 @@ export default function Login() {
       const token = data?.token;
       if (token) {
         localStorage.setItem('kaumudi_token', token);
+        localStorage.setItem('kaumudi_role', 'STUDENT');
+        localStorage.setItem('kaumudi_user_email', email);
         setAuthToken(token);
       }
       navigate('/');
@@ -67,7 +69,7 @@ export default function Login() {
           <div className="space-y-2">
             <div className="flex justify-between items-center px-1">
               <label className="text-[11px] font-bold text-[#8c7a56] uppercase tracking-[0.15em]">Password</label>
-              <a href="#" className="text-[10px] font-bold text-[#b8973d] hover:underline uppercase tracking-wider">Forgot?</a>
+              <Link to="/forgot-password" className="text-[10px] font-bold text-[#b8973d] hover:underline uppercase tracking-wider">Forgot?</Link>
             </div>
             <div className="relative">
               <input 

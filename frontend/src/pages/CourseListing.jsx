@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useMemo, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import {
   Search,
   ChevronLeft,
@@ -18,8 +19,11 @@ import {
   X,
   SlidersHorizontal,
 } from "lucide-react";
+import { getAllCourses } from "../lib/api";
 
 const AllCoursesPage = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All Shastras");
   const [modeFilter, setModeFilter] = useState([]);
@@ -29,7 +33,60 @@ const AllCoursesPage = () => {
   const [view, setView] = useState("grid");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const itemsPerPage = 6;
+
+  // Fetch courses from backend
+  const fetchCourses = async () => {
+    try {
+      setLoading(true);
+      const response = await getAllCourses();
+
+      // Normalize possible shapes: array, { courses: [...] }, { items: [...] }, { data: [...] }
+      const payload = response;
+      const list = Array.isArray(payload)
+        ? payload
+        : payload?.courses || payload?.items || payload?.data || [];
+
+      const finalList = Array.isArray(list) ? list : [];
+      // Map backend Course model to UI-friendly shape expected by the listing
+      const mapped = finalList.map((c) => {
+        // Handle price formatting - extract numeric value
+        let priceValue = c.price || 0;
+        if (typeof priceValue === 'string') {
+          priceValue = parseInt(priceValue.replace(/[^0-9]/g, '')) || 0;
+        }
+        
+        return {
+          id: c._id || c.id,
+          title: c.title || c.name || "Untitled Course",
+          instructor: c.instructor || "Faculty",
+          category: c.category || "General",
+          mode: c.mode || "ONLINE",
+          level: c.level || "All Levels",
+          duration: c.duration || "",
+          price: typeof priceValue === "number" ? priceValue : 0,
+          priceFormatted: `₹${(typeof priceValue === "number" ? priceValue : 0).toLocaleString('en-IN')}`,
+          image: c.image?.url || c.image || null,
+          raw: c,
+        };
+      });
+
+      console.debug("CourseListing: fetched courses count=", mapped.length, mapped[0]);
+      setCourses(mapped);
+    } catch (err) {
+      setError("Failed to load courses");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
 
   const categories = [
     "All Shastras",
@@ -39,81 +96,6 @@ const AllCoursesPage = () => {
     "Darshana (Philosophy)",
     "Sahitya (Literature)",
     "Language",
-  ];
-
-  const courses = [
-    {
-      id: 1,
-      title: "Foundations of Sanskrit Vyakaran (Level 1)",
-      category: "Vyakarana (Grammar)",
-      instructor: "Acharya Sharma",
-      duration: "12 Weeks",
-      level: "Beginner",
-      mode: "ONLINE",
-      price: "4,999",
-      image:
-        "https://images.unsplash.com/photo-1544640808-32ca72ac7f37?auto=format&fit=crop&q=80&w=600",
-    },
-    {
-      id: 2,
-      title: "Mandukya Upanishad Deep Dive",
-      category: "Veda & Upanishad",
-      instructor: "Swami Jnananda",
-      duration: "8 Weeks",
-      level: "Intermediate",
-      mode: "LIVE",
-      price: "6,499",
-      image:
-        "https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&q=80&w=600",
-    },
-    {
-      id: 3,
-      title: "Kalidasa's Meghaduta: Aesthetics",
-      category: "Sahitya (Literature)",
-      instructor: "Dr. Meenakshi",
-      duration: "6 Weeks",
-      level: "Advanced",
-      mode: "ONLINE",
-      price: "3,200",
-      image:
-        "https://images.unsplash.com/photo-1516410529446-2c777cb7366d?auto=format&fit=crop&q=80&w=600",
-    },
-    {
-      id: 4,
-      title: "Sanskrit 101: Foundation",
-      category: "Language",
-      instructor: "Acharya Raghav",
-      duration: "16 Weeks",
-      level: "Beginner",
-      mode: "RECORDED",
-      price: "2,999",
-      image:
-        "https://images.unsplash.com/photo-1502136969935-8d8eef54d77b?auto=format&fit=crop&q=80&w=600",
-    },
-    {
-      id: 5,
-      title: "Patanjali's Yoga Sutras",
-      category: "Yoga & Ayurveda",
-      instructor: "Vidushi Aruna",
-      duration: "10 Weeks",
-      level: "Intermediate",
-      mode: "ONLINE",
-      price: "5,500",
-      image:
-        "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=600",
-    },
-    {
-      id: 6,
-      title: "Deciphering Ancient Scripts",
-      category: "Darshana (Philosophy)",
-      instructor: "Dr. S. Murthy",
-      duration: "14 Weeks",
-      level: "Advanced",
-      mode: "LIVE",
-      price: "7,800",
-      image:
-        "https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?auto=format&fit=crop&q=80&w=600",
-    },
   ];
 
   const resetFilters = () => {
@@ -135,9 +117,14 @@ const AllCoursesPage = () => {
 
   const filteredCourses = useMemo(() => {
     return courses.filter((course) => {
+      const instructorName =
+        typeof course.instructor === "string"
+          ? course.instructor
+          : course.instructor?.name || "";
+
       const matchesSearch =
-        course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.instructor.toLowerCase().includes(searchQuery.toLowerCase());
+        (course.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        instructorName.toLowerCase().includes(searchQuery.toLowerCase());
 
       const matchesCategory =
         activeCategory === "All Shastras" || course.category === activeCategory;
@@ -165,7 +152,7 @@ const AllCoursesPage = () => {
         matchesDuration
       );
     });
-  }, [searchQuery, activeCategory, modeFilter, levelFilter, durationFilter]);
+  }, [searchQuery, activeCategory, modeFilter, levelFilter, durationFilter, courses]);
 
   const isFiltered =
     searchQuery !== "" ||
@@ -493,7 +480,25 @@ const AllCoursesPage = () => {
             </div>
           </div>
 
-          {paginatedCourses.length > 0 ? (
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="w-12 h-12 rounded-full border-4 border-[#E2D4A6] border-t-[#74271E] animate-spin mb-4"></div>
+              <p className="text-[#4A4135] font-semibold">Loading courses...</p>
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center py-16 bg-red-50 rounded-2xl border border-red-200 p-8">
+              <p className="text-red-600 font-semibold text-center">{error}</p>
+              <button
+                onClick={() => {
+                  setLoading(true);
+                  fetchCourses();
+                }}
+                className="mt-4 px-6 py-2 bg-[#74271E] text-white rounded-lg font-bold hover:bg-[#5a1f15] transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          ) : paginatedCourses.length > 0 ? (
             <div
               className={
                 view === "grid"
@@ -573,16 +578,21 @@ const AllCoursesPage = () => {
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-lg font-bold text-[#74271E] tabular-nums tracking-tight">
-                          ₹{course.price}
+                          {course.priceFormatted || "₹0"}
                         </span>
-                        <Link
-                          to={`/coursedetail`}
-                          state={{ course: course }}
+                        <button
+                          onClick={() => {
+                            if (isAuthenticated) {
+                              navigate(`/coursedetail/${course.id}`, { state: { course: course } });
+                            } else {
+                              navigate("/auth", { state: { from: `/coursedetail/${course.id}` } });
+                            }
+                          }}
                           className="flex items-center  gap-2 px-3 py-2 bg-[#c9a84e] text-white text-[10px] font-bold uppercase tracking-wider rounded-md transition-all duration-300 hover:bg-[#b38b3f] shadow-sm active:scale-95 group/link"
                         >
                           Learn More
                           <ArrowUpRight className="w-3 h-3 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
-                        </Link>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -591,22 +601,31 @@ const AllCoursesPage = () => {
             </div>
           ) : (
             <div className="py-32 flex flex-col items-center justify-center bg-white border border-[#E2D4A6] rounded-2xl text-center">
-              <div className="w-16 h-16 bg-[#FDFCF7] rounded-full flex items-center justify-center mb-6 border border-[#E2D4A6]">
-                <Search className="w-6 h-6 text-stone-300" />
+                <div className="w-16 h-16 bg-[#FDFCF7] rounded-full flex items-center justify-center mb-6 border border-[#E2D4A6]">
+                  <Search className="w-6 h-6 text-stone-300" />
+                </div>
+                <h3 className="text-2xl font-bold text-[#2D2417] mb-2">
+                  No Shastras Found
+                </h3>
+                <p className="text-stone-500 italic mb-3">
+                  Try adjusting your filters to find what you seek.
+                </p>
+                {courses.length === 0 ? (
+                  <p className="text-sm text-stone-400 mb-6">
+                    There are no active courses available on the server right now.
+                  </p>
+                ) : (
+                  <p className="text-sm text-stone-400 mb-6">
+                    {`Fetched ${courses.length} courses; none match the current filters.`}
+                  </p>
+                )}
+                <button
+                  onClick={resetFilters}
+                  className="px-8 py-3 bg-[#74271E] text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all"
+                >
+                  Reset All Filters
+                </button>
               </div>
-              <h3 className="text-2xl font-bold text-[#2D2417] mb-2">
-                No Shastras Found
-              </h3>
-              <p className="text-stone-500 italic mb-8">
-                Try adjusting your filters to find what you seek.
-              </p>
-              <button
-                onClick={resetFilters}
-                className="px-8 py-3 bg-[#74271E] text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all"
-              >
-                Reset All Filters
-              </button>
-            </div>
           )}
 
           {/* --- REFINED PAGINATION --- */}

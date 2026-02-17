@@ -24,6 +24,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions";
 import CookiePolicy from "./pages/CookiePolicy.jsx";
 import StudentProfile from "./pages/StudentProfile";
+import RequireAuth from "./components/RequireAuth";
 
 // Public site layout with shared navbar/footer
 function PublicLayout() {
@@ -61,13 +62,14 @@ function App() {
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/allcourses" element={<AllCoursesPage />} />
+        <Route path="/coursedetail/:id" element={<CourseDetail />} />
         <Route path="/coursedetail" element={<CourseDetail />} />
         <Route path="/about" element={<About />} />
         <Route path="/faculty" element={<FacultyPage />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/inquiry" element={<Inquiry />} />
-        <Route path="/courseBuy" element={<Buy />} />
-        <Route path="/profile" element={<StudentProfile />} />
+        <Route path="/courseBuy" element={<RequireAuth><Buy /></RequireAuth>} />
+        <Route path="/profile" element={<RequireAuth><StudentProfile /></RequireAuth>} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsConditions />} />
         <Route path="/cookies" element={<CookiePolicy />} />
@@ -75,6 +77,8 @@ function App() {
 
       {/* Auth routes without navbar/footer */}
       <Route path="/auth" element={<Sign />} />
+      <Route path="/login" element={<Sign />} />
+      <Route path="/signup" element={<Sign />} />
 
       {/* Admin nested routes */}
       <Route path="/admin" element={<AdminLayout />}>

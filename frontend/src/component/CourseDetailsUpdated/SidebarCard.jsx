@@ -1,13 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { CheckCircle, Flame } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 // courseFullData prop add kiya gaya hai
 const SidebarCard = ({ price, courseData }) => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [leftSeats, setLeftSeats] = useState(0);
   const totalSeats = 25;
   const targetLeft = 4;
   const [visibleFeatures, setVisibleFeatures] = useState(0);
+  
+  // Format price properly from backend
+  const formatPrice = (p) => {
+    if (!p) return "0";
+    const numPrice = typeof p === 'string' ? parseInt(p.replace(/[^0-9]/g, '')) || 0 : p;
+    return numPrice.toLocaleString('en-IN');
+  };
   
   const features = [
     "120+ Hours of Live Instruction",
@@ -47,7 +57,7 @@ const SidebarCard = ({ price, courseData }) => {
         </p>
         <div className="flex items-center justify-center gap-3 mt-4">
           <span className="text-4xl font-extrabold tracking-tight">
-            ₹{price || "14,999"}
+            ₹{formatPrice(price)}
           </span>
           <span className="text-xl line-through text-stone-400 font-medium">
             ₹24,000
@@ -108,39 +118,56 @@ const SidebarCard = ({ price, courseData }) => {
 
         {/* Buttons Section with Spacing and Data Passing */}
         <div className="flex flex-col space-y-12 mt-auto"> 
-          <Link to="/courseBuy" 
-          className="w-full"
-          state={{ 
-            courseName: courseData?.title, 
-            price: courseData?.price,
-            duration: courseData?.duration,
-            level: courseData?.level,
-            language: courseData?.language,
-            mode: "Live Online" 
-          }}
-          >
-            <button className="w-full bg-[#631D11] text-white py-5 rounded-2xl font-bold text-xl hover:text-[#631D11] hover:bg-[#d6b15c] transition-all flex items-center justify-center gap-2 shadow-lg">
-              Enroll Now <span className="text-2xl">→</span>
-            </button>
-          </Link>
-          
-          {/* Inquiry Link with State Data */}
-        
-          <Link 
-            to="/inquiry" 
+          {isAuthenticated ? (
+            <Link to="/courseBuy" 
             className="w-full"
             state={{ 
-              // courseData se title, duration aur language uthayega
-              courseName: courseData?.title || "Sanskrit for Beginners", 
-              duration: courseData?.duration || "6 Months", 
-              language: courseData?.language || "Sanskrit/Hindi" ,
-              level: courseData?.level || "Beginner"
+              courseId: courseData?._id,
+              courseName: courseData?.title, 
+              price: courseData?.price,
+              duration: courseData?.duration,
+              level: courseData?.level,
+              language: courseData?.language,
+              mode: "Live Online" 
             }}
-          >
-            <button className="w-full bg-[#631D11] text-white py-5 rounded-2xl font-bold text-xl hover:text-[#631D11] hover:bg-[#d6b15c] transition-all flex items-center justify-center gap-2 shadow-lg">
-              Inquiry <span className="text-2xl">→</span>
+            >
+              <button className="w-full bg-[#631D11] text-white py-5 rounded-2xl font-bold text-xl hover:text-[#631D11] hover:bg-[#d6b15c] transition-all flex items-center justify-center gap-2 shadow-lg">
+                Enroll Now <span className="text-2xl">→</span>
+              </button>
+            </Link>
+          ) : (
+            <button
+              onClick={() => navigate("/auth", { state: { from: window.location.pathname } })}
+              className="w-full bg-[#631D11] text-white py-5 rounded-2xl font-bold text-xl hover:text-[#631D11] hover:bg-[#d6b15c] transition-all flex items-center justify-center gap-2 shadow-lg"
+            >
+              Login to Enroll <span className="text-2xl">→</span>
             </button>
-          </Link>
+          )}
+          
+          {/* Inquiry Button */}
+          {isAuthenticated ? (
+            <Link 
+              to="/inquiry" 
+              className="w-full"
+              state={{ 
+                courseName: courseData?.title || "Sanskrit for Beginners", 
+                duration: courseData?.duration || "6 Months", 
+                language: courseData?.language || "Sanskrit/Hindi" ,
+                level: courseData?.level || "Beginner"
+              }}
+            >
+              <button className="w-full bg-[#631D11] text-white py-5 rounded-2xl font-bold text-xl hover:text-[#631D11] hover:bg-[#d6b15c] transition-all flex items-center justify-center gap-2 shadow-lg">
+                Inquiry <span className="text-2xl">→</span>
+              </button>
+            </Link>
+          ) : (
+            <button
+              onClick={() => navigate("/auth", { state: { from: window.location.pathname } })}
+              className="w-full bg-[#631D11] text-white py-5 rounded-2xl font-bold text-xl hover:text-[#631D11] hover:bg-[#d6b15c] transition-all flex items-center justify-center gap-2 shadow-lg"
+            >
+              Login to Inquire <span className="text-2xl">→</span>
+            </button>
+          )}
         </div>
       </div>
     </div>

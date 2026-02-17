@@ -1,15 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Download, FileText, Languages, Play } from 'lucide-react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import HeroSection from '../component/CourseDetailsUpdated/HeroSection';
 import SidebarCard from '../component/CourseDetailsUpdated/SidebarCard';
 import InstructorSection from '../component/CourseDetailsUpdated/InstructorSection';
 import CurriculumAccordion from '../component/CourseDetailsUpdated/CurriculumAccordion';
 import ScheduleTable from '../component/CourseDetailsUpdated/ScheduleTable';
 import Suggetion from '../component/CourseDetailsUpdated/suggetion';
+import { getCourseDetail } from '../lib/api';
 
 const CourseDetails = () => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const videoRef = useRef(null);
   const { id } = useParams(); 
   const location = useLocation();
@@ -31,34 +35,96 @@ const CourseDetails = () => {
     }
   };
 
-  // 2. NEW LOGIC: Sirf Title, Price, Level, Image aur Description update hoga
-  const incomingData = location.state?.course;
-  
-  const courseData = incomingData ? {
-    ...defaultCourse, // Baaki sab (instructor, curriculum etc.) default rahega
-    title: incomingData.title,
-    price: incomingData.price,
-    level: incomingData.level,
-    duration: incomingData.duration,
-    Languages: incomingData.language,
-   instructor: {
-        name: incomingData.instructorName || incomingData.instructor?.name || defaultCourse.instructor.name,
-        qualification: incomingData.instructorQualification || incomingData.instructor?.qualification || defaultCourse.instructor.qualification,
-        bio: incomingData.instructorBio || incomingData.instructor?.bio || defaultCourse.instructor.bio,
-        tags: incomingData.instructorTags || incomingData.instructor?.tags || defaultCourse.instructor.tags,
-        image: incomingData.instructorImage || incomingData.instructor?.image || defaultCourse.instructor.image
-      },
-    curriculum: incomingData.curriculum || defaultCourse.curriculum,
-    schedule: incomingData.schedule || defaultCourse.schedule,
-    image: incomingData.image,
-    description: `Deep study into ${incomingData.category}. A ${incomingData.duration} immersive journey for ${incomingData.level} seekers.`
-  } : defaultCourse;
+  // 2. State for fetched course data
+  const [courseData, setCourseData] = useState(null);
 
-  // 3. Scroll to Top Logic
+  // 3. Fetch course data from API if ID is available
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setIsPlaying(false);
-  }, [courseData.title]); // Jab title change ho tab scroll ho
+    const fetchCourse = async () => {
+      // Try to get course from location state first (navigation from CourseListing)
+      const incomingData = location.state?.course;
+      
+      if (incomingData) {
+        // Use data from navigation
+        const merged = {
+          ...defaultCourse,
+          _id: incomingData.id || incomingData._id,
+          id: incomingData.id || incomingData._id,
+          title: incomingData.title,
+          price: incomingData.price,
+          level: incomingData.level,
+          duration: incomingData.duration,
+          language: incomingData.language,
+          instructor: {
+            name: incomingData.instructorName || incomingData.instructor?.name || defaultCourse.instructor.name,
+            qualification: incomingData.instructorQualification || incomingData.instructor?.qualification || defaultCourse.instructor.qualification,
+            bio: incomingData.instructorBio || incomingData.instructor?.bio || defaultCourse.instructor.bio,
+            tags: incomingData.instructorTags || incomingData.instructor?.tags || defaultCourse.instructor.tags,
+            image: incomingData.instructorImage || incomingData.instructor?.image || defaultCourse.instructor.image
+          },
+          curriculum: incomingData.curriculum || defaultCourse.curriculum,
+          schedule: incomingData.schedule || defaultCourse.schedule,
+          image: incomingData.image,
+          description: `Deep study into ${incomingData.category}. A ${incomingData.duration} immersive journey for ${incomingData.level} seekers.`
+        };
+        setCourseData(merged);
+      } else if (id) {
+        // Try to fetch from API if ID is in URL
+        try {
+          setLoading(true);
+          setError('');
+          const response = await getCourseDetail(id);
+          const apiCourse = response.data || response;
+          
+      const merged = {
+        ...defaultCourse,
+        _id: apiCourse._id || apiCourse.id,
+        id: apiCourse._id || apiCourse.id,
+        title: apiCourse.title || defaultCourse.title,
+        price: apiCourse.price || defaultCourse.price,
+        level: apiCourse.level || defaultCourse.level,
+        duration: apiCourse.duration || '',
+        language: Array.isArray(apiCourse.language) ? apiCourse.language.join(', ') : apiCourse.language || '',
+        image: apiCourse.image?.url || apiCourse.image || defaultCourse.image,
+        description: apiCourse.description || defaultCourse.description,
+        category: apiCourse.category || 'General',
+        mode: apiCourse.mode || 'ONLINE',
+        startDate: apiCourse.startDate,
+        endDate: apiCourse.endDate,
+        instructor: {
+          name: apiCourse.instructor || defaultCourse.instructor.name,
+          qualification: defaultCourse.instructor.qualification,
+          bio: defaultCourse.instructor.bio,
+          tags: defaultCourse.instructor.tags,
+          image: defaultCourse.instructor.image
+        },
+        curriculum: defaultCourse.curriculum,
+        schedule: defaultCourse.schedule
+      };
+      setCourseData(merged);
+        } catch (err) {
+          console.error('Failed to fetch course:', err);
+          setError('Failed to load course details. Using default data.');
+          setCourseData(defaultCourse);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        // No ID and no location state, use default
+        setCourseData(defaultCourse);
+      }
+    };
+
+    fetchCourse();
+  }, [id, location.state]);
+
+  // 4. Scroll to Top Logic
+  useEffect(() => {
+    if (courseData) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setIsPlaying(false);
+    }
+  }, [courseData?.title]);
 
   const handlePlayVideo = () => {
     if (videoRef.current) {
@@ -66,6 +132,44 @@ const CourseDetails = () => {
       setIsPlaying(true);
     }
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="bg-[#f1e4c8] min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 rounded-full border-4 border-[#E2D4A6] border-t-[#74271E] animate-spin mx-auto mb-4"></div>
+          <p className="text-[#4A4135] font-semibold">Loading course details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error && !courseData) {
+    return (
+      <div className="bg-[#f1e4c8] min-h-screen flex items-center justify-center">
+        <div className="bg-white rounded-2xl p-8 text-center max-w-md">
+          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-red-600 font-bold">!</span>
+          </div>
+          <h3 className="text-xl font-bold text-red-600 mb-2">Error Loading Course</h3>
+          <p className="text-stone-600 mb-6">{error}</p>
+          <button
+            onClick={() => navigate('/courses')}
+            className="px-6 py-2 bg-[#74271E] text-white rounded-lg font-bold hover:bg-[#5a1f15] transition-colors"
+          >
+            Back to Courses
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show course details if courseData is available
+  if (!courseData) {
+    return null;
+  }
 
   return (
     <div className="bg-[#f1e4c8] min-h-screen font-sans-serif text-[#e6d0bd]">

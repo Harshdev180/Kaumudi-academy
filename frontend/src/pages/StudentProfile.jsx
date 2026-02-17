@@ -1,14 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  getStudentProfile,
-  updateStudentProfile,
-  getStudentEnrollments,
-  setAuthToken,
-} from "../lib/api";
+import { getMyEnrollments, setAuthToken, updateStudentProfile } from "../lib/api";
+import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function StudentProfile() {
   const navigate = useNavigate();
+  const { user, token: authToken, isAuthenticated } = useAuth();
+  
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/auth", { state: { from: "/profile" } });
+    }
+  }, [isAuthenticated, navigate]);
+  
   const [profile, setProfile] = useState({
     name: "",
     email: "",
@@ -62,59 +67,49 @@ export default function StudentProfile() {
   }, [enrollments]);
 
   useEffect(() => {
-    const token = localStorage.getItem("kaumudi_token");
-    if (token) setAuthToken(token);
-    const dummy = [
-      {
-        id: "ENR-1001",
-        courseId: "PAN-ADV-01",
-        courseTitle: "Advanced Paninian Grammar: Mahabhashya Study",
-        status: "Active",
-        progress: 42,
-      },
-      {
-        id: "ENR-1002",
-        courseId: "VED-RIG-02",
-        courseTitle: "Rigveda Bhashya Foundations",
-        status: "Completed",
-        progress: 100,
-        certificateId: "CERT-987654",
-      },
-      {
-        id: "ENR-1003",
-        courseId: "SANS-L1-03",
-        courseTitle: "Spoken Sanskrit Level 1",
-        status: "Active",
-        progress: 68,
-      },
-    ];
+    if (authToken) setAuthToken(authToken);
+    const storedProfileRaw = localStorage.getItem("kaumudi_user_profile");
+    const storedName = localStorage.getItem("kaumudi_user_name");
+    const storedEmail = localStorage.getItem("kaumudi_user_email");
+    const nameFromAuth = user
+      ? (user.firstName || user.name
+          ? `${user.firstName ? `${user.firstName} ${user.lastName || ""}`.trim() : user.name}`.trim()
+          : null)
+      : null;
+
+    if (storedProfileRaw) {
+      try {
+        const storedProfile = JSON.parse(storedProfileRaw);
+        setProfile((prev) => ({ ...prev, ...storedProfile }));
+      } catch {
+        // ignore malformed storage
+      }
+    } else {
+      setProfile((prev) => ({
+        ...prev,
+        name: nameFromAuth || storedName || prev.name,
+        email: user?.email || storedEmail || prev.email,
+      }));
+    }
+    // No local dummy fallback — prefer empty list if backend has no enrollments
     const load = async () => {
       setError("");
       try {
-        const [p, e] = await Promise.all([
-          getStudentProfile(),
-          getStudentEnrollments(),
-        ]);
-        setProfile({
-          name: p?.name || "",
-          email: p?.email || "",
-          phone: p?.phone || "",
-          dob: p?.dob || "",
-          address1: p?.address1 || "",
-          address2: p?.address2 || "",
-          city: p?.city || "",
-          state: p?.state || "",
-          postalCode: p?.postalCode || "",
-          country: p?.country || "",
-          preferredMode: p?.preferredMode || "ONLINE",
-          newsletter: typeof p?.newsletter === "boolean" ? p.newsletter : true,
-        });
-        const items = Array.isArray(e) ? e : e?.items || [];
-        setEnrollments(items.length ? items : dummy);
+        const e = await getMyEnrollments();
+        const items = Array.isArray(e) ? e : e?.data || [];
+        const mapped = items.map((enr) => ({
+          id: enr._id,
+          courseId: enr.course?._id || enr.courseId,
+          courseTitle: enr.course?.title || enr.courseTitle,
+          status: "Active",
+          progress: 0
+        }));
+        // Use the real (possibly empty) mapped enrollments from backend
+        setEnrollments(mapped);
       } catch (err) {
         const msg = err?.response?.data?.message || "Unable to load profile";
         setError(msg);
-        setEnrollments(dummy);
+        setEnrollments([]);
       } finally {
         setLoading(false);
       }
@@ -131,7 +126,7 @@ export default function StudentProfile() {
     }
     try {
       setSaving(true);
-      const res = await updateStudentProfile({
+      const nextProfile = {
         name: profile.name,
         email: profile.email,
         phone: profile.phone,
@@ -144,8 +139,34 @@ export default function StudentProfile() {
         country: profile.country,
         preferredMode: profile.preferredMode,
         newsletter: profile.newsletter,
-      });
-      setSuccess(res?.message || "Profile updated");
+      };
+
+      // Try to persist to backend first. If backend doesn't expose the endpoint,
+      // fall back to localStorage and inform the user.
+      try {
+        const res = await updateStudentProfile(nextProfile);
+        if (res && res.success) {
+          setSuccess("Profile updated on server");
+        } else {
+          // backend returned non-success payload
+          localStorage.setItem("kaumudi_user_profile", JSON.stringify(nextProfile));
+          localStorage.setItem("kaumudi_user_name", profile.name);
+          localStorage.setItem("kaumudi_user_email", profile.email);
+          setSuccess("Profile saved locally (server did not accept update)");
+        }
+      } catch (apiErr) {
+        // Likely no backend endpoint or network/auth issue — save locally and show message
+        const serverMsg = apiErr?.response?.data?.message;
+        localStorage.setItem("kaumudi_user_profile", JSON.stringify(nextProfile));
+        localStorage.setItem("kaumudi_user_name", profile.name);
+        localStorage.setItem("kaumudi_user_email", profile.email);
+        setSuccess(
+          serverMsg
+            ? `Saved locally — server error: ${serverMsg}`
+            : "Saved locally — server endpoint unavailable",
+        );
+      }
+
       setEditing(false);
     } catch (err) {
       const msg = err?.response?.data?.message || "Update failed";
@@ -274,7 +295,7 @@ export default function StudentProfile() {
                         </div>
                         <button
                           onClick={() =>
-                            navigate("/coursedetail", {
+                            navigate(`/coursedetail/${enr.courseId}`, {
                               state: {
                                 course: {
                                   id: enr.courseId,
@@ -602,7 +623,7 @@ export default function StudentProfile() {
                         <td className="px-4 py-4 text-right">
                           <button
                             onClick={() =>
-                              navigate("/coursedetail", {
+                              navigate(`/coursedetail/${enr.courseId}`, {
                                 state: {
                                   course: {
                                     id: enr.courseId,
@@ -649,7 +670,7 @@ export default function StudentProfile() {
                       <button
                         className="px-4 py-2 rounded-xl bg-[#74271E] text-white text-xs font-bold"
                         onClick={() =>
-                          navigate("/coursedetail", {
+                          navigate(`/coursedetail/${e.courseId}`, {
                             state: {
                               course: { id: e.courseId, title: e.courseTitle },
                             },

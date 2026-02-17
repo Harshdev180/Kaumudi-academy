@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import { 
   User, Mail, Phone, MapPin, Globe, 
   CreditCard, ShieldCheck, GraduationCap, 
   Calendar, Award, BookOpen, CheckCircle,
   Lock, ArrowRight, Zap, Info, HelpCircle
 } from "lucide-react";
+import { createPaymentOrder, verifyPayment, updateStudentProfile } from "../../lib/api";
 
 /**
  * EnrollmentPage Component
@@ -14,18 +16,43 @@ import {
  */
 const EnrollmentPage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated, user, token } = useAuth();
   const [paymentMethod, setPaymentMethod] = useState("upi");
   const [isHovered, setIsHovered] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [couponCode, setCouponCode] = useState("");
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/auth", { state: { from: location.pathname } });
+    }
+  }, [isAuthenticated, navigate, location.pathname]);
+
+  // Form state
+  const [formData, setFormData] = useState({
+    fullName: "",
+    whatsapp: "",
+    email: user?.email || "",
+    address: "",
+    city: "",
+    state: "",
+    sanskritKnowledge: "Beginner (No prior knowledge)",
+    occupation: ""
+  });
 
   // --- DATA HANDLING ---
   const courseData = useMemo(() => {
-    return location.state || {
-      courseName: "Advanced Paninian Grammar",
-      price: "14,999",
-      duration: "6 Months",
-      level: "Advanced",
-      language: "Sanskrit/Hindi",
-      mode: "Live Online"
+    return {
+      courseId: location.state?.courseId || null,
+      courseName: location.state?.courseName || "Advanced Paninian Grammar",
+      price: location.state?.price || "14,999",
+      duration: location.state?.duration || "6 Months",
+      level: location.state?.level || "Advanced",
+      language: location.state?.language || "Sanskrit/Hindi",
+      mode: location.state?.mode || "Live Online"
     };
   }, [location.state]);
 
@@ -38,33 +65,111 @@ const EnrollmentPage = () => {
     document.body.appendChild(script);
   }, []);
 
-  const handlePayment = () => {
-    // Amount se comma hatakar number mein convert karna aur paise mein badalna (INR * 100)
-    const amountInPaise = parseInt(courseData.price.replace(/,/g, "")) * 100;
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
-    const options = {
-      key: "YOUR_RAZORPAY_KEY_ID", // YAHAN APNI KEY DAALEIN
-      amount: amountInPaise,
-      currency: "INR",
-      name: "Kaumudi Trust",
-      description: `Enrollment for ${courseData.courseName}`,
-      image: "https://your-logo-url.com/logo.png",
-      handler: function (response) {
-        alert("Payment Successful! ID: " + response.razorpay_payment_id);
-        // Yahan aap success ke baad redirect ya database update kar sakte hain
-      },
-      prefill: {
-        name: "", // Aap state se user name yahan daal sakte hain
-        email: "",
-        contact: ""
-      },
-      theme: {
-        color: "#631D11",
-      },
-    };
+  const handlePayment = async () => {
+    // Validate form
+    if (!formData.fullName || !formData.email || !formData.whatsapp) {
+      setError("Please fill in all required fields");
+      return;
+    }
 
-    const rzp = new window.Razorpay(options);
-    rzp.open();
+    if (!courseData.courseId) {
+      setError("Course information is missing. Please go back and select a course again.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+
+      // Step 1: Update student profile with form data
+      const [firstName, ...lastNameParts] = formData.fullName.split(" ");
+      const lastName = lastNameParts.join(" ") || "Student";
+      
+      try {
+        await updateStudentProfile({
+          firstName,
+          lastName,
+          phoneNumber: formData.whatsapp,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          sanskritKnowledge: formData.sanskritKnowledge,
+          occupation: formData.occupation
+        });
+      } catch (profileErr) {
+        console.warn("Profile update failed (non-critical):", profileErr);
+        // Continue with payment even if profile update fails
+      }
+
+      // Step 2: Create Razorpay order
+      const orderResponse = await createPaymentOrder(courseData.courseId, couponCode || undefined);
+      
+      if (!orderResponse.success) {
+        setError(orderResponse.message || "Failed to create payment order");
+        return;
+      }
+
+      const amountInPaise = orderResponse.amount;
+      const razorpayOrderId = orderResponse.orderId;
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY || "YOUR_RAZORPAY_KEY_ID",
+        amount: amountInPaise,
+        currency: "INR",
+        order_id: razorpayOrderId,
+        name: "Kaumudi Trust",
+        description: `Enrollment for ${courseData.courseName}`,
+        image: "https://your-logo-url.com/logo.png",
+        handler: async function (response) {
+          try {
+            // Step 3: Verify payment with backend
+            const verifyResponse = await verifyPayment({
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+              courseId: courseData.courseId
+            });
+
+            if (verifyResponse.success) {
+              alert("Payment Successful! Enrollment Confirmed!");
+              // Redirect to profile or success page
+              navigate("/profile", { 
+                state: { message: "You have successfully enrolled in the course!" } 
+              });
+            } else {
+              setError("Payment verification failed: " + (verifyResponse.message || "Unknown error"));
+            }
+          } catch (err) {
+            console.error("Payment verification error:", err);
+            setError("Failed to verify payment: " + err.message);
+          }
+        },
+        prefill: {
+          name: formData.fullName,
+          email: formData.email,
+          contact: formData.whatsapp
+        },
+        theme: {
+          color: "#631D11",
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error("Payment error:", err);
+      setError("Failed to initiate payment: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // --- DATE LOGIC ---
@@ -74,7 +179,8 @@ const EnrollmentPage = () => {
   });
 
   const calculateEndDate = () => {
-    const months = parseInt(courseData.duration) || 0;
+    const durationStr = courseData.duration || "0";
+    const months = parseInt(durationStr.match(/\d+/)?.[0] || "0") || 0;
     const end = new Date();
     end.setMonth(startDate.getMonth() + months);
     return end.toLocaleDateString('en-IN', { 
@@ -87,6 +193,18 @@ const EnrollmentPage = () => {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
+
+  // Show loading or not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#f1e4c8] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 rounded-full border-4 border-[#E2D4A6] border-t-[#74271E] animate-spin mx-auto mb-4"></div>
+          <p className="text-[#4A4135] font-semibold">Redirecting to login...</p>
+        </div>
+      </div>
+    );
+  }
 
   // --- SHARED STYLES ---
   const inputStyle = "w-full bg-[#fdfaf5]/80 backdrop-blur-sm border-b-2 border-[#631D11]/10 p-4 outline-none focus:border-[#d6b15c] transition-all duration-300 text-[#3D1A16] font-medium placeholder:text-gray-400 placeholder:font-normal rounded-t-lg group-hover:bg-white";
@@ -161,27 +279,72 @@ const EnrollmentPage = () => {
               <div className="grid md:grid-cols-2 gap-8">
                 <div className="space-y-1">
                   <label className={labelStyle}><CheckCircle size={12}/> Full Name</label>
-                  <input type="text" placeholder="e.g. Rahul Sharma" className={inputStyle} required />
+                  <input 
+                    type="text" 
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleInputChange}
+                    placeholder="e.g. Rahul Sharma" 
+                    className={inputStyle} 
+                    required 
+                  />
                 </div>
                 <div className="space-y-1">
                   <label className={labelStyle}><Phone size={12}/> WhatsApp Number</label>
-                  <input type="tel" placeholder="+91 00000 00000" className={inputStyle} required />
+                  <input 
+                    type="tel" 
+                    name="whatsapp"
+                    value={formData.whatsapp}
+                    onChange={handleInputChange}
+                    placeholder="+91 00000 00000" 
+                    className={inputStyle} 
+                    required 
+                  />
                 </div>
                 <div className="md:col-span-2 space-y-1">
                   <label className={labelStyle}><Mail size={12}/> Email Address</label>
-                  <input type="email" placeholder="rahul@example.com" className={inputStyle} required />
+                  <input 
+                    type="email" 
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="rahul@example.com" 
+                    className={inputStyle} 
+                    required 
+                  />
                 </div>
                 <div className="md:col-span-2 space-y-1">
                   <label className={labelStyle}><MapPin size={12}/> Permanent Address</label>
-                  <input type="text" placeholder="Street name, Apartment, Area" className={inputStyle} />
+                  <input 
+                    type="text" 
+                    name="address"
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    placeholder="Street name, Apartment, Area" 
+                    className={inputStyle} 
+                  />
                 </div>
                 <div className="space-y-1">
                   <label className={labelStyle}><Globe size={12}/> City</label>
-                  <input type="text" placeholder="Varanasi" className={inputStyle} />
+                  <input 
+                    type="text" 
+                    name="city"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    placeholder="Varanasi" 
+                    className={inputStyle} 
+                  />
                 </div>
                 <div className="space-y-1">
                   <label className={labelStyle}><Globe size={12}/> State / Country</label>
-                  <input type="text" placeholder="Uttar Pradesh, India" className={inputStyle} />
+                  <input 
+                    type="text" 
+                    name="state"
+                    value={formData.state}
+                    onChange={handleInputChange}
+                    placeholder="Uttar Pradesh, India" 
+                    className={inputStyle} 
+                  />
                 </div>
               </div>
             </motion.section>
@@ -205,7 +368,12 @@ const EnrollmentPage = () => {
                 <div className="space-y-1">
                   <label className={labelStyle}>Prior Sanskrit Knowledge?</label>
                   <div className="relative group">
-                    <select className={`${inputStyle} appearance-none cursor-pointer bg-white/50`}>
+                    <select 
+                      name="sanskritKnowledge"
+                      value={formData.sanskritKnowledge}
+                      onChange={handleInputChange}
+                      className={`${inputStyle} appearance-none cursor-pointer bg-white/50`}
+                    >
                       <option>Beginner (No prior knowledge)</option>
                       <option>Intermediate (Knows basics)</option>
                       <option>Advanced (Fluent)</option>
@@ -215,7 +383,14 @@ const EnrollmentPage = () => {
                 </div>
                 <div className="space-y-1">
                   <label className={labelStyle}>Occupation</label>
-                  <input type="text" placeholder="Student / Professional" className={inputStyle} />
+                  <input 
+                    type="text" 
+                    name="occupation"
+                    value={formData.occupation}
+                    onChange={handleInputChange}
+                    placeholder="Student / Professional" 
+                    className={inputStyle} 
+                  />
                 </div>
               </div>
             </motion.section>   
@@ -277,36 +452,59 @@ const EnrollmentPage = () => {
 
                 {/* Final Pricing */}
                 <div className="space-y-4 border-t border-white/10 pt-8 mt-4">
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      placeholder="Enter coupon code" 
+                      className="flex-1 bg-white/20 border border-white/30 px-4 py-2 rounded-lg text-white placeholder:text-stone-400 text-sm focus:outline-none focus:border-[#d6b15c]"
+                    />
+                    <button 
+                      className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white text-sm font-bold transition-colors"
+                    >
+                      Apply
+                    </button>
+                  </div>
                   <div className="flex justify-between items-center text-stone-300 text-sm">
-                    <span className="flex items-center gap-2 italic">Standard Fee</span>
-                    <span className="opacity-80">₹20,000</span>
+                    <span className="flex items-center gap-2 italic">Course Fee</span>
+                    <span className="opacity-80">₹{(typeof courseData.price === 'number' ? courseData.price : parseInt(courseData.price.toString().replace(/[^0-9]/g, '')) || 0).toLocaleString('en-IN')}</span>
                   </div>
                   <div className="flex justify-between items-center text-[#d6b15c] text-sm font-bold">
-                    <span>Discount Applied</span>
-                    <span>-₹{(20000 - parseInt(courseData.price.replace(',', ''))).toLocaleString()}</span>
+                    <span>Additional Charges</span>
+                    <span>₹0</span>
                   </div>
                   <div className="flex justify-between items-end pt-4">
                     <div className="flex flex-col">
                       <span className="text-[10px] uppercase font-bold tracking-widest text-stone-300">Net Payable</span>
-                      <span className="text-3xl font-black text-white">₹{courseData.price}</span>
+                      <span className="text-3xl font-black text-white">₹{(typeof courseData.price === 'number' ? courseData.price : parseInt(courseData.price.toString().replace(/[^0-9]/g, '')) || 0).toLocaleString('en-IN')}</span>
                     </div>
                     <div className="text-[10px] bg-white/10 px-2 py-1 rounded text-stone-300">Incl. Taxes</div>
                   </div>
                 </div>
 
+                {error && (
+                  <div className="mt-4 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300 text-sm">
+                    {error}
+                  </div>
+                )}
+
                 <motion.button 
                   onHoverStart={() => setIsHovered(true)}
                   onHoverEnd={() => setIsHovered(false)}
-                  onClick={handlePayment} // Razorpay function trigger
-                  className="w-full bg-[#d6b15c] text-[#74271E] py-6 rounded-3xl font-black text-xl mt-6 hover:bg-[#c09c4a] transition-all duration-500 shadow-[0_15px_30px_rgba(214,177,92,0.3)] flex items-center justify-center gap-3 relative overflow-hidden group"
+                  onClick={handlePayment}
+                  disabled={loading}
+                  className="w-full bg-[#d6b15c] text-[#74271E] py-6 rounded-3xl font-black text-xl mt-6 hover:bg-[#c09c4a] transition-all duration-500 shadow-[0_15px_30px_rgba(214,177,92,0.3)] flex items-center justify-center gap-3 relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <span className="relative z-10">Proceed to Payment</span>
-                  <motion.div 
-                    animate={{ x: isHovered ? 5 : 0 }}
-                    className="relative z-10"
-                  >
-                    <ArrowRight size={24} />
-                  </motion.div>
+                  <span className="relative z-10">{loading ? "Processing..." : "Proceed to Payment"}</span>
+                  {!loading && (
+                    <motion.div 
+                      animate={{ x: isHovered ? 5 : 0 }}
+                      className="relative z-10"
+                    >
+                      <ArrowRight size={24} />
+                    </motion.div>
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/40 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                 </motion.button>
 

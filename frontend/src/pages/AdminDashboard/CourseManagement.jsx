@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   MdSearch, MdNotifications, MdFileDownload, MdAdd,
@@ -6,6 +6,7 @@ import {
   MdFilterList, MdChevronLeft, MdChevronRight, MdDelete, MdEdit,
   MdClose, MdSave, MdCloudUpload
 } from 'react-icons/md';
+import { getAllCoursesForAdmin, createCourse, updateCourse } from '../../lib/api';
 
 const CourseManagement = () => {
   // 1. COLORS & THEME
@@ -23,14 +24,45 @@ const CourseManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("All");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [courses, setCourses] = useState([
-    { id: 1, title: "Paninian Grammar Basics", level: "Beginner • L1", dur: "6 Months", mode: "ONLINE", price: "240.00", status: "Published", icon: <MdAutoStories /> },
-    { id: 2, title: "Advanced Kavya Study", level: "Advanced • L4", dur: "4 Months", mode: "HYBRID", price: "350.00", status: "Published", icon: <MdSchool /> },
-    { id: 3, title: "Sanskrit Level 1", level: "Beginner • L1", dur: "3 Months", mode: "ONLINE", price: "120.00", status: "Draft", icon: <MdTranslate /> },
-  ]);
-
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [courses, setCourses] = useState([]);
+  
   // Form State for Add New Course
-  const [formData, setFormData] = useState({ title: '', level: 'Beginner • L1', price: '', dur: '3 Months', mode: 'ONLINE' });
+  const [formData, setFormData] = useState({ title: '', level: 'Beginner', price: '', duration: '3 Months', mode: 'ONLINE' });
+
+  // 3. Fetch courses from API
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const response = await getAllCoursesForAdmin();
+        const data = Array.isArray(response) ? response : response.data || [];
+        
+        // Transform API response to match UI format
+        const formattedCourses = data.map((course, index) => ({
+          id: course._id || course.id || index,
+          title: course.title || 'Untitled Course',
+          level: course.level || 'Beginner',
+          dur: course.duration || '3 Months',
+          mode: course.mode || 'ONLINE',
+          price: course.price || '0',
+          status: course.status === 'active' ? 'Published' : 'Draft',
+          icon: <MdAutoStories />
+        }));
+        
+        setCourses(formattedCourses);
+      } catch (err) {
+        console.error("Failed to fetch courses:", err);
+        setError("Failed to load courses. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
 
   // 3. LOGIC: Search & Filter
   const filteredCourses = useMemo(() => {
@@ -53,27 +85,65 @@ const CourseManagement = () => {
     link.click();
   };
 
-  const handleAddCourse = (e) => {
+  const handleAddCourse = async (e) => {
     e.preventDefault();
-    const newEntry = {
-      ...formData,
-      id: Date.now(),
-      status: 'Draft',
-      icon: <MdAutoStories />,
-      price: `$${formData.price}`
-    };
-    setCourses([newEntry, ...courses]);
-    setIsModalOpen(false);
-    setFormData({ title: '', level: 'Beginner • L1', price: '', dur: '3 Months', mode: 'ONLINE' });
+    try {
+      const courseData = {
+        title: formData.title,
+        level: formData.level,
+        price: parseFloat(formData.price),
+        duration: formData.dur,
+        mode: formData.mode,
+        status: 'draft'
+      };
+      
+      const response = await createCourse(courseData);
+      const newCourse = response.data || response;
+      
+      const newEntry = {
+        id: newCourse._id || newCourse.id || Date.now(),
+        title: newCourse.title,
+        level: newCourse.level,
+        dur: newCourse.duration,
+        mode: newCourse.mode,
+        price: newCourse.price,
+        status: 'Draft',
+        icon: <MdAutoStories />,
+      };
+      
+      setCourses([newEntry, ...courses]);
+      setIsModalOpen(false);
+      setFormData({ title: '', level: 'Beginner', price: '', dur: '3 Months', mode: 'ONLINE' });
+    } catch (err) {
+      console.error("Failed to create course:", err);
+      alert("Failed to create course. Please try again.");
+    }
   };
 
-  const toggleStatus = (id) => {
-    setCourses(courses.map(c => c.id === id ? { ...c, status: c.status === "Published" ? "Draft" : "Published" } : c));
+  const toggleStatus = async (id) => {
+    try {
+      const course = courses.find(c => c.id === id);
+      const newStatus = course.status === "Published" ? "draft" : "active";
+      
+      await updateCourse(id, { status: newStatus });
+      
+      setCourses(courses.map(c => c.id === id ? { ...c, status: c.status === "Published" ? "Draft" : "Published" } : c));
+    } catch (err) {
+      console.error("Failed to toggle course status:", err);
+      alert("Failed to update course status.");
+    }
   };
 
-  const deleteCourse = (id) => {
-    if (window.confirm("Bhai, pakka delete karna hai?")) {
-      setCourses(courses.filter(c => c.id !== id));
+  const deleteCourse = async (id) => {
+    if (window.confirm("Are you sure you want to delete this course?")) {
+      try {
+        // Note: Backend may not have delete endpoint, using updateCourse with status as fallback
+        await updateCourse(id, { status: 'deleted' });
+        setCourses(courses.filter(c => c.id !== id));
+      } catch (err) {
+        console.error("Failed to delete course:", err);
+        alert("Failed to delete course.");
+      }
     }
   };
 
@@ -106,6 +176,25 @@ const CourseManagement = () => {
           </div>
         </div>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="flex justify-center items-center py-12">
+            <div className="text-center">
+              <div className="w-10 h-10 rounded-full border-4 border-[#E2D4A6] border-t-[#74271E] animate-spin mx-auto mb-4"></div>
+              <p style={{ color: palette.textDark }}>Loading courses...</p>
+            </div>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && !loading && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-600">
+            <p>{error}</p>
+          </div>
+        )}
+        {/* Content */}
+        {!loading && !error && (
+          <>
         {/* FILTERS */}
         <div className="flex items-center gap-2 border-b" style={{ borderColor: palette.goldDivider + '20' }}>
           {["All", "Published", "Draft"].map((tab) => (
@@ -173,6 +262,8 @@ const CourseManagement = () => {
             </table>
           </div>
         </div>
+          </>
+        )}
       </motion.div>
 
       {/* ADD NEW COURSE MODAL (LOGIC IMPLEMENTED) */}

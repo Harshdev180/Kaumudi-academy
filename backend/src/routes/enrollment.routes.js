@@ -14,7 +14,6 @@ import { roleMiddleware } from "../middlewares/role.middleware.js";
 router.get(
   "/enrollment/my",
   authMiddleware,
-  roleMiddleware("STUDENT"),
   getMyEnrollments
 );
 

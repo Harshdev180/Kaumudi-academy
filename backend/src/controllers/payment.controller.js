@@ -1,5 +1,5 @@
 import razorpay from "../configs/razorpay.js";
-import Transaction from "../models/Transaction.model.js";
+import Payment from "../models/Transaction.model.js";
 import crypto from "crypto";
 import { config } from "../configs/env.js";
 import Course from "../models/Course.model.js";
@@ -67,7 +67,7 @@ if (alreadyEnrolled) {
 
     });
 
-    const payment = await Transaction.create({
+    const payment = await Payment.create({
       user: req.user._id,
       course: courseId,
       originalAmount,
@@ -119,7 +119,7 @@ export const verifyRazorpayPayment = async (req, res) => {
       });
     }
 
-    const transaction = await Transaction.findOne({
+    const transaction = await Payment.findOne({
       razorpayOrderId
     });
 
@@ -136,11 +136,11 @@ export const verifyRazorpayPayment = async (req, res) => {
 
     await transaction.save();
 
-await createEnrollment({
-  studentId: transaction.user,
-  courseId: transaction.course,
-  paymentId: transaction._id
-});
+    await createEnrollment({
+      studentId: transaction.user,
+      courseId: transaction.course,
+      paymentId: transaction._id
+    });
 
     res.json({
       success: true,
@@ -157,7 +157,7 @@ export const fakeVerifyPayment = async (req, res) => {
   try {
     const { razorpayOrderId } = req.body;
 
-    const transaction = await Transaction.findOne({
+    const transaction = await Payment.findOne({
       razorpayOrderId
     });
 
@@ -173,11 +173,11 @@ export const fakeVerifyPayment = async (req, res) => {
     transaction.razorpaySignature = "FAKE_SIGNATURE";
 
     await transaction.save();
-await createEnrollment({
-  studentId: transaction.user,
-  courseId: transaction.course,
-  paymentId: transaction._id
-});
+    await createEnrollment({
+      studentId: transaction.user,
+      courseId: transaction.course,
+      paymentId: transaction._id
+    });
     res.json({
       success: true,
       message: "Fake payment verified (testing only)"

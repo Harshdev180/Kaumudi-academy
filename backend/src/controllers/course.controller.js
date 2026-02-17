@@ -34,7 +34,7 @@ export const createCourse = async (req, res) => {
 
     }
 
-    const course = await Course.create({
+    const acourse = await Course.create({
       title,
       description,
       syllabus,
@@ -170,8 +170,7 @@ export const getAllCourses = async (req, res) => {
   const now = new Date();
 
   const courses = await Course.find({
-    status: "ACTIVE",
-    endDate: { $gte: now }
+    status: "ACTIVE"
   })
     .select("-price")
     .sort({ createdAt: -1 });

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 /* ------------------ CONFIG ------------------ */
 
@@ -42,6 +43,7 @@ export default function Navbar() {
 
   const { pathname } = useLocation();
   const isHome = pathname === "/";
+  const { isAuthenticated, user, logout } = useAuth();
 
   /* Scroll shadow */
   useEffect(() => {
@@ -116,15 +118,26 @@ export default function Navbar() {
 
         {/* ---------------- RIGHT ACTIONS ---------------- */}
         <div className="flex items-center gap-4">
-          <Link to="/auth" className="hidden md:block">
-            <motion.span
-              whileHover={{ scale: 1.06 }}
-              whileTap={{ scale: 0.94 }}
-              className="inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-[#d6b15c] text-[#74271E] font-bold text-sm shadow-lg hover:shadow-xl transition-all"
-            >
-              Student Login
-            </motion.span>
-          </Link>
+          {!isAuthenticated ? (
+            <Link to="/auth" className="hidden md:block">
+              <motion.span
+                whileHover={{ scale: 1.06 }}
+                whileTap={{ scale: 0.94 }}
+                className="inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-[#d6b15c] text-[#74271E] font-bold text-sm shadow-lg hover:shadow-xl transition-all"
+              >
+                Student Login
+              </motion.span>
+            </Link>
+          ) : (
+            <div className="hidden md:flex items-center gap-3">
+              <Link to="/profile" className="px-4 py-2 rounded-full bg-white text-[#74271E] font-bold text-sm shadow-lg">
+                {user?.email ? user.email.split('@')[0] : 'Profile'}
+              </Link>
+              <button onClick={() => logout()} className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white font-bold text-sm">
+                Logout
+              </button>
+            </div>
+          )}
 
           {/* ---------------- MOBILE TOGGLE ---------------- */}
           <button

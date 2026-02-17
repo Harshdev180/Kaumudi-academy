@@ -28,6 +28,22 @@ const courseSchema = new mongoose.Schema(
       required: true,
     },
 
+    level: {
+      type: String,
+      enum: ["Prathama (Beginner)", "Madhyama (Intermediate)", "Kovida (Advanced)"],
+      default: "Prathama (Beginner)"
+    },
+
+    category: {
+      type: String,
+      default: "General"
+    },
+
+    instructor: {
+      type: String,
+      default: "Faculty"
+    },
+
     price: {
       type: Number,
       required: true,
@@ -51,11 +67,11 @@ const courseSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
-language: {
-  type: [String],
-  required: true,
-  trim: true
-},
+    language: {
+      type: [String],
+      required: true,
+      trim: true
+    },
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

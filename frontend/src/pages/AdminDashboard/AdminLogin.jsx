@@ -1,15 +1,40 @@
 import React, { useState } from 'react';
 import { ShieldCheck, User, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { loginAdmin, setAuthToken } from '../../lib/api';
 
 const AdminLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    // Simulate backend verification for JWT 
-    setTimeout(() => setIsLoading(false), 2000);
+    setError('');
+    if (!email || !password) {
+      setError('Please enter admin email and password.');
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const data = await loginAdmin(email, password);
+      const token = data?.token;
+      if (token) {
+        localStorage.setItem('kaumudi_token', token);
+        localStorage.setItem('kaumudi_role', 'ADMIN');
+        localStorage.setItem('kaumudi_user_email', email);
+        setAuthToken(token);
+      }
+      navigate('/admin/dashboard');
+    } catch (err) {
+      const msg = err?.response?.data?.message || 'Admin login failed.';
+      setError(msg);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -38,6 +63,8 @@ const AdminLogin = () => {
               <input
                 type="text"
                 placeholder="Enter admin username"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800000]/20 focus:border-[#800000] transition-all font-sans"
                 required
               />
@@ -55,6 +82,8 @@ const AdminLogin = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter secure password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-10 pr-12 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800000]/20 focus:border-[#800000] transition-all font-sans"
                 required
               />
@@ -75,6 +104,12 @@ const AdminLogin = () => {
           </div>
 
           {/* Submit Button [cite: 152] */}
+          {error && (
+            <div className="text-red-600 text-sm font-semibold text-center">
+              {error}
+            </div>
+          )}
+
           <button
             disabled={isLoading}
             className="w-full bg-[#5c1c11] hover:bg-[#4a1a12] text-white py-3.5 rounded-lg font-bold flex items-center justify-center gap-2 shadow-lg shadow-[#800000]/20 transition-all active:scale-[0.98] disabled:opacity-70"
