@@ -34,12 +34,28 @@ const studentSchema = new mongoose.Schema(
       minlength: 10,
       maxlength: 15
     },  
+    settings: {
+      notifications: {
+        email: {
+          type: Boolean,
+          default: true
+        },
+        sms: {
+          type: Boolean,
+          default: false
+        },
+        courseUpdates: {
+          type: Boolean,
+          default: true
+        }
+      },
+    },
     resetPasswordToken: {
       type: String
     },
     resetPasswordExpire: {
       type: Date
-    }
+    },
   },
   { timestamps: true }
 );

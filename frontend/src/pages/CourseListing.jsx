@@ -18,6 +18,8 @@ import {
   X,
   SlidersHorizontal,
 } from "lucide-react";
+import { motion } from "framer-motion";
+import CountUp from "react-countup";
 
 const AllCoursesPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -43,76 +45,64 @@ const AllCoursesPage = () => {
 
   const courses = [
     {
-      id: 1,
-      title: "Foundations of Sanskrit Vyakaran (Level 1)",
-      category: "Vyakarana (Grammar)",
+      id: 101,
+      title: "Shlok",
+      category: "Sahitya (Literature)",
       instructor: "Acharya Sharma",
-      duration: "12 Weeks",
+      duration: "6 Weeks",
       level: "Beginner",
       mode: "ONLINE",
-      price: "4,999",
+      price: "2,499",
       image:
-        "https://images.unsplash.com/photo-1544640808-32ca72ac7f37?auto=format&fit=crop&q=80&w=600",
+        "https://thumbs.dreamstime.com/b/antique-literature-collection-old-fashioned-wisdom-preserved-generative-ai-antique-literature-collection-old-fashioned-wisdom-274867858.jpg",
     },
     {
-      id: 2,
-      title: "Mandukya Upanishad Deep Dive",
-      category: "Veda & Upanishad",
-      instructor: "Swami Jnananda",
+      id: 102,
+      title: "Spoken Sanskrit (Level-1)",
+      category: "Language",
+      instructor: "Vidushi Aruna",
       duration: "8 Weeks",
-      level: "Intermediate",
+      level: "Beginner",
       mode: "LIVE",
-      price: "6,499",
+      price: "3,999",
       image:
-        "https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&q=80&w=600",
+        "https://tse2.mm.bing.net/th/id/OIP.aO6k2XyBjXEcWju-JEOo_QHaE7?pid=Api&P=0&h=180",
     },
     {
-      id: 3,
-      title: "Kalidasa's Meghaduta: Aesthetics",
-      category: "Sahitya (Literature)",
+      id: 103,
+      title: "Vyakarana Shastra",
+      category: "Vyakarana (Grammar)",
       instructor: "Dr. Meenakshi",
-      duration: "6 Weeks",
-      level: "Advanced",
+      duration: "12 Weeks",
+      level: "Intermediate",
       mode: "ONLINE",
-      price: "3,200",
+      price: "5,999",
       image:
-        "https://images.unsplash.com/photo-1516410529446-2c777cb7366d?auto=format&fit=crop&q=80&w=600",
+        "https://i.pinimg.com/736x/6a/3a/3c/6a3a3c4378419743ff09e29c6d4796bc.jpg",
     },
     {
-      id: 4,
-      title: "Sanskrit 101: Foundation",
+      id: 104,
+      title: "UGC NET",
+      category: "Language",
+      instructor: "Swami Jnananda",
+      duration: "16 Weeks",
+      level: "Advanced",
+      mode: "RECORDED",
+      price: "7,499",
+      image:
+        "https://i.pinimg.com/736x/19/6c/f4/196cf4706012f8407a08c0cf7db51339.jpg",
+    },
+    {
+      id: 105,
+      title: "BA",
       category: "Language",
       instructor: "Acharya Raghav",
-      duration: "16 Weeks",
-      level: "Beginner",
-      mode: "RECORDED",
-      price: "2,999",
-      image:
-        "https://images.unsplash.com/photo-1502136969935-8d8eef54d77b?auto=format&fit=crop&q=80&w=600",
-    },
-    {
-      id: 5,
-      title: "Patanjali's Yoga Sutras",
-      category: "Yoga & Ayurveda",
-      instructor: "Vidushi Aruna",
-      duration: "10 Weeks",
+      duration: "24 Weeks",
       level: "Intermediate",
       mode: "ONLINE",
-      price: "5,500",
+      price: "9,999",
       image:
-        "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=600",
-    },
-    {
-      id: 6,
-      title: "Deciphering Ancient Scripts",
-      category: "Darshana (Philosophy)",
-      instructor: "Dr. S. Murthy",
-      duration: "14 Weeks",
-      level: "Advanced",
-      mode: "LIVE",
-      price: "7,800",
-      image:
-        "https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?auto=format&fit=crop&q=80&w=600",
+        "https://i.pinimg.com/736x/63/74/4f/63744f0c869b1b9b3095eccdb91daa1d.jpg",
     },
   ];
 
@@ -174,8 +164,7 @@ const AllCoursesPage = () => {
     levelFilter.length > 0 ||
     durationFilter.length > 0;
 
-  const parsePrice = (p) =>
-    Number(String(p).replace(/[^0-9]/g, "")) || 0;
+  const parsePrice = (p) => Number(String(p).replace(/[^0-9]/g, "")) || 0;
 
   const parseDurationWeeks = (d) => {
     const s = String(d).toLowerCase();
@@ -199,12 +188,14 @@ const AllCoursesPage = () => {
         break;
       case "durationAsc":
         arr.sort(
-          (a, b) => parseDurationWeeks(a.duration) - parseDurationWeeks(b.duration),
+          (a, b) =>
+            parseDurationWeeks(a.duration) - parseDurationWeeks(b.duration),
         );
         break;
       case "durationDesc":
         arr.sort(
-          (a, b) => parseDurationWeeks(b.duration) - parseDurationWeeks(a.duration),
+          (a, b) =>
+            parseDurationWeeks(b.duration) - parseDurationWeeks(a.duration),
         );
         break;
       default:
@@ -213,7 +204,10 @@ const AllCoursesPage = () => {
     return arr;
   }, [filteredCourses, sortBy]);
 
-  const totalPages = Math.max(1, Math.ceil(sortedCourses.length / itemsPerPage));
+  const totalPages = Math.max(
+    1,
+    Math.ceil(sortedCourses.length / itemsPerPage),
+  );
   const safePage = Math.min(currentPage, totalPages);
   const paginatedCourses = sortedCourses.slice(
     (safePage - 1) * itemsPerPage,
@@ -232,7 +226,12 @@ const AllCoursesPage = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#1E2A1E] via-[#1E2A1E]/70 to-transparent"></div>
 
-          <div className="relative z-10 h-full flex flex-col justify-center px-8 lg:px-16">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="relative z-10 h-full flex flex-col justify-center px-8 lg:px-16"
+          >
             <div className="flex items-center gap-3 mb-5">
               <div className="h-[1px] w-6 bg-[#c9a84e]"></div>
               <span className="text-[13px] font-semibold uppercase tracking-widest text-[#c9a84e]">
@@ -250,13 +249,18 @@ const AllCoursesPage = () => {
               Bridge ancient heritage with modern structural analysis through
               our curated Shastra archives and expert-led pathways.
             </p>
-          </div>
+          </motion.div>
         </div>
       </header>
 
       {/* ================= SEARCH BAR (BELOW HERO) ================= */}
       <div className="px-6 lg:px-10 max-w-screen-2xl mx-auto -mt-10 relative z-30">
-        <div className="bg-[#FBF4E2] rounded-2xl shadow-lg border border-[#EDE4CF] p-4 flex flex-col lg:flex-row lg:items-center gap-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="bg-[#FBF4E2] rounded-2xl shadow-lg border border-[#EDE4CF] p-4 flex flex-col lg:flex-row lg:items-center gap-4"
+        >
           {/* Search Input */}
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
@@ -295,7 +299,7 @@ const AllCoursesPage = () => {
               Filters
             </button>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       <div className="px-4 lg:px-10 max-w-screen-2xl mx-auto mt-12 grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-10">
@@ -494,7 +498,11 @@ const AllCoursesPage = () => {
           </div>
 
           {paginatedCourses.length > 0 ? (
-            <div
+            <motion.div
+              key={view}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
               className={
                 view === "grid"
                   ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
@@ -502,12 +510,19 @@ const AllCoursesPage = () => {
               }
             >
               {paginatedCourses.map((course) => (
-                <div
+                <motion.div
                   key={course.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
                   className={`group bg-white rounded-2xl overflow-hidden shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-2 border border-[#E2D4A6]/40 ${
-                    view === "list" ? "flex" : "flex flex-col"
+                    view === "list"
+                      ? "flex flex-col sm:flex-row"
+                      : "flex flex-col"
                   } h-full`}
                 >
+                  {/* Image Container */}
                   <div
                     className={
                       view === "list"
@@ -518,14 +533,18 @@ const AllCoursesPage = () => {
                     <img
                       src={course.image}
                       alt={course.title}
-                      className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
+
+                    {/* Mode Badge */}
                     <div className="absolute top-4 left-4">
                       <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-[#74271E] text-[10px] font-bold uppercase tracking-wider rounded-lg shadow-sm">
                         {course.mode}
                       </span>
                     </div>
+
+                    {/* Level Badge */}
                     <div className="absolute bottom-4 left-4">
                       <span className="px-3 py-1 bg-[#74271E]/90 text-white text-[10px] font-bold uppercase tracking-wider rounded-lg shadow-sm">
                         {course.level}
@@ -533,29 +552,39 @@ const AllCoursesPage = () => {
                     </div>
                   </div>
 
+                  {/* Content Container */}
                   <div
                     className={`p-6 flex flex-col flex-grow bg-[#FDFCF7]/50 group-hover:bg-white transition-colors ${
                       view === "list" ? "sm:w-2/3" : ""
                     }`}
                   >
-                    {/* <div className="flex items-center gap-2 mb-1.5">
-                      <div className="w-1 h-1 rounded-full bg-[#B38B3F]"></div>
-                      <span className="text-[11px] font-semibold text-stone-500">{course.instructor}</span>
-                    </div> */}
+                    {/* Category */}
                     <div className="flex items-center gap-2 mb-3">
                       <BookOpen className="w-3.5 h-3.5 text-[#B38B3F]" />
                       <span className="text-[11px] font-bold text-[#8B6D31] uppercase tracking-wide">
                         {course.category}
                       </span>
                     </div>
+
+                    {/* Title */}
                     <h3 className="text-xl font-bold text-[#2D2417] leading-snug mb-3 group-hover:text-[#74271E] transition-colors">
                       {course.title}
                     </h3>
-                    <p className="text-sm text-stone-600 leading-relaxed mb-2 line-clamp-3">
+
+                    {/* Description */}
+                    <p className="text-sm text-stone-600 leading-relaxed mb-4 line-clamp-3">
                       Deep study into {course.category}. A {course.duration}{" "}
-                      immersive journey for {course.level} seekers.
+                      immersive journey for {course.level} seekers guided by{" "}
+                      {course.instructor}.
                     </p>
 
+                    {/* Instructor (Optional - can be shown if needed) */}
+                    <div className="flex items-center gap-2 mb-4 text-xs text-stone-500">
+                      <span className="font-medium">Instructor:</span>
+                      <span>{course.instructor}</span>
+                    </div>
+
+                    {/* Course Details */}
                     <div className="mt-auto">
                       <div className="flex items-center justify-between py-4 border-y border-[#E2D4A6]/30 mb-5">
                         <div className="flex items-center gap-1.5">
@@ -571,78 +600,88 @@ const AllCoursesPage = () => {
                           </span>
                         </div>
                       </div>
+
+                      {/* Price and CTA */}
                       <div className="flex items-center justify-between">
                         <span className="text-lg font-bold text-[#74271E] tabular-nums tracking-tight">
                           ₹{course.price}
                         </span>
                         <Link
-                          to={`/coursedetail`}
-                          state={{ course: course }}
-                          className="flex items-center  gap-2 px-3 py-2 bg-[#c9a84e] text-white text-[10px] font-bold uppercase tracking-wider rounded-md transition-all duration-300 hover:bg-[#b38b3f] shadow-sm active:scale-95 group/link"
+                          to={`/coursedetail/${course.id}`}
+                          state={{ course }}
+                          className="flex items-center gap-2 px-4 py-2.5 bg-[#c9a84e] text-white text-xs font-bold uppercase tracking-wider rounded-md transition-all duration-300 hover:bg-[#b38b3f] shadow-sm hover:shadow-md active:scale-95 group/link"
                         >
-                          Learn More
-                          <ArrowUpRight className="w-3 h-3 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
+                          <span>Learn More</span>
+                          <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
                         </Link>
                       </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           ) : (
-            <div className="py-32 flex flex-col items-center justify-center bg-white border border-[#E2D4A6] rounded-2xl text-center">
-              <div className="w-16 h-16 bg-[#FDFCF7] rounded-full flex items-center justify-center mb-6 border border-[#E2D4A6]">
-                <Search className="w-6 h-6 text-stone-300" />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="py-32 flex flex-col items-center justify-center bg-white border border-[#E2D4A6] rounded-2xl text-center px-6"
+            >
+              <div className="w-20 h-20 bg-[#FDFCF7] rounded-full flex items-center justify-center mb-6 border-2 border-[#E2D4A6]">
+                <Search className="w-8 h-8 text-stone-400" />
               </div>
-              <h3 className="text-2xl font-bold text-[#2D2417] mb-2">
+              <h3 className="text-2xl font-bold text-[#2D2417] mb-3">
                 No Shastras Found
               </h3>
-              <p className="text-stone-500 italic mb-8">
-                Try adjusting your filters to find what you seek.
+              <p className="text-stone-500 mb-8 max-w-md">
+                We couldn't find any courses matching your current filters. Try
+                adjusting your search criteria or explore our other offerings.
               </p>
               <button
                 onClick={resetFilters}
-                className="px-8 py-3 bg-[#74271E] text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all"
+                className="px-8 py-3.5 bg-[#74271E] text-white rounded-xl text-sm font-bold uppercase tracking-widest transition-all hover:bg-[#5a1f17] hover:shadow-lg active:scale-95"
               >
-                Reset All Filters
+                Clear All Filters
+              </button>
+            </motion.div>
+          )}
+
+          {sortedCourses.length > itemsPerPage && (
+            /* --- REFINED PAGINATION --- */
+            <div className="flex justify-center items-center gap-3 mt-16">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={safePage === 1}
+                className="p-3 rounded-xl border border-[#E2D4A6] text-[#8B6D31] hover:bg-white transition-all disabled:opacity-30"
+                aria-label="Previous page"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+                <button
+                  key={n}
+                  onClick={() => setCurrentPage(n)}
+                  className={`w-11 h-11 flex items-center justify-center rounded-xl text-sm font-bold transition-all ${
+                    n === safePage
+                      ? "bg-[#74271E] text-white shadow-xl shadow-[#74271E]/20"
+                      : "text-[#8B6D31] bg-white border border-[#E2D4A6] hover:border-[#B38B3F]"
+                  }`}
+                >
+                  {n}
+                </button>
+              ))}
+              <button
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
+                disabled={safePage === totalPages}
+                className="p-3 rounded-xl border border-[#E2D4A6] text-[#8B6D31] hover:bg-white transition-all disabled:opacity-30"
+                aria-label="Next page"
+              >
+                <ChevronRight className="w-5 h-5" />
               </button>
             </div>
           )}
-
-          {/* --- REFINED PAGINATION --- */}
-          <div className="flex justify-center items-center gap-3 mt-16">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={safePage === 1}
-              className="p-3 rounded-xl border border-[#E2D4A6] text-[#8B6D31] hover:bg-white transition-all disabled:opacity-30"
-              aria-label="Previous page"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-              <button
-                key={n}
-                onClick={() => setCurrentPage(n)}
-                className={`w-11 h-11 flex items-center justify-center rounded-xl text-sm font-bold transition-all ${
-                  n === safePage
-                    ? "bg-[#74271E] text-white shadow-xl shadow-[#74271E]/20"
-                    : "text-[#8B6D31] bg-white border border-[#E2D4A6] hover:border-[#B38B3F]"
-                }`}
-              >
-                {n}
-              </button>
-            ))}
-            <button
-              onClick={() =>
-                setCurrentPage((p) => Math.min(totalPages, p + 1))
-              }
-              disabled={safePage === totalPages}
-              className="p-3 rounded-xl border border-[#E2D4A6] text-[#8B6D31] hover:bg-white transition-all disabled:opacity-30"
-              aria-label="Next page"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
         </main>
       </div>
 
@@ -715,7 +754,11 @@ const AllCoursesPage = () => {
                             type="checkbox"
                             checked={group.state.includes(opt.val)}
                             onChange={() =>
-                              handleToggleFilter(group.state, group.setter, opt.val)
+                              handleToggleFilter(
+                                group.state,
+                                group.setter,
+                                opt.val,
+                              )
                             }
                             className="peer appearance-none w-5 h-5 border-2 border-[#E2D4A6] rounded-md checked:bg-[#74271E] checked:border-[#74271E] transition-all"
                           />

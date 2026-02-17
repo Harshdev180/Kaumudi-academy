@@ -14,6 +14,7 @@ const SidebarCard = ({ price, courseData }) => {
     "Certificate of Completion",
     "Access to Library & Recordings",
     "Lifetime Discussion Forum Access",
+    "Expert Scholars with Proven Pedagogy & Wisdom",
   ];
 
   useEffect(() => {
@@ -86,7 +87,7 @@ const SidebarCard = ({ price, courseData }) => {
             </div>
           </div>
 
-          <ul className="space-y-10">
+          <ul className="space-y-8">
             {features.map((item, i) => (
               <li
                 key={i}
@@ -107,7 +108,7 @@ const SidebarCard = ({ price, courseData }) => {
         </div>
 
         {/* Buttons Section with Spacing and Data Passing */}
-        <div className="flex flex-col space-y-12 mt-auto"> 
+        <div className="flex flex-col space-y-6 mt-auto"> 
           <Link to="/courseBuy" 
           className="w-full"
           state={{ 
@@ -119,9 +120,11 @@ const SidebarCard = ({ price, courseData }) => {
             mode: "Live Online" 
           }}
           >
-            <button className="w-full bg-[#631D11] text-white py-5 rounded-2xl font-bold text-xl hover:text-[#631D11] hover:bg-[#d6b15c] transition-all flex items-center justify-center gap-2 shadow-lg">
-              Enroll Now <span className="text-2xl">→</span>
-            </button>
+            <div className="flex justify-center w-full">
+              <button className="w-[80%] bg-[#631D11] text-white px-8 py-3 rounded-2xl font-bold text-xl hover:text-[#631D11] hover:bg-[#d6b15c] transition-all flex items-center justify-center gap-2 shadow-lg">
+                Enroll Now <span className="text-2xl">→</span>
+              </button>
+            </div>  
           </Link>
           
           {/* Inquiry Link with State Data */}
@@ -137,9 +140,11 @@ const SidebarCard = ({ price, courseData }) => {
               level: courseData?.level || "Beginner"
             }}
           >
-            <button className="w-full bg-[#631D11] text-white py-5 rounded-2xl font-bold text-xl hover:text-[#631D11] hover:bg-[#d6b15c] transition-all flex items-center justify-center gap-2 shadow-lg">
+            <div className="flex justify-center w-full">
+            <button className="w-[80%] bg-[#631D11] text-white px-8 py-3 rounded-2xl font-bold text-xl hover:text-[#631D11] hover:bg-[#d6b15c] transition-all flex items-center justify-center gap-2 shadow-lg">
               Inquiry <span className="text-2xl">→</span>
             </button>
+          </div>
           </Link>
         </div>
       </div>

@@ -7,11 +7,20 @@ import Coupon from "../models/Coupon.model.js";
 import { createEnrollment } from "./enrollment.controller.js";
 import Enrollment from "../models/Enrollment.model.js";
 
+// Helper function price clean karne ke liye (6,499 -> 6499)
+const sanitizePrice = (price) => {
+    if (typeof price === "number") return price;
+    return Number(price.toString().replace(/[^0-9.]/g, ""));
+};
+
 export const createRazorpayOrder = async (req, res) => {
+  console.log("USER FROM AUTH:", req.user); // Check karein kya user ID aa rahi hai
+  console.log("BODY DATA:", req.body);
   try {
+    
     const { courseId, couponCode } = req.body;
 
-    
+    // 1. Course ko find karein
     const course = await Course.findById(courseId);
     if (!course || course.status !== "ACTIVE") {
       return res.status(404).json({
@@ -20,53 +29,46 @@ export const createRazorpayOrder = async (req, res) => {
       });
     }
 
+    // 2. Price ko clean karein (Comma hatayein aur Number banayein)
+    // '6,499' -> 6499
+    const originalAmount = Number(course.price.toString().replace(/,/g, ''));
+    
+    if (isNaN(originalAmount)) {
+      throw new Error("Invalid price format in database");
+    }
 
-const alreadyEnrolled = await Enrollment.findOne({
-  student: req.user._id,
-  course: courseId
-});
-
-if (alreadyEnrolled) {
-  return res.status(400).json({
-    success: false,
-    message: "You are already enrolled in this course"
-  });
-}
-
-  
-    const originalAmount = course.price;
     let discountAmount = 0;
     let appliedCoupon = null;
 
-   
-    if (couponCode) {
+    // 3. Coupon Logic
+    if (couponCode && couponCode.trim() !== "") {
       const coupon = await Coupon.findOne({
-        code: couponCode,
+        code: couponCode.toUpperCase(),
         isActive: true,
         startTime: { $lte: new Date() },
         endTime: { $gte: new Date() }
       });
 
       if (coupon) {
-        discountAmount =
-          (originalAmount * coupon.discountPercentage) / 100;
+        discountAmount = (originalAmount * coupon.discountPercentage) / 100;
         appliedCoupon = coupon.code;
       }
     }
 
-    const finalAmount = Math.max(
-      originalAmount - discountAmount,
-    
-    );
+    const finalAmount = Math.max(originalAmount - discountAmount, 0);
 
- 
-    const order = await razorpay.orders.create({
-      amount: Math.round(finalAmount * 100), 
+    // 4. Razorpay Order Create karein
+    const options = {
+      amount: Math.round(finalAmount * 100), // Paise mein convert karein
       currency: "INR",
       receipt: `rcpt_${Date.now()}`
+    };
 
-    });
+    console.log("Sending to Razorpay:", options); // Debugging ke liye
 
+    const order = await razorpay.orders.create(options);
+
+    // 5. Transaction Create karein
     const payment = await Transaction.create({
       user: req.user._id,
       course: courseId,
@@ -85,104 +87,278 @@ if (alreadyEnrolled) {
       currency: order.currency,
       paymentId: payment._id
     });
+
   } catch (error) {
     console.error("CREATE ORDER ERROR:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to create order"
+      message: error.message || "Failed to create order"
     });
   }
 };
-
-
-
 
 export const verifyRazorpayPayment = async (req, res) => {
-  try {
-    const {
-      razorpayOrderId,
-      razorpayPaymentId,
-      razorpaySignature
-    } = req.body;
+    try {
+        const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body;
 
-    const body = razorpayOrderId + "|" + razorpayPaymentId;
+        const body = razorpayOrderId + "|" + razorpayPaymentId;
 
-    const expectedSignature = crypto
-      .createHmac("sha256", config.RAZORPAY_SECRET)
-      .update(body)
-      .digest("hex");
+        const expectedSignature = crypto
+            .createHmac("sha256", config.RAZORPAY_SECRET)
+            .update(body)
+            .digest("hex");
 
-    if (expectedSignature !== razorpaySignature) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid payment signature"
-      });
+        if (expectedSignature !== razorpaySignature) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid payment signature"
+            });
+        }
+
+        const transaction = await Transaction.findOne({ razorpayOrderId });
+
+        if (!transaction) {
+            return res.status(404).json({
+                success: false,
+                message: "Transaction not found"
+            });
+        }
+
+        transaction.status = "SUCCESS";
+        transaction.razorpayPaymentId = razorpayPaymentId;
+        transaction.razorpaySignature = razorpaySignature;
+        await transaction.save();
+
+        // Enrollment trigger
+        await createEnrollment({
+            studentId: transaction.user,
+            courseId: transaction.course,
+            paymentId: transaction._id
+        });
+
+        return res.json({
+            success: true,
+            message: "Payment verified successfully"
+        });
+    } catch (error) {
+        console.error("VERIFY PAYMENT ERROR:", error);
+        return res.status(500).json({ success: false, message: "Verification failed" });
     }
-
-    const transaction = await Transaction.findOne({
-      razorpayOrderId
-    });
-
-    if (!transaction) {
-      return res.status(404).json({
-        success: false,
-        message: "Transaction not found"
-      });
-    }
-
-    transaction.status = "SUCCESS";
-    transaction.razorpayPaymentId = razorpayPaymentId;
-    transaction.razorpaySignature = razorpaySignature;
-
-    await transaction.save();
-
-await createEnrollment({
-  studentId: transaction.user,
-  courseId: transaction.course,
-  paymentId: transaction._id
-});
-
-    res.json({
-      success: true,
-      message: "Payment verified successfully"
-    });
-  } catch (error) {
-    console.error("VERIFY PAYMENT ERROR:", error);
-    res.status(500).json({ success: false });
-  }
 };
-
 
 export const fakeVerifyPayment = async (req, res) => {
-  try {
-    const { razorpayOrderId } = req.body;
+    try {
+        const { razorpayOrderId } = req.body;
+        const transaction = await Transaction.findOne({ razorpayOrderId });
 
-    const transaction = await Transaction.findOne({
-      razorpayOrderId
-    });
+        if (!transaction) {
+            return res.status(404).json({ success: false, message: "Transaction not found" });
+        }
 
-    if (!transaction) {
-      return res.status(404).json({
-        success: false,
-        message: "Transaction not found"
-      });
+        transaction.status = "SUCCESS";
+        transaction.razorpayPaymentId = "FAKE_PAYMENT_ID_" + Date.now();
+        transaction.razorpaySignature = "FAKE_SIGNATURE";
+        await transaction.save();
+
+        await createEnrollment({
+            studentId: transaction.user,
+            courseId: transaction.course,
+            paymentId: transaction._id
+        });
+
+        return res.json({ success: true, message: "Fake payment verified" });
+    } catch (error) {
+        return res.status(500).json({ success: false });
     }
-
-    transaction.status = "SUCCESS";
-    transaction.razorpayPaymentId = "FAKE_PAYMENT_ID";
-    transaction.razorpaySignature = "FAKE_SIGNATURE";
-
-    await transaction.save();
-await createEnrollment({
-  studentId: transaction.user,
-  courseId: transaction.course,
-  paymentId: transaction._id
-});
-    res.json({
-      success: true,
-      message: "Fake payment verified (testing only)"
-    });
-  } catch (error) {
-    res.status(500).json({ success: false });
-  }
 };
+
+
+
+// import razorpay from "../configs/razorpay.js";
+// import Transaction from "../models/Transaction.model.js";
+// import crypto from "crypto";
+// import { config } from "../configs/env.js";
+// import Course from "../models/Course.model.js";
+// import Coupon from "../models/Coupon.model.js";
+// import { createEnrollment } from "./enrollment.controller.js";
+// import Enrollment from "../models/Enrollment.model.js";
+
+// export const createRazorpayOrder = async (req, res) => {
+//   try {
+//     const { courseId, couponCode } = req.body;
+
+    
+//     const course = await Course.findById(courseId);
+//     if (!course || course.status !== "ACTIVE") {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Course not available"
+//       });
+//     }
+
+
+// const alreadyEnrolled = await Enrollment.findOne({
+//   student: req.user._id,
+//   course: courseId
+// });
+
+// if (alreadyEnrolled) {
+//   return res.status(400).json({
+//     success: false,
+//     message: "You are already enrolled in this course"
+//   });
+// }
+
+  
+//     const originalAmount = course.price;
+//     let discountAmount = 0;
+//     let appliedCoupon = null;
+
+   
+//     if (couponCode) {
+//       const coupon = await Coupon.findOne({
+//         code: couponCode,
+//         isActive: true,
+//         startTime: { $lte: new Date() },
+//         endTime: { $gte: new Date() }
+//       });
+
+//       if (coupon) {
+//         discountAmount =
+//           (originalAmount * coupon.discountPercentage) / 100;
+//         appliedCoupon = coupon.code;
+//       }
+//     }
+
+//     const finalAmount = Math.max(
+//       originalAmount - discountAmount,
+    
+//     );
+
+ 
+//     const order = await razorpay.orders.create({
+//       amount: Math.round(finalAmount * 100), 
+//       currency: "INR",
+//       receipt: `rcpt_${Date.now()}`
+
+//     });
+
+//     const payment = await Transaction.create({
+//       user: req.user._id,
+//       course: courseId,
+//       originalAmount,
+//       discountAmount,
+//       finalAmount,
+//       couponCode: appliedCoupon,
+//       razorpayOrderId: order.id,
+//       status: "PENDING"
+//     });
+
+//     res.json({
+//       success: true,
+//       orderId: order.id,
+//       amount: order.amount,
+//       currency: order.currency,
+//       paymentId: payment._id
+//     });
+//   } catch (error) {
+//     console.error("CREATE ORDER ERROR:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Failed to create order"
+//     });
+//   }
+// };
+
+
+
+
+// export const verifyRazorpayPayment = async (req, res) => {
+//   try {
+//     const {
+//       razorpayOrderId,
+//       razorpayPaymentId,
+//       razorpaySignature
+//     } = req.body;
+
+//     const body = razorpayOrderId + "|" + razorpayPaymentId;
+
+//     const expectedSignature = crypto
+//       .createHmac("sha256", config.RAZORPAY_SECRET)
+//       .update(body)
+//       .digest("hex");
+
+//     if (expectedSignature !== razorpaySignature) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid payment signature"
+//       });
+//     }
+
+//     const transaction = await Transaction.findOne({
+//       razorpayOrderId
+//     });
+
+//     if (!transaction) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Transaction not found"
+//       });
+//     }
+
+//     transaction.status = "SUCCESS";
+//     transaction.razorpayPaymentId = razorpayPaymentId;
+//     transaction.razorpaySignature = razorpaySignature;
+
+//     await transaction.save();
+
+// await createEnrollment({
+//   studentId: transaction.user,
+//   courseId: transaction.course,
+//   paymentId: transaction._id
+// });
+
+//     res.json({
+//       success: true,
+//       message: "Payment verified successfully"
+//     });
+//   } catch (error) {
+//     console.error("VERIFY PAYMENT ERROR:", error);
+//     res.status(500).json({ success: false });
+//   }
+// };
+
+
+// export const fakeVerifyPayment = async (req, res) => {
+//   try {
+//     const { razorpayOrderId } = req.body;
+
+//     const transaction = await Transaction.findOne({
+//       razorpayOrderId
+//     });
+
+//     if (!transaction) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Transaction not found"
+//       });
+//     }
+
+//     transaction.status = "SUCCESS";
+//     transaction.razorpayPaymentId = "FAKE_PAYMENT_ID";
+//     transaction.razorpaySignature = "FAKE_SIGNATURE";
+
+//     await transaction.save();
+// await createEnrollment({
+//   studentId: transaction.user,
+//   courseId: transaction.course,
+//   paymentId: transaction._id
+// });
+//     res.json({
+//       success: true,
+//       message: "Fake payment verified (testing only)"
+//     });
+//   } catch (error) {
+//     res.status(500).json({ success: false });
+//   }
+// };

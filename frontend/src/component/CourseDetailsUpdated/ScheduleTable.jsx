@@ -1,7 +1,6 @@
 import React from 'react';
 
 const ScheduleTable = ({ scheduleData }) => {
-  // Agar props se data aaye toh wo, nahi toh default data
   const batches = scheduleData || [
     {
       type: "Weekday Batch ",
@@ -24,36 +23,40 @@ const ScheduleTable = ({ scheduleData }) => {
         <h2 className="text-[28px] font-bold text-[#74271E]">Batch Schedule</h2>
       </div>
 
-      <div className="bg-white rounded-[20px] overflow-hidden shadow-xl border border-[#E8DFD3]">
-        <table className="w-full text-left border-collapse">
-          <thead className="bg-[#D9C5B2] text-[#631D11]">
-            <tr>
-              <th className="p-8 text-[16px] font-bold tracking-tight">Batch Type</th>
-              <th className="p-8 text-[16px] font-bold tracking-tight">Days</th>
-              <th className="p-8 text-[16px] font-bold tracking-tight">Time (IST)</th>
-              <th className="p-8 text-[16px] font-bold tracking-tight">Start Date</th>
-            </tr>
-          </thead>
-          
-          <tbody className="divide-y divide-[#F2E8CF]">
-            {batches.map((batch, idx) => (
-              <tr key={idx} className="hover:bg-[#F9F5F0] transition-colors">
-                <td className="p-8 font-bold text-[#631D11] text-[16px] max-w-[160px] leading-tight">
-                  {batch.type}
-                </td>
-                <td className="p-8 text-[#3D1A16] text-[15px] font-medium">
-                  {batch.days}
-                </td>
-                <td className="p-8 text-[#3D1A16] text-[15px] font-medium leading-relaxed">
-                  {batch.time}
-                </td>
-                <td className="p-8 text-[#3D1A16] text-[15px] font-bold">
-                  {batch.Date}
-                </td>
+      <div className="bg-white rounded-[20px] shadow-xl border border-[#E8DFD3] overflow-hidden">
+        {/* FIX: Is div ko add kiya gaya hai table ko scrollable banane ke liye */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[600px]"> 
+            {/* min-w-[600px] ensure karta hai ki columns squeeze na hon aur sub dikhayi den */}
+            <thead className="bg-[#D9C5B2] text-[#631D11]">
+              <tr>
+                <th className="p-8 text-[16px] font-bold tracking-tight whitespace-nowrap">Batch Type</th>
+                <th className="p-8 text-[16px] font-bold tracking-tight whitespace-nowrap">Days</th>
+                <th className="p-8 text-[16px] font-bold tracking-tight whitespace-nowrap">Time (IST)</th>
+                <th className="p-8 text-[16px] font-bold tracking-tight whitespace-nowrap">Start Date</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            
+            <tbody className="divide-y divide-[#F2E8CF]">
+              {batches.map((batch, idx) => (
+                <tr key={idx} className="hover:bg-[#F9F5F0] transition-colors">
+                  <td className="p-8 font-bold text-[#631D11] text-[16px] leading-tight whitespace-nowrap">
+                    {batch.type}
+                  </td>
+                  <td className="p-8 text-[#3D1A16] text-[15px] font-medium whitespace-nowrap">
+                    {batch.days}
+                  </td>
+                  <td className="p-8 text-[#3D1A16] text-[15px] font-medium leading-relaxed whitespace-nowrap">
+                    {batch.time}
+                  </td>
+                  <td className="p-8 text-[#3D1A16] text-[15px] font-bold whitespace-nowrap">
+                    {batch.Date}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
   );
