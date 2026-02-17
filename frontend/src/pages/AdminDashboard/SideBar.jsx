@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   BookOpen,
   LayoutDashboard,
@@ -7,166 +7,188 @@ import {
   ChevronLeft,
   ChevronRight,
   UserRoundPlus,
+  LogOut,
+  UserRoundPen,
 } from "lucide-react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 function Sidebar({ collapsed, setCollapsed }) {
+
   const location = useLocation();
+  const navigate = useNavigate();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const confirmLogout = () => {
+    localStorage.removeItem("adminToken");
+    localStorage.removeItem("adminData");
+    sessionStorage.clear();
+    navigate("/admin-login", { replace: true });
+  };
 
   const menuItems = [
-    {
-      path: "/admin/dashboard",
-      label: "Dashboard",
-      icon: <LayoutDashboard size={18} />,
-    },
+    { path: "/admin/dashboard", label: "Dashboard", icon: <LayoutDashboard size={18} /> },
     { path: "/admin/lead", label: "Lead Management", icon: <Users size={18} /> },
     { path: "/admin/course", label: "Courses", icon: <BookOpen size={18} /> },
     { path: "/admin/coupon", label: "Coupon", icon: <Tags size={18} /> },
-    { path: "/admin/staff-salary", label: "Staff", icon: <UserRoundPlus size={18} /> },
+    { path: "/admin/staff-salary", label: "Staff Management", icon: <UserRoundPlus size={18} /> },
+    { path: "/admin/student-management", label: "Student Management", icon: <UserRoundPen size={18} /> },
   ];
 
   return (
-    <div
-      className={`
-        ${collapsed ? "w-20" : "w-72"}
-        transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
-        bg-[#FBF4E2] text-[#6b1d14]
-        backdrop-blur-xl border-r border-slate-200/50
-        flex flex-col h-screen sticky top-0 z-50 relative
-      `}
-    >
-      {/* 🔥 Arrow Control */}
-      <div className="absolute top-4 right-3 z-50">
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="text-[#6b1d14]/70 hover:text-[#6b1d14]
-          transition-all duration-300 hover:scale-110"
-        >
-          {collapsed ? (
-            <ChevronRight className="transition-transform duration-500" size={22} />
-          ) : (
-            <ChevronLeft className="transition-transform duration-500" size={22} />
-          )}
-        </button>
-      </div>
-
-      {/* Logo Section */}
+    <>
       <div
-        className={`
-          border-b border-slate-200/50 flex items-center
-          ${collapsed ? "pt-16 pb-6 justify-center" : "p-6"}
-          transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
-        `}
+        className={`${collapsed ? "w-20" : "w-72"}  transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]  bg-[#FBF4E2] text-[#6b1d14]  backdrop-blur-xl border-r border-slate-200/50  flex flex-col h-screen sticky top-0 z-50 relative`}
       >
-        <div className="flex items-center space-x-3">
-          <div
-            className="
-              w-10 h-10 bg-[#D4AF37] rounded-xl
-              flex items-center justify-center shadow-lg
-              flex-shrink-0
-              transition-transform duration-500
-              hover:scale-105
-            "
-          >
-            <BookOpen className="text-[#6b1d14]" />
-          </div>
 
-          {/* Smooth fade + slide */}
-          <div
-            className={`
-              overflow-hidden whitespace-nowrap
-              transition-all duration-500
-              ${collapsed
-                ? "opacity-0 translate-x-[-10px] w-0"
-                : "opacity-100 translate-x-0 w-auto"}
-            `}
-          >
-            <h1 className="font-serif font-extrabold text-2xl text-[#6b1d14] tracking-normal">
-              KAUMUDI
-            </h1>
-            <p className="text-[10px] text-[#6b1d14]/70 uppercase font-bold tracking-widest">
-              Sanskrit Academy
-            </p>
-          </div>
+        {/* Arrow Toggle */}
+        <div className="absolute top-4 right-3 z-50">
+          <button onClick={() => setCollapsed(!collapsed)}>
+            {collapsed ? <ChevronRight size={22} /> : <ChevronLeft size={22} />}
+          </button>
         </div>
-      </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-        {menuItems.map((item) => {
-          const isActive = location.pathname === item.path;
+        {/* LOGO */}
+        <div
+          className={`border-b border-slate-200/50 flex items-center
+          ${collapsed ? "pt-16 pb-6 justify-center" : "p-6"}`}
+        >
+          <BookOpen className="text-[#6b1d14]" />
+          {!collapsed && (
+            <div className="ml-3">
+              <h1 className="font-serif font-extrabold text-2xl">KAUMUDI</h1>
+              <p className="text-[10px] uppercase font-bold tracking-widest">
+                Sanskrit Academy
+              </p>
+            </div>
+          )}
+        </div>
 
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`
-                flex items-center group relative px-4 py-3 rounded-2xl
-                transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
-                ${isActive
-                  ? "bg-[#6b1d14] text-white shadow-md shadow-[#6b1d14]/20"
-                  : "hover:bg-[#F3E6C9] text-[#6b1d14]/70"}
-              `}
-            >
-              <div
-                className={`
-                  flex items-center justify-center
-                  transition-all duration-300
-                  ${isActive ? "text-[#D4AF37]" : "group-hover:text-[#6b1d14]"}
-                `}
+        {/* NAVIGATION */}
+        <nav
+          className={`flex-1 p-4 space-y-2 ${collapsed ? "overflow-hidden" : "overflow-y-auto"
+            }`}
+        >
+          {menuItems.map((item) => {
+            const isActive = location.pathname === item.path;
+
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={` relative group flex items-center px-4 py-3 rounded-2xl transition-all duration-300 ${isActive ? "bg-[#6b1d14] text-[#D4AF37]" : "hover:bg-[#F3E6C9] text-[#6b1d14]/70"}`}
               >
-                {item.icon}
-              </div>
+                {/* ICON */}
+                <div
+                  className={`${isActive ? "text-[#D4AF37]" : "group-hover:text-[#6b1d14]"
+                    }`}
+                >
+                  {item.icon}
+                </div>
 
-              {/* Smooth text animation */}
-              <span
-                className={`
-                  ml-4 text-sm font-semibold
-                  transition-all duration-500
-                  ${collapsed
-                    ? "opacity-0 translate-x-[-8px] w-0"
-                    : "opacity-100 translate-x-0 w-auto"}
-                  ${isActive ? "text-white" : "text-[#6b1d14]/80"}
-                `}
-              >
-                {item.label}
-              </span>
+                {/* LABEL */}
+                {!collapsed && (
+                  <span
+                    className={`ml-4 text-sm font-semibold ${isActive ? "text-[#D4AF37]" : ""
+                      }`}
+                  >
+                    {item.label}
+                  </span>
+                )}
 
-              {isActive && !collapsed && (
-                <div className="absolute right-4 w-1.5 h-1.5 bg-[#D4AF37] rounded-full shadow-[0_0_8px_#D4AF37]" />
-              )}
-            </Link>
-          );
-        })}
-      </nav>
+                {/* GOLD ACTIVE DOT */}
+                {isActive && !collapsed && (
+                  <div className="absolute right-4 w-1.5 h-1.5 bg-[#D4AF37] rounded-full shadow-[0_0_8px_#D4AF37]" />
+                )}
 
-      {/* User Profile */}
-      <div
-        className={`
-          transition-all duration-500
-          ${collapsed ? "opacity-0 translate-y-4 pointer-events-none" : "opacity-100 translate-y-0"}
-        `}
-      >
+                {/* TOOLTIP WHEN COLLAPSED */}
+                {collapsed && (
+                  <div
+                    className=" absolute left-[70px] px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-[#6b1d14] text-white shadow-lg opacity-0 translate-x-[-6px] group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 pointer-events-none z-[9999]">
+                    {item.label}
+                  </div>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* PROFILE + LOGOUT */}
         {!collapsed && (
-          <div className="p-4 border-t border-slate-200/50 bg-[#F3E6C9]/30">
-            <div className="flex items-center space-x-3 p-2 rounded-xl">
-              <div className="w-10 h-10 rounded-full bg-[#D4AF37]/20 border-2 border-[#D4AF37] flex items-center justify-center font-bold text-[#6b1d14]">
+          <div className="p-4 border-t border-slate-200/50 bg-[#F3E6C9]/30 space-y-3">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-full bg-[#D4AF37]/20 border-2 border-[#D4AF37] flex items-center justify-center font-bold">
                 AS
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-[#6b1d14] truncate">
-                  Ajay Sharma
-                </p>
-                <p className="text-[10px] text-[#6b1d14]/60 uppercase font-black">
+
+              <div>
+                <p className="text-sm font-bold">Ajay Sharma</p>
+                <p className="text-[10px] uppercase font-black text-[#6b1d14]/60">
                   Administrator
                 </p>
               </div>
             </div>
+
+            <button
+              onClick={() => setShowLogoutModal(true)}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl
+              text-red-600 hover:bg-red-50 transition-all font-semibold text-sm"
+            >
+              <LogOut size={18} />
+              Logout
+            </button>
           </div>
         )}
       </div>
-    </div>
+
+      {/* LOGOUT MODAL */}
+      <AnimatePresence>
+        {showLogoutModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowLogoutModal(false)}
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[999]"
+            />
+
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[360px] bg-[#FBF4E2] rounded-3xl shadow-2xl z-[1000] p-6 text-center"
+            >
+              <h2 className="text-xl font-bold text-[#6b1d14] mb-2">
+                Confirm Logout
+              </h2>
+
+              <p className="text-sm text-[#856966] mb-6">
+                Are you sure you want to logout from admin panel?
+              </p>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowLogoutModal(false)}
+                  className="flex-1 py-3 rounded-xl bg-[#EFE3D5]"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={confirmLogout}
+                  className="flex-1 py-3 rounded-xl text-white bg-[#6b1d14]"
+                >
+                  Logout
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
 export default Sidebar;
+
