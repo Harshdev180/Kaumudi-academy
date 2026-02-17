@@ -11,6 +11,10 @@ import testimonialRoutes from "./routes/testimonial.routes.js"
 import studentRoutes from "./routes/student.routes.js"
 import staffRoutes from "./routes/staff.routes.js";
 import adminStudentRoutes from "./routes/adminStudent.routes.js";
+import inquiryRoutes from "./routes/inquiry.routes.js";
+import adminInquiryRoutes from "./routes/adminInquiry.routes.js";
+
+
 
 // import mongoSanitize from "express-mongo-sanitize";
 // import xss from "xss-clean";
@@ -47,7 +51,8 @@ app.use("/api", contactRoutes)
 app.use("/api", studentRoutes)
 app.use("/api", staffRoutes);
 app.use("/api", adminStudentRoutes);
-
+app.use("/api", inquiryRoutes);
+app.use("/api", adminInquiryRoutes);
 
 
 app.use("/health",(_,res)=>{
