@@ -135,15 +135,86 @@ export default function Footer() {
 
             <ul className="space-y-4">
               {[
-                { label: "Shloks", to: "/" },
-                { label: "Spoken Sanskrit", to: "/" },
-                { label: "Vyakaran Shastra", to: "/" },
-                { label: "UGC NET", to: "/" },
-                { label: "B.A.", to: "/" },
+                {
+                  label: "Shloks",
+                  to: "/coursedetail",
+                  state: {
+                    course: {
+                      title: "Shloks Recitation & Meaning",
+                      category: "Sahitya (Literature)",
+                      duration: "6 Weeks",
+                      level: "Beginner",
+                      price: "2,499",
+                      image:
+                        "https://images.unsplash.com/photo-1516410529446-2c777cb7366d?auto=format&fit=crop&q=80&w=800",
+                    },
+                  },
+                },
+                {
+                  label: "Spoken Sanskrit",
+                  to: "/coursedetail",
+                  state: {
+                    course: {
+                      title: "Spoken Sanskrit Fundamentals",
+                      category: "Language",
+                      duration: "8 Weeks",
+                      level: "Beginner",
+                      price: "3,999",
+                      image:
+                        "https://images.unsplash.com/photo-1502136969935-8d8eef54d77b?auto=format&fit=crop&q=80&w=800",
+                    },
+                  },
+                },
+                {
+                  label: "Vyakaran Shastra",
+                  to: "/coursedetail",
+                  state: {
+                    course: {
+                      title: "Vyakaran Shastra Essentials",
+                      category: "Vyakarana (Grammar)",
+                      duration: "12 Weeks",
+                      level: "Intermediate",
+                      price: "5,999",
+                      image:
+                        "https://images.unsplash.com/photo-1544640808-32ca72ac7f37?auto=format&fit=crop&q=80&w=800",
+                    },
+                  },
+                },
+                {
+                  label: "UGC NET",
+                  to: "/coursedetail",
+                  state: {
+                    course: {
+                      title: "UGC NET Sanskrit Prep",
+                      category: "Language",
+                      duration: "16 Weeks",
+                      level: "Advanced",
+                      price: "7,499",
+                      image:
+                        "https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&q=80&w=800",
+                    },
+                  },
+                },
+                {
+                  label: "B.A.",
+                  to: "/coursedetail",
+                  state: {
+                    course: {
+                      title: "B.A. Sanskrit Bridge Program",
+                      category: "Language",
+                      duration: "24 Weeks",
+                      level: "Intermediate",
+                      price: "9,999",
+                      image:
+                        "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=800",
+                    },
+                  },
+                },
               ].map((link) => (
                 <li key={link.label}>
                   <Link
                     to={link.to}
+                    state={link.state}
                     className="group flex items-center gap-2 text-sm text-white
                       hover:text-[#d6b15c] transition font-bold"
                   >

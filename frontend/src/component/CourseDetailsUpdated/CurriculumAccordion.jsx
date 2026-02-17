@@ -6,6 +6,9 @@ const CurriculumAccordion = ({ curriculumData }) => {
   const [openIndex, setOpenIndex] = useState(-1); 
   const navigate = useNavigate();
 
+  // --- LOGIC ADDED: Login Check ---
+  const isLoggedIn = !!localStorage.getItem("token");
+
   // Props se data aayega, warna default show hoga
   const modules = curriculumData || [
     {
@@ -29,13 +32,18 @@ const CurriculumAccordion = ({ curriculumData }) => {
     { 
       title: "Sutra Interpretation Principles", 
       isLocked: true, 
-      content: [] 
+      content: [
+        "Sutra structure analysis",
+        "Paribhasha implementation",
+        "Vartika perspectives"
+      ] // Content add kiya takki login ke baad empty na dikhe
     }
   ];
 
   const handleToggle = (index, isLocked) => {
-    if (isLocked) {
-      navigate('/login'); 
+    // Agar module locked hai AUR user login NAHI hai, tabhi redirect karein
+    if (isLocked && !isLoggedIn) {
+      navigate('/auth'); 
       return;
     }
     setOpenIndex(openIndex === index ? -1 : index);
@@ -51,6 +59,8 @@ const CurriculumAccordion = ({ curriculumData }) => {
       <div className="space-y-4">
         {modules.map((module, index) => {
           const isOpen = openIndex === index;
+          // UI Logic: Agar login hai toh lock icon hide kar sakte hain ya color change
+          const showAsLocked = module.isLocked && !isLoggedIn;
           
           return (
             <div 
@@ -62,16 +72,16 @@ const CurriculumAccordion = ({ curriculumData }) => {
                 className={`w-full flex justify-between items-center p-6 text-left transition-colors ${isOpen ? 'bg-white' : 'bg-white hover:bg-[#F9F5F0]'}`}
               >
                 <div className="flex items-center gap-4">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[14px] font-bold ${module.isLocked ? 'bg-[#D9C5B2] text-white' : 'bg-[#631D11] text-white'}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[14px] font-bold ${showAsLocked ? 'bg-[#D9C5B2] text-white' : 'bg-[#631D11] text-white'}`}>
                     {index + 1}
                   </div>
-                  <span className={`text-[18px] font-bold ${module.isLocked ? 'text-gray-400' : 'text-[#631D11]'}`}>
+                  <span className={`text-[18px] font-bold ${showAsLocked ? 'text-gray-400' : 'text-[#631D11]'}`}>
                     {module.title}
                   </span>
                 </div>
                 
                 <div className="text-gray-400">
-                  {module.isLocked ? (
+                  {showAsLocked ? (
                     <Lock size={20} className="text-[#B18E40]" />
                   ) : isOpen ? (
                     <ChevronUp size={24} className="text-[#631D11]" />
@@ -81,7 +91,8 @@ const CurriculumAccordion = ({ curriculumData }) => {
                 </div>
               </button>
               
-              {isOpen && !module.isLocked && (
+              {/* Login hone par ya unlocked hone par content dikhayein */}
+              {isOpen && (!module.isLocked || isLoggedIn) && (
                 <div className="bg-[#EFE3C8] p-8 border-t border-[#D9C5B2]">
                   <ul className="space-y-4">
                     {module.content && module.content.map((item, i) => (

@@ -9,14 +9,12 @@ import {
 import { getAllCoursesForAdmin, createCourse, updateCourse } from '../../lib/api';
 
 const CourseManagement = () => {
-  // 1. COLORS & THEME
+
   const palette = {
     primary: "#6b1d14",
-    accentDark: "#6b1d14",
-    goldDivider: "#D1B062",
     parchment: "#FBF4E2",
-    bgLight: "#f8f7f6",
-    textDark: "#171212",
+    bg: "#F3E6C9",
+    gold: "#D1B062",
     textMuted: "#856966"
   };
 
@@ -64,25 +62,41 @@ const CourseManagement = () => {
     fetchCourses();
   }, []);
 
-  // 3. LOGIC: Search & Filter
-  const filteredCourses = useMemo(() => {
-    return courses.filter(course => {
-      const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesFilter = filter === "All" || course.status === filter;
-      return matchesSearch && matchesFilter;
-    });
-  }, [searchTerm, filter, courses]);
+  // ================= FILTER =================
+  const filtered = useMemo(() => {
+    return courses.filter(c =>
+      c.title.toLowerCase().includes(search.toLowerCase()) &&
+      (filter === "All" || c.status === filter)
+    );
+  }, [search, filter, courses]);
 
-  // 4. FUNCTIONAL LOGIC: Export, Add, Toggle, Delete
-  const handleExport = () => {
-    const headers = "Title,Level,Duration,Mode,Price,Status\n";
-    const csv = filteredCourses.map(c => `${c.title},${c.level},${c.dur},${c.mode},${c.price},${c.status}`).join("\n");
-    const blob = new Blob([headers + csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = "Course_List.csv";
-    link.click();
+  // ================= STATS =================
+  const stats = {
+    total: courses.length,
+    published: courses.filter(c => c.status === "Published").length,
+    draft: courses.filter(c => c.status === "Draft").length
+  };
+
+  // ================= CRUD =================
+  const openAdd = () => {
+    setEditId(null);
+    setForm({
+      title: "",
+      description: "",
+      level: "Beginner",
+      dur: "3 Months",
+      mode: "ONLINE",
+      price: "",
+      status: "Draft",
+      image: ""
+    });
+    setDrawerOpen(true);
+  };
+
+  const openEdit = (course) => {
+    setEditId(course.id);
+    setForm(course);
+    setDrawerOpen(true);
   };
 
   const handleAddCourse = async (e) => {
@@ -148,32 +162,60 @@ const CourseManagement = () => {
   };
 
   return (
-    <main className="flex-1 md:ml-0 min-h-screen bg-[#F3E6C9] flex flex-col transition-all duration-300">
-      {/* HEADER */}
-      <header className="h-1 border border-b-[#6b1d14] bg-[#F3E6C9] flex items-center justify-between px-8 mt-8 sticky top-0 z-10 " style={{ borderColor: palette.goldDivider + '30' }}>
-        <div className="flex items-center gap-4 flex-1 max-w-xl">
-          <div className="relative w-full">
-            <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-xl" style={{ color: palette.textMuted }} />
-            <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search by title..." className="w-full border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-1 outline-none transition-all" style={{ backgroundColor: palette.bgLight }} />
-          </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2 border rounded-xl text-sm font-bold bg-white" style={{ borderColor: palette.goldDivider }}>
-            <MdFileDownload size={18} /> Export
-          </button>
-          <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 px-4 py-2 text-white rounded-xl text-sm font-bold shadow-lg" style={{ backgroundColor: palette.primary }}>
-            <MdAdd size={20} /> New Course
-          </button>
-        </div>
-      </header>
+    <main className="min-h-screen bg-[#F3E6C9] p-8 space-y-8">
 
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-8 space-y-8">
-        {/* HEADING */}
-        <div className="flex justify-between items-end">
-          <div>
-            <h2 className="text-4xl font-black tracking-tight" style={{ color: palette.accentDark }}>Course Management</h2>
-            <p className="text-sm mt-1" style={{ color: palette.textMuted }}>Showing {filteredCourses.length} courses total</p>
+      {/* PREMIUM HEADING */}
+      
+
+      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#74271E] via-[#8a2a1f] to-[#5a1b14] text-white p-8 shadow-lg">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-5">
+            <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center text-2xl">
+              <MdAutoStories />
+            </div>
+
+            <div>
+              <h1 className="text-3xl md:text-4xl font-black tracking-tight">
+                Course Management
+              </h1>
+              <p className="text-sm text-white/80 mt-1">
+                Manage Sanskrit academy courses and visibility.
+              </p>
+            </div>
           </div>
+
+          <button
+            onClick={openAdd}
+            className="flex items-center gap-2 bg-[#D4AF37] text-[#74271E] px-5 py-2 rounded-full text-sm font-semibold shadow-md hover:scale-105 transition"
+          >
+            <MdAdd size={16} />
+            Add Course
+          </button>
+        </div>
+      </div>
+
+      {/* STATS */}
+      <div className="grid md:grid-cols-3 gap-6">
+        {[{ label: "Total Courses", value: stats.total },
+        { label: "Published", value: stats.published },
+        { label: "Draft", value: stats.draft }].map((card, i) => (
+          <div key={i} className="bg-[#FBF4E2] rounded-2xl p-6 border border-[#D1B062]/30">
+            <p className="text-xs text-[#856966]">{card.label}</p>
+            <h3 className="text-3xl font-black text-[#6b1d14]">{card.value}</h3>
+          </div>
+        ))}
+      </div>
+
+      {/* TOOLBAR */}
+      <div className="flex flex-wrap justify-between gap-4">
+        <div className="relative w-full md:w-[350px]">
+          <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[#856966]" size={20} />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search course..."
+            className="w-full pl-10 pr-3 py-3 rounded-xl bg-[#FBF4E2] outline-none"
+          />
         </div>
 
         {/* Loading State */}
@@ -276,21 +318,73 @@ const CourseManagement = () => {
                 <h2 className="text-2xl font-black text-[#171212]">Add Course</h2>
                 <button onClick={() => setIsModalOpen(false)}><MdClose size={24} /></button>
               </div>
-              <form onSubmit={handleAddCourse} className="space-y-6">
-                <input required placeholder="Course Title" className="w-full p-3 bg-gray-50 rounded-xl outline-none" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
-                <div className="grid grid-cols-2 gap-4">
-                  <input required placeholder="Price" type="number" className="w-full p-3 bg-gray-50 rounded-xl outline-none" value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} />
-                  <select className="w-full p-3 bg-gray-50 rounded-xl outline-none" value={formData.mode} onChange={e => setFormData({ ...formData, mode: e.target.value })}>
-                    <option>ONLINE</option>
-                    <option>HYBRID</option>
-                  </select>
+
+              {/* BODY */}
+              <div className="p-5 space-y-3">
+
+                <h3 className="font-bold text-[#6b1d14]">
+                  {course.title}
+                </h3>
+
+                <p className="text-xs text-[#856966] line-clamp-2">
+                  {course.description}
+                </p>
+
+                <div className="flex flex-wrap gap-2 text-[11px] text-[#856966]">
+                  <span>{course.level}</span>
+                  <span>•</span>
+                  <span>{course.dur}</span>
+                  <span>•</span>
+                  <span>{course.mode}</span>
                 </div>
-                <button type="submit" className="w-full py-4 text-white rounded-xl font-black" style={{ backgroundColor: palette.primary }}>SAVE COURSE</button>
-              </form>
+
+                <div className="flex justify-between items-center pt-2">
+
+                  <button
+                    onClick={() => toggleStatus(course.id)}
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${course.status === "Published"
+                      ? "bg-green-100 text-green-600"
+                      : "bg-orange-100 text-orange-500"
+                      }`}
+                  >
+                    {course.status}
+                  </button>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => openEdit(course)}
+                      className="p-2 hover:bg-blue-50 text-blue-600 rounded-lg"
+                    >
+                      <MdEdit size={18} />
+                    </button>
+
+                    <button
+                      onClick={() => deleteCourse(course.id)}
+                      className="p-2 hover:bg-red-50 text-red-600 rounded-lg"
+                    >
+                      <MdDelete size={18} />
+                    </button>
+                  </div>
+
+                </div>
+
+              </div>
+
             </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+          ))}
+        </AnimatePresence>
+      </div>
+
+      {/* DRAWER */}
+      <AddCourse
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        form={form}
+        setForm={setForm}
+        saveCourse={saveCourse}
+        editId={editId}
+      />
+
     </main>
   );
 };

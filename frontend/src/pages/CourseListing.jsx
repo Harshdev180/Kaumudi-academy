@@ -161,8 +161,7 @@ const AllCoursesPage = () => {
     levelFilter.length > 0 ||
     durationFilter.length > 0;
 
-  const parsePrice = (p) =>
-    Number(String(p).replace(/[^0-9]/g, "")) || 0;
+  const parsePrice = (p) => Number(String(p).replace(/[^0-9]/g, "")) || 0;
 
   const parseDurationWeeks = (d) => {
     const s = String(d).toLowerCase();
@@ -186,12 +185,14 @@ const AllCoursesPage = () => {
         break;
       case "durationAsc":
         arr.sort(
-          (a, b) => parseDurationWeeks(a.duration) - parseDurationWeeks(b.duration),
+          (a, b) =>
+            parseDurationWeeks(a.duration) - parseDurationWeeks(b.duration),
         );
         break;
       case "durationDesc":
         arr.sort(
-          (a, b) => parseDurationWeeks(b.duration) - parseDurationWeeks(a.duration),
+          (a, b) =>
+            parseDurationWeeks(b.duration) - parseDurationWeeks(a.duration),
         );
         break;
       default:
@@ -200,7 +201,10 @@ const AllCoursesPage = () => {
     return arr;
   }, [filteredCourses, sortBy]);
 
-  const totalPages = Math.max(1, Math.ceil(sortedCourses.length / itemsPerPage));
+  const totalPages = Math.max(
+    1,
+    Math.ceil(sortedCourses.length / itemsPerPage),
+  );
   const safePage = Math.min(currentPage, totalPages);
   const paginatedCourses = sortedCourses.slice(
     (safePage - 1) * itemsPerPage,
@@ -219,7 +223,12 @@ const AllCoursesPage = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#1E2A1E] via-[#1E2A1E]/70 to-transparent"></div>
 
-          <div className="relative z-10 h-full flex flex-col justify-center px-8 lg:px-16">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="relative z-10 h-full flex flex-col justify-center px-8 lg:px-16"
+          >
             <div className="flex items-center gap-3 mb-5">
               <div className="h-[1px] w-6 bg-[#c9a84e]"></div>
               <span className="text-[13px] font-semibold uppercase tracking-widest text-[#c9a84e]">
@@ -237,13 +246,18 @@ const AllCoursesPage = () => {
               Bridge ancient heritage with modern structural analysis through
               our curated Shastra archives and expert-led pathways.
             </p>
-          </div>
+          </motion.div>
         </div>
       </header>
 
       {/* ================= SEARCH BAR (BELOW HERO) ================= */}
       <div className="px-6 lg:px-10 max-w-screen-2xl mx-auto -mt-10 relative z-30">
-        <div className="bg-[#FBF4E2] rounded-2xl shadow-lg border border-[#EDE4CF] p-4 flex flex-col lg:flex-row lg:items-center gap-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="bg-[#FBF4E2] rounded-2xl shadow-lg border border-[#EDE4CF] p-4 flex flex-col lg:flex-row lg:items-center gap-4"
+        >
           {/* Search Input */}
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
@@ -282,7 +296,7 @@ const AllCoursesPage = () => {
               Filters
             </button>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       <div className="px-4 lg:px-10 max-w-screen-2xl mx-auto mt-12 grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-10">
@@ -507,12 +521,19 @@ const AllCoursesPage = () => {
               }
             >
               {paginatedCourses.map((course) => (
-                <div
+                <motion.div
                   key={course.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
                   className={`group bg-white rounded-2xl overflow-hidden shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-2 border border-[#E2D4A6]/40 ${
-                    view === "list" ? "flex" : "flex flex-col"
+                    view === "list"
+                      ? "flex flex-col sm:flex-row"
+                      : "flex flex-col"
                   } h-full`}
                 >
+                  {/* Image Container */}
                   <div
                     className={
                       view === "list"
@@ -523,14 +544,18 @@ const AllCoursesPage = () => {
                     <img
                       src={course.image}
                       alt={course.title}
-                      className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
+
+                    {/* Mode Badge */}
                     <div className="absolute top-4 left-4">
                       <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-[#74271E] text-[10px] font-bold uppercase tracking-wider rounded-lg shadow-sm">
                         {course.mode}
                       </span>
                     </div>
+
+                    {/* Level Badge */}
                     <div className="absolute bottom-4 left-4">
                       <span className="px-3 py-1 bg-[#74271E]/90 text-white text-[10px] font-bold uppercase tracking-wider rounded-lg shadow-sm">
                         {course.level}
@@ -538,29 +563,39 @@ const AllCoursesPage = () => {
                     </div>
                   </div>
 
+                  {/* Content Container */}
                   <div
                     className={`p-6 flex flex-col flex-grow bg-[#FDFCF7]/50 group-hover:bg-white transition-colors ${
                       view === "list" ? "sm:w-2/3" : ""
                     }`}
                   >
-                    {/* <div className="flex items-center gap-2 mb-1.5">
-                      <div className="w-1 h-1 rounded-full bg-[#B38B3F]"></div>
-                      <span className="text-[11px] font-semibold text-stone-500">{course.instructor}</span>
-                    </div> */}
+                    {/* Category */}
                     <div className="flex items-center gap-2 mb-3">
                       <BookOpen className="w-3.5 h-3.5 text-[#B38B3F]" />
                       <span className="text-[11px] font-bold text-[#8B6D31] uppercase tracking-wide">
                         {course.category}
                       </span>
                     </div>
+
+                    {/* Title */}
                     <h3 className="text-xl font-bold text-[#2D2417] leading-snug mb-3 group-hover:text-[#74271E] transition-colors">
                       {course.title}
                     </h3>
-                    <p className="text-sm text-stone-600 leading-relaxed mb-2 line-clamp-3">
+
+                    {/* Description */}
+                    <p className="text-sm text-stone-600 leading-relaxed mb-4 line-clamp-3">
                       Deep study into {course.category}. A {course.duration}{" "}
-                      immersive journey for {course.level} seekers.
+                      immersive journey for {course.level} seekers guided by{" "}
+                      {course.instructor}.
                     </p>
 
+                    {/* Instructor (Optional - can be shown if needed) */}
+                    <div className="flex items-center gap-2 mb-4 text-xs text-stone-500">
+                      <span className="font-medium">Instructor:</span>
+                      <span>{course.instructor}</span>
+                    </div>
+
+                    {/* Course Details */}
                     <div className="mt-auto">
                       <div className="flex items-center justify-between py-4 border-y border-[#E2D4A6]/30 mb-5">
                         <div className="flex items-center gap-1.5">
@@ -576,6 +611,8 @@ const AllCoursesPage = () => {
                           </span>
                         </div>
                       </div>
+
+                      {/* Price and CTA */}
                       <div className="flex items-center justify-between">
                         <span className="text-lg font-bold text-[#74271E] tabular-nums tracking-tight">
                           {course.priceFormatted || "₹0"}
@@ -596,9 +633,9 @@ const AllCoursesPage = () => {
                       </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           ) : (
             <div className="py-32 flex flex-col items-center justify-center bg-white border border-[#E2D4A6] rounded-2xl text-center">
                 <div className="w-16 h-16 bg-[#FDFCF7] rounded-full flex items-center justify-center mb-6 border border-[#E2D4A6]">
@@ -628,40 +665,42 @@ const AllCoursesPage = () => {
               </div>
           )}
 
-          {/* --- REFINED PAGINATION --- */}
-          <div className="flex justify-center items-center gap-3 mt-16">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={safePage === 1}
-              className="p-3 rounded-xl border border-[#E2D4A6] text-[#8B6D31] hover:bg-white transition-all disabled:opacity-30"
-              aria-label="Previous page"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+          {sortedCourses.length > itemsPerPage && (
+            /* --- REFINED PAGINATION --- */
+            <div className="flex justify-center items-center gap-3 mt-16">
               <button
-                key={n}
-                onClick={() => setCurrentPage(n)}
-                className={`w-11 h-11 flex items-center justify-center rounded-xl text-sm font-bold transition-all ${
-                  n === safePage
-                    ? "bg-[#74271E] text-white shadow-xl shadow-[#74271E]/20"
-                    : "text-[#8B6D31] bg-white border border-[#E2D4A6] hover:border-[#B38B3F]"
-                }`}
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={safePage === 1}
+                className="p-3 rounded-xl border border-[#E2D4A6] text-[#8B6D31] hover:bg-white transition-all disabled:opacity-30"
+                aria-label="Previous page"
               >
-                {n}
+                <ChevronLeft className="w-5 h-5" />
               </button>
-            ))}
-            <button
-              onClick={() =>
-                setCurrentPage((p) => Math.min(totalPages, p + 1))
-              }
-              disabled={safePage === totalPages}
-              className="p-3 rounded-xl border border-[#E2D4A6] text-[#8B6D31] hover:bg-white transition-all disabled:opacity-30"
-              aria-label="Next page"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+                <button
+                  key={n}
+                  onClick={() => setCurrentPage(n)}
+                  className={`w-11 h-11 flex items-center justify-center rounded-xl text-sm font-bold transition-all ${
+                    n === safePage
+                      ? "bg-[#74271E] text-white shadow-xl shadow-[#74271E]/20"
+                      : "text-[#8B6D31] bg-white border border-[#E2D4A6] hover:border-[#B38B3F]"
+                  }`}
+                >
+                  {n}
+                </button>
+              ))}
+              <button
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
+                disabled={safePage === totalPages}
+                className="p-3 rounded-xl border border-[#E2D4A6] text-[#8B6D31] hover:bg-white transition-all disabled:opacity-30"
+                aria-label="Next page"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          )}
         </main>
       </div>
 
@@ -734,7 +773,11 @@ const AllCoursesPage = () => {
                             type="checkbox"
                             checked={group.state.includes(opt.val)}
                             onChange={() =>
-                              handleToggleFilter(group.state, group.setter, opt.val)
+                              handleToggleFilter(
+                                group.state,
+                                group.setter,
+                                opt.val,
+                              )
                             }
                             className="peer appearance-none w-5 h-5 border-2 border-[#E2D4A6] rounded-md checked:bg-[#74271E] checked:border-[#74271E] transition-all"
                           />

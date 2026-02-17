@@ -17,7 +17,7 @@ import { authMiddleware } from "../middlewares/auth.middleware.js";
 router.post(
   "/payment/create-order",
   authMiddleware,
-  validateBody(createPaymentOrderSchema),
+  //validateBody(createPaymentOrderSchema),
   createRazorpayOrder
 );
 

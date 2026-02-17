@@ -26,7 +26,7 @@ const courses = [
       qualification: "PHD IN VYAKARANA, BANARAS HINDU UNIVERSITY",
       bio: "With over 25 years of teaching experience, Acharya Vasudev has guided thousands of students through the complexities of Sanskrit Grammar.",
       image: "https://t3.ftcdn.net/jpg/06/20/35/33/360_F_620353344_5n9KjA60OQdE2vB6H4VlEaB0nNqI8H9o.jpg",
-      tags: ["25+ Yrs Exp", "100+ Publications", "Veda Ratna Awardee", "Senior Faculty"]
+      tags: ["25+ Yrs Exp", "100+ Publications", "Senior Faculty"]
     },
     curriculum: [
       {
@@ -72,7 +72,7 @@ const courses = [
       qualification: "VEDIC SCHOLAR & PHONETICS EXPERT",
       bio: "A specialist in Krishna Yajurveda, Pandit Ravi Prakash focuses on the preservation of oral traditions through scientific phonetic training.",
       image: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200",
-      tags: ["15+ Yrs Exp", "Vedic Expert", "Ritual Specialist", "Chanting Coach"]
+      tags: ["15+ Yrs Exp", "Vedic Expert", "Ritual Specialist"]
     },
     curriculum: [
       {
@@ -117,7 +117,7 @@ const courses = [
       qualification: "PHD IN SANSKRIT LITERATURE, JNU",
       bio: "Dr. Ananya focuses on making Sanskrit a living language, teaching students to express complex thoughts with simplicity and elegance.",
       image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200",
-      tags: ["10+ Yrs Exp", "Linguistics Expert", "Gold Medalist", "Modern Pedagogy"]
+      tags: ["10+ Yrs Exp", "Linguistics Expert", "Modern Pedagogy"]
     },
     curriculum: [
       {
@@ -162,7 +162,7 @@ const courses = [
       qualification: "UGC NET QUALIFIED & SENIOR RESEARCH FELLOW",
       bio: "Prof. Mukherjee has mentored over 500+ successful candidates, specializing in the analytical breakdown of complex exam patterns.",
       image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200",
-      tags: ["12+ Yrs Exp", "NET Expert", "Sr. Faculty", "Research Scholar"]
+      tags: ["12+ Yrs Exp", "NET Expert", "Sr. Faculty"]
     },
     curriculum: [
       {
@@ -207,7 +207,7 @@ const courses = [
       qualification: "ACADEMIC DEAN & YOGA PHILOSOPHER",
       bio: "Dr. Meera Iyer combines traditional textual knowledge with practical yoga philosophy to provide a holistic educational experience.",
       image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200",
-      tags: ["20+ Yrs Exp", "Author", "Yoga Philosopher", "Academic Dean"]
+      tags: ["20+ Yrs Exp", "Author", "Yoga Philosopher"]
     },
     curriculum: [
       {

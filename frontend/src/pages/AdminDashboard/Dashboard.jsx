@@ -3,6 +3,8 @@ import StatsGrid from './StatsGrid'
 import ChartSection from './ChartSection'
 import TableSection from './TableSection'
 import ActivityFeed from './ActivityFeed'
+// import AlertInfo from './AlertInfo'
+
 
 
 function Dashboard() {
@@ -20,6 +22,7 @@ function Dashboard() {
                         <TableSection />
                     </div>
                     <div>
+                        {/* <AlertInfo /> */}
                         <ActivityFeed />
                     </div>
                 </div>

@@ -167,19 +167,33 @@ export const toggleCourseStatus = async (req, res) => {
 
 
 export const getAllCourses = async (req, res) => {
-  const now = new Date();
-
   const courses = await Course.find({
     status: "ACTIVE"
   })
-    .select("-price")
-    .sort({ createdAt: -1 });
+  .select("-price")
+  .sort({ createdAt: -1 });
 
   res.json({
     success: true,
     data: courses
   });
 };
+
+// export const getAllCourses = async (req, res) => {
+//   const now = new Date();
+
+//   const courses = await Course.find({
+//     status: "ACTIVE",
+//     endDate: { $gte: now }
+//   })
+//     .select("-price")
+//     .sort({ createdAt: -1 });
+
+//   res.json({
+//     success: true,
+//     data: courses
+//   });
+// };
 
 
 export const getCourseDetail = async (req, res) => {

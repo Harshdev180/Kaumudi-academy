@@ -29,34 +29,29 @@ const studentSchema = new mongoose.Schema(
       trim: true,
       minlength: 10,
       maxlength: 15
-    },
-    address: {
-      type: String,
-      trim: true
-    },
-    city: {
-      type: String,
-      trim: true
-    },
-    state: {
-      type: String,
-      trim: true
-    },
-    sanskritKnowledge: {
-      type: String,
-      enum: ["Beginner (No prior knowledge)", "Intermediate (Knows basics)", "Advanced (Fluent)"],
-      default: "Beginner (No prior knowledge)"
-    },
-    occupation: {
-      type: String,
-      trim: true
+    },  
+    settings: {
+      notifications: {
+        email: {
+          type: Boolean,
+          default: true
+        },
+        sms: {
+          type: Boolean,
+          default: false
+        },
+        courseUpdates: {
+          type: Boolean,
+          default: true
+        }
+      },
     },
     resetPasswordToken: {
       type: String
     },
     resetPasswordExpire: {
       type: Date
-    }
+    },
   },
   { timestamps: true }
 );
