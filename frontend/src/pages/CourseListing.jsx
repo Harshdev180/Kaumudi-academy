@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { motion } from "framer-motion";
+import { useAuth } from "../context/useAuthHook";
 import {
   Search,
   ChevronLeft,
@@ -23,7 +24,7 @@ import { getAllCourses } from "../lib/api";
 
 const AllCoursesPage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All Shastras");
   const [modeFilter, setModeFilter] = useState([]);
@@ -635,34 +636,34 @@ const AllCoursesPage = () => {
                   </div>
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
           ) : (
             <div className="py-32 flex flex-col items-center justify-center bg-white border border-[#E2D4A6] rounded-2xl text-center">
-                <div className="w-16 h-16 bg-[#FDFCF7] rounded-full flex items-center justify-center mb-6 border border-[#E2D4A6]">
-                  <Search className="w-6 h-6 text-stone-300" />
-                </div>
-                <h3 className="text-2xl font-bold text-[#2D2417] mb-2">
-                  No Shastras Found
-                </h3>
-                <p className="text-stone-500 italic mb-3">
-                  Try adjusting your filters to find what you seek.
-                </p>
-                {courses.length === 0 ? (
-                  <p className="text-sm text-stone-400 mb-6">
-                    There are no active courses available on the server right now.
-                  </p>
-                ) : (
-                  <p className="text-sm text-stone-400 mb-6">
-                    {`Fetched ${courses.length} courses; none match the current filters.`}
-                  </p>
-                )}
-                <button
-                  onClick={resetFilters}
-                  className="px-8 py-3 bg-[#74271E] text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all"
-                >
-                  Reset All Filters
-                </button>
+              <div className="w-16 h-16 bg-[#FDFCF7] rounded-full flex items-center justify-center mb-6 border border-[#E2D4A6]">
+                <Search className="w-6 h-6 text-stone-300" />
               </div>
+              <h3 className="text-2xl font-bold text-[#2D2417] mb-2">
+                No Shastras Found
+              </h3>
+              <p className="text-stone-500 italic mb-3">
+                Try adjusting your filters to find what you seek.
+              </p>
+              {courses.length === 0 ? (
+                <p className="text-sm text-stone-400 mb-6">
+                  There are no active courses available on the server right now.
+                </p>
+              ) : (
+                <p className="text-sm text-stone-400 mb-6">
+                  {`Fetched ${courses.length} courses; none match the current filters.`}
+                </p>
+              )}
+              <button
+                onClick={resetFilters}
+                className="px-8 py-3 bg-[#74271E] text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all"
+              >
+                Reset All Filters
+              </button>
+            </div>
           )}
 
           {sortedCourses.length > itemsPerPage && (

@@ -6,7 +6,8 @@ import {
   MdFilterList, MdChevronLeft, MdChevronRight, MdDelete, MdEdit,
   MdClose, MdSave, MdCloudUpload
 } from 'react-icons/md';
-import { getAllCoursesForAdmin, createCourse, updateCourse } from '../../lib/api';
+import AddCourse from './AddCourse';
+import { getAllCoursesForAdmin, createCourse, updateCourse, deleteCourse, toggleCourseStatus } from '../../lib/api';
 
 const CourseManagement = () => {
 
@@ -18,52 +19,78 @@ const CourseManagement = () => {
     textMuted: "#856966"
   };
 
+  const initialForm = {
+    title: "",
+    description: "",
+    syllabus: "",
+    duration: "",
+    mode: "ONLINE",
+    price: "",
+    language: "Sanskrit",
+    startDate: "",
+    endDate: "",
+    image: "",
+    imageFile: null,
+    imagePreview: "",
+    videoFile: null,
+    videoName: ""
+  };
+
   // 2. STATE MANAGEMENT
-  const [searchTerm, setSearchTerm] = useState("");
+  const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [courses, setCourses] = useState([]);
-  
-  // Form State for Add New Course
-  const [formData, setFormData] = useState({ title: '', level: 'Beginner', price: '', duration: '3 Months', mode: 'ONLINE' });
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [form, setForm] = useState(initialForm);
+
+  const fetchCourses = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const response = await getAllCoursesForAdmin();
+      const payload = response?.data ?? response;
+      const data = Array.isArray(payload) ? payload : payload?.data || [];
+
+      const formattedCourses = data.map((course, index) => ({
+        id: course._id || course.id || index,
+        title: course.title || "Untitled Course",
+        level: course.level || "Prathama (Beginner)",
+        dur: course.duration || "—",
+        mode: course.mode || "ONLINE",
+        price: course.price ?? 0,
+        status: course.status === "ACTIVE" ? "Published" : "Draft",
+        rawStatus: course.status || "INACTIVE",
+        image: course.image?.url || "",
+        description: course.description || "",
+        syllabus: course.syllabus || "",
+        language: Array.isArray(course.language)
+          ? course.language.join(", ")
+          : course.language || "",
+        startDate: course.startDate ? course.startDate.slice(0, 10) : "",
+        endDate: course.endDate ? course.endDate.slice(0, 10) : "",
+        icon: <MdAutoStories />
+      }));
+
+      setCourses(formattedCourses);
+    } catch (err) {
+      console.error("Failed to fetch courses:", err);
+      setError("Failed to load courses. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // 3. Fetch courses from API
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        setLoading(true);
-        setError("");
-        const response = await getAllCoursesForAdmin();
-        const data = Array.isArray(response) ? response : response.data || [];
-        
-        // Transform API response to match UI format
-        const formattedCourses = data.map((course, index) => ({
-          id: course._id || course.id || index,
-          title: course.title || 'Untitled Course',
-          level: course.level || 'Beginner',
-          dur: course.duration || '3 Months',
-          mode: course.mode || 'ONLINE',
-          price: course.price || '0',
-          status: course.status === 'active' ? 'Published' : 'Draft',
-          icon: <MdAutoStories />
-        }));
-        
-        setCourses(formattedCourses);
-      } catch (err) {
-        console.error("Failed to fetch courses:", err);
-        setError("Failed to load courses. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchCourses();
   }, []);
 
   // ================= FILTER =================
-  const filtered = useMemo(() => {
+  const filteredCourses = useMemo(() => {
     return courses.filter(c =>
       c.title.toLowerCase().includes(search.toLowerCase()) &&
       (filter === "All" || c.status === filter)
@@ -80,79 +107,98 @@ const CourseManagement = () => {
   // ================= CRUD =================
   const openAdd = () => {
     setEditId(null);
-    setForm({
-      title: "",
-      description: "",
-      level: "Beginner",
-      dur: "3 Months",
-      mode: "ONLINE",
-      price: "",
-      status: "Draft",
-      image: ""
-    });
+    setForm(initialForm);
     setDrawerOpen(true);
   };
 
   const openEdit = (course) => {
     setEditId(course.id);
-    setForm(course);
+    setForm({
+      title: course.title || "",
+      description: course.description || "",
+      syllabus: course.syllabus || "",
+      duration: course.dur || "",
+      mode: course.mode || "ONLINE",
+      price: course.price ?? "",
+      language: course.language || "Sanskrit",
+      startDate: course.startDate || "",
+      endDate: course.endDate || "",
+      image: course.image || "",
+      imageFile: null,
+      imagePreview: course.image || "",
+      videoFile: null,
+      videoName: ""
+    });
     setDrawerOpen(true);
   };
 
-  const handleAddCourse = async (e) => {
-    e.preventDefault();
+  const saveCourse = async () => {
     try {
-      const courseData = {
-        title: formData.title,
-        level: formData.level,
-        price: parseFloat(formData.price),
-        duration: formData.dur,
-        mode: formData.mode,
-        status: 'draft'
-      };
-      
-      const response = await createCourse(courseData);
-      const newCourse = response.data || response;
-      
-      const newEntry = {
-        id: newCourse._id || newCourse.id || Date.now(),
-        title: newCourse.title,
-        level: newCourse.level,
-        dur: newCourse.duration,
-        mode: newCourse.mode,
-        price: newCourse.price,
-        status: 'Draft',
-        icon: <MdAutoStories />,
-      };
-      
-      setCourses([newEntry, ...courses]);
-      setIsModalOpen(false);
-      setFormData({ title: '', level: 'Beginner', price: '', dur: '3 Months', mode: 'ONLINE' });
+      setSaving(true);
+      if (!form.title.trim() || !form.description.trim() || !form.duration.trim() || !form.mode || !form.price || !form.startDate || !form.endDate || !form.language.trim()) {
+        alert("Please fill all required fields.");
+        setSaving(false);
+        return;
+      }
+      const payload = new FormData();
+      payload.append("title", form.title);
+      payload.append("description", form.description);
+      if (form.syllabus) payload.append("syllabus", form.syllabus);
+      payload.append("duration", form.duration);
+      payload.append("mode", form.mode);
+      payload.append("price", Number(form.price));
+      const languageList = form.language
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean);
+      payload.append("language", JSON.stringify(languageList));
+      payload.append("startDate", form.startDate);
+      payload.append("endDate", form.endDate);
+      if (form.imageFile) payload.append("image", form.imageFile);
+
+      if (editId) {
+        await updateCourse(editId, payload);
+      } else {
+        await createCourse(payload);
+      }
+
+      await fetchCourses();
+      setDrawerOpen(false);
+      setEditId(null);
+      setForm(initialForm);
     } catch (err) {
-      console.error("Failed to create course:", err);
-      alert("Failed to create course. Please try again.");
+      console.error("Failed to save course:", err);
+      alert("Failed to save course. Please try again.");
+    } finally {
+      setSaving(false);
     }
   };
 
   const toggleStatus = async (id) => {
     try {
-      const course = courses.find(c => c.id === id);
-      const newStatus = course.status === "Published" ? "draft" : "active";
-      
-      await updateCourse(id, { status: newStatus });
-      
-      setCourses(courses.map(c => c.id === id ? { ...c, status: c.status === "Published" ? "Draft" : "Published" } : c));
+      const response = await toggleCourseStatus(id);
+      const nextStatus = response?.status || response?.data?.status;
+      setCourses(courses.map(c => {
+        if (c.id !== id) return c;
+        const isActive = (nextStatus || c.rawStatus) === "ACTIVE"
+          ? "Published"
+          : "Draft";
+        return {
+          ...c,
+          rawStatus: nextStatus || c.rawStatus,
+          status: isActive
+        };
+      }));
     } catch (err) {
       console.error("Failed to toggle course status:", err);
       alert("Failed to update course status.");
     }
   };
 
-  const deleteCourse = async (id) => {
+  const deleteCourseItem = async (id) => {
     if (window.confirm("Are you sure you want to delete this course?")) {
       try {
-        // Note: Backend may not have delete endpoint, using updateCourse with status as fallback
-        await updateCourse(id, { status: 'deleted' });
+        await deleteCourse(id);
         setCourses(courses.filter(c => c.id !== id));
       } catch (err) {
         console.error("Failed to delete course:", err);
@@ -217,27 +263,29 @@ const CourseManagement = () => {
             className="w-full pl-10 pr-3 py-3 rounded-xl bg-[#FBF4E2] outline-none"
           />
         </div>
+      </div>
 
-        {/* Loading State */}
-        {loading && (
-          <div className="flex justify-center items-center py-12">
-            <div className="text-center">
-              <div className="w-10 h-10 rounded-full border-4 border-[#E2D4A6] border-t-[#74271E] animate-spin mx-auto mb-4"></div>
-              <p style={{ color: palette.textDark }}>Loading courses...</p>
-            </div>
+      {/* Loading State */}
+      {loading && (
+        <div className="flex justify-center items-center py-12">
+          <div className="text-center">
+            <div className="w-10 h-10 rounded-full border-4 border-[#E2D4A6] border-t-[#74271E] animate-spin mx-auto mb-4"></div>
+            <p style={{ color: palette.textMuted }}>Loading courses...</p>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Error State */}
-        {error && !loading && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-600">
-            <p>{error}</p>
-          </div>
-        )}
-        {/* Content */}
-        {!loading && !error && (
-          <>
-        {/* FILTERS */}
+      {/* Error State */}
+      {error && !loading && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-600">
+          <p>{error}</p>
+        </div>
+      )}
+      
+      {/* Content */}
+      {!loading && !error && (
+        <>
+          {/* FILTERS */}
         <div className="flex items-center gap-2 border-b" style={{ borderColor: palette.goldDivider + '20' }}>
           {["All", "Published", "Draft"].map((tab) => (
             <button key={tab} onClick={() => setFilter(tab)} className="px-6 py-3 text-sm font-bold relative" style={{ color: filter === tab ? palette.primary : palette.textMuted }}>
@@ -293,8 +341,8 @@ const CourseManagement = () => {
                       </td>
                       <td className="px-8 py-5 text-right">
                         <div className="flex justify-end gap-2 opacity-100 transition-opacity">
-                          {/* <button className="p-2 hover:bg-blue-50 text-blue-600 rounded-lg"><MdEdit size={18} /></button> */}
-                          <button onClick={() => deleteCourse(course.id)} className="p-2 hover:bg-red-50 text-red-600 rounded-lg"><MdDelete size={18} /></button>
+                          <button onClick={() => openEdit(course)} className="p-2 hover:bg-blue-50 text-blue-600 rounded-lg"><MdEdit size={18} /></button>
+                          <button onClick={() => deleteCourseItem(course.id)} className="p-2 hover:bg-red-50 text-red-600 rounded-lg"><MdDelete size={18} /></button>
                         </div>
                       </td>
                     </motion.tr>
@@ -304,78 +352,9 @@ const CourseManagement = () => {
             </table>
           </div>
         </div>
-          </>
+        </>
         )}
-      </motion.div>
 
-      {/* ADD NEW COURSE MODAL (LOGIC IMPLEMENTED) */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsModalOpen(false)} className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40" />
-            <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} className="fixed right-0 top-0 h-full w-[450px] bg-white z-50 shadow-2xl p-8 flex flex-col">
-              <div className="flex justify-between items-center mb-8">
-                <h2 className="text-2xl font-black text-[#171212]">Add Course</h2>
-                <button onClick={() => setIsModalOpen(false)}><MdClose size={24} /></button>
-              </div>
-
-              {/* BODY */}
-              <div className="p-5 space-y-3">
-
-                <h3 className="font-bold text-[#6b1d14]">
-                  {course.title}
-                </h3>
-
-                <p className="text-xs text-[#856966] line-clamp-2">
-                  {course.description}
-                </p>
-
-                <div className="flex flex-wrap gap-2 text-[11px] text-[#856966]">
-                  <span>{course.level}</span>
-                  <span>•</span>
-                  <span>{course.dur}</span>
-                  <span>•</span>
-                  <span>{course.mode}</span>
-                </div>
-
-                <div className="flex justify-between items-center pt-2">
-
-                  <button
-                    onClick={() => toggleStatus(course.id)}
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${course.status === "Published"
-                      ? "bg-green-100 text-green-600"
-                      : "bg-orange-100 text-orange-500"
-                      }`}
-                  >
-                    {course.status}
-                  </button>
-
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => openEdit(course)}
-                      className="p-2 hover:bg-blue-50 text-blue-600 rounded-lg"
-                    >
-                      <MdEdit size={18} />
-                    </button>
-
-                    <button
-                      onClick={() => deleteCourse(course.id)}
-                      className="p-2 hover:bg-red-50 text-red-600 rounded-lg"
-                    >
-                      <MdDelete size={18} />
-                    </button>
-                  </div>
-
-                </div>
-
-              </div>
-
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
-
-      {/* DRAWER */}
       <AddCourse
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}

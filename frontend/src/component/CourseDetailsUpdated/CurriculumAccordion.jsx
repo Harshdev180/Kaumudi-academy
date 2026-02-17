@@ -7,7 +7,7 @@ const CurriculumAccordion = ({ curriculumData }) => {
   const navigate = useNavigate();
 
   // --- LOGIC ADDED: Login Check ---
-  const isLoggedIn = !!localStorage.getItem("token");
+  const isLoggedIn = !!localStorage.getItem("kaumudi_token");
 
   // Props se data aayega, warna default show hoga
   const modules = curriculumData || [

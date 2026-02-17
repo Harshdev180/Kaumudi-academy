@@ -1,69 +1,94 @@
 import { MoreHorizontal, TrendingUp } from 'lucide-react'
-import React from 'react'
-
-
-const recentOrders = [
-    {
-        id: "#3847",
-        customer: "Prakash Bharti",
-        course: "Shlok",
-        amount: "699/-",
-        status: "completed",
-        date: "2026-01-15",
-    },
-    {
-        id: "#3848",
-        customer: "Shivam Pandey",
-        course: "Spoken Sanskrit",
-        amount: "2499/-",
-        status: "pending",
-        date: "2026-01-15",
-    },
-    {
-        id: "#3849",
-        customer: "Vishal Sharma",
-        course: "Vyakaran Shastra",
-        amount: "9599/-",
-        status: "completed",
-        date: "2026-01-14",
-    },
-    {
-        id: "#3850",
-        customer: "Suman Yadav",
-        course: "UGC NET",
-        amount: "1499/-",
-        status: "cancelled",
-        date: "2026-01-14",
-    },
-    {
-        id: "#3850",
-        customer: "Aman Gupta",
-        course: "BA",
-        amount: "3999/-",
-        status: "cancelled",
-        date: "2026-01-14",
-    },
-
-];
-
-const topCourses = [
-    {
-        name: "Spoken Sanskrit",
-        sales: 147,
-        revenue: "₹12,000",
-        trend: "up",
-        change: "+12%",
-    },
-    {
-        name: "Vyakaran Shastra",
-        sales: 156,
-        revenue: "₹12,587",
-        trend: "up",
-        change: "+8%",
-    },
-];
+import React, { useEffect, useState } from 'react'
+import { getAllEnrollments, getCoursesWithEnrollmentCount } from '../../lib/api'
 
 function TableSection() {
+    const [recentOrders, setRecentOrders] = useState([]);
+    const [topCourses, setTopCourses] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                setError("");
+                const [enrollRes, coursesRes] = await Promise.all([
+                    getAllEnrollments(),
+                    getCoursesWithEnrollmentCount()
+                ]);
+
+                const enrollmentsPayload = enrollRes?.data ?? enrollRes;
+                const enrollments = Array.isArray(enrollmentsPayload)
+                    ? enrollmentsPayload
+                    : enrollmentsPayload?.data || [];
+
+                const coursesPayload = coursesRes?.data ?? coursesRes;
+                const courses = Array.isArray(coursesPayload)
+                    ? coursesPayload
+                    : coursesPayload?.data || [];
+
+                const coursePriceMap = new Map();
+                courses.forEach((course) => {
+                    coursePriceMap.set(course._id || course.id, Number(course.price || 0));
+                });
+
+                const normalizedOrders = enrollments.slice(0, 8).map((enrollment) => {
+                    const student = enrollment.student;
+                    const course = enrollment.course;
+                    const courseId = course?._id || course;
+                    const price = coursePriceMap.get(courseId) || course?.price || 0;
+                    const dateValue = enrollment.enrolledAt || enrollment.createdAt;
+                    const date = dateValue ? new Date(dateValue).toISOString().slice(0, 10) : "â€”";
+                    const statusRaw = enrollment.payment?.status || enrollment.status || "PENDING";
+                    const status =
+                        statusRaw === "SUCCESS" || statusRaw === "COMPLETED"
+                            ? "completed"
+                            : statusRaw === "FAILED" || statusRaw === "DROPPED"
+                                ? "cancelled"
+                                : "pending";
+
+                    return {
+                        id: enrollment._id || "â€”",
+                        customer: student
+                            ? `${student.firstName || ""} ${student.lastName || ""}`.trim() || student.email || "Student"
+                            : "Student",
+                        course: course?.title || "Course",
+                        amount: price ? `â‚¹${price.toLocaleString()}` : "â€”",
+                        status,
+                        date
+                    };
+                });
+
+                setRecentOrders(normalizedOrders);
+
+                const sortedCourses = [...courses]
+                    .sort((a, b) => (b.enrollmentCount || 0) - (a.enrollmentCount || 0))
+                    .slice(0, 5)
+                    .map((course) => {
+                        const sales = course.enrollmentCount || 0;
+                        const revenue = (Number(course.price || 0) * sales) || 0;
+                        return {
+                            name: course.title || "Course",
+                            sales,
+                            revenue: revenue ? `â‚¹${revenue.toLocaleString()}` : "â‚¹0",
+                            trend: "up",
+                            change: "â€”"
+                        };
+                    });
+
+                setTopCourses(sortedCourses);
+            } catch (err) {
+                console.error("Failed to load dashboard tables:", err);
+                setError("Failed to load table data.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     const getStatusColor = (status) => {
         switch (status) {
             case "completed":
@@ -88,7 +113,7 @@ function TableSection() {
                             Recent Orders
                         </h3>
                         <p className="text-sm text-slate-500">
-                            Latest course orders
+                            Latest course enrollments
                         </p>
                     </div>
                     <button className="text-[#6b1d14]/70 hover:text-[#6b1d14] text-sm font-medium">
@@ -112,7 +137,28 @@ function TableSection() {
                         </thead>
 
                         <tbody>
-                            {recentOrders.map((order, index) => (
+                            {loading && (
+                                <tr>
+                                    <td colSpan={7} className="p-6 text-sm text-slate-500">
+                                        Loading recent orders...
+                                    </td>
+                                </tr>
+                            )}
+                            {!loading && error && (
+                                <tr>
+                                    <td colSpan={7} className="p-6 text-sm text-red-600">
+                                        {error}
+                                    </td>
+                                </tr>
+                            )}
+                            {!loading && !error && recentOrders.length === 0 && (
+                                <tr>
+                                    <td colSpan={7} className="p-6 text-sm text-slate-500">
+                                        No recent orders found.
+                                    </td>
+                                </tr>
+                            )}
+                            {!loading && !error && recentOrders.map((order, index) => (
                                 <tr
                                     key={`${order.id}-${index}`}
                                     className="border-b border-slate-200/50 hover:bg-slate-50/50 transition-colors"
@@ -197,6 +243,11 @@ function TableSection() {
                             </div>
                         </div>
                     ))}
+                    {!loading && !error && topCourses.length === 0 && (
+                        <div className="px-6 py-4 text-sm text-slate-500">
+                            No course performance data yet.
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

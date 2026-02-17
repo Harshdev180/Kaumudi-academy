@@ -1,99 +1,87 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Clock, Plus, Percent, Copy, Pencil, IndianRupee, Power } from "lucide-react";
-
-/*  COUPON DATA */
-const initialCoupons = [
-    {
-        id: 1,
-        code: "KAUMUDI10",
-        discountType: "percentage",
-        discount: 10,
-        course: "Shlok",
-        start: "2026-05-20T10:00",
-        end: "2026-05-30T23:59",
-        is_active: true,
-    },
-    {
-        id: 2,
-        code: "FLAT500",
-        discountType: "flat",
-        discount: 500,
-        course: "BA",
-        start: "2026-06-01T10:00",
-        end: "2026-06-10T23:59",
-        is_active: true,
-    },
-];
+import { Clock, Plus, Percent, Copy, Power } from "lucide-react";
+import { createCoupon, toggleCouponStatus } from "../../lib/api";
 
 /* STATUS AUTOMATION */
 const getStatus = (coupon) => {
     const now = new Date();
-    const start = new Date(coupon.start);
-    const end = new Date(coupon.end);
+    const start = new Date(coupon.startTime);
+    const end = new Date(coupon.endTime);
 
-    if (!coupon.is_active) return "disabled";
+    if (!coupon.isActive) return "disabled";
     if (now < start) return "upcoming";
     if (now > end) return "expired";
     return "active";
 };
 
 function CouponPage() {
-    const [coupons, setCoupons] = useState(initialCoupons);
-
+    const [coupons, setCoupons] = useState([]);
     const [showForm, setShowForm] = useState(false);
-    const [editingCoupon, setEditingCoupon] = useState(null);
 
-    /* 🔥 FORM STATE UPDATED */
     const [formData, setFormData] = useState({
         code: "",
         discount: "",
-        discountType: "percentage",
-        course: "",
-        start: "",
-        end: "",
+        startTime: "",
+        endTime: "",
     });
 
     const copyCode = (code) => navigator.clipboard.writeText(code);
 
-    /* SAVE CREATE + EDIT */
-    const handleSaveCoupon = () => {
-        if (!formData.code) return;
+    const handleSaveCoupon = async () => {
+        if (!formData.code || !formData.discount || !formData.startTime || !formData.endTime) return;
 
-        if (editingCoupon) {
+        try {
+            const response = await createCoupon({
+                code: formData.code,
+                discountPercentage: Number(formData.discount),
+                startTime: formData.startTime,
+                endTime: formData.endTime,
+            });
+
+            const payload = response?.data ?? response;
+            const created = payload?.data ?? payload;
+
+            if (created) {
+                setCoupons((prev) => [
+                    ...prev,
+                    {
+                        id: created._id || Date.now(),
+                        code: created.code,
+                        discount: created.discountPercentage,
+                        startTime: created.startTime,
+                        endTime: created.endTime,
+                        isActive: created.isActive ?? true,
+                    },
+                ]);
+            }
+
+            setShowForm(false);
+            setFormData({
+                code: "",
+                discount: "",
+                startTime: "",
+                endTime: "",
+            });
+        } catch (error) {
+            console.error("Failed to create coupon:", error);
+            alert(error?.response?.data?.message || "Failed to create coupon.");
+        }
+    };
+
+    const handleToggleCoupon = async (coupon) => {
+        try {
+            const response = await toggleCouponStatus(coupon.id);
+            const nextActive = response?.isActive ?? response?.data?.isActive;
             setCoupons((prev) =>
                 prev.map((c) =>
-                    c.id === editingCoupon.id
-                        ? {
-                            ...c,
-                            ...formData,
-                            discount: Number(formData.discount),
-                        }
-                        : c
+                    c.id === coupon.id ? { ...c, isActive: typeof nextActive === "boolean" ? nextActive : !c.isActive } : c
                 )
             );
-        } else {
-            setCoupons((prev) => [
-                ...prev,
-                {
-                    ...formData,
-                    discount: Number(formData.discount),
-                    id: Date.now(),
-                    is_active: true,
-                },
-            ]);
+        } catch (error) {
+            console.error("Failed to toggle coupon:", error);
+            alert("Failed to toggle coupon.");
         }
-
-        setShowForm(false);
-        setEditingCoupon(null);
-        setFormData({
-            code: "",
-            discount: "",
-            discountType: "percentage",
-            course: "",
-            start: "",
-            end: "",
-        });
     };
 
     const statusColor = {
@@ -117,10 +105,7 @@ function CouponPage() {
                     </div>
 
                     <button
-                        onClick={() => {
-                            setEditingCoupon(null);
-                            setShowForm(true);
-                        }}
+                        onClick={() => setShowForm(true)}
                         className="flex items-center gap-2 bg-[#D4AF37] text-[#74271E] px-5 py-2 rounded-full text-sm font-semibold shadow-md hover:scale-105 transition"
                     >
                         <Plus size={16} />
@@ -131,6 +116,9 @@ function CouponPage() {
 
             {/* COUPON LIST */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {coupons.length === 0 && (
+                    <div className="text-sm text-[#74271E]/70">No coupons yet. Create one to get started.</div>
+                )}
                 {coupons.map((coupon) => {
                     const status = getStatus(coupon);
 
@@ -153,27 +141,16 @@ function CouponPage() {
                                     </h3>
                                 </div>
 
-                                {coupon.discountType === "percentage" ? (
-                                    <Percent className="text-[#D4AF37]" />
-                                ) : (
-                                    <IndianRupee className="text-[#D4AF37]" />
-                                )}
+                                <Percent className="text-[#D4AF37]" />
                             </div>
 
-                            <p className="text-sm text-[#74271E]/70 mt-2">
-                                Course: <span className="font-semibold">{coupon.course}</span>
-                            </p>
-
-                            {/* 🔥 AUTO TEXT CHANGE */}
                             <p className="text-2xl font-black text-[#74271E] mt-2">
-                                {coupon.discountType === "percentage"
-                                    ? `${coupon.discount}% OFF`
-                                    : `₹${coupon.discount} OFF`}
+                                {coupon.discount}% OFF
                             </p>
 
                             <div className="flex items-center gap-2 text-xs text-[#74271E]/60 mt-3">
                                 <Clock size={14} />
-                                Valid Till {new Date(coupon.end).toLocaleDateString()}
+                                Valid Till {new Date(coupon.endTime).toLocaleDateString()}
                             </div>
 
                             <div className="flex gap-3 mt-4 flex-wrap">
@@ -186,27 +163,7 @@ function CouponPage() {
                                 </button>
 
                                 <button
-                                    onClick={() => {
-                                        setEditingCoupon(coupon);
-                                        setFormData(coupon);
-                                        setShowForm(true);
-                                    }}
-                                    className="flex items-center gap-1 text-xs bg-blue-100 text-blue-600 px-3 py-1 rounded-full hover:bg-blue-600 hover:text-white transition"
-                                >
-                                    <Pencil size={14} />
-                                    Edit
-                                </button>
-
-                                <button
-                                    onClick={() =>
-                                        setCoupons((prev) =>
-                                            prev.map((c) =>
-                                                c.id === coupon.id
-                                                    ? { ...c, is_active: !c.is_active }
-                                                    : c
-                                            )
-                                        )
-                                    }
+                                    onClick={() => handleToggleCoupon(coupon)}
                                     className="text-xs bg-[#D4AF37]/20 text-[#74271E] px-3 py-1 rounded-full hover:bg-[#D4AF37] hover:text-white transition"
                                 >
                                     <Power />
@@ -220,11 +177,11 @@ function CouponPage() {
             {/* MODAL */}
             {showForm && (
                 <div
-                    onClick={() => setShowForm(false)} // ✅ Outside click close
+                    onClick={() => setShowForm(false)}
                     className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
                 >
                     <motion.div
-                        onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
+                        onClick={(e) => e.stopPropagation()}
                         initial={{ opacity: 0, y: 40, scale: 0.96 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 20, scale: 0.96 }}
@@ -232,52 +189,22 @@ function CouponPage() {
                         className="w-[420px] rounded-[28px] overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.2)] relative"
                     >
 
-                        {/* 🔥 TOP HEADER */}
+                        {/* TOP HEADER */}
                         <div className="bg-gradient-to-r from-[#74271E] via-[#8a2a1f] to-[#5a1b14] px-6 py-5 text-white relative">
-
                             <h3 className="text-xl font-black">
-                                {editingCoupon ? "Edit Coupon" : "Create Coupon"}
+                                Create Coupon
                             </h3>
 
-                            {/* ✅ CLOSE BUTTON */}
                             <button
                                 onClick={() => setShowForm(false)}
                                 className="absolute right-4 top-4 text-white/80 hover:text-white transition"
                             >
-                                ✕
+                                âœ•
                             </button>
                         </div>
 
                         {/* FORM BODY */}
                         <div className="bg-[#FBF4E2] p-6 space-y-4">
-
-                            {/* Discount Type */}
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() =>
-                                        setFormData({ ...formData, discountType: "percentage" })
-                                    }
-                                    className={`flex-1 py-2 rounded-xl text-xs font-semibold ${formData.discountType === "percentage"
-                                        ? "bg-[#74271E] text-white"
-                                        : "bg-[#F3E6C9] text-[#74271E]"
-                                        }`}
-                                >
-                                    % Percentage
-                                </button>
-
-                                <button
-                                    onClick={() =>
-                                        setFormData({ ...formData, discountType: "flat" })
-                                    }
-                                    className={`flex-1 py-2 rounded-xl text-xs font-semibold ${formData.discountType === "flat"
-                                        ? "bg-[#74271E] text-white"
-                                        : "bg-[#F3E6C9] text-[#74271E]"
-                                        }`}
-                                >
-                                    ₹ Flat
-                                </button>
-                            </div>
-
                             <input
                                 placeholder="Coupon Code"
                                 value={formData.code}
@@ -288,11 +215,7 @@ function CouponPage() {
                             />
 
                             <input
-                                placeholder={
-                                    formData.discountType === "percentage"
-                                        ? "Discount %"
-                                        : "Flat Amount ₹"
-                                }
+                                placeholder="Discount %"
                                 value={formData.discount}
                                 onChange={(e) =>
                                     setFormData({ ...formData, discount: e.target.value })
@@ -301,28 +224,19 @@ function CouponPage() {
                             />
 
                             <input
-                                placeholder="Course Name"
-                                value={formData.course}
+                                type="datetime-local"
+                                value={formData.startTime}
                                 onChange={(e) =>
-                                    setFormData({ ...formData, course: e.target.value })
+                                    setFormData({ ...formData, startTime: e.target.value })
                                 }
                                 className="w-full px-4 py-3 rounded-xl border border-[#74271E]/20 bg-[#F3E6C9]"
                             />
 
                             <input
                                 type="datetime-local"
-                                value={formData.start}
+                                value={formData.endTime}
                                 onChange={(e) =>
-                                    setFormData({ ...formData, start: e.target.value })
-                                }
-                                className="w-full px-4 py-3 rounded-xl border border-[#74271E]/20 bg-[#F3E6C9]"
-                            />
-
-                            <input
-                                type="datetime-local"
-                                value={formData.end}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, end: e.target.value })
+                                    setFormData({ ...formData, endTime: e.target.value })
                                 }
                                 className="w-full px-4 py-3 rounded-xl border border-[#74271E]/20 bg-[#F3E6C9]"
                             />

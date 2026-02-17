@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Download, FileText, Languages, Play } from 'lucide-react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuthHook';
 import HeroSection from '../component/CourseDetailsUpdated/HeroSection';
 import SidebarCard from '../component/CourseDetailsUpdated/SidebarCard';
 import InstructorSection from '../component/CourseDetailsUpdated/InstructorSection';

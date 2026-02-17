@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
     PieChart,
     Pie,
@@ -7,16 +7,45 @@ import {
     Cell,
 } from "recharts";
 import { motion } from "framer-motion";
+import { getCoursesWithEnrollmentCount } from "../../lib/api";
 
-const data = [
-    { name: "Shlok", value: 45, color: "#4f7cff" },
-    { name: "Spoken Sanskrit", value: 30, color: "#8b5cf6" },
-    { name: "Vyakaran Shastra", value: 15, color: "#22c55e" },
-    { name: "UGC NET", value: 10, color: "#f59e0b" },
-    { name: "BA", value: 12, color: "#FF5B5B" },
-];
+const COLORS = ["#4f7cff", "#8b5cf6", "#22c55e", "#f59e0b", "#FF5B5B", "#14b8a6"];
 
 function SalesChart() {
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const response = await getCoursesWithEnrollmentCount();
+                const payload = response?.data ?? response;
+                const courses = Array.isArray(payload) ? payload : payload?.data || [];
+
+                const total = courses.reduce((sum, course) => sum + (course.enrollmentCount || 0), 0) || 1;
+
+                const chartData = courses
+                    .sort((a, b) => (b.enrollmentCount || 0) - (a.enrollmentCount || 0))
+                    .slice(0, 5)
+                    .map((course, index) => ({
+                        name: course.title || "Course",
+                        value: Math.round(((course.enrollmentCount || 0) / total) * 100),
+                        color: COLORS[index % COLORS.length]
+                    }));
+
+                setData(chartData);
+            } catch (error) {
+                console.error("Failed to load sales chart:", error);
+                setData([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -65,6 +94,7 @@ function SalesChart() {
                                 ))}
                             </Pie>
                             <Tooltip
+                                formatter={(value) => `${value}%`}
                                 contentStyle={{
                                     backgroundColor: "rgba(255, 255, 255, 0.95)",
                                     border: "none",
@@ -91,7 +121,13 @@ function SalesChart() {
                     }}
                     className="space-y-3 mt-4 w-full"
                 >
-                    {data.map((item, index) => (
+                    {loading && (
+                        <div className="text-sm text-slate-500">Loading chart...</div>
+                    )}
+                    {!loading && data.length === 0 && (
+                        <div className="text-sm text-slate-500">No sales data available.</div>
+                    )}
+                    {!loading && data.map((item, index) => (
                         <motion.div
                             key={index}
                             variants={{

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios"; 
-import { useNavigate, useParams } from "react-router-dom"; 
+import { useNavigate, useParams, useLocation } from "react-router-dom"; 
+import { api } from "../../lib/api";
+import { useAuth } from "../../context/useAuthHook";
 import {
   Eye,
   EyeOff,
@@ -10,17 +11,15 @@ import {
   Flower2,
   ArrowLeft,
 } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { registerStudent, loginStudent } from "../../lib/api";
-import { useAuth } from "../../context/AuthContext";
 
 const AuthPage = () => {
   // --- STATES ---
   const [isLogin, setIsLogin] = useState(true);
   const [isForgot, setIsForgot] = useState(false); // Forgot Password toggle
   const [showPass, setShowPass] = useState(false);
-  const [selectedLang, setSelectedLang] = useState("SK");
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
   const { token } = useParams(); // URL se reset token pakadne ke liye
 
   // --- INITIAL FORM STATE ---
@@ -48,7 +47,7 @@ const AuthPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/forgot-password", {
+      const res = await api.post("/auth/forgot-password", {
         email: formData.email,
         role: "STUDENT"
       });
@@ -70,7 +69,7 @@ const AuthPage = () => {
     }
     setLoading(true);
     try {
-      const res = await axios.post(`http://localhost:5000/api/auth/reset-password/${token}`, {
+      const res = await api.post(`/auth/reset-password/${token}`, {
         newPassword: formData.password,
         confirmPassword: formData.confirmPassword
       });
@@ -87,25 +86,35 @@ const AuthPage = () => {
   const handleAuth = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const baseUrl = "http://localhost:5000/api/auth"; 
 
     try {
       if (isLogin) {
-        const res = await axios.post(`${baseUrl}/login`, {
+        const res = await api.post("/auth/login", {
           email: formData.email,
           password: formData.password,
           role: formData.role
         });
-        localStorage.setItem("token", res.data.token);
+        if (res?.data?.token) {
+          login(
+            {
+              email: formData.email,
+              role: res.data.role || formData.role,
+              firstName: formData.firstName,
+              lastName: formData.lastName
+            },
+            res.data.token
+          );
+        }
         setFormData(initialFormData);
-        navigate("/"); 
+        const nextPath = location?.state?.from?.pathname || "/";
+        navigate(nextPath); 
       } else {
         if (formData.password !== formData.confirmPassword) {
           alert("Passwords do not match!");
           setLoading(false);
           return;
         }
-        await axios.post(`${baseUrl}/student/register`, {
+        await api.post("/auth/student/register", {
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,

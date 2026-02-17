@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { setAuthToken } from '../lib/api';
 
@@ -7,9 +7,9 @@ function decodeJwt(token) {
     const payload = token.split('.')[1];
     const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
     return JSON.parse(decodeURIComponent(escape(json)));
-  } catch (e) {
-    return null;
-  }
+  // eslint-disable-next-line no-empty
+  } catch {}
+  return null;
 }
 
 const AuthContext = createContext();
@@ -73,9 +73,8 @@ export function AuthProvider({ children }) {
     setAuthToken(null);
     try {
       navigate('/');
-    } catch (e) {
-      // ignore navigation errors in non-router contexts
-    }
+    // eslint-disable-next-line no-empty
+    } catch {}
   };
 
   const isAuthenticated = !!token && !!user;
@@ -87,8 +86,4 @@ export function AuthProvider({ children }) {
   );
 }
 
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within AuthProvider');
-  return context;
-}
+export { AuthContext };

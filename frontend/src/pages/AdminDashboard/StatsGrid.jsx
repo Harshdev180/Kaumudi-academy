@@ -58,8 +58,8 @@ function StatsGrid() {
     const fetchStats = async () => {
       try {
         const response = await getDashboardStats();
-        const data = response.data || response;
-        
+        const data = response?.data ?? response ?? {};
+
         setStats([
           {
             title: "TOTAL COURSES",
@@ -72,8 +72,8 @@ function StatsGrid() {
             textColor: "text-[#b8973d]",
           },
           {
-            title: "ACTIVE STUDENTS",
-            value: (data.totalStudents || 0).toLocaleString(),
+            title: "TOTAL ENROLLMENTS",
+            value: (data.totalEnrollments || data.activeStudents || 0).toLocaleString(),
             change: "-2%",
             trend: "down",
             icon: Users,

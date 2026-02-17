@@ -15,6 +15,7 @@ import Home from "./pages/Homepage/Home";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
+import RequireAuth from "./components/RequireAuth";
 import About from "./pages/About";
 import FacultyPage from "./pages/FacultyPage";
 import Contact from "./pages/Contact";

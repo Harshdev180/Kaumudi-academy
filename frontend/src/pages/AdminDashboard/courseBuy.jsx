@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuthHook";
 import { 
   User, Mail, Phone, MapPin, Globe, 
   CreditCard, ShieldCheck, GraduationCap, 
@@ -17,12 +17,15 @@ import { createPaymentOrder, verifyPayment, updateStudentProfile } from "../../l
 const EnrollmentPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated, user, token } = useAuth();
-  const [paymentMethod, setPaymentMethod] = useState("upi");
+  const { isAuthenticated, user } = useAuth();
   const [isHovered, setIsHovered] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [couponCode, setCouponCode] = useState("");
+  const [Discount, setDiscount] = useState(0);
+  const [couponError, setCouponError] = useState("");
+  const [isApplying, setIsApplying] = useState(false);
+  const [appliedCouponName, setAppliedCouponName] = useState("");
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -61,7 +64,7 @@ const EnrollmentPage = () => {
     return parseInt(courseData.price.replace(/,/g, '')) || 0;
   }, [courseData.price]);
 
-  const finalPayableAmount = basePrice - discount;
+  // finalPayableAmount = Discount amount is applied via setDiscount() function
 
   // --- COUPON HANDLER ---
   const handleApplyCoupon = async () => {
@@ -86,7 +89,7 @@ const EnrollmentPage = () => {
         }
         setIsApplying(false);
       }, 1000);
-    } catch (err) {
+    } catch {
       setCouponError("Server error. Try again.");
       setIsApplying(false);
     }

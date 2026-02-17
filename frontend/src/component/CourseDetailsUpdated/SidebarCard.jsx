@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { CheckCircle, Flame } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuthHook";
 
 // courseFullData prop add kiya gaya hai
 const SidebarCard = ({ price, courseData }) => {

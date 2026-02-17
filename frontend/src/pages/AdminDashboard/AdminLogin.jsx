@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { ShieldCheck, User, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ShieldCheck, User, Lock, Eye, EyeOff, Loader2, X, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { loginAdmin, setAuthToken } from '../../lib/api';
+import { loginAdmin, loginSuperAdmin, forgotPassword } from '../../lib/api';
+import { useAuth } from '../../context/useAuthHook';
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -10,8 +12,12 @@ const AdminLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('ADMIN');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [openForgot, setOpenForgot] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -22,20 +28,35 @@ const AdminLogin = () => {
     }
     try {
       setIsLoading(true);
-      const data = await loginAdmin(email, password);
+      const loginFn = role === 'SUPER_ADMIN' ? loginSuperAdmin : loginAdmin;
+      const data = await loginFn(email, password);
       const token = data?.token;
-      if (token) {
-        localStorage.setItem('kaumudi_token', token);
-        localStorage.setItem('kaumudi_role', 'ADMIN');
-        localStorage.setItem('kaumudi_user_email', email);
-        setAuthToken(token);
-      }
+      if (token) login({ email, role: data?.role || role }, token);
       navigate('/admin/dashboard');
     } catch (err) {
       const msg = err?.response?.data?.message || 'Admin login failed.';
       setError(msg);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleForgotKey = async () => {
+    if (!forgotEmail.trim()) {
+      alert('Please enter your admin email');
+      return;
+    }
+    try {
+      setForgotLoading(true);
+      const response = await forgotPassword(forgotEmail, role);
+      alert(response?.message || 'Reset link sent to your email. Please check your inbox.');
+      setForgotEmail('');
+      setOpenForgot(false);
+    } catch (err) {
+      const msg = err?.response?.data?.message || 'Failed to send reset link. Please try again.';
+      alert(msg);
+    } finally {
+      setForgotLoading(false);
     }
   };
 
@@ -74,14 +95,31 @@ const AdminLogin = () => {
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">
+          <div className="flex items-center gap-2">
+            {["ADMIN", "SUPER_ADMIN"].map((item) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setRole(item)}
+                className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
+                  role === item
+                    ? "bg-[#5c1c11] text-white shadow"
+                    : "bg-white text-[#5c1c11] border border-[#d4af37]/40"
+                }`}
+              >
+                {item === "ADMIN" ? "Admin" : "Super Admin"}
+              </button>
+            ))}
+          </div>
+
           {/* Administrator ID Field [cite: 145] */}
           <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-gray-600 ml-1">Administrator ID</label>
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-600 ml-1">Admin Email</label>
             <div className="relative group">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#800000] transition-colors" size={18} />
               <input
-                type="text"
-                placeholder="Enter admin username"
+                type="email"
+                placeholder="admin@kaumudi.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800000]/20 focus:border-[#800000] transition-all font-sans"
@@ -94,7 +132,7 @@ const AdminLogin = () => {
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <label className="text-xs font-bold uppercase tracking-wider text-gray-600 ml-1">Access Key</label>
-              <button type="button" className="text-xs text-[#800000] hover:underline font-sans">Forgot Key?</button>
+              <button type="button" onClick={() => setOpenForgot(true)} className="text-xs text-[#800000] hover:underline font-sans">Forgot Key?</button>
             </div>
             <div className="relative group">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#800000] transition-colors" size={18} />
@@ -145,8 +183,7 @@ const AdminLogin = () => {
             )}
           </button>
         </form>
-
-          {/* 👉 NEW REGISTER OPTION (SMOOTH UI) */}
+        <div>          {/* 👉 NEW REGISTER OPTION (SMOOTH UI) */}
           <p className="text-sm text-center text-[#8D6F61] mt-6">
             Don’t have an admin account?
             <span
