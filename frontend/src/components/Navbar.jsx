@@ -34,6 +34,22 @@ const underlineVariants = {
   visible: { scaleX: 1 },
 };
 
+const mobileListContainer = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.06, delayChildren: 0.08 },
+  },
+};
+
+const mobileItem = {
+  hidden: { opacity: 0, y: 6 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.25, ease: "easeOut" },
+  },
+};
+
 /* ------------------ COMPONENT ------------------ */
 
 export default function Navbar() {
@@ -60,6 +76,23 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  /* Close on route change */
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  /* Body scroll lock when mobile menu is open */
+  useEffect(() => {
+    try {
+      document.body.style.overflow = open ? "hidden" : "";
+    } catch {}
+    return () => {
+      try {
+        document.body.style.overflow = "";
+      } catch {}
+    };
+  }, [open]);
 
   return (
     <nav
@@ -157,6 +190,9 @@ export default function Navbar() {
           <button
             onClick={() => setOpen((v) => !v)}
             className="md:hidden p-2 rounded-xl bg-[#d6b15c]/15 text-[#d6b15c] hover:bg-[#d6b15c]/25 transition-colors focus:outline-none"
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            aria-label="Toggle navigation"
           >
             {open ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -166,57 +202,83 @@ export default function Navbar() {
       {/* ---------------- MOBILE MENU ---------------- */}
       <AnimatePresence>
         {open && (
-          <motion.div
-            variants={mobileMenuVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            className="md:hidden bg-[#74271E] border-t border-[#dccbb4]/25 overflow-hidden"
-          >
-            <div className="px-6 py-6 space-y-5">
-              {/* Profile link in Mobile Menu */}
-              {isLoggedIn && (
-                <Link
-                  to="/profile"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 text-[#d6b15c]"
-                >
-                  <User size={20} />
-                  <span className="font-bold">My Profile</span>
-                </Link>
-              )}
-
-              {NAV_ITEMS.map(({ label, to }) => (
-                <Link
-                  key={label}
-                  to={to}
-                  onClick={() => setOpen(false)}
-                  className={`block text-lg font-medium tracking-wide transition-colors ${
-                    pathname === to ? "text-[#d6b15c]" : "text-[#e6d0bd] hover:text-[#d6b15c]"
-                  }`}
-                >
-                  {label}
-                </Link>
-              ))}
-
-              <div className="pt-5 border-t border-[#dccbb4]/25">
-                {isLoggedIn ? (
-                  <button 
-                    onClick={handleLogout} 
-                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#d6b15c] text-[#74271E] border border-[#d6b15c] font-bold text-lg"
-                  >
-                    <LogOut size={20} /> Logout
-                  </button>
-                ) : (
-                  <Link to="/auth" onClick={() => setOpen(false)}>
-                    <span className="block text-center py-3 rounded-xl bg-[#d6b15c] text-[#74271E] font-bold text-lg shadow-lg">
-                      Student Login
-                    </span>
-                  </Link>
+          <>
+            {/* Backdrop */}
+            <motion.div
+              className="fixed inset-0 z-40 bg-black/40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
+            />
+            {/* Panel */}
+            <motion.div
+              id="mobile-menu"
+              role="dialog"
+              aria-modal="true"
+              variants={mobileMenuVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="md:hidden relative z-50 bg-[#74271E] border-t border-[#dccbb4]/25 overflow-hidden"
+            >
+              <motion.div
+                variants={mobileListContainer}
+                initial="hidden"
+                animate="show"
+                className="px-6 py-6 space-y-5"
+              >
+                {/* Profile link in Mobile Menu */}
+                {isLoggedIn && (
+                  <motion.div variants={mobileItem}>
+                    <Link
+                      to="/profile"
+                      onClick={() => setOpen(false)}
+                      className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 text-[#d6b15c]"
+                    >
+                      <User size={20} />
+                      <span className="font-bold">My Profile</span>
+                    </Link>
+                  </motion.div>
                 )}
-              </div>
-            </div>
-          </motion.div>
+
+                {NAV_ITEMS.map(({ label, to }) => (
+                  <motion.div key={label} variants={mobileItem}>
+                    <Link
+                      to={to}
+                      onClick={() => setOpen(false)}
+                      className={`block text-lg font-medium tracking-wide transition-colors ${
+                        pathname === to ? "text-[#d6b15c]" : "text-[#e6d0bd] hover:text-[#d6b15c]"
+                      }`}
+                    >
+                      {label}
+                    </Link>
+                  </motion.div>
+                ))}
+
+                <div className="pt-5 border-t border-[#dccbb4]/25">
+                  {isLoggedIn ? (
+                    <motion.div variants={mobileItem}>
+                      <button 
+                        onClick={handleLogout} 
+                        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#d6b15c] text-[#74271E] border border-[#d6b15c] font-bold text-lg"
+                      >
+                        <LogOut size={20} /> Logout
+                      </button>
+                    </motion.div>
+                  ) : (
+                    <motion.div variants={mobileItem}>
+                      <Link to="/auth" onClick={() => setOpen(false)}>
+                        <span className="block text-center py-3 rounded-xl bg-[#d6b15c] text-[#74271E] font-bold text-lg shadow-lg">
+                          Student Login
+                        </span>
+                      </Link>
+                    </motion.div>
+                  )}
+                </div>
+              </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </nav>

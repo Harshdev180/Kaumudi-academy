@@ -32,7 +32,14 @@ const CourseDetails = () => {
   };
 
   // 2. NEW LOGIC: Sirf Title, Price, Level, Image aur Description update hoga
-  const incomingData = location.state?.course;
+  const incomingData = location.state?.course || (() => {
+    try {
+      const s = localStorage.getItem("course");
+      return s ? JSON.parse(s) : null;
+    } catch {
+      return null;
+    }
+  })();
   
   const courseData = incomingData ? {
     ...defaultCourse, // Baaki sab (instructor, curriculum etc.) default rahega

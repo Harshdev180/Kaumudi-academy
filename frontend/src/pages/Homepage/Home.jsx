@@ -53,17 +53,17 @@ export default function Home() {
       <section
         aria-label="Hero Section"
         id="hero"
-        className="relative min-h-screen w-full overflow-hidden flex items-center justify-center shadow-[0_40px_120px_-30px_rgba(0,0,0,0.5)] bg-cover bg-center"
+        className="relative min-h-[90vh] md:min-h-screen w-full overflow-hidden flex items-center justify-center shadow-[0_40px_120px_-30px_rgba(0,0,0,0.5)] bg-cover bg-center"
         style={heroBackground}
       >
         {/* Soft overlay */}
         <div className="absolute inset-0 bg-black/20 pointer-events-none" />
 
         {/* CONTENT */}
-        <div className="relative z-10 w-full px-6 sm:px-12 md:px-28 xl:px-44 flex flex-col items-center text-center pt-20">
+        <div className="relative z-10 w-full px-4 sm:px-8 md:px-16 lg:px-24 xl:px-44 flex flex-col items-center text-center pt-24 pb-16">
           {/* Sanskrit Verse */}
-          <div className="min-h-[160px] flex items-center justify-center">
-            <h1 className="text-3xl sm:text-4xl md:text-4xl xl:text-5xl font-serif font-black leading-relaxed tracking-wide text-[#d6b15c] whitespace-pre-line">
+          <div className="min-h-[128px] sm:min-h-[160px] flex items-center justify-center">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl xl:text-5xl font-serif font-black leading-relaxed tracking-wide text-[#d6b15c] whitespace-pre-line">
               <Typewriter
                 text={`असतो मा सद्गमय, तमसो मा ज्योतिर्गमय । 
 मृत्योर्मा अमृतं गमय ॥`}
@@ -84,23 +84,23 @@ export default function Home() {
             {/* Divider */}
             <div className="w-32 h-[3px] bg-[#d6b15c] mb-12 rounded-full" />
 
-            <h2 className="text-4xl sm:text-5xl xl:text-6xl font-extrabold tracking-wide text-white">
+            <h2 className="text-3xl sm:text-4xl xl:text-6xl font-extrabold tracking-wide text-white">
               Rediscover the Power of{" "}
               <span className="text-[#d6b15c] font-serif italic">Sanskrit</span>
             </h2>
 
-            <p className="mt-8 max-w-5xl text-base sm:text-xl md:text-2xl leading-relaxed font-serif text-white/95">
+            <p className="mt-6 max-w-5xl text-sm sm:text-base md:text-xl leading-relaxed font-serif text-white/95">
               Immerse yourself in the profound heritage of classical Sanskrit
               through our curated traditional and modern learning programs.
             </p>
 
             {/* CTA Buttons */}
-            <div className="mt-16 flex flex-wrap justify-center gap-8">
+            <div className="mt-10 sm:mt-14 flex flex-wrap justify-center gap-6 sm:gap-8">
               <Link to="/allcourses" aria-label="Explore Courses">
                 <motion.span
                   whileHover={buttonHover}
                   whileTap={buttonTap}
-                  className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-[#d6b15c] text-[#74271E] font-bold text-lg md:text-xl tracking-wide shadow-2xl hover:shadow-[0_25px_60px_rgba(0,0,0,0.45)] transition"
+                  className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-[#d6b15c] text-[#74271E] font-bold text-base sm:text-lg md:text-xl tracking-wide shadow-2xl hover:shadow-[0_25px_60px_rgba(0,0,0,0.45)] transition"
                 >
                   Explore Courses
                 </motion.span>
@@ -110,7 +110,7 @@ export default function Home() {
                 <motion.span
                   whileHover={buttonHover}
                   whileTap={buttonTap}
-                  className="inline-flex items-center justify-center px-8 py-4 rounded-full border-2 border-white/30 bg-white/10 backdrop-blur-md text-white font-bold text-lg md:text-xl shadow-xl hover:bg-white/20 transition"
+                  className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded-full border-2 border-white/30 bg-white/10 backdrop-blur-md text-white font-bold text-base sm:text-lg md:text-xl shadow-xl hover:bg-white/20 transition"
                 >
                   Contact Academy
                 </motion.span>

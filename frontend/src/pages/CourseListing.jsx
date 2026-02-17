@@ -220,7 +220,7 @@ const AllCoursesPage = () => {
       <header className="px-4 lg:px-10 pt-6 pb-14 max-w-screen-2xl mx-auto">
         <div className="relative h-[420px] rounded-3xl overflow-hidden shadow-2xl border border-[#E2D4A6]/50">
           <img
-            src="https://images.unsplash.com/photo-1544640808-32ca72ac7f37?auto=format&fit=crop&q=80&w=1600"
+            src="https://i.pinimg.com/736x/c6/3c/1d/c63c1d8721a4226db27c8a2b6fd3448e.jpg"
             alt="Ancient Sanskrit Manuscripts"
             className="absolute inset-0 w-full h-full object-cover"
           />
@@ -607,8 +607,16 @@ const AllCoursesPage = () => {
                           ₹{course.price}
                         </span>
                         <Link
-                          to={`/coursedetail/${course.id}`}
+                          to="/coursedetail"
                           state={{ course }}
+                          onClick={() => {
+                            try {
+                              localStorage.setItem(
+                                "course",
+                                JSON.stringify(course),
+                              );
+                            } catch {}
+                          }}
                           className="flex items-center gap-2 px-4 py-2.5 bg-[#c9a84e] text-white text-xs font-bold uppercase tracking-wider rounded-md transition-all duration-300 hover:bg-[#b38b3f] shadow-sm hover:shadow-md active:scale-95 group/link"
                         >
                           <span>Learn More</span>
