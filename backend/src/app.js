@@ -9,6 +9,8 @@ import enrollmentRoutes from "./routes/enrollment.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import testimonialRoutes from "./routes/testimonial.routes.js"
 import studentRoutes from "./routes/student.routes.js"
+import staffRoutes from "./routes/staff.routes.js";
+
 // import mongoSanitize from "express-mongo-sanitize";
 // import xss from "xss-clean";
 import contactRoutes from "./routes/contact.routes.js"
@@ -42,6 +44,9 @@ app.use("/api", dashboardRoutes);
 app.use("/api", testimonialRoutes)
 app.use("/api", contactRoutes)
 app.use("/api", studentRoutes)
+app.use("/api", staffRoutes);
+
+
 
 app.use("/health",(_,res)=>{
   res.status(200).json({
