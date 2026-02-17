@@ -56,10 +56,10 @@ const AllCoursesPage = () => {
       const mapped = finalList.map((c) => {
         // Handle price formatting - extract numeric value
         let priceValue = c.price || 0;
-        if (typeof priceValue === 'string') {
-          priceValue = parseInt(priceValue.replace(/[^0-9]/g, '')) || 0;
+        if (typeof priceValue === "string") {
+          priceValue = parseInt(priceValue.replace(/[^0-9]/g, "")) || 0;
         }
-        
+
         return {
           id: c._id || c.id,
           title: c.title || c.name || "Untitled Course",
@@ -69,13 +69,17 @@ const AllCoursesPage = () => {
           level: c.level || "All Levels",
           duration: c.duration || "",
           price: typeof priceValue === "number" ? priceValue : 0,
-          priceFormatted: `₹${(typeof priceValue === "number" ? priceValue : 0).toLocaleString('en-IN')}`,
+          priceFormatted: `₹${(typeof priceValue === "number" ? priceValue : 0).toLocaleString("en-IN")}`,
           image: c.image?.url || c.image || null,
           raw: c,
         };
       });
 
-      console.debug("CourseListing: fetched courses count=", mapped.length, mapped[0]);
+      console.debug(
+        "CourseListing: fetched courses count=",
+        mapped.length,
+        mapped[0],
+      );
       setCourses(mapped);
     } catch (err) {
       setError("Failed to load courses");
@@ -124,7 +128,9 @@ const AllCoursesPage = () => {
           : course.instructor?.name || "";
 
       const matchesSearch =
-        (course.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (course.title || "")
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
         instructorName.toLowerCase().includes(searchQuery.toLowerCase());
 
       const matchesCategory =
@@ -153,7 +159,14 @@ const AllCoursesPage = () => {
         matchesDuration
       );
     });
-  }, [searchQuery, activeCategory, modeFilter, levelFilter, durationFilter, courses]);
+  }, [
+    searchQuery,
+    activeCategory,
+    modeFilter,
+    levelFilter,
+    durationFilter,
+    courses,
+  ]);
 
   const isFiltered =
     searchQuery !== "" ||
@@ -218,7 +231,7 @@ const AllCoursesPage = () => {
       <header className="px-4 lg:px-10 pt-6 pb-14 max-w-screen-2xl mx-auto">
         <div className="relative h-[420px] rounded-3xl overflow-hidden shadow-2xl border border-[#E2D4A6]/50">
           <img
-            src="https://images.unsplash.com/photo-1544640808-32ca72ac7f37?auto=format&fit=crop&q=80&w=1600"
+            src="https://i.pinimg.com/736x/c6/3c/1d/c63c1d8721a4226db27c8a2b6fd3448e.jpg"
             alt="Ancient Sanskrit Manuscripts"
             className="absolute inset-0 w-full h-full object-cover"
           />
@@ -621,9 +634,13 @@ const AllCoursesPage = () => {
                         <button
                           onClick={() => {
                             if (isAuthenticated) {
-                              navigate(`/coursedetail/${course.id}`, { state: { course: course } });
+                              navigate(`/coursedetail/${course.id}`, {
+                                state: { course: course },
+                              });
                             } else {
-                              navigate("/auth", { state: { from: `/coursedetail/${course.id}` } });
+                              navigate("/auth", {
+                                state: { from: `/coursedetail/${course.id}` },
+                              });
                             }
                           }}
                           className="flex items-center  gap-2 px-3 py-2 bg-[#c9a84e] text-white text-[10px] font-bold uppercase tracking-wider rounded-md transition-all duration-300 hover:bg-[#b38b3f] shadow-sm active:scale-95 group/link"

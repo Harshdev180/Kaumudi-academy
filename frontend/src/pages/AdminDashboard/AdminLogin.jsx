@@ -89,7 +89,7 @@ const AdminLogin = () => {
           <img
             src="https://i.pinimg.com/1200x/06/72/38/0672383215952a5cfc406218c734a067.jpg"
             alt="Sanskrit Guru"
-            className="w-full h-[480px] object-cover"
+            className="w-full h-120 object-cover"
           />
 
           <div className="absolute inset-0 bg-gradient-to-t from-[#5c1c11]/60 via-transparent to-transparent flex items-end p-8">

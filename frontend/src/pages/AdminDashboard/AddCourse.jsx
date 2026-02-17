@@ -55,7 +55,7 @@ const AddCourse = ({
                     animate={{ x: 0 }}
                     exit={{ x: "100%" }}
                     transition={{ type: "spring", damping: 20 }}
-                    className="fixed right-4 top-4 bottom-4 w-[95%] max-w-[500px] bg-[#F7EFE6] rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden"
+                    className="fixed right-4 top-4 bottom-4 w-[95%] max-w-125 bg-[#F7EFE6] rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden"
                 >
 
                     {/* HEADER */}

@@ -2,7 +2,10 @@ import Course from "../models/Course.model.js";
 import cloudinary from "../configs/cloudinary.js";
 import fs from "fs";
 
-
+/**
+ * CREATE COURSE (ADMIN)
+ * Image is REQUIRED while creating a course
+ */
 export const createCourse = async (req, res) => {
   try {
     const {
@@ -17,24 +20,32 @@ export const createCourse = async (req, res) => {
       endDate
     } = req.body;
 
-    let imageData = {};
-
-    if (req.file) {
-      const upload = await cloudinary.uploader.upload(req.file.path, {
-        folder: "kaumudi/courses"
+    // ✅ Industry standard: thumbnail image must be present
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Course thumbnail image is required"
       });
-
-      imageData = {
-        public_id: upload.public_id,
-        url: upload.secure_url
-      };
-       if (req.file && fs.existsSync(req.file.path)) {
-  fs.unlinkSync(req.file.path);
-}
-
     }
 
-    const acourse = await Course.create({
+    /**
+     * Upload image to Cloudinary
+     */
+    const upload = await cloudinary.uploader.upload(req.file.path, {
+      folder: "kaumudi/courses"
+    });
+
+    // Clean up local file after upload
+    if (fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+
+    const imageData = {
+      public_id: upload.public_id,
+      url: upload.secure_url
+    };
+
+    const course = await Course.create({
       title,
       description,
       syllabus,
@@ -48,23 +59,28 @@ export const createCourse = async (req, res) => {
       createdBy: req.user._id
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Course created successfully",
-      data: acourse
+      data: course
     });
   } catch (error) {
     console.error("CREATE COURSE ERROR:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to create course"
     });
   }
 };
 
+/**
+ * UPDATE COURSE (ADMIN)
+ * Image is OPTIONAL while updating
+ */
 export const updateCourse = async (req, res) => {
   try {
     const course = await Course.findById(req.params.id);
+
     if (!course) {
       return res.status(404).json({
         success: false,
@@ -72,12 +88,16 @@ export const updateCourse = async (req, res) => {
       });
     }
 
-    
+    // ❌ Protect restricted fields
     delete req.body.createdBy;
     delete req.body._id;
     delete req.body.status;
 
+    /**
+     * If new image uploaded → replace old one
+     */
     if (req.file) {
+      // Remove old image from Cloudinary
       if (course.image?.public_id) {
         await cloudinary.uploader.destroy(course.image.public_id);
       }
@@ -86,28 +106,35 @@ export const updateCourse = async (req, res) => {
         folder: "kaumudi/courses"
       });
 
+      // Cleanup local file
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+
       course.image = {
         public_id: upload.public_id,
         url: upload.secure_url
       };
     }
 
+    // Update remaining fields safely
     Object.assign(course, req.body);
     await course.save();
 
-    res.json({
+    return res.json({
       success: true,
       message: "Course updated successfully",
       data: course
     });
   } catch (error) {
     console.error("UPDATE COURSE ERROR:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to update course"
     });
   }
 };
+
 
 
 export const deleteCourse = async (req, res) => {
@@ -179,21 +206,6 @@ export const getAllCourses = async (req, res) => {
   });
 };
 
-// export const getAllCourses = async (req, res) => {
-//   const now = new Date();
-
-//   const courses = await Course.find({
-//     status: "ACTIVE",
-//     endDate: { $gte: now }
-//   })
-//     .select("-price")
-//     .sort({ createdAt: -1 });
-
-//   res.json({
-//     success: true,
-//     data: courses
-//   });
-// };
 
 
 export const getCourseDetail = async (req, res) => {
