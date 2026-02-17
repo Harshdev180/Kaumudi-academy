@@ -3,7 +3,8 @@ import {
   createCoupon,
   updateCoupon,
   toggleCouponStatus,
-  getAllCoupons
+  getAllCoupons,
+  getAllCouponsForAdmin
 } from "../controllers/coupon.controller.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
@@ -17,6 +18,12 @@ const router = express.Router();
  * PUBLIC
  */
 router.get("/coupon", getAllCoupons);
+router.get(
+  "/coupon/admin/all",
+  authMiddleware,
+  roleMiddleware("ADMIN", "SUPER_ADMIN"),
+  getAllCouponsForAdmin
+);
 
 /**
  * ADMIN
@@ -24,7 +31,7 @@ router.get("/coupon", getAllCoupons);
 router.post(
   "/coupon",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("ADMIN", "SUPER_ADMIN"),
   validateBody(createCouponSchema),
   createCoupon
 );
@@ -32,7 +39,7 @@ router.post(
 router.put(
   "/coupon/:id",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("ADMIN", "SUPER_ADMIN"),
   validateBody(createCouponSchema),
   updateCoupon
 );
@@ -40,7 +47,7 @@ router.put(
 router.patch(
   "/coupon/:id/status",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("ADMIN", "SUPER_ADMIN"),
   toggleCouponStatus
 );
 

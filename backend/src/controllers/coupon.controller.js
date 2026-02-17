@@ -52,15 +52,12 @@ export const updateCoupon = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const coupon = await Coupon.findOne({
-      _id: id,
-      createdBy: req.user._id
-    });
+    const coupon = await Coupon.findById(id);
 
     if (!coupon) {
       return res.status(404).json({
         success: false,
-        message: "Coupon not found or access denied"
+        message: "Coupon not found"
       });
     }
 
@@ -101,15 +98,12 @@ export const toggleCouponStatus = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const coupon = await Coupon.findOne({
-      _id: id,
-      createdBy: req.user._id
-    });
+    const coupon = await Coupon.findById(id);
 
     if (!coupon) {
       return res.status(404).json({
         success: false,
-        message: "Coupon not found or access denied"
+        message: "Coupon not found"
       });
     }
 
@@ -150,6 +144,26 @@ export const getAllCoupons = async (req, res) => {
     });
   } catch (error) {
     console.error("GET COUPONS ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch coupons"
+    });
+  }
+};
+
+/**
+ * GET ALL COUPONS (ADMIN)
+ * GET /coupon/admin/all
+ */
+export const getAllCouponsForAdmin = async (req, res) => {
+  try {
+    const coupons = await Coupon.find().sort({ createdAt: -1 });
+    return res.status(200).json({
+      success: true,
+      data: coupons
+    });
+  } catch (error) {
+    console.error("GET ADMIN COUPONS ERROR:", error);
     return res.status(500).json({
       success: false,
       message: "Failed to fetch coupons"

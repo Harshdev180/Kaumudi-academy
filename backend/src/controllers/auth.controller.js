@@ -140,11 +140,29 @@ export const login = async (req, res) => {
     }
 
     const token = generateToken(account._id, role);
+    const baseUser = {
+      id: account._id,
+      email: account.email,
+      role
+    };
+    const user =
+      role === "STUDENT"
+        ? {
+            ...baseUser,
+            firstName: account.firstName || "",
+            lastName: account.lastName || "",
+            name: `${account.firstName || ""} ${account.lastName || ""}`.trim()
+          }
+        : {
+            ...baseUser,
+            name: account.name || ""
+          };
 
     res.status(200).json({
       success: true,
       token,
-      role
+      role,
+      user
     });
   } catch (error) {
     console.log("LOGIN ERROR:", error);

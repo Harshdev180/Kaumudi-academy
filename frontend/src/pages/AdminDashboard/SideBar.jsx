@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   BookOpen,
   LayoutDashboard,
@@ -16,7 +17,8 @@ import { useAuth } from "../../context/useAuthHook";
 function Sidebar({ collapsed, setCollapsed }) {
 
   const location = useLocation();
-  const { user, loading } = useAuth();
+  const { user, loading, logout } = useAuth();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const displayName = (() => {
     if (user?.name) return user.name;
@@ -58,6 +60,11 @@ function Sidebar({ collapsed, setCollapsed }) {
   const profileName = loading ? "Loading..." : displayName;
   const profileRole = loading ? "Checking..." : displayRole;
   const profileInitials = loading ? "--" : initials;
+
+  const confirmLogout = () => {
+    setShowLogoutModal(false);
+    logout("/admin-login");
+  };
 
   const menuItems = [
     { path: "/admin/dashboard", label: "Dashboard", icon: <LayoutDashboard size={18} /> },

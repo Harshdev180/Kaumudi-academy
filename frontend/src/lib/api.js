@@ -156,8 +156,13 @@ export async function createCoupon(couponData) {
   return res.data;
 }
 
+export async function getAllCouponsForAdmin() {
+  const res = await api.get("/coupon/admin/all");
+  return res.data;
+}
+
 export async function toggleCouponStatus(couponId) {
-  const res = await api.patch(`/coupon/${couponId}/toggle`);
+  const res = await api.patch(`/coupon/${couponId}/status`);
   return res.data;
 }
 

@@ -90,18 +90,19 @@ export function AuthProvider({ children }) {
     localStorage.setItem('kaumudi_role', role);
   };
 
-  const logout = () => {
+  const logout = (redirectTo = '/') => {
     setUser(null);
     setToken(null);
     localStorage.removeItem('kaumudi_token');
     localStorage.removeItem('kaumudi_user_email');
+    localStorage.removeItem('kaumudi_user_id');
     localStorage.removeItem('kaumudi_role');
     localStorage.removeItem('kaumudi_user_first_name');
     localStorage.removeItem('kaumudi_user_last_name');
     localStorage.removeItem('kaumudi_user_name');
     setAuthToken(null);
     try {
-      navigate('/');
+      navigate(redirectTo);
     // eslint-disable-next-line no-empty
     } catch {}
   };

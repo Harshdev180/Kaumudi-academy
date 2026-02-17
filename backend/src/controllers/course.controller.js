@@ -197,7 +197,6 @@ export const getAllCourses = async (req, res) => {
   const courses = await Course.find({
     status: "ACTIVE"
   })
-  .select("-price")
   .sort({ createdAt: -1 });
 
   res.json({
