@@ -21,15 +21,6 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 
-// ================= STUDENT DASHBOARD =================
-import StudentLayout from "./pages/StudentProfile/Layout";
-import StudentDashboard from "./pages/StudentProfile/Dashboard";
-import StudentCourses from "./pages/StudentProfile/Courses";
-import Certifications from "./pages/StudentProfile/Certifications";
-import Profile from "./pages/StudentProfile/Profile";
-import Settings from "./pages/StudentProfile/Settings";
-// Removed invalid import: StudentProfile.jsx does not exist
-
 // ================= ADMIN DASHBOARD =================
 import AdminLayout from "./pages/AdminDashboard/AdminLayout";
 import Dashboard from "./pages/AdminDashboard/Dashboard";
@@ -45,7 +36,7 @@ import AdminSettings from "./pages/AdminDashboard/AdminSettings.jsx";
 import AdminStaffSalary from "./pages/AdminDashboard/AdminStaffSalary.jsx";
 import StudentManagement from "./pages/AdminDashboard/Student/StudentManagement.jsx";
 
-// ================= PUBLIC LAYOUT =================
+// ================= STUDENT DASHBOARD =================
 import StudentLayout from "./pages/StudentProfile/Layout";
 import StudentDashboard from "./pages/StudentProfile/Dashboard";
 import StudentCourses from "./pages/StudentProfile/Courses";
