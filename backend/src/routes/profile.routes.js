@@ -2,6 +2,8 @@ import express from "express";
 import {
   getMyEnrollments,
   getMyCertificates,
+    getDashboardStats,
+    getRecentEnrollments,
   getMyProfile,
   updateMyProfile,
   getMySettings,
@@ -40,5 +42,7 @@ router.put("/me", updateMyProfile);
  */
 router.get("/settings", getMySettings);
 router.put("/settings", updateMySettings);
+router.get("/stats", getDashboardStats);
+router.get("/recent", getRecentEnrollments);
 
 export default router;
