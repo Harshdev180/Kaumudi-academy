@@ -97,40 +97,22 @@ function App() {
           }
         />
 
-        <Route
-          path="/profile"
-          element={
-            <RequireAuth>
-              <Navigate to="/student/dashboard" replace />
-            </RequireAuth>
-          }
-        />
+        {/* ========= STUDENT DASHBOARD ========= */} 
+        <Route path="/student" element={<StudentLayout />}>
+          <Route index element={<StudentDashboard />} />
+          <Route path="overview" element={<StudentDashboard />} />
+          <Route path="courses" element={<StudentCourses />} />
+          <Route path="certifications" element={<Certifications />} />
+          <Route path="payments" element={<FeePurchase />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
+
 
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsConditions />} />
         <Route path="/cookies" element={<CookiePolicy />} />
       </Route>
-
-      {/* ========= STUDENT DASHBOARD ========= */}
-      <Route
-        path="/student"
-        element={
-          <RequireAuth>
-            <StudentLayout />
-          </RequireAuth>
-        }
-      >
-        
-        <Route path="/student" element={<StudentLayout />}>
-        <Route index element={<StudentDashboard />} />
-        <Route path="overview" element={<StudentDashboard />} />
-        <Route path="courses" element={<StudentCourses />} />
-        <Route path="certifications" element={<Certifications />} />
-        <Route path="payments" element={<FeePurchase />} />
-        <Route path="settings" element={<Settings />} />
-      </Route>
-      </Route>
-
+      
       {/* NEW: Student Dashboard Routes (No Public Navbar/Footer) */}
       {/* <Route path="/student" element={<StudentLayout />}>
         <Route index element={<StudentDashboard />} />

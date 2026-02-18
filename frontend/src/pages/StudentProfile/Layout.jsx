@@ -34,9 +34,9 @@ const Layout = () => {
                 <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#f7f1e3]"></span>
               </button>
               {/* Replaced navy blue border/bg with #74271E */}
-              <div className="w-11 h-11 rounded-2xl border-2 border-white shadow-md overflow-hidden bg-[#74271E]">
+              {/* <div className="w-11 h-11 rounded-2xl border-2 border-white shadow-md overflow-hidden bg-[#74271E]">
                 <img src="https://i.pravatar.cc/150?u=arjun" alt="Profile" className="w-full h-full object-cover" />
-              </div>
+              </div> */}
             </div>
           </div>
         </header>

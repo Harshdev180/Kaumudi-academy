@@ -121,7 +121,7 @@ const AuthPage = () => {
         const userRole = res?.data?.role || formData.role;
         const fallback =
           userRole === "STUDENT"
-            ? "/student/dashboard"
+            ? "/student/overview"
             : userRole === "ADMIN" || userRole === "SUPER_ADMIN"
             ? "/admin"
             : "/profile";
