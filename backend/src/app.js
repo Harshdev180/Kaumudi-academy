@@ -4,12 +4,16 @@ import authRoutes from "./routes/auth.routes.js";
 import courseRoutes from "./routes/course.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
 import couponRoutes from "./routes/coupon.routes.js";
-import inquiryRoutes from "./routes/inquiry.routes.js";
 import enrollmentRoutes from "./routes/enrollment.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import testimonialRoutes from "./routes/testimonial.routes.js"
 import studentRoutes from "./routes/student.routes.js"
 import staffRoutes from "./routes/staff.routes.js";
+import adminStudentRoutes from "./routes/adminStudent.routes.js";
+import inquiryRoutes from "./routes/inquiry.routes.js";
+import adminInquiryRoutes from "./routes/adminInquiry.routes.js";
+
+
 
 // import mongoSanitize from "express-mongo-sanitize";
 // import xss from "xss-clean";
@@ -38,14 +42,15 @@ app.use("/api", authRoutes);
 app.use("/api", courseRoutes);
 app.use("/api", paymentRoutes)
 app.use("/api", couponRoutes);
-app.use("/api", inquiryRoutes);
 app.use("/api", enrollmentRoutes);
 app.use("/api", dashboardRoutes);
 app.use("/api", testimonialRoutes)
 app.use("/api", contactRoutes)
 app.use("/api", studentRoutes)
 app.use("/api", staffRoutes);
-
+app.use("/api", adminStudentRoutes);
+app.use("/api", inquiryRoutes);
+app.use("/api", adminInquiryRoutes);
 
 
 app.use("/health",(_,res)=>{

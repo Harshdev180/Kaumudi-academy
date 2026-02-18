@@ -1,46 +1,178 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Phone, Mail, Search, Trash2, Loader2, Calendar, Clock, CheckCircle } from 'lucide-react';
+import {
+    getAdminInquiries,
+    updateAdminInquiryStatus,
+    deleteAdminInquiry
+} from "../../lib/api";
+
+const formatPreferredLevel = (level) => {
+    if (!level) return "General";
+    return level.charAt(0) + level.slice(1).toLowerCase();
+};
+
+const formatDate = (date) => {
+    try {
+        return new Intl.DateTimeFormat("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        }).format(date);
+    } catch {
+        return "";
+    }
+};
+
+const formatRelativeTime = (date) => {
+    const diffMs = Date.now() - date.getTime();
+    const diffSec = Math.floor(diffMs / 1000);
+    if (diffSec < 60) return "just now";
+    const diffMin = Math.floor(diffSec / 60);
+    if (diffMin < 60) return `${diffMin}m ago`;
+    const diffHr = Math.floor(diffMin / 60);
+    if (diffHr < 24) return `${diffHr}h ago`;
+    const diffDay = Math.floor(diffHr / 24);
+    return `${diffDay}d ago`;
+};
+
+const mapStatusToLabel = (status) => {
+    if (status === "CONTACTED") return "Contacted";
+    if (status === "CLOSED") return "Closed";
+    return "New";
+};
 
 const LeadManagement = () => {
     const [leads, setLeads] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
     const [selectedLead, setSelectedLead] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [activeFilter, setActiveFilter] = useState("All Leads");
+    const [updating, setUpdating] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
-        // Simulating data fetch
-        setTimeout(() => {
-            setLeads([
-                { id: 1, name: "Aryan Sharma", course: "Advanced Paninian Grammar", time: "2h ago", status: "New", email: "aryan@example.com", phone: "+91 98765 43210", date: "24 Oct 2023" },
-                { id: 2, name: "Meera Iyer", course: "Sanskrit Vyakaran", time: "3h ago", status: "Contacted", email: "meera@example.com", phone: "+91 99887 76655", date: "23 Oct 2023" },
-                { id: 3, name: "Besic Sharma", course: "Vedic Chanting", time: "1d ago", status: "Follow-up", email: "besic@example.com", phone: "+91 88776 65544" }
+        const fetchLeads = async () => {
+            try {
+                setLoading(true);
+                setError("");
+                const all = [];
+                let page = 1;
+                const limit = 50;
+                let total = null;
 
-            ]);
-            setLoading(false);
-        }, 800);
+                while (true) {
+                    const response = await getAdminInquiries({ page, limit });
+                    const payload = response?.data ?? response;
+                    const list = payload?.data ?? payload ?? [];
+                    const pagination = payload?.pagination ?? response?.pagination;
+                    if (Array.isArray(list)) {
+                        all.push(...list);
+                    }
+                    total = pagination?.total ?? total;
+                    if (!pagination) break;
+                    if (list.length < limit) break;
+                    if (typeof total === "number" && all.length >= total) break;
+                    page += 1;
+                }
+
+                const mapped = Array.isArray(all) ? all.map((item) => {
+                    const createdAt = item?.createdAt ? new Date(item.createdAt) : null;
+                    return {
+                        id: item?._id || item?.id,
+                        name: item?.fullName || "Unnamed",
+                        vedicName: item?.vedicName || "",
+                        course: formatPreferredLevel(item?.preferredLevel),
+                        time: createdAt ? formatRelativeTime(createdAt) : "",
+                        date: createdAt ? formatDate(createdAt) : "",
+                        status: mapStatusToLabel(item?.status),
+                        email: item?.email || "",
+                        phone: item?.phoneNumber || "",
+                        message: item?.message || "",
+                        rawStatus: item?.status || "NEW",
+                        createdAt: item?.createdAt || ""
+                    };
+                }) : [];
+                setLeads(mapped);
+            } catch (err) {
+                console.error("Failed to load leads:", err);
+                setError(err?.response?.data?.message || "Failed to load leads. Please try again.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchLeads();
     }, []);
 
     // --- Actions ---
-    const handleUpdateStatus = (id) => {
-        const updatedLeads = leads.map(lead =>
-            lead.id === id ? { ...lead, status: "Contacted" } : lead
-        );
-        setLeads(updatedLeads);
-        // Instant update in sidebar
-        setSelectedLead(prev => ({ ...prev, status: "Contacted" }));
+    const handleUpdateStatus = async (id, nextStatus = "CONTACTED") => {
+        try {
+            setUpdating(true);
+            const response = await updateAdminInquiryStatus(id, nextStatus);
+            const updated = response?.data?.data || response?.data || response;
+            const updatedLead = updated
+                ? {
+                    id: updated?._id || id,
+                    name: updated?.fullName || "Unnamed",
+                    vedicName: updated?.vedicName || "",
+                    course: formatPreferredLevel(updated?.preferredLevel),
+                    time: updated?.createdAt ? formatRelativeTime(new Date(updated.createdAt)) : "",
+                    date: updated?.createdAt ? formatDate(new Date(updated.createdAt)) : "",
+                    status: mapStatusToLabel(updated?.status),
+                    email: updated?.email || "",
+                    phone: updated?.phoneNumber || "",
+                    message: updated?.message || "",
+                    rawStatus: updated?.status || nextStatus,
+                    createdAt: updated?.createdAt || ""
+                }
+                : null;
+            setLeads(prev => prev.map(lead => lead.id === id ? (updatedLead || {
+                ...lead,
+                status: mapStatusToLabel(nextStatus),
+                rawStatus: nextStatus
+            }) : lead));
+            setSelectedLead(prev => prev && prev.id === id ? (updatedLead || {
+                ...prev,
+                status: mapStatusToLabel(nextStatus),
+                rawStatus: nextStatus
+            }) : prev);
+        } catch (err) {
+            console.error("Failed to update status:", err);
+            alert(err?.response?.data?.message || "Failed to update status.");
+        } finally {
+            setUpdating(false);
+        }
     };
 
-    const handleDeleteLead = (id) => {
-        setLeads(leads.filter(lead => lead.id !== id));
-        setSelectedLead(null);
+    const handleDeleteLead = async (id) => {
+        if (!window.confirm("Delete this lead?")) return;
+        try {
+            setDeleting(true);
+            await deleteAdminInquiry(id);
+            setLeads(prev => prev.filter(lead => lead.id !== id));
+            setSelectedLead(null);
+        } catch (err) {
+            console.error("Failed to delete lead:", err);
+            alert(err?.response?.data?.message || "Failed to delete lead.");
+        } finally {
+            setDeleting(false);
+        }
     };
 
-    const filteredLeads = leads.filter(lead =>
-        (activeFilter === "All Leads" || lead.status === activeFilter) &&
-        (lead.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
+    const filteredLeads = useMemo(() => {
+        const term = searchQuery.trim().toLowerCase();
+        return leads.filter(lead => {
+            const matchFilter = activeFilter === "All Leads" || lead.status === activeFilter;
+            const matchSearch = !term || [
+                lead.name,
+                lead.email,
+                lead.phone,
+                lead.course
+            ].some(value => (value || "").toLowerCase().includes(term));
+            return matchFilter && matchSearch;
+        });
+    }, [leads, activeFilter, searchQuery]);
 
     return (
         <div className="flex h-screen w-full bg-[#f1e4c8] overflow-hidden font-sans text-[#201412]">
@@ -85,10 +217,22 @@ const LeadManagement = () => {
                                 active={activeFilter === "Contacted"}
                                 onClick={() => setActiveFilter("Contacted")}
                             />
+                            <FilterBadge
+                                label="Closed"
+                                count={leads.filter(l => l.status === 'Closed').length}
+                                active={activeFilter === "Closed"}
+                                onClick={() => setActiveFilter("Closed")}
+                            />
                         </div>
 
                         {loading ? <div className="flex justify-center py-20"><Loader2 className="animate-spin text-[#641e16]" size={32} /></div> : (
                             <motion.div layout className="grid gap-4">
+                                {!loading && error && (
+                                    <div className="text-sm text-red-600">{error}</div>
+                                )}
+                                {!loading && !error && filteredLeads.length === 0 && (
+                                    <div className="text-sm text-[#641e16]/70">No leads found.</div>
+                                )}
                                 {filteredLeads.map((lead) => (
                                     <motion.div
                                         layout
@@ -110,7 +254,11 @@ const LeadManagement = () => {
                                         </div>
                                         <div className="text-right">
                                             <span className="text-[10px] font-bold text-zinc-400 uppercase block mb-1">{lead.time}</span>
-                                            <span className={`text-[10px] px-2 py-1 rounded-full font-bold ${lead.status === 'New' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>{lead.status}</span>
+                                            <span className={`text-[10px] px-2 py-1 rounded-full font-bold ${lead.status === 'New'
+                                                ? 'bg-green-100 text-green-700'
+                                                : lead.status === 'Closed'
+                                                    ? 'bg-zinc-200 text-zinc-600'
+                                                    : 'bg-blue-100 text-blue-700'}`}>{lead.status}</span>
                                         </div>
                                     </motion.div>
                                 ))}
@@ -133,9 +281,10 @@ const LeadManagement = () => {
                                     <div className="flex gap-2">
                                         <button
                                             onClick={() => handleDeleteLead(selectedLead.id)}
+                                            disabled={deleting}
                                             className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors"
                                         >
-                                            <Trash2 size={18} />
+                                            {deleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={18} />}
                                         </button>
                                         <button onClick={() => setSelectedLead(null)} className="p-2 hover:bg-zinc-100 rounded-full"><X size={20} /></button>
                                     </div>
@@ -147,7 +296,7 @@ const LeadManagement = () => {
                                     </div>
                                     <div>
                                         <h4 className="text-xl font-black text-[#201412]">{selectedLead.name}</h4>
-                                        <p className="text-xs text-zinc-400 font-bold uppercase tracking-wider">ID: #KA-00{selectedLead.id}</p>
+                                        <p className="text-xs text-zinc-400 font-bold uppercase tracking-wider">ID: #{(selectedLead.id || "").toString().slice(-6)}</p>
                                     </div>
                                 </div>
 
@@ -160,22 +309,26 @@ const LeadManagement = () => {
                                     <h5 className="text-[10px] font-black uppercase text-zinc-400 tracking-widest flex items-center gap-2">
                                         <span className="w-4 h-px bg-zinc-200"></span> Recent Activity
                                     </h5>
-                                    <TimelineItem icon={<Clock size={10} />} date="10:15 AM" title="Inquiry Received" desc="Interested in Grammar." />
-                                    <TimelineItem icon={<Calendar size={10} />} date="11:30 AM" title="Brochure Sent" desc="Shared via email." isLast />
+                                    <TimelineItem icon={<Clock size={10} />} date={selectedLead.time || "--"} title="Inquiry Received" desc={selectedLead.message || "Inquiry received."} />
+                                    <TimelineItem icon={<Calendar size={10} />} date={selectedLead.date || "--"} title="Submitted" desc="Captured in lead management." isLast />
                                 </div>
 
                                 <button
-                                    onClick={() => handleUpdateStatus(selectedLead.id)}
-                                    disabled={selectedLead.status === "Contacted"}
+                                    onClick={() => handleUpdateStatus(selectedLead.id, "CONTACTED")}
+                                    disabled={selectedLead.status !== "New" || updating}
                                     className={`w-full mt-10 py-4 rounded-2xl font-bold shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2 ${selectedLead.status === "Contacted"
                                         ? "bg-green-100 text-green-700 cursor-not-allowed"
+                                        : selectedLead.status === "Closed"
+                                            ? "bg-zinc-200 text-zinc-500 cursor-not-allowed"
                                         : "bg-[#641e16] text-white shadow-[#641e16]/20 hover:bg-[#4d1711]"
                                         }`}
                                 >
                                     {selectedLead.status === "Contacted" ? (
                                         <><CheckCircle size={18} /> Status: Contacted</>
+                                    ) : selectedLead.status === "Closed" ? (
+                                        <>Status: Closed</>
                                     ) : (
-                                        "Update Status to Contacted"
+                                        updating ? <><Loader2 size={18} className="animate-spin" /> Updating...</> : "Update Status to Contacted"
                                     )}
                                 </button>
                             </motion.div>

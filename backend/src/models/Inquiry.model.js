@@ -17,13 +17,15 @@ const inquirySchema = new mongoose.Schema(
       type: String,
       required: true,
       lowercase: true,
-      trim: true
+      trim: true,
+      index: true
     },
 
     phoneNumber: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
+      index: true
     },
 
     preferredLevel: {
@@ -41,7 +43,8 @@ const inquirySchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["NEW", "CONTACTED", "CLOSED"],
-      default: "NEW"
+      default: "NEW",
+      index: true
     }
   },
   { timestamps: true }

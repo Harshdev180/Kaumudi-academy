@@ -8,7 +8,7 @@ import {
 } from "react-icons/md";
 
 export default function StudentCard({
-    student, onEdit, onDelete, onToggleStatus }) {
+    student, onEdit, onDelete, onToggleStatus, onTogglePayment }) {
 
     return (
         <motion.div
@@ -76,12 +76,15 @@ export default function StudentCard({
                 <div className="flex items-center gap-2 text-xs mt-1">
                     <MdCreditCard className="text-[#6b1d14]" />
 
-                    <span className={`px-3 py-1 rounded-full font-semibold
+                    <button
+                        onClick={onTogglePayment}
+                        className={`px-3 py-1 rounded-full font-semibold
             ${student.payment === "Paid"
-                            ? "bg-green-100 text-green-600"
-                            : "bg-orange-100 text-orange-600"}`}>
+                                ? "bg-green-100 text-green-600"
+                                : "bg-orange-100 text-orange-600"}`}
+                    >
                         {student.payment}
-                    </span>
+                    </button>
                 </div>
 
                 {/* ACTIONS */}

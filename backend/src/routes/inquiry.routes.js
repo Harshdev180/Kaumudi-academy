@@ -6,7 +6,7 @@ import { submitInquirySchema } from "../validators/inquiry.validator.js";
 const router = express.Router();
 
 router.post(
-  "/inquiry",
+  "/inquiries",
   validateBody(submitInquirySchema),
   submitInquiry
 );

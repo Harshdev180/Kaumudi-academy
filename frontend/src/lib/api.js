@@ -224,6 +224,62 @@ export async function toggleStaffStatus(staffId) {
   return res.data;
 }
 
+// ==================== ADMIN STUDENT APIs ====================
+export async function getAllStudentsForAdmin(params = {}) {
+  const res = await api.get("/admin/students", { params });
+  return res.data;
+}
+
+export async function createStudentByAdmin(studentData) {
+  const res = await api.post("/admin/students", studentData, {
+    headers: { "Content-Type": "multipart/form-data" }
+  });
+  return res.data;
+}
+
+export async function updateStudentByAdmin(studentId, studentData) {
+  const res = await api.put(`/admin/students/${studentId}`, studentData, {
+    headers: { "Content-Type": "multipart/form-data" }
+  });
+  return res.data;
+}
+
+export async function deleteStudentByAdmin(studentId) {
+  const res = await api.delete(`/admin/students/${studentId}`);
+  return res.data;
+}
+
+export async function toggleStudentStatus(studentId) {
+  const res = await api.patch(`/admin/students/${studentId}/status`);
+  return res.data;
+}
+
+export async function toggleStudentPayment(studentId) {
+  const res = await api.patch(`/admin/students/${studentId}/payment`);
+  return res.data;
+}
+
+// ==================== ADMIN INQUIRY APIs ====================
+export async function getAdminInquiries(params = {}) {
+  const res = await api.get("/admin/inquiries", { params });
+  return res.data;
+}
+
+export async function getAdminInquiryById(inquiryId) {
+  const res = await api.get(`/admin/inquiries/${inquiryId}`);
+  return res.data;
+}
+
+export async function updateAdminInquiryStatus(inquiryId, status) {
+  const res = await api.patch(`/admin/inquiries/${inquiryId}/status`, { status });
+  return res.data;
+}
+
+export async function deleteAdminInquiry(inquiryId) {
+  const res = await api.delete(`/admin/inquiries/${inquiryId}`);
+  return res.data;
+}
+
 // ==================== STUDENT PROFILE APIs ====================
 export async function getStudentProfile() {
   const res = await api.get('/student/me');

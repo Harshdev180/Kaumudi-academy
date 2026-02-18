@@ -7,11 +7,13 @@ const studentSchema = new mongoose.Schema(
       required: true,
       trim: true
     },
+
     lastName: {
       type: String,
       required: true,
       trim: true
     },
+
     email: {
       type: String,
       required: true,
@@ -19,39 +21,59 @@ const studentSchema = new mongoose.Schema(
       lowercase: true,
       trim: true
     },
+
     password: {
       type: String,
       required: true,
       select: false
     },
+
     phoneNumber: {
       type: String,
       trim: true,
       minlength: 10,
       maxlength: 15
-    },  
+    },
+
+    // 🔹 ADMIN MANAGEMENT FIELDS
+    course: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course"
+    },
+
+    mode: {
+      type: String,
+      enum: ["ONLINE", "OFFLINE", "HYBRID"],
+      default: "ONLINE"
+    },
+
+    status: {
+      type: String,
+      enum: ["ACTIVE", "INACTIVE"],
+      default: "ACTIVE"
+    },
+
+    paymentStatus: {
+      type: String,
+      enum: ["PAID", "PENDING"],
+      default: "PENDING"
+    },
+
+    image: {
+      public_id: String,
+      url: String
+    },
+
     settings: {
       notifications: {
-        email: {
-          type: Boolean,
-          default: true
-        },
-        sms: {
-          type: Boolean,
-          default: false
-        },
-        courseUpdates: {
-          type: Boolean,
-          default: true
-        }
-      },
+        email: { type: Boolean, default: true },
+        sms: { type: Boolean, default: false },
+        courseUpdates: { type: Boolean, default: true }
+      }
     },
-    resetPasswordToken: {
-      type: String
-    },
-    resetPasswordExpire: {
-      type: Date
-    },
+
+    resetPasswordToken: String,
+    resetPasswordExpire: Date
   },
   { timestamps: true }
 );
