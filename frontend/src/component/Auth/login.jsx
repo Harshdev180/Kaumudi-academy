@@ -42,7 +42,7 @@ export default function Login() {
         else localStorage.removeItem('kaumudi_user_name');
         setAuthToken(token);
       }
-      navigate('/');
+      navigate('/student/dashboard');
     } catch (err) {
       const msg = err?.response?.data?.message || 'Login failed. Please check your credentials.';
       setError(msg);

@@ -65,13 +65,12 @@ export default function Navbar() {
 
   // --- LOGIN LOGIC ---
   const isLoggedIn = !!localStorage.getItem("kaumudi_token");
-  const role = localStorage.getItem("kaumudi_role");
+  const role = (localStorage.getItem("kaumudi_role") || "").toUpperCase();
+
   const profilePath =
-    role === "STUDENT"
-      ? "/student/profile"
-      : role === "ADMIN" || role === "SUPER_ADMIN"
-        ? "/admin"
-        : "/profile";
+    role === "ADMIN" || role === "SUPER_ADMIN"
+      ? "/admin"
+      : "/student/dashboard";
 
   const handleLogout = () => {
     localStorage.removeItem("kaumudi_token");
@@ -298,7 +297,7 @@ export default function Navbar() {
                       className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 text-[#d6b15c]"
                     >
                       <User size={20} />
-                      <span className="font-bold">My Profile</span>
+                      <span className="font-bold">Profile</span>
                     </Link>
                   </motion.div>
                 )}

@@ -115,8 +115,17 @@ const AuthPage = () => {
           );
         }
         setFormData(initialFormData);
-        const nextPath = location?.state?.from?.pathname || "/";
-        navigate(nextPath); 
+        const from = location?.state?.from;
+        const intended =
+          typeof from === "string" ? from : from?.pathname;
+        const userRole = res?.data?.role || formData.role;
+        const fallback =
+          userRole === "STUDENT"
+            ? "/student/dashboard"
+            : userRole === "ADMIN" || userRole === "SUPER_ADMIN"
+            ? "/admin"
+            : "/profile";
+        navigate(intended || fallback);
       } else {
         if (formData.password !== formData.confirmPassword) {
           alert("Passwords do not match!");
