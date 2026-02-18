@@ -1,30 +1,43 @@
 import "./App.css";
-import { Route, Routes, Outlet } from "react-router-dom";
-import Dashboard from "./pages/AdminDashboard/Dashboard";
-import AdminLayout from "./pages/AdminDashboard/AdminLayout";
-import LeadManagement from "./pages/AdminDashboard/LeadManagement";
-import AdminLogin from "./pages/AdminDashboard/AdminLogin";
-import CourseManagement from "./pages/AdminDashboard/CourseManagement";
+import { Route, Routes, Outlet, Navigate } from "react-router-dom";
+
+// ================= PUBLIC PAGES =================
+import Home from "./pages/Homepage/Home";
 import AllCoursesPage from "./pages/CourseListing";
 import CourseDetail from "./pages/CourseDetailsUp";
-import Inquiry from "./pages/AdminDashboard/Inquiry";
-import Buy from "./pages/AdminDashboard/courseBuy";
-// import Signup from "./component/Auth/signup";
-// import Signin from "./component/Auth/login";
-import Home from "./pages/Homepage/Home";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import ScrollToTop from "./components/ScrollToTop";
-import RequireAuth from "./components/RequireAuth";
 import About from "./pages/About";
 import FacultyPage from "./pages/FacultyPage";
 import Contact from "./pages/Contact";
-
-import Sign from "./component/Auth/loginSignup";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions";
 import CookiePolicy from "./pages/CookiePolicy.jsx";
-import StudentProfile from "./pages/StudentProfile";
+
+// ================= AUTH =================
+import Sign from "./component/Auth/loginSignup";
+import RequireAuth from "./components/RequireAuth";
+
+// ================= LAYOUT COMPONENTS =================
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
+
+// ================= STUDENT DASHBOARD =================
+import StudentLayout from "./pages/StudentProfile/Layout";
+import StudentDashboard from "./pages/StudentProfile/Dashboard";
+import StudentCourses from "./pages/StudentProfile/Courses";
+import Certifications from "./pages/StudentProfile/Certifications";
+import Profile from "./pages/StudentProfile/Profile";
+import Settings from "./pages/StudentProfile/Settings";
+// Removed invalid import: StudentProfile.jsx does not exist
+
+// ================= ADMIN DASHBOARD =================
+import AdminLayout from "./pages/AdminDashboard/AdminLayout";
+import Dashboard from "./pages/AdminDashboard/Dashboard";
+import LeadManagement from "./pages/AdminDashboard/LeadManagement";
+import CourseManagement from "./pages/AdminDashboard/CourseManagement";
+import Inquiry from "./pages/AdminDashboard/Inquiry";
+import Buy from "./pages/AdminDashboard/courseBuy";
+import AdminLogin from "./pages/AdminDashboard/AdminLogin";
 import AdminRegister from "./pages/AdminDashboard/AdminRegister.jsx";
 import NotificationsPage from "./pages/AdminDashboard/NotificationPage.jsx";
 import CouponPage from "./pages/AdminDashboard/CouponPage.jsx";
@@ -32,14 +45,7 @@ import AdminSettings from "./pages/AdminDashboard/AdminSettings.jsx";
 import AdminStaffSalary from "./pages/AdminDashboard/AdminStaffSalary.jsx";
 import StudentManagement from "./pages/AdminDashboard/Student/StudentManagement.jsx";
 
-import StudentLayout from "./pages/StudentProfile/Layout";
-import StudentDashboard from "./pages/StudentProfile/Dashboard";
-import StudentCourses from "./pages/StudentProfile/Courses";
-import Certifications from "./pages/StudentProfile/Certifications";
-import Profile from "./pages/StudentProfile/Profile";
-import Settings from "./pages/StudentProfile/Settings";
-
-// Public site layout with shared navbar/footer
+// ================= PUBLIC LAYOUT =================
 function PublicLayout() {
   return (
     <>
@@ -51,7 +57,7 @@ function PublicLayout() {
   );
 }
 
-// Simple 404 page (inline, no new file)
+// ================= 404 PAGE =================
 function NotFound() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f1e4c8] px-6">
@@ -68,47 +74,72 @@ function NotFound() {
   );
 }
 
+// ================= MAIN APP =================
 function App() {
   return (
     <Routes>
-      {/* Public routes under shared layout */}
+      {/* ========= PUBLIC SITE ========= */}
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/allcourses" element={<AllCoursesPage />} />
         <Route path="/coursedetail/:id" element={<CourseDetail />} />
-        <Route path="/coursedetail" element={<CourseDetail />} />
+
         <Route path="/about" element={<About />} />
         <Route path="/faculty" element={<FacultyPage />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/inquiry" element={<Inquiry />} />
-        <Route path="/courseBuy" element={<RequireAuth><Buy /></RequireAuth>} />
-        <Route path="/profile" element={<RequireAuth><StudentProfile /></RequireAuth>} />
+
+        <Route
+          path="/courseBuy"
+          element={
+            <RequireAuth>
+              <Buy />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <RequireAuth>
+              <Navigate to="/student/dashboard" replace />
+            </RequireAuth>
+          }
+        />
+
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsConditions />} />
         <Route path="/cookies" element={<CookiePolicy />} />
-        
       </Route>
 
-      {/* NEW: Student Dashboard Routes (No Public Navbar/Footer) */}
-      <Route path="/student" element={<StudentLayout />}>
+      {/* ========= STUDENT DASHBOARD ========= */}
+      <Route
+        path="/student"
+        element={
+          <RequireAuth>
+            <StudentLayout />
+          </RequireAuth>
+        }
+      >
         <Route index element={<StudentDashboard />} />
         <Route path="dashboard" element={<StudentDashboard />} />
         <Route path="courses" element={<StudentCourses />} />
         <Route path="certifications" element={<Certifications />} />
-        {/* Profile and Settings can be added here too */}
         <Route path="profile" element={<Profile />} />
         <Route path="settings" element={<Settings />} />
       </Route>
 
-      {/* Auth routes without navbar/footer */}
+      {/* ========= AUTH ========= */}
       <Route path="/auth" element={<Sign />} />
       <Route path="/reset-password/:token" element={<Sign />} />
 
-      {/* Admin nested routes */}
+      {/* ========= ADMIN DASHBOARD ========= */}
       <Route
         path="/admin"
         element={
-          <RequireAuth roles={["ADMIN", "SUPER_ADMIN"]} redirectTo="/admin-login">
+          <RequireAuth
+            roles={["ADMIN", "SUPER_ADMIN"]}
+            redirectTo="/admin-login"
+          >
             <AdminLayout />
           </RequireAuth>
         }
@@ -118,32 +149,18 @@ function App() {
         <Route path="lead" element={<LeadManagement />} />
         <Route path="course" element={<CourseManagement />} />
         <Route path="coupon" element={<CouponPage />} />
-        <Route path="/admin/staff-salary" element={<AdminStaffSalary />} />
-        <Route path="/admin/student-management" element={<StudentManagement />} />
+        <Route path="staff-salary" element={<AdminStaffSalary />} />
+        <Route path="student-management" element={<StudentManagement />} />
+        <Route path="inquiry" element={<Inquiry />} />
+        <Route path="notifications" element={<NotificationsPage />} />
+        <Route path="settings" element={<AdminSettings />} />
       </Route>
 
-      {/* Admin login outside admin layout */}
+      {/* ========= ADMIN AUTH ========= */}
       <Route path="/admin-login" element={<AdminLogin />} />
       <Route path="/admin-register" element={<AdminRegister />} />
-      <Route
-        path="/admin/notifications"
-        element={
-          <RequireAuth roles={["ADMIN", "SUPER_ADMIN"]} redirectTo="/admin-login">
-            <NotificationsPage />
-          </RequireAuth>
-        }
-      />
-      <Route
-        path="/admin/settings"
-        element={
-          <RequireAuth roles={["ADMIN", "SUPER_ADMIN"]} redirectTo="/admin-login">
-            <AdminSettings />
-          </RequireAuth>
-        }
-      />
 
-
-      {/* Fallback */}
+      {/* ========= 404 ========= */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

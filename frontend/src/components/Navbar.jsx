@@ -111,7 +111,10 @@ export default function Navbar() {
     >
       <div className="max-w-[1280px] mx-auto px-5 h-16 md:h-20 flex items-center justify-between">
         {/* ---------------- BRAND ---------------- */}
-        <Link to="/" className="flex items-center gap-3 group focus:outline-none">
+        <Link
+          to="/"
+          className="flex items-center gap-3 group focus:outline-none"
+        >
           <div className="bg-[#d6b15c] text-[#74271E] h-9 w-9 rounded-xl grid place-items-center text-lg shadow-md">
             🪔
           </div>
@@ -134,7 +137,9 @@ export default function Navbar() {
                 <Link
                   to={to}
                   className={`text-sm tracking-wide transition-colors focus:outline-none ${
-                    isActive ? "text-[#d6b15c]" : "text-white hover:text-[#d6b15c]"
+                    isActive
+                      ? "text-[#d6b15c]"
+                      : "text-white hover:text-[#d6b15c]"
                   }`}
                 >
                   {label}
@@ -156,8 +161,8 @@ export default function Navbar() {
           {isLoggedIn ? (
             <div className="hidden md:flex items-center gap-4">
               {/* Profile Link */}
-              <Link 
-                to="/profile" 
+              <Link
+                to="/student/profile"
                 className="flex items-center gap-2 text-[#d6b15c] font-semibold text-sm hover:opacity-90 transition"
               >
                 <div className="w-8 h-8 rounded-full bg-[#74271E]/20 flex items-center justify-center border border-[#d6b15c]/90">
@@ -165,7 +170,7 @@ export default function Navbar() {
                 </div>
                 <span className="text-white">Profile</span>
               </Link>
-              
+
               {/* Logout Button */}
               <motion.button
                 onClick={handleLogout}
@@ -251,7 +256,9 @@ export default function Navbar() {
                       to={to}
                       onClick={() => setOpen(false)}
                       className={`block text-lg font-medium tracking-wide transition-colors ${
-                        pathname === to ? "text-[#d6b15c]" : "text-[#e6d0bd] hover:text-[#d6b15c]"
+                        pathname === to
+                          ? "text-[#d6b15c]"
+                          : "text-[#e6d0bd] hover:text-[#d6b15c]"
                       }`}
                     >
                       {label}
@@ -262,8 +269,8 @@ export default function Navbar() {
                 <div className="pt-5 border-t border-[#dccbb4]/25">
                   {isLoggedIn ? (
                     <motion.div variants={mobileItem}>
-                      <button 
-                        onClick={handleLogout} 
+                      <button
+                        onClick={handleLogout}
                         className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#d6b15c] text-[#74271E] border border-[#d6b15c] font-bold text-lg"
                       >
                         <LogOut size={20} /> Logout
