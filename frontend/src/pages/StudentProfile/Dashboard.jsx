@@ -20,14 +20,71 @@ const Dashboard = () => {
     <div className="grid grid-cols-12 gap-6">
       
       {/* Welcome Banner */}
-      <div className="col-span-8 bg-[#74271E] rounded-3xl p-12 relative overflow-hidden flex items-center shadow-xl min-h-[220px]">
-        <div className="absolute -right-20 -top-20 w-80 h-80 rounded-full border-[32px] border-[#c9a050]/10 border-dotted" />
-        <div className="relative z-10">
-          <h2 className="text-4xl font-serif text-white leading-tight">
-            Welcome back, <br />
-            <span className="font-bold">Arjun Sharma | अर्जुन शर्मा</span>
-          </h2>
+      <div className="col-span-12 lg:col-span-8 bg-[#74271E] rounded-[2.5rem] p-12 relative overflow-hidden flex items-center shadow-2xl min-h-[280px] group">
+        
+        {/* GEOMETRY */}
+        <div className="absolute -right-20 -top-20 w-[450px] h-[450px] opacity-[0.15] pointer-events-none group">
+          <svg 
+            viewBox="0 0 200 200" 
+            className="w-full h-full text-[#c9a050] animate-[spin_60s_linear_infinite] group-hover:animate-[spin_30s_linear_infinite] transition-all duration-1000"
+          >
+            {/* Concentric Circles for Depth */}
+            <circle cx="100" cy="100" r="95" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="4 4" />
+            <circle cx="100" cy="100" r="80" fill="none" stroke="currentColor" strokeWidth="0.25" />
+            
+            {/* Geometric Lotus/Mandala Pattern */}
+            <defs>
+              <path id="petal" d="M100,20 C110,50 110,80 100,100 C90,80 90,50 100,20" fill="none" stroke="currentColor" strokeWidth="0.5" />
+            </defs>
+            
+            {/* Rotating Petal Layers */}
+            {[...Array(12)].map((_, i) => (
+              <use key={`layer1-${i}`} href="#petal" transform={`rotate(${i * 30} 100 100)`} />
+            ))}
+            
+            {[...Array(24)].map((_, i) => (
+              <use 
+                key={`layer2-${i}`} 
+                href="#petal" 
+                transform={`rotate(${i * 15} 100 100) scale(0.7)`} 
+                transform-origin="center" 
+                className="opacity-50"
+              />
+            ))}
+
+            {/* Center Bindu */}
+            <circle cx="100" cy="100" r="2" fill="currentColor" />
+          </svg>
+          
+          {/* Soft Radial Glow to bleed the edges */}
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-[#74271E]/40 to-[#74271E] rounded-full" />
         </div>
+
+        {/* CONTENT */}
+        <div className="relative z-10 space-y-3">
+          {/* Professional Badge-style Greeting */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#c9a050] animate-pulse" />
+            <span className="text-[10px] font-black text-[#c9a050] uppercase tracking-[0.3em]">
+              Svāgatam | स्वागतम्
+            </span>
+          </div>
+          
+          <h2 className="text-3xl md:text-4xl font-serif text-white leading-[1.15]">
+            Welcome back, <br />
+            <span className="font-bold bg-gradient-to-r from-white via-white to-[#c9a050]/50 bg-clip-text text-transparent">
+              Arjun Sharma | अर्जुन शर्मा
+            </span>
+          </h2>
+          
+          {/* Quick Status Sub-line */}
+          {/* <p className="text-[11px] text-white/50 font-medium tracking-wide">
+            You have <span className="text-[#c9a050]">2 sessions</span> scheduled for this week.
+          </p> */}
+        </div>
+
+        {/* Bottom subtle accent gradient */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
       </div>
 
       {/* LIVE FUNCTIONAL CALENDAR CARD */}
@@ -80,72 +137,177 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Progress Summary */}
-      <div className="col-span-4 bg-white rounded-3xl p-8 shadow-sm flex flex-col justify-around">
-        <h3 className="font-bold text-lg mb-6">Progress Summary</h3>
-        <div className="space-y-8">
-          {[
-            { label: 'Courses Completed', val: '4/10', color: 'border-t-[#74271E]' },
-            { label: 'Hours Learned', val: '120', color: 'border-[#74271E]' },
-            { label: 'Current Streak', val: '15 Days', color: 'border-t-[#74271E] border-l-[#74271E]' }
-          ].map((stat, idx) => (
-            <div key={idx} className="flex items-center gap-6">
-              <div className={`w-14 h-14 rounded-full border-4 border-gray-100 ${stat.color} flex items-center justify-center`}>
-                <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center">
-                  <div className="w-1 h-1 bg-[#74271E] rounded-full"></div>
-                </div>
-              </div>
-              <div>
-                <p className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">{stat.label}:</p>
-                <p className="text-xl font-black text-gray-800">{stat.val}</p>
-              </div>
-            </div>
-          ))}
+
+      {/* Progress Summary - Unified Professional Version */}
+<div className="col-span-12 lg:col-span-4 bg-white rounded-[2.5rem] p-10 shadow-sm border border-black/5 flex flex-col h-full group hover:shadow-md transition-all duration-500">
+  
+  {/* Header Section - Matches Continue Learning Layout */}
+  <div className="flex items-center justify-between mb-8">
+    <div>
+      <h3 className="text-lg font-bold text-gray-800 tracking-tight">Progress Summary</h3>
+      <p className="text-sm text-[#c9a050] font-medium italic">Abhyāsa • अभ्यास</p>
+    </div>
+  </div>
+
+  {/* Main Metrics Content */}
+  <div className="flex-1 flex flex-col justify-center gap-8">
+    {[
+      { label: 'Courses Completed', val: '04', total: '10', percent: 40 },
+      { label: 'Learning Hours', val: '120', total: '160', percent: 75 },
+      { label: 'Current Streak', val: '15', total: '30', percent: 50 }
+    ].map((stat, idx) => (
+      <div key={idx} className="flex items-center gap-6 group/item cursor-default">
+        
+        {/* Progress Circle */}
+        <div className="relative w-16 h-16 flex items-center justify-center shrink-0">
+          <svg className="w-full h-full -rotate-90">
+            <circle cx="32" cy="32" r="28" fill="none" stroke="#f8f9fa" strokeWidth="5" />
+            <circle 
+              cx="32" 
+              cy="32" 
+              r="28" 
+              fill="none" 
+              stroke={idx === 1 ? "#c9a050" : "#74271E"} 
+              strokeWidth="5" 
+              strokeDasharray={175.9} 
+              strokeDashoffset={175.9 - (175.9 * stat.percent) / 100}
+              strokeLinecap="round"
+              className="transition-all duration-1000 group-hover/item:opacity-80"
+            />
+          </svg>
+          <span className="absolute text-[11px] font-bold text-gray-600">
+            {stat.percent}%
+          </span>
+        </div>
+
+        {/* Text Content */}
+        <div className="flex-1">
+          <p className="text-sm font-semibold text-gray-500 mb-0.5">{stat.label}</p>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-2xl font-bold text-gray-900 leading-none">{stat.val}</span>
+            <span className="text-xs font-medium text-gray-300">/ {stat.total}</span>
+          </div>
+        </div>
+
+        {/* Subtle hover detail to match the premium feel */}
+        <div className="opacity-0 group-hover/item:opacity-100 transition-opacity pr-2 text-gray-200">
+          <div className="w-1.5 h-1.5 border-t-2 border-r-2 border-current rotate-45" />
         </div>
       </div>
+    ))}
+  </div>
 
-      {/* Continue Learning */}
-      <div className="col-span-4 bg-white rounded-3xl p-6 shadow-sm border border-black/5 flex flex-col">
-        <h3 className="font-bold text-lg mb-4">Continue Learning</h3>
-        <div className="bg-[#2a1b0a] h-36 rounded-2xl mb-4 flex items-center justify-center text-center p-6 relative overflow-hidden group cursor-pointer">
-          <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
-          <p className="relative z-10 text-[#c9a050] font-serif text-sm border-b border-[#c9a050]/30 pb-1">
-            Introduction to <br/> Sanskrit Grammar
+  {/* Progress Insight - Matches the "Last Studied" metadata style */}
+  <div className="mt-6">
+    <p className="text-[11px] text-gray-400 flex items-center gap-1.5">
+      <span className="w-1 h-1 rounded-full bg-[#c9a050] animate-pulse" />
+      You are in the top 5% of active students this week
+    </p>
+  </div>
+</div>
+
+
+
+      {/* Continue Learning - Professional Version */}
+      <div className="col-span-12 lg:col-span-4 bg-white rounded-[2.5rem] p-10 shadow-sm border border-black/5 flex flex-col h-full group hover:shadow-md transition-all duration-500">
+        
+        {/* Header Section */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h3 className="text-lg font-bold text-gray-800 tracking-tight">Continue Learning</h3>
+            <p className="text-sm text-[#c9a050] font-medium italic">Anuvartatām • अनुवर्तताम्</p>
+          </div>
+          {/* View All Button - Redirects to Courses */}
+          <button 
+            onClick={() => window.location.href = '/student/courses'} 
+            className="text-[11px] font-bold text-gray-400 hover:text-[#74271E] transition-colors uppercase tracking-wider flex items-center gap-1 group/link"
+          >
+            View All
+            <span className="group-hover/link:translate-x-0.5 transition-transform">→</span>
+          </button>
+        </div>
+
+        {/* Course Thumbnail Area */}
+        <div className="relative h-44 rounded-[2rem] mb-6 overflow-hidden group/thumb cursor-pointer">
+          {/* Background Image / Pattern Overlay */}
+          <div className="absolute inset-0 bg-[#2a1b0a] flex items-center justify-center">
+            {/* Subtle Geometric Pattern */}
+            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#c9a050 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+
+            <p className="relative z-10 text-[#c9a050] font-serif text-lg text-center px-6 leading-relaxed">
+              Introduction to <br/> 
+              <span className="font-bold">Sanskrit Grammar</span>
+            </p>
+          </div>
+        </div>
+
+        {/* Progress Info */}
+        <div className="flex-1">
+          <div className="flex justify-between items-end mb-3">
+            <p className="text-sm font-bold text-gray-800">Vyākaraṇa Prārambha</p>
+            <span className="text-xs font-bold text-[#74271E]">65%</span>
+          </div>
+          
+          <div className="w-full bg-gray-50 h-2 rounded-full overflow-hidden">
+            <div 
+              className="bg-gradient-to-r from-[#74271E] to-[#c9a050] h-full rounded-full transition-all duration-1000" 
+              style={{ width: '65%' }}
+            />
+          </div>
+          <p className="text-[11px] text-gray-400 mt-3 flex items-center gap-1.5">
+            <span className="w-1 h-1 rounded-full bg-gray-300" />
+            Last studied: 2 days ago
           </p>
         </div>
-        <div className="flex-1">
-          <p className="font-bold text-sm text-gray-800">Introduction to Sanskrit Grammar</p>
-          <div className="flex justify-between text-[10px] font-bold text-gray-500 mt-2 mb-1">
-            <span>Progress: 65%</span>
-          </div>
-          <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-            <div className="bg-[#74271E] h-full rounded-full transition-all duration-1000" style={{ width: '65%' }}></div>
-          </div>
-        </div>
-        <button className="mt-6 w-full bg-[#74271E] text-white py-3 rounded-xl font-bold text-sm shadow-lg hover:bg-[#5a1e17] transition-colors">
-          Resume
+
+        {/* Action Button */}
+        <button className="mt-8 w-full bg-[#74271E] text-white py-4 rounded-2xl font-bold text-sm shadow-lg hover:bg-[#5a1e17] transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+          Resume Course
         </button>
       </div>
 
-      {/* Daily Shloka Card */}
-      <div className="col-span-4 bg-[#fdfbf7] rounded-3xl p-8 shadow-sm border-2 border-[#e6d5b8] flex flex-col items-center justify-center text-center relative">
-        {/* Corners */}
-        <div className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-[#c9a050]/40 rounded-tl-lg" />
-        <div className="absolute bottom-4 right-4 w-6 h-6 border-b-2 border-r-2 border-[#c9a050]/40 rounded-br-lg" />
+
+      {/* Daily Shloka Card - Professionally Enhanced */}
+      <div className="col-span-12 lg:col-span-4 bg-[#fdfbf7] rounded-[2.5rem] p-10 shadow-sm border border-[#e6d5b8] flex flex-col items-center justify-center text-center relative overflow-hidden group hover:shadow-md transition-all duration-500">
         
-        <h3 className="font-bold text-gray-400 uppercase tracking-[0.2em] text-[10px] mb-6">Daily Shloka</h3>
-        <div className="font-serif text-xl text-gray-800 leading-relaxed mb-6">
+        {/* Layered Decorative Frame (Corners) */}
+        <div className="absolute top-6 left-6 w-10 h-10 border-t-[1px] border-l-[1px] border-[#c9a050]/40 rounded-tl-2xl transition-all" />
+        <div className="absolute bottom-6 right-6 w-10 h-10 border-b-[1px] border-r-[1px] border-[#c9a050]/40 rounded-br-2xl transition-all" />
+
+        {/* Subtle Background Watermark (OM or Flower Symbol) */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none select-none">
+          <svg viewBox="0 0 100 100" className="w-64 h-64 text-[#c9a050] fill-current">
+            <path d="M50 0C22.4 0 0 22.4 0 50s22.4 50 50 50 50-22.4 50-50S77.6 0 50 0zm0 90C27.9 90 10 72.1 10 50S27.9 10 50 10s40 17.9 40 40-17.9 40-40 40z"/>
+          </svg>
+        </div>
+
+        {/* Label */}
+        <h3 className="font-black text-[#c9a050] uppercase tracking-[0.3em] text-[10px] mb-8 relative z-10">
+          Daily Shloka • दैनिक श्लोक
+        </h3>
+
+        {/* Main Sanskrit Text - Increased Line Height for Elegance */}
+        <div className="font-serif text-2xl text-gray-800 leading-[2] mb-6 relative z-10 drop-shadow-sm">
           <p>असतो मा सद्गमय ।</p>
           <p>तमसो मा ज्योतिर्गमय ।</p>
           <p>मृत्योर्मा अमृतं गमय ।</p>
         </div>
-        <div className="space-y-1">
-          <p className="text-[10px] text-gray-500 font-medium">असतो मा सद्गमय | तमसो मा ज्योतिर्गमय |</p>
-          <p className="text-[10px] text-gray-500 font-medium">मृत्योर्मा अमृतं गमय |</p>
+
+        {/* Transliteration Section - Clean & Readable */}
+        <div className="space-y-2 relative z-10">
+          <div className="h-[1px] w-12 bg-gray-200 mx-auto mb-4" />
+          <p className="text-[11px] text-gray-500 font-medium leading-relaxed max-w-[280px]">
+            asato mā sadgamaya | tamaso mā jyotirgamaya |<br />
+            mṛtyormā amṛtaṃ gamaya |
+          </p>
         </div>
-        <p className="mt-4 text-[11px] text-[#c9a050] italic px-4">
-          Translation: Lead me from the unreal to the real, from darkness to light...
-        </p>
+
+        {/* Translation - Premium Italic Styling */}
+        <div className="mt-8 px-6 py-3 bg-[#f7f1e3]/40 rounded-2xl border border-[#e6d5b8]/20 relative z-10">
+          <p className="text-[12px] text-[#74271E] italic leading-relaxed font-serif">
+            "Lead me from the unreal to the real, from darkness to light, from death to immortality."
+          </p>
+        </div>
       </div>
 
     </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Award, Download, ExternalLink, ShieldCheck } from 'lucide-react';
+import { Award, Download, ExternalLink, ShieldCheck, CheckCircle2, FileText, BadgeCheck } from 'lucide-react';
 
 const Certifications = () => {
   const certificates = [
@@ -9,7 +9,8 @@ const Certifications = () => {
       sanskritTitle: "ऋग्वेद भाष्य",
       date: "December 20, 2023",
       grade: "A+",
-      issuer: "Kaumudi Sanskrit Academy"
+      issuer: "Kaumudi Sanskrit Academy",
+      type: "Vedic Studies"
     },
     {
       id: "CERT-102938",
@@ -17,71 +18,109 @@ const Certifications = () => {
       sanskritTitle: "संस्कृत व्याकरण आधार",
       date: "January 15, 2024",
       grade: "O",
-      issuer: "Kaumudi Sanskrit Academy"
+      issuer: "Kaumudi Sanskrit Academy",
+      type: "Linguistics"
     }
   ];
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      {/* Header matching Dashboard Title Style */}
-      {/* <div className="flex flex-col">
-        <h2 className="text-2xl font-bold text-gray-800">My Certifications</h2>
-        <p className="text-[11px] text-gray-500 font-bold uppercase tracking-[0.2em] mt-1">
-          Pramana | प्रमाण
-        </p>
-      </div> */}
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-12">
+      
+      {/* 1. HEADER SECTION */}
+      <div className="flex flex-col md:flex-row justify-between items-end gap-6 px-2">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-8 bg-[#c9a050] rounded-full" />
+            <h3 className="text-3xl font-serif font-bold text-gray-800 tracking-tight">Academic Credentials</h3>
+          </div>
+          <p className="text-[11px] text-gray-400 font-black uppercase tracking-[0.2em]">
+            Pramana-Patra | प्रमाण-पत्राणि
+          </p>
+        </div>
+        
+        <div className="flex items-center gap-4 bg-[#fdfbf7] border border-[#e6d5b8]/30 px-6 py-3 rounded-2xl">
+          <BadgeCheck className="text-[#c9a050]" size={20} />
+          <div className="text-left">
+            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Digital Status</p>
+            <p className="text-xs font-bold text-gray-700">All Credentials Verified</p>
+          </div>
+        </div>
+      </div>
 
-      {/* 2-Column Grid for the perfect "Standard" card size */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* 2. CERTIFICATE GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {certificates.map((cert) => (
-          <div key={cert.id} className="bg-white rounded-[1.5rem] p-6 shadow-sm border border-black/5 flex flex-col relative overflow-hidden group hover:shadow-md transition-all">
+          <div 
+            key={cert.id} 
+            className="group bg-white rounded-[2.5rem] p-8 shadow-sm border border-black/5 flex flex-col relative overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-[#c9a050]/10 hover:-translate-y-1"
+          >
             
-            {/* Background Mandala Detail */}
-            <div className="absolute -right-6 -top-6 w-24 h-24 bg-[#c9a050]/5 rounded-full border-4 border-[#c9a050]/10 border-dotted" />
+            {/* Artistic Mandala Watermark Background */}
+            <div className="absolute -right-16 -top-16 opacity-[0.03] text-[#74271E] duration-1000 select-none pointer-events-none">
+              <span className="text-[300px] font-serif">ॐ</span>
+            </div>
 
-            <div className="flex items-start justify-between mb-5 relative z-10">
-              <div className="flex gap-4 items-center">
-                {/* Icon box */}
-                <div className="w-12 h-12 bg-[#fdfbf7] border border-[#e6d5b8] rounded-xl flex items-center justify-center shadow-sm">
-                  <Award size={24} className="text-[#c9a050]" strokeWidth={1.5} />
+            {/* Top Row: Icon & Certificate ID */}
+            <div className="flex justify-between items-start mb-8 relative z-10">
+              <div className="flex gap-5 items-center">
+                <div className="w-14 h-14 bg-[#fdfbf7] border border-[#e6d5b8]/40 rounded-2xl flex items-center justify-center shadow-inner group-hover:border-[#c9a050]/50 transition-colors">
+                  <Award size={28} className="text-[#c9a050]" strokeWidth={1.5} />
                 </div>
                 <div>
-                  {/* Replaced navy blue with #74271E for Title */}
-                  <h3 className="text-lg font-serif font-bold text-[#74271E] leading-tight">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="px-3 py-0.5 bg-[#74271E]/5 text-[#74271E] text-[9px] font-black uppercase tracking-widest rounded-full">
+                      {cert.type}
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-serif font-bold text-gray-800 leading-tight group-hover:text-[#74271E] transition-colors">
                     {cert.title}
                   </h3>
-                  <p className="text-[13px] text-gray-400 font-serif italic">
+                  <p className="text-sm text-[#c9a050] font-serif italic mt-1 font-medium">
                     {cert.sanskritTitle}
                   </p>
                 </div>
               </div>
-              <div className="hidden sm:block">
-                 <ShieldCheck size={20} className="text-[#c9a050] opacity-30" />
+              
+              <div className="flex flex-col items-end">
+                <CheckCircle2 size={20} className="text-emerald-500 mb-2" />
+                <span className="font-mono text-[10px] text-gray-300 font-bold tracking-tighter">
+                  {cert.id}
+                </span>
               </div>
             </div>
 
-            {/* Info Section */}
-            <div className="grid grid-cols-2 gap-3 mb-6">
-              <div className="bg-[#f7f1e3]/40 p-3 rounded-xl border border-[#e6d5b8]/20">
-                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Issue Date</p>
-                <p className="text-xs font-bold text-gray-700">{cert.date}</p>
+            {/* Info Section with "Seal" Style Grade */}
+            <div className="grid grid-cols-12 gap-4 mb-8 relative z-10">
+              <div className="col-span-8 grid grid-cols-2 gap-4">
+                <div className="bg-gray-50/80 p-4 rounded-2xl border border-gray-100/50">
+                  <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest mb-1">Issued On</p>
+                  <p className="text-xs font-bold text-gray-700">{cert.date}</p>
+                </div>
+                <div className="bg-gray-50/80 p-4 rounded-2xl border border-gray-100/50">
+                  <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest mb-1">Authority</p>
+                  <p className="text-[10px] font-bold text-gray-700 leading-tight">Kaumudi Academy</p>
+                </div>
               </div>
-              <div className="bg-[#f7f1e3]/40 p-3 rounded-xl border border-[#e6d5b8]/20">
-                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Grade</p>
-                {/* Replaced navy blue with #74271E for Grade text */}
-                <p className="text-xs font-bold text-[#74271E]">{cert.grade}</p>
+              
+              {/* Grade Seal */}
+              <div className="col-span-4 bg-[#fdfbf7] rounded-2xl border-2 border-dashed border-[#e6d5b8] flex flex-col items-center justify-center relative group-hover:bg-white transition-colors">
+                <p className="text-[8px] text-[#c9a050] font-black uppercase tracking-tighter absolute top-2">Final Grade</p>
+                <span className="text-2xl font-serif font-black text-[#74271E] mt-2">
+                  {cert.grade}
+                </span>
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="mt-auto pt-4 border-t border-gray-50 flex items-center gap-3">
-              {/* Main Button background updated to #74271E */}
-              <button className="flex-1 flex items-center justify-center gap-2 bg-[#74271E] text-white py-2.5 rounded-xl font-bold text-sm hover:bg-[#5a1e17] transition-all shadow-sm active:scale-95">
+            {/* Action Footer */}
+            <div className="mt-auto pt-6 border-t border-gray-50 flex items-center gap-4 relative z-10">
+              <button className="flex-1 flex items-center justify-center gap-3 bg-[#74271E] text-white py-4 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-[#5a1e17] transition-all shadow-xl shadow-[#74271E]/10 active:scale-95">
                 <Download size={16} />
-                Download PDF
+                Download Certificate
               </button>
-              <button className="p-2.5 rounded-xl border border-gray-100 text-gray-400 hover:text-[#c9a050] hover:border-[#c9a050]/30 transition-all">
-                <ExternalLink size={18} />
+              
+              <button className="flex items-center gap-2 px-5 py-4 rounded-2xl border border-gray-100 text-gray-400 hover:text-[#c9a050] hover:border-[#c9a050]/30 hover:bg-[#f7f1e3]/30 transition-all group/btn">
+                <ExternalLink size={18} className="group-hover/btn:scale-110 transition-transform" />
+                <span className="text-[10px] font-black uppercase tracking-widest hidden sm:block">Verify</span>
               </button>
             </div>
           </div>

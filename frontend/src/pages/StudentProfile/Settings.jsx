@@ -1,150 +1,238 @@
 import React, { useState } from 'react';
 import { 
-  Settings as SettingsIcon, 
-  Bell, 
-  Lock, 
-  Globe, 
-  Palette, 
-  ShieldCheck, 
-  LogOut, 
-  Trash2, 
-  ChevronRight,
-  Moon
+  User, Lock, Bell, Edit3, Save, ShieldCheck, 
+  Shield, Users, MapPin, Clock, Mail, Smartphone, Monitor 
 } from 'lucide-react';
 
 const Settings = () => {
+  const [activeTab, setActiveTab] = useState('student details');
   const [notifications, setNotifications] = useState({
     email: true,
-    courseUpdates: true,
-    reminders: false
+    sms: false,
+    system: true,
   });
 
-  return (
-    <div className="max-w-6xl mx-auto pb-16 animate-in fade-in duration-700">
-      
-      {/* HEADER SECTION */}
-      <div className="flex flex-col mb-10">
-        <h2 className="text-2xl font-bold text-gray-800">Settings</h2>
-        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] mt-1">
-          Vinyasa | विन्यास
-        </p>
-      </div>
+  // Profile Mock Data
+  const profile = {
+    name: "Aarav Sharma",
+    hindiName: "आरव शर्मा",
+    id: "SA-20230514",
+    level: "Level 4 • Senior Scholar",
+    dob: "12 January 1998",
+    father: "Rajesh Sharma",
+    mother: "Geeta Sharma",
+    email: "aarav.sharma@email.com",
+    phone: "+91 98765 43210",
+    address: "14, Vasant Vihar, New Delhi"
+  };
 
-      <div className="grid grid-cols-12 gap-8">
+  // Logic to split name for the requested fields
+  const nameParts = profile.name.split(' ');
+  const firstName = nameParts[0];
+  const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+
+  const tabs = ['student details', 'change password', 'notification settings'];
+
+  return (
+    <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700 pb-12">
+      
+      {/* TOP SECTION: Header & Status Card */}
+      <div className="grid grid-cols-12 gap-6 items-stretch">
         
-        {/* LEFT COLUMN: ACCOUNT & PREFERENCES */}
-        <div className="col-span-12 lg:col-span-8 space-y-8">
-          
-          {/* Security Card */}
-          <div className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-black/5">
-            <h3 className="text-xs font-bold text-gray-800 mb-8 flex items-center gap-2 uppercase tracking-widest">
-              <Lock size={16} className="text-[#c9a050]" />
-              Account Security
-            </h3>
-            
-            <div className="space-y-4">
-              {[
-                { label: "Change Password", sub: "Last updated 3 months ago", icon: <ShieldCheck size={18} /> },
-                { label: "Two-Factor Authentication", sub: "Add an extra layer of security", icon: <Lock size={18} /> },
-                { label: "Active Sessions", sub: "Manage where you're logged in", icon: <Globe size={18} /> }
-              ].map((item, i) => (
-                <button key={i} className="w-full flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 transition-colors group border border-transparent hover:border-black/5">
-                  <div className="flex items-center gap-4">
-                    <div className="text-[#74271E]/60 group-hover:text-[#74271E] transition-colors">
-                      {item.icon}
-                    </div>
-                    <div className="text-left">
-                      <p className="text-xs font-bold text-gray-700">{item.label}</p>
-                      <p className="text-[10px] text-gray-400">{item.sub}</p>
-                    </div>
-                  </div>
-                  <ChevronRight size={16} className="text-gray-300 group-hover:text-[#c9a050] transition-colors" />
-                </button>
-              ))}
+        {/* Profile Identity Left */}
+        <div className="col-span-12 lg:col-span-8 flex flex-col md:flex-row items-center gap-8 p-6">
+          <div className="relative">
+            <div className="w-32 h-32 rounded-full border-2 border-[#c9a050] p-1 shadow-xl">
+              <div className="w-full h-full bg-[#fdfbf7] rounded-full flex items-center justify-center border border-[#c9a050]/20">
+                <span className="text-4xl font-serif font-bold text-[#74271E]">AS</span>
+              </div>
             </div>
           </div>
 
-          {/* Preferences Card */}
-          <div className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-black/5">
-            <h3 className="text-xs font-bold text-gray-800 mb-8 flex items-center gap-2 uppercase tracking-widest">
-              <Palette size={16} className="text-[#c9a050]" />
-              App Preferences
-            </h3>
-            
-            <div className="space-y-6">
-              <div className="flex items-center justify-between px-2">
-                <div>
-                  <p className="text-xs font-bold text-gray-700">Display Language</p>
-                  <p className="text-[10px] text-gray-400">English (Sanskrit transliteration enabled)</p>
-                </div>
-                <select className="bg-gray-50 border border-black/5 rounded-lg px-3 py-2 text-[11px] font-bold text-gray-600 outline-none">
-                  <option>English</option>
-                  <option>Hindi (हिन्दी)</option>
-                  <option>Sanskrit (संस्कृतम्)</option>
-                </select>
-              </div>
-
-              <div className="h-px bg-gray-50" />
-
-              <div className="flex items-center justify-between px-2">
-                <div>
-                  <p className="text-xs font-bold text-gray-700">Dark Mode</p>
-                  <p className="text-[10px] text-gray-400">Reduce glare and save battery</p>
-                </div>
-                <button className="w-10 h-5 bg-gray-200 rounded-full relative transition-colors">
-                  <div className="absolute left-1 top-1 w-3 h-3 bg-white rounded-full shadow-sm" />
-                </button>
-              </div>
+          <div className="text-center md:text-left space-y-2">
+            <h2 className="text-4xl font-serif font-bold text-gray-800 tracking-tight">
+              {profile.name} <span className="text-gray-300 mx-2 font-light">/</span> {profile.hindiName}
+            </h2>
+            <div className="flex flex-wrap justify-center md:justify-start gap-3">
+              <span className="px-4 py-1.5 bg-[#f7f1e3] text-[#c9a050] text-[10px] font-black uppercase tracking-widest rounded-full border border-[#c9a050]/20">
+                Verified Student
+              </span>
+              <span className="px-4 py-1.5 bg-gray-100 text-gray-500 text-[10px] font-black uppercase tracking-widest rounded-full">
+                MA Sanskrit Lit.
+              </span>
             </div>
           </div>
         </div>
 
-        {/* RIGHT COLUMN: NOTIFICATIONS & DANGER ZONE */}
-        <div className="col-span-12 lg:col-span-4 space-y-8">
+        {/* Student Status Card (Top Right) */}
+        <div className="col-span-12 lg:col-span-4 bg-[#c9a050] rounded-[2.5rem] p-10 text-[#74271E] shadow-xl relative overflow-hidden group flex flex-col justify-center min-h-[200px]">
+          <Shield className="absolute -right-4 -bottom-4 text-[#74271E]/5 opacity-20" size={140} />
+          <div className="relative z-10">
+            <p className="text-[#74271E]/70 text-[9px] font-black uppercase tracking-[0.2em] mb-2">Student Status</p>
+            <h4 className="text-xl font-serif font-bold mb-6 leading-tight">{profile.level}</h4>
+            
+            <div className="bg-[#74271E]/10 p-4 rounded-2xl border border-[#74271E]/10 backdrop-blur-sm transition-transform group-hover:scale-[1.02] duration-500">
+              <p className="text-[9px] text-[#74271E]/60 uppercase font-black tracking-widest mb-1">Enrollment ID</p>
+              <p className="font-mono font-bold text-[#74271E] text-sm tracking-widest">{profile.id}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* MAIN SETTINGS CARD WITH TABS */}
+      <div className="bg-white rounded-[2.5rem] shadow-sm border border-black/5 overflow-hidden min-h-[550px]">
+        
+        {/* Figma Style Navigation */}
+        <div className="flex border-b border-gray-100 px-8 pt-6 bg-gray-50/30">
+          {tabs.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-8 py-5 text-[11px] font-black uppercase tracking-[0.15em] transition-all relative ${
+                activeTab === tab 
+                ? 'text-[#74271E]' 
+                : 'text-gray-400 hover:text-gray-600'
+              }`}
+            >
+              {tab}
+              {activeTab === tab && (
+                <div className="absolute bottom-0 left-8 right-8 h-1 bg-[#74271E] rounded-t-full shadow-[0_-2px_10px_rgba(116,39,30,0.3)]" />
+              )}
+            </button>
+          ))}
+        </div>
+
+        <div className="p-12 relative">
           
-          {/* Notifications Card */}
-          <div className="bg-[#74271E] rounded-[2.5rem] p-10 shadow-xl text-white relative overflow-hidden">
-            <Bell className="absolute -right-4 -top-4 text-white/5 opacity-10" size={120} />
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] mb-8 text-[#c9a050]">Notifications</h3>
-            
-            <div className="space-y-6 relative z-10">
-              {Object.keys(notifications).map((key) => (
-                <div key={key} className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold capitalize">
-                    {key.replace(/([A-Z])/g, ' $1').trim()}
-                  </span>
-                  <button 
-                    onClick={() => setNotifications({...notifications, [key]: !notifications[key]})}
-                    className={`w-10 h-5 rounded-full relative transition-all duration-300 ${notifications[key] ? 'bg-[#c9a050]' : 'bg-white/10'}`}
-                  >
-                    <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-300 ${notifications[key] ? 'left-6' : 'left-1'}`} />
-                  </button>
+          {/* 1. STUDENT DETAILS TAB */}
+          {activeTab === 'student details' && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-12">
+              <div className="flex justify-between items-start border-b border-gray-50 pb-8">
+                <div>
+                  <h3 className="text-2xl font-serif font-bold text-gray-800">Personal Identity</h3>
+                  <p className="text-sm text-gray-400 mt-1 italic">Manage your verified academic and contact information</p>
                 </div>
-              ))}
-            </div>
-          </div>
+                <button className="flex items-center gap-2 px-6 py-3 bg-[#74271E] text-white rounded-2xl font-bold text-xs shadow-lg hover:shadow-[#74271E]/20 transition-all active:scale-95">
+                  <Edit3 size={14} /> Edit Profile
+                </button>
+              </div>
 
-          {/* Danger Zone */}
-          <div className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-red-100">
-            <h3 className="text-xs font-bold text-red-500 mb-8 flex items-center gap-2 uppercase tracking-widest">
-              <Trash2 size={16} />
-              Danger Zone
-            </h3>
-            
-            <div className="space-y-4">
-              <button className="w-full py-3 bg-white border border-gray-100 text-gray-500 rounded-xl text-[11px] font-bold flex items-center justify-center gap-2 hover:bg-gray-50 transition-all">
-                <LogOut size={14} /> Log Out
-              </button>
-              <button className="w-full py-3 bg-red-50 text-red-500 rounded-xl text-[11px] font-bold flex items-center justify-center gap-2 hover:bg-red-100 transition-all">
-                Delete Account
-              </button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-10">
+                <div className="space-y-8">
+                  {/* Corrected First Name and Last Name Fields */}
+                  <DetailItem icon={<User size={16}/>} label="First Name" val={firstName} />
+                  <DetailItem icon={<User size={16}/>} label="Last Name" val={lastName} />
+                  <DetailItem icon={<Clock size={16}/>} label="Date of Birth" val={profile.dob} />
+                </div>
+                <div className="space-y-8">
+                  <DetailItem icon={<Mail size={16}/>} label="Email Address" val={profile.email} />
+                  <DetailItem icon={<Smartphone size={16}/>} label="Phone Number" val={profile.phone} />
+                  <DetailItem icon={<MapPin size={16}/>} label="Address" val={profile.address} />
+                </div>
+              </div>
             </div>
-          </div>
+          )}
 
+          {/* 2. CHANGE PASSWORD TAB */}
+          {activeTab === 'change password' && (
+            <div className="animate-in fade-in slide-in-from-right-4 duration-700 max-w-xl mx-auto py-4">
+              <div className="bg-[#fdfbf7] p-10 rounded-[2.5rem] border border-[#e6d5b8]/30 relative overflow-hidden">
+                 <div className="absolute top-0 right-0 p-8 opacity-[0.03] text-[#74271E]">
+                    <Lock size={120} />
+                 </div>
+                 
+                 <div className="relative z-10 space-y-8">
+                    <div className="text-center space-y-2">
+                      <h3 className="text-xl font-bold text-gray-800">Update Credentials</h3>
+                      <p className="text-xs text-gray-400 font-medium uppercase tracking-widest">Ensure your account remains secure</p>
+                    </div>
+
+                    <form className="space-y-6">
+                      {['Current Password', 'New Password', 'Confirm Password'].map((label) => (
+                        <div key={label}>
+                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block ml-1">
+                            {label}
+                          </label>
+                          <input 
+                            type="password" 
+                            className="w-full px-6 py-4 bg-white border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#74271E]/10 transition-all text-sm font-medium"
+                            placeholder="••••••••"
+                          />
+                        </div>
+                      ))}
+                      <button className="w-full mt-4 bg-[#74271E] text-white py-4 rounded-2xl font-bold text-sm shadow-xl hover:bg-[#5a1e17] transition-all flex items-center justify-center gap-2">
+                        <Save size={18} /> Save New Credentials
+                      </button>
+                    </form>
+                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* 3. NOTIFICATION SETTINGS TAB */}
+          {activeTab === 'notification settings' && (
+            <div className="animate-in fade-in zoom-in-95 duration-700 space-y-10">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div className="space-y-6">
+                  <h3 className="text-xl font-bold text-gray-800 border-l-4 border-[#c9a050] pl-4">Alert Preferences</h3>
+                  {[
+                    { id: 'email', label: 'Email Notifications', desc: 'Course updates and academy news', icon: <Mail size={18}/> },
+                    { id: 'sms', label: 'SMS Alerts', desc: 'Urgent schedule changes and reminders', icon: <Smartphone size={18}/> },
+                    { id: 'system', label: 'System Alerts', desc: 'Internal dashboard notifications', icon: <Monitor size={18}/> }
+                  ].map((pref) => (
+                    <div key={pref.id} className="flex items-center justify-between p-6 rounded-[2rem] bg-gray-50/50 hover:bg-white border border-transparent hover:border-gray-100 transition-all group">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-400 group-hover:text-[#c9a050] shadow-sm">
+                          {pref.icon}
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-gray-700">{pref.label}</p>
+                          <p className="text-[10px] text-gray-400 font-medium">{pref.desc}</p>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => setNotifications(prev => ({ ...prev, [pref.id]: !prev[pref.id] }))}
+                        className={`w-12 h-6 rounded-full transition-colors relative ${notifications[pref.id] ? 'bg-[#74271E]' : 'bg-gray-200'}`}
+                      >
+                        <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${notifications[pref.id] ? 'translate-x-6' : 'translate-x-0'}`} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="bg-[#fdfbf7] p-10 rounded-[3rem] border border-[#e6d5b8]/30 flex flex-col justify-center text-center space-y-6">
+                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto text-[#c9a050] shadow-sm">
+                    <ShieldCheck size={32} />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-black uppercase tracking-widest text-gray-700 mb-2">Privacy Assurance</h4>
+                    <p className="text-xs text-gray-500 leading-relaxed font-medium italic">
+                      "We respect your peace. Notifications are sent only for essential academic progress."
+                    </p>
+                  </div>
+                  <div className="h-[1px] w-12 bg-[#c9a050]/30 mx-auto" />
+                  <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">SA Security Protocol v2.4</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
+
+// Sub-component for Details Item
+const DetailItem = ({ icon, label, val }) => (
+  <div className="flex items-start gap-4 group cursor-default">
+    <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-[#f7f1e3] group-hover:text-[#c9a050] transition-colors shrink-0">
+      {icon}
+    </div>
+    <div className="space-y-0.5">
+      <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest group-hover:text-[#c9a050] transition-colors">{label}</p>
+      <p className="text-base font-bold text-gray-700">{val}</p>
+    </div>
+  </div>
+);
 
 export default Settings;

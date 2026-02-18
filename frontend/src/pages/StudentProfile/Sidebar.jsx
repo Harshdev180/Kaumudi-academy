@@ -4,19 +4,11 @@ import { LayoutDashboard, BookOpen, Award, User, Settings } from "lucide-react";
 
 const Sidebar = () => {
   const menuItems = [
-    {
-      path: "dashboard",
-      label: "Dashboard",
-      icon: <LayoutDashboard size={20} />,
-    },
-    { path: "courses", label: "Courses", icon: <BookOpen size={20} /> },
-    {
-      path: "certifications",
-      label: "Certifications",
-      icon: <Award size={20} />,
-    },
-    { path: "profile", label: "Profile", icon: <User size={20} /> },
-    { path: "settings", label: "Settings", icon: <Settings size={20} /> },
+    { path: 'overview', label: 'Overview', icon: <LayoutDashboard size={20} /> },
+    { path: 'courses', label: 'Courses', icon: <BookOpen size={20} /> },
+    { path: 'certifications', label: 'Certifications', icon: <Award size={20} /> },
+    { path: 'payments', label: 'Payments', icon: <User size={20} /> },
+    { path: 'settings', label: 'Settings', icon: <Settings size={20} /> },
   ];
 
   return (

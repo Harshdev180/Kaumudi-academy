@@ -6,7 +6,7 @@ import { Bell, Search } from 'lucide-react';
 const Layout = () => {
   const location = useLocation();
   // Generate breadcrumb or title based on path
-  const pageTitle = location.pathname.split('/').pop() || 'Dashboard';
+  const pageTitle = location.pathname.split('/').pop() || 'Overview';
 
   return (
     <div className="flex h-screen bg-[#f7f1e3] font-sans text-gray-800 overflow-hidden">
