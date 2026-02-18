@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from "react-router-dom"
 import { Mail, Clock } from "lucide-react"
 import { motion } from "framer-motion"
+import { getAllEnrollments, getAllCoursesForAdmin } from '../../lib/api'
 
 /*
   👉 Future me tu inquiries backend se fetch karega.
@@ -27,10 +28,70 @@ const recentInquiries = [
 
 function ActivityFeed() {
 
+    const [activities, setActivities] = useState([]);
+    const [loading, setLoading] = useState(true);
+
     const navigate = useNavigate();
 
     // ⭐ Only show latest 3
     const latest = recentInquiries.slice(0, 3);
+
+
+    useEffect(() => {
+        const fetchActivity = async () => {
+            try {
+                setLoading(true);
+                const [enrollRes, coursesRes] = await Promise.all([
+                    getAllEnrollments(),
+                    getAllCoursesForAdmin()
+                ]);
+                const enrollmentsPayload = enrollRes?.data ?? enrollRes;
+                const enrollments = Array.isArray(enrollmentsPayload)
+                    ? enrollmentsPayload
+                    : enrollmentsPayload?.data || [];
+
+                const coursesPayload = coursesRes?.data ?? coursesRes;
+                const courses = Array.isArray(coursesPayload)
+                    ? coursesPayload
+                    : coursesPayload?.data || [];
+
+                const enrollmentActivities = enrollments.map((enrollment) => {
+                    const student = enrollment.student;
+                    const course = enrollment.course;
+                    const name = student
+                        ? `${student.firstName || ""} ${student.lastName || ""}`.trim() || student.email || "Student"
+                        : "Student";
+                    return {
+                        id: enrollment._id,
+                        title: "New Enrollment",
+                        description: `${name} enrolled in ${course?.title || "a course"}`,
+                        time: enrollment.enrolledAt || enrollment.createdAt
+                    };
+                });
+
+                const courseActivities = courses.map((course) => ({
+                    id: course._id,
+                    title: "Course Updated",
+                    description: `${course.title || "Course"} updated`,
+                    time: course.updatedAt || course.createdAt
+                }));
+
+                const merged = [...enrollmentActivities, ...courseActivities]
+                    .filter((item) => item.time)
+                    .sort((a, b) => new Date(b.time) - new Date(a.time))
+                    .slice(0, 5);
+
+                setActivities(merged);
+            } catch (error) {
+                console.error("Failed to load activity feed:", error);
+                setActivities([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchActivity();
+    }, []);
 
     return (
         <div className='bg-white/80 backdrop-blur-xl rounded-2xl border border-slate-200/50'>
@@ -91,6 +152,7 @@ function ActivityFeed() {
                 ))}
 
             </div>
+            
         </div>
     )
 }

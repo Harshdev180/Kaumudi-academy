@@ -1,13 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { CheckCircle, Flame } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/useAuthHook";
 
 // courseFullData prop add kiya gaya hai
 const SidebarCard = ({ price, courseData }) => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [leftSeats, setLeftSeats] = useState(0);
   const totalSeats = 25;
   const targetLeft = 4;
   const [visibleFeatures, setVisibleFeatures] = useState(0);
+  
+  // Format price properly from backend
+  const formatPrice = (p) => {
+    if (!p) return "0";
+    const numPrice = typeof p === 'string' ? parseInt(p.replace(/[^0-9]/g, '')) || 0 : p;
+    return numPrice.toLocaleString('en-IN');
+  };
   
   const features = [
     "120+ Hours of Live Instruction",
@@ -48,7 +58,7 @@ const SidebarCard = ({ price, courseData }) => {
         </p>
         <div className="flex items-center justify-center gap-3 mt-4">
           <span className="text-4xl font-extrabold tracking-tight">
-            ₹{price || "14,999"}
+            ₹{formatPrice(price)}
           </span>
           <span className="text-xl line-through text-stone-400 font-medium">
             ₹24,000

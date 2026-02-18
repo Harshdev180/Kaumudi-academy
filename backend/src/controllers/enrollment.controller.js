@@ -1,5 +1,5 @@
 import Enrollment from "../models/Enrollment.model.js";
-import Transaction from "../models/Transaction.model.js";
+import Payment from "../models/Transaction.model.js";
 import Course from "../models/Course.model.js";
 
 
@@ -8,23 +8,29 @@ export const createEnrollment = async ({
   courseId,
   paymentId
 }) => {
+  try {
+    const exists = await Enrollment.findOne({
+      student: studentId,
+      course: courseId
+    });
 
-  const exists = await Enrollment.findOne({
-    student: studentId,
-    course: courseId
-  });
+    if (exists) {
+      return exists;
+    }
 
-  if (exists) {
-    return exists;
+    const enrollment = await Enrollment.create({
+      student: studentId,
+      course: courseId,
+      payment: paymentId,
+      status: "ACTIVE",
+      progress: 0
+    });
+
+    return enrollment;
+  } catch (error) {
+    console.error("CREATE ENROLLMENT ERROR:", error);
+    throw error;
   }
-
-  const enrollment = await Enrollment.create({
-    student: studentId,
-    course: courseId,
-    payment: paymentId
-  });
-
-  return enrollment;
 };
 
 

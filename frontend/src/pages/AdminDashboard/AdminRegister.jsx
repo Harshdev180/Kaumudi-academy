@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { User, Mail, Lock, Eye, EyeOff, Camera } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff, Camera, Loader2, Key } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { registerSuperAdmin, loginSuperAdmin, setAuthToken } from "../../lib/api";
 
 const AdminRegister = () => {
     const navigate = useNavigate();
-
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
     const [showPass, setShowPass] = useState(false);
     const [profilePreview, setProfilePreview] = useState(null);
 
@@ -14,6 +16,8 @@ const AdminRegister = () => {
         email: "",
         password: "",
         confirmPassword: "",
+        phoneNumber: "",
+        secretKey: "",
         image: null,
     });
 
@@ -30,9 +34,57 @@ const AdminRegister = () => {
         setProfilePreview(URL.createObjectURL(file));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(form);
+        setError("");
+
+        // Validation
+        if (!form.name.trim() || !form.email.trim() || !form.password || !form.phoneNumber.trim() || !form.secretKey.trim()) {
+            setError("All fields are required");
+            return;
+        }
+
+        if (form.password !== form.confirmPassword) {
+            setError("Passwords do not match");
+            return;
+        }
+
+        if (form.password.length < 6) {
+            setError("Password must be at least 6 characters");
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+            
+            // Register super admin
+            const registerRes = await registerSuperAdmin({
+                name: form.name,
+                email: form.email,
+                password: form.password,
+                phoneNumber: form.phoneNumber,
+                secretKey: form.secretKey,
+            });
+
+            // Auto-login after registration
+            const loginRes = await loginSuperAdmin(form.email, form.password);
+            if (loginRes?.token) {
+                localStorage.setItem("kaumudi_token", loginRes.token);
+                localStorage.setItem("kaumudi_role", "SUPER_ADMIN");
+                localStorage.setItem("kaumudi_user_email", form.email);
+                setAuthToken(loginRes.token);
+                navigate("/admin/dashboard");
+            } else {
+                alert(registerRes?.message || "Registration successful! Please login.");
+                navigate("/admin-login");
+            }
+        } catch (err) {
+            const msg = err?.response?.data?.message || "Registration failed. Please try again.";
+            setError(msg);
+            console.error("Registration error:", err);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -112,14 +164,23 @@ const AdminRegister = () => {
                     {/* FORM */}
                     <form onSubmit={handleSubmit} className="space-y-4">
 
+                        {/* ERROR MESSAGE */}
+                        {error && (
+                            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                                {error}
+                            </div>
+                        )}
+
                         {/* NAME */}
                         <div className="relative">
                             <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A57F6F]" />
                             <input
                                 name="name"
+                                value={form.name}
                                 onChange={handleChange}
                                 placeholder="Full Name"
                                 className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-[#EFE3D5] outline-none focus:ring-2 focus:ring-[#7B2C21]/20"
+                                required
                             />
                         </div>
 
@@ -129,9 +190,39 @@ const AdminRegister = () => {
                             <input
                                 name="email"
                                 type="email"
+                                value={form.email}
                                 onChange={handleChange}
                                 placeholder="Email Address"
                                 className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-[#EFE3D5] outline-none focus:ring-2 focus:ring-[#7B2C21]/20"
+                                required
+                            />
+                        </div>
+
+                        {/* PHONE NUMBER */}
+                        <div className="relative">
+                            <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A57F6F]" />
+                            <input
+                                name="phoneNumber"
+                                type="tel"
+                                value={form.phoneNumber}
+                                onChange={handleChange}
+                                placeholder="Phone Number"
+                                className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-[#EFE3D5] outline-none focus:ring-2 focus:ring-[#7B2C21]/20"
+                                required
+                            />
+                        </div>
+
+                        {/* SECRET KEY */}
+                        <div className="relative">
+                            <Key size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A57F6F]" />
+                            <input
+                                name="secretKey"
+                                type="password"
+                                value={form.secretKey}
+                                onChange={handleChange}
+                                placeholder="Super Admin Secret Key"
+                                className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-[#EFE3D5] outline-none focus:ring-2 focus:ring-[#7B2C21]/20"
+                                required
                             />
                         </div>
 
@@ -141,9 +232,11 @@ const AdminRegister = () => {
                             <input
                                 name="password"
                                 type={showPass ? "text" : "password"}
+                                value={form.password}
                                 onChange={handleChange}
                                 placeholder="Password"
                                 className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-[#EFE3D5] outline-none focus:ring-2 focus:ring-[#7B2C21]/20"
+                                required
                             />
 
                             <button
@@ -161,15 +254,28 @@ const AdminRegister = () => {
                             <input
                                 name="confirmPassword"
                                 type="password"
+                                value={form.confirmPassword}
                                 onChange={handleChange}
                                 placeholder="Confirm Password"
                                 className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-[#EFE3D5] outline-none focus:ring-2 focus:ring-[#7B2C21]/20"
+                                required
                             />
                         </div>
 
                         {/* REGISTER BUTTON */}
-                        <button className="w-full bg-[#6b1f12] hover:bg-[#5c1c11] hover:shadow-lg hover:scale-[1.01] text-white py-2.5 rounded-xl font-semibold transition">
-                            Create Admin Account
+                        <button 
+                            type="submit"
+                            disabled={isLoading}
+                            className="w-full bg-[#6b1f12] hover:bg-[#5c1c11] hover:shadow-lg hover:scale-[1.01] text-white py-2.5 rounded-xl font-semibold transition disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                            {isLoading ? (
+                                <>
+                                    <Loader2 size={18} className="animate-spin" />
+                                    Creating Account...
+                                </>
+                            ) : (
+                                "Create Admin Account"
+                            )}
                         </button>
                     </form>
 

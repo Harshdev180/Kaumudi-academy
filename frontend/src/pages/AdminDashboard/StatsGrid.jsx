@@ -7,9 +7,11 @@ import {
   Users,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { getDashboardStats } from "../../lib/api";
 
 function StatsGrid() {
-  const stats = [
+  const [stats, setStats] = useState([
     {
       title: "TOTAL COURSES",
       value: "42",
@@ -50,7 +52,64 @@ function StatsGrid() {
       bgColor: "bg-purple-50",
       textColor: "text-purple-600",
     },
-  ];
+  ]);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await getDashboardStats();
+        const data = response?.data ?? response ?? {};
+
+        setStats([
+          {
+            title: "TOTAL COURSES",
+            value: data.totalCourses || "0",
+            change: "+5%",
+            trend: "up",
+            icon: BookOpen,
+            color: "from-[#b8973d] to-[#d4af37]",
+            bgColor: "bg-[#FBF4E2]",
+            textColor: "text-[#b8973d]",
+          },
+          {
+            title: "TOTAL ENROLLMENTS",
+            value: (data.totalEnrollments || data.activeStudents || 0).toLocaleString(),
+            change: "-2%",
+            trend: "down",
+            icon: Users,
+            color: "from-[#6b1d14] to-[#8a2a1f]",
+            bgColor: "bg-[#6b1d14]/5",
+            textColor: "text-[#6b1d14]",
+          },
+          {
+            title: "TOTAL REVENUE",
+            value: `₹${(data.totalRevenue || 0).toLocaleString()}`,
+            change: "+12%",
+            trend: "up",
+            icon: Ticket,
+            color: "from-[#b8973d] to-[#d4af37]",
+            bgColor: "bg-[#FBF4E2]",
+            textColor: "text-[#b8973d]",
+          },
+          {
+            title: "NEW INQUIRIES",
+            value: data.totalInquiries || "0",
+            change: "PENDING",
+            trend: "neutral",
+            icon: Mail,
+            color: "from-purple-500 to-indigo-600",
+            bgColor: "bg-purple-50",
+            textColor: "text-purple-600",
+          },
+        ]);
+      } catch (error) {
+        console.error("Failed to fetch dashboard stats:", error);
+        // Keep default stats on error
+      }
+    };
+
+    fetchStats();
+  }, []);
 
   return (
     <motion.div

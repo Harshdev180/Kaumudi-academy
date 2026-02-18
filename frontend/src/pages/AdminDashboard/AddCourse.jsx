@@ -25,7 +25,7 @@ const AddCourse = ({
             const url = URL.createObjectURL(file);
 
             // IMPORTANT FIX — image key same as CourseManagement
-            setForm({ ...form, image: url });
+            setForm({ ...form, imageFile: file, imagePreview: url });
         }
     };
 
@@ -33,7 +33,7 @@ const AddCourse = ({
     const handleVideo = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setForm({ ...form, video: file.name });
+            setForm({ ...form, videoFile: file, videoName: file.name });
         }
     };
 
@@ -84,9 +84,9 @@ const AddCourse = ({
 
                             <label className="flex items-center justify-center h-32 rounded-2xl border-2 border-dashed border-[#D1B062] cursor-pointer bg-[#EFE3D5] overflow-hidden">
 
-                                {form.image ? (
+                                {form.imagePreview || form.image ? (
                                     <img
-                                        src={form.image}
+                                        src={form.imagePreview || form.image}
                                         alt="thumbnail"
                                         className="w-full h-full object-cover"
                                     />
@@ -174,6 +174,14 @@ const AddCourse = ({
                                 )}
                             </div>
 
+                            <label className="flex items-center justify-between px-4 py-3 bg-[#EFE3D5] rounded-xl cursor-pointer">
+                                <span className="text-sm truncate">
+                                    {form.videoName || "Upload intro video"}
+                                </span>
+                                <MdVideocam size={22} />
+                                <input type="file" hidden onChange={handleVideo} />
+                            </label>
+
                         </div>
 
                         {/* PRICE + MODE */}
@@ -191,29 +199,25 @@ const AddCourse = ({
                                 className="p-3 rounded-xl bg-[#EFE3D5] outline-none"
                             >
                                 <option>ONLINE</option>
-                                <option>HYBRID</option>
                                 <option>OFFLINE</option>
                             </select>
                         </div>
 
-                        {/* DURATION + LEVEL */}
+                        {/* DURATION + LANGUAGE */}
                         <div className="grid grid-cols-2 gap-3">
                             <input
                                 placeholder="Duration"
-                                value={form.dur}
-                                onChange={e => setForm({ ...form, dur: e.target.value })}
+                                value={form.duration}
+                                onChange={e => setForm({ ...form, duration: e.target.value })}
                                 className="p-3 rounded-xl bg-[#EFE3D5] outline-none"
                             />
 
-                            <select
-                                value={form.level}
-                                onChange={e => setForm({ ...form, level: e.target.value })}
+                            <input
+                                placeholder="Languages (comma separated)"
+                                value={form.language}
+                                onChange={e => setForm({ ...form, language: e.target.value })}
                                 className="p-3 rounded-xl bg-[#EFE3D5] outline-none"
-                            >
-                                <option>Beginner</option>
-                                <option>Intermediate</option>
-                                <option>Advanced</option>
-                            </select>
+                            />
                         </div>
 
                         {/* SCHEDULING */}
@@ -237,24 +241,6 @@ const AddCourse = ({
                                     className="p-3 rounded-xl bg-[#EFE3D5] outline-none"
                                 />
                             </div>
-                        </div>
-
-                        {/* STATUS */}
-                        <div>
-                            <p className="text-xs font-bold text-[#856966] mb-2 uppercase">
-                                Visibility
-                            </p>
-
-                            <select
-                                value={form.status}
-                                onChange={e => setForm({ ...form, status: e.target.value })}
-                                className="w-full p-3 rounded-xl bg-[#EFE3D5] outline-none"
-                            >
-                                <option>Draft</option>
-                                <option>Published</option>
-                                <option>Hidden</option>
-                                <option>Inactive</option>
-                            </select>
                         </div>
 
                     </div>

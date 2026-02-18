@@ -15,6 +15,7 @@ import Home from "./pages/Homepage/Home";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
+import RequireAuth from "./components/RequireAuth";
 import About from "./pages/About";
 import FacultyPage from "./pages/FacultyPage";
 import Contact from "./pages/Contact";
@@ -70,13 +71,14 @@ function App() {
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/allcourses" element={<AllCoursesPage />} />
+        <Route path="/coursedetail/:id" element={<CourseDetail />} />
         <Route path="/coursedetail" element={<CourseDetail />} />
         <Route path="/about" element={<About />} />
         <Route path="/faculty" element={<FacultyPage />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/inquiry" element={<Inquiry />} />
-        <Route path="/courseBuy" element={<Buy />} />
-        <Route path="/profile" element={<StudentProfile />} />
+        <Route path="/courseBuy" element={<RequireAuth><Buy /></RequireAuth>} />
+        <Route path="/profile" element={<RequireAuth><StudentProfile /></RequireAuth>} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsConditions />} />
         <Route path="/cookies" element={<CookiePolicy />} />

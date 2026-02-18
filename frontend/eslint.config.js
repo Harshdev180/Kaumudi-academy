@@ -25,7 +25,7 @@ export default defineConfig([
     rules: {
       "no-unused-vars": [
         "error",
-        { varsIgnorePattern: "^(motion|AnimatePresence|[A-Z_])$" },
+        { varsIgnorePattern: "^(motion|AnimatePresence|_|[A-Z][a-zA-Z0-9_]*)$" },
       ],
       "react-hooks/set-state-in-effect": "off",
     },

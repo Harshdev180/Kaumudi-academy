@@ -28,6 +28,13 @@ import {
 } from "../validators/course.validator.js";
 
 
+// Specific admin routes should come before parameterized routes
+router.get("/course/admin/all", authMiddleware, roleMiddleware("ADMIN"), getAllCoursesForAdmin);
+router.get("/course/admin/active", authMiddleware, roleMiddleware("ADMIN"), getActiveCoursesForAdmin);
+router.get("/course/admin/with-enrollments", authMiddleware, roleMiddleware("ADMIN"), getCoursesWithEnrollmentCount);
+router.get("/course/admin/stats", authMiddleware, roleMiddleware("ADMIN"), getCourseDashboardStats);
+
+// Generic routes
 router.get("/course", getAllCourses);
 router.get("/course/:id", getCourseDetail);
 
@@ -63,10 +70,5 @@ router.delete(
   roleMiddleware("ADMIN"),
   deleteCourse
 );
-
-router.get("/course/admin/all", authMiddleware, roleMiddleware("ADMIN"), getAllCoursesForAdmin);
-router.get("/course/admin/active", authMiddleware, roleMiddleware("ADMIN"), getActiveCoursesForAdmin);
-router.get("/course/admin/with-enrollments", authMiddleware, roleMiddleware("ADMIN"), getCoursesWithEnrollmentCount);
-router.get("/course/admin/stats", authMiddleware, roleMiddleware("ADMIN"), getCourseDashboardStats);
 
 export default router;

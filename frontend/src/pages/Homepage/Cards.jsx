@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const courses = [
@@ -33,11 +33,35 @@ const courses = [
 
 export default function Cards() {
   const [index, setIndex] = useState(0);
+  const [itemsPerSlide, setItemsPerSlide] = useState(3);
 
-  const visible = courses.slice(index, index + 3);
+  useEffect(() => {
+    const calc = () => {
+      const w = window.innerWidth;
+      if (w < 640) return 1; // < sm
+      if (w < 1024) return 2; // sm..lg
+      return 3; // >= lg
+    };
+    const apply = () => {
+      const n = calc();
+      setItemsPerSlide((prev) => {
+        if (prev !== n) {
+          // clamp index to new bounds
+          const maxStart = Math.max(0, courses.length - n);
+          if (index > maxStart) setIndex(maxStart);
+        }
+        return n;
+      });
+    };
+    apply();
+    window.addEventListener("resize", apply);
+    return () => window.removeEventListener("resize", apply);
+  }, [index]);
+
+  const visible = courses.slice(index, index + itemsPerSlide);
 
   const next = () => {
-    if (index < courses.length - 3) {
+    if (index < courses.length - itemsPerSlide) {
       setIndex((i) => i + 1);
     }
   };
@@ -107,7 +131,7 @@ export default function Cards() {
             <motion.button
               onClick={prev}
               disabled={index === 0}
-              whileHover={{ scale: index === 0 ? 1 : 1.1 }}
+              whileHover={{ scale: index === 0 ? 1 : 1.08 }}
               whileTap={{ scale: 0.9 }}
               className={`h-11 w-11 rounded-full flex items-center justify-center
               border transition-colors duration-200
@@ -123,13 +147,15 @@ export default function Cards() {
             {/* RIGHT */}
             <motion.button
               onClick={next}
-              disabled={index >= courses.length - 3}
-              whileHover={{ scale: index >= courses.length - 3 ? 1 : 1.1 }}
+              disabled={index >= courses.length - itemsPerSlide}
+              whileHover={{
+                scale: index >= courses.length - itemsPerSlide ? 1 : 1.08,
+              }}
               whileTap={{ scale: 0.9 }}
               className={`h-11 w-11 rounded-full flex items-center justify-center
               border transition-colors duration-200
               ${
-                index >= courses.length - 3
+                index >= courses.length - itemsPerSlide
                   ? "border-[#74271E]/20 text-[#74271E]/40 cursor-not-allowed"
                   : "border-[#74271E]/40 text-[#74271E] hover:bg-[#74271E] hover:text-white"
               }`}
@@ -161,8 +187,8 @@ export default function Cards() {
               {/* Image */}
               <div className="h-56 overflow-hidden">
                 <motion.img
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.6, ease: "easeOut" }}
+                  whileHover={{ scale: 1.06 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
                   src={course.img}
                   alt={course.title}
                   className="w-full h-full object-cover"
@@ -181,12 +207,12 @@ export default function Cards() {
                   {course.desc}
                 </p>
 
-                <a
-                  href="/coursedetail"
+                <Link
+                  to="/coursedetail"
                   className="inline-flex items-center bg-[#74271E] p-3 rounded-3xl text-white font-bold text-sm hover:gap-2 transition-all"
                 >
                   View Details <ArrowRight size={14} className="ml-1" />
-                </a>
+                </Link>
               </div>
             </motion.div>
           ))}
