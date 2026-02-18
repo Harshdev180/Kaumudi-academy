@@ -3,6 +3,7 @@ import StatsGrid from './StatsGrid'
 import ChartSection from './ChartSection'
 import TableSection from './TableSection'
 import ActivityFeed from './ActivityFeed'
+import RecentOreder from './RecentOreder'
 // import AlertInfo from './AlertInfo'
 
 
@@ -26,6 +27,7 @@ function Dashboard() {
                         <ActivityFeed />
                     </div>
                 </div>
+                    {/* <RecentOreder/> */}
             </div>
 
         </>

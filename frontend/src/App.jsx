@@ -2,7 +2,7 @@ import "./App.css";
 import { Route, Routes, Outlet } from "react-router-dom";
 import Dashboard from "./pages/AdminDashboard/Dashboard";
 import AdminLayout from "./pages/AdminDashboard/AdminLayout";
-import LeadManagement from "./pages/AdminDashboard/LeadManagement";
+
 import AdminLogin from "./pages/AdminDashboard/AdminLogin";
 import CourseManagement from "./pages/AdminDashboard/CourseManagement";
 import AllCoursesPage from "./pages/CourseListing";
@@ -30,6 +30,8 @@ import CouponPage from "./pages/AdminDashboard/CouponPage.jsx";
 import AdminSettings from "./pages/AdminDashboard/AdminSettings.jsx";
 import AdminStaffSalary from "./pages/AdminDashboard/AdminStaffSalary.jsx";
 import StudentManagement from "./pages/AdminDashboard/Student/StudentManagement.jsx";
+import EnrollmentManagement from "./pages/AdminDashboard/EnrollmentManagement.jsx";
+import InquiryManagement from "./pages/AdminDashboard/InquiryManagement.jsx";
 
 // Public site layout with shared navbar/footer
 function PublicLayout() {
@@ -77,7 +79,7 @@ function App() {
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsConditions />} />
         <Route path="/cookies" element={<CookiePolicy />} />
-        
+
       </Route>
 
       {/* Auth routes without navbar/footer */}
@@ -88,18 +90,19 @@ function App() {
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="dashboard" element={<Dashboard />} />
-        <Route path="lead" element={<LeadManagement />} />
+        <Route path="/admin/student-inquiry" element={<InquiryManagement />} />
         <Route path="course" element={<CourseManagement />} />
         <Route path="coupon" element={<CouponPage />} />
         <Route path="/admin/staff-salary" element={<AdminStaffSalary />} />
         <Route path="/admin/student-management" element={<StudentManagement />} />
+        <Route path="/admin/enroll-students" element={<EnrollmentManagement />} />
+        <Route path="/admin/settings" element={<AdminSettings />} />
+        <Route path="/admin/notifications" element={<NotificationsPage />} />
       </Route>
 
       {/* Admin login outside admin layout */}
       <Route path="/admin-login" element={<AdminLogin />} />
       <Route path="/admin-register" element={<AdminRegister />} />
-      <Route path="/admin/notifications" element={<NotificationsPage />} />
-      <Route path="/admin/settings" element={<AdminSettings />} />
 
 
       {/* Fallback */}

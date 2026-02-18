@@ -79,8 +79,9 @@ function TableSection() {
 
     return (
         <div className="space-y-6">
+
             {/* ================= Recent Orders ================= */}
-            <div className="bg-white/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 overflow-hidden">
+            <div className="bg-white/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 overflow-hidden ">
                 {/* Header */}
                 <div className="p-6 border-b border-slate-200/50 flex items-center justify-between">
                     <div>
@@ -91,9 +92,9 @@ function TableSection() {
                             Latest course orders
                         </p>
                     </div>
-                    <button className="text-[#6b1d14]/70 hover:text-[#6b1d14] text-sm font-medium">
+                    {/* <button className="text-[#6b1d14]/70 hover:text-[#6b1d14] text-sm font-medium">
                         View All
-                    </button>
+                    </button> */}
                 </div>
 
                 {/* Table */}
@@ -148,9 +149,9 @@ function TableSection() {
                     </table>
                 </div>
             </div>
-
-            {/* ================= Top Course ================= */}
             <div className="bg-white/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 overflow-hidden">
+                {/* ================= Top Course ================= */}
+
                 {/* Header */}
                 <div className="p-6 border-b border-slate-200/50 flex items-center justify-between">
                     <div>
@@ -161,12 +162,12 @@ function TableSection() {
                             Best performing course
                         </p>
                     </div>
-                    <button className="text-[#6b1d14]/70 hover:text-[#6b1d14] text-sm font-medium">
+                    {/* <button className="text-[#6b1d14]/70 hover:text-[#6b1d14] text-sm font-medium">
                         View All
-                    </button>
+                    </button> */}
                 </div>
 
-                {/* List */}
+
                 <div className="divide-y divide-slate-100">
                     {topCourses.map((course, index) => (
                         <div
@@ -199,6 +200,7 @@ function TableSection() {
                     ))}
                 </div>
             </div>
+
         </div>
     );
 }

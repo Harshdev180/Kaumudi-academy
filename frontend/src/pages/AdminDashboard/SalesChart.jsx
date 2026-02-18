@@ -9,11 +9,11 @@ import {
 import { motion } from "framer-motion";
 
 const data = [
-    { name: "Shlok", value: 45, color: "#4f7cff" },
-    { name: "Spoken Sanskrit", value: 30, color: "#8b5cf6" },
-    { name: "Vyakaran Shastra", value: 15, color: "#22c55e" },
-    { name: "UGC NET", value: 10, color: "#f59e0b" },
-    { name: "BA", value: 12, color: "#FF5B5B" },
+    { name: "Shlok", value: 45, color: "#D4AF37" },
+    { name: "Spoken Sanskrit", value: 30, color: "#6b1d14" },
+    { name: "Vyakaran Shastra", value: 15, color: "#8A2A1F" },
+    { name: "UGC NET", value: 10, color: "#E0B84F" },
+    { name: "BA", value: 12, color: "#F3E6C9" },
 ];
 
 function SalesChart() {
