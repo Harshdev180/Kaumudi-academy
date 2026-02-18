@@ -4,7 +4,7 @@
 // import {config} from "./configs/env.js"
 
 
-// connectDB()
+
 // const PORT = config.PORT || 5000
 
 // app.listen(PORT,()=>{
