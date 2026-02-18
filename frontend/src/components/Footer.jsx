@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Facebook,
@@ -12,8 +12,10 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import wheel from "../assets/wheel.jpg";
+import { AnimatePresence } from "framer-motion";
+import logo from "../assets/logo-bgremove.png";
 
-const socials = [Facebook, Twitter, Instagram, Linkedin];
+const socials = [Instagram];
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -30,79 +32,171 @@ export default function Footer() {
     }
     setError("");
     setSent(true);
+    setEmail(""); // Clear input after successful subscription
+  };
+
+  // Animation variants
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+    },
+  };
+
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
   };
 
   return (
-    <footer className="relative overflow-hidden text-white pt-28 pb-12">
+    <footer className="relative overflow-hidden text-white pt-16 sm:pt-20 md:pt-24 lg:pt-28 pb-8 sm:pb-10 md:pb-12">
       {/* BACKGROUND IMAGE */}
-      <div
-        className="absolute inset-0 bg-cover bg-center scale-110"
+      <motion.div
+        initial={{ scale: 1.1, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 1.5 }}
+        className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${wheel})` }}
       />
 
       {/* DARK OVERLAY */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#3b120e]/85 via-[#5a1e17]/80 to-[#2a0b08]/85" />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        className="absolute inset-0 bg-gradient-to-b from-[#3b120e]/90 via-[#5a1e17]/85 to-[#2a0b08]/90"
+      />
 
       {/* GOLD RADIAL GLOW */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(214,177,92,0.12),transparent_60%)]" />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.2, delay: 0.3 }}
+        className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(214,177,92,0.15),transparent_70%)]"
+      />
 
-      {/* TOP DIVIDER */}
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#d6b15c]/60 to-transparent" />
+      {/* TOP DIVIDER - Animated */}
+      <motion.div
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: 1 }}
+        transition={{ duration: 1, delay: 0.5 }}
+        className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#d6b15c]/80 to-transparent origin-left"
+      />
 
       {/* CONTENT */}
-      <div className="relative z-10 max-w-[1200px] mx-auto px-6">
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={staggerContainer}
+        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+      >
         {/* MAIN GRID */}
-        <div className="grid md:grid-cols-4 gap-16 mb-20">
+        <motion.div
+          variants={staggerContainer}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 md:gap-12 lg:gap-16 mb-12 sm:mb-16 md:mb-20"
+        >
           {/* BRAND */}
-          <div className="space-y-6">
+          <motion.div
+            variants={fadeInUp}
+            className="space-y-4 sm:space-y-5 md:space-y-6"
+          >
             <motion.div
               whileHover={{ scale: 1.04 }}
-              className="flex items-center gap-3"
+              className="flex items-center gap-2 sm:gap-3"
             >
-              <div className="bg-[#d6b15c] text-[#74271E] h-11 w-11 rounded-xl grid place-items-center text-xl shadow-[0_0_25px_rgba(214,177,92,0.45)]">
-                🪔
+              <div
+                className="
+    relative
+    bg-[#74271E]
+    h-12 w-12
+    rounded-xl
+    grid place-items-center
+    text-lg
+    p-1
+    overflow-hidden
+    transition-all duration-500
+    group-hover:scale-110
+    shadow-[0_0_18px_rgba(214,177,92,0.55)]
+    before:absolute before:inset-0
+    before:rounded-xl
+    before:bg-[radial-gradient(circle,rgba(214,177,92,0.55),transparent_70%)]
+    before:opacity-70
+    before:blur-md
+    before:animate-pulse
+  "
+              >
+                <img
+                  src={logo}
+                  alt="logo"
+                  className="relative z-10 brightness-110 contrast-110"
+                />
               </div>
 
               <div className="leading-tight">
-                <div className="font-black tracking-wide text-lg">KAUMUDI</div>
-                <div className="text-[10px] tracking-widest text-white uppercase">
+                <div className="font-black tracking-wide text-base sm:text-lg">
+                  KAUMUDI
+                </div>
+                <div className="text-[8px] sm:text-[9px] md:text-[10px] tracking-widest text-white/90 uppercase">
                   Sanskrit Academy
                 </div>
               </div>
             </motion.div>
 
-            <p className="text-white text-sm leading-relaxed max-w-xs tracking-wider">
-              Reviving Sanskrit’s timeless wisdom through scholarly rigor,
+            <p className="text-white/90 text-xs sm:text-sm leading-relaxed max-w-xs tracking-wider">
+              Reviving Sanskrit's timeless wisdom through scholarly rigor,
               authentic pedagogy, and global access.
             </p>
 
-            <div className="flex gap-4 pt-2">
+            <motion.div
+              variants={staggerContainer}
+              className="flex gap-2 sm:gap-3 md:gap-4 pt-1 sm:pt-2"
+            >
               {socials.map((Icon, i) => (
                 <motion.a
                   key={i}
-                  whileHover={{ scale: 1.15, rotate: 8 }}
+                  variants={fadeInUp}
+                  whileHover={{ scale: 1.15, rotate: 8, y: -4 }}
                   whileTap={{ scale: 0.95 }}
-                  href="#"
-                  className="h-10 w-10 rounded-full bg-[#74271E]
+                  href="https://www.instagram.com/sanskritstation/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 rounded-full bg-[#74271E]
                     flex items-center justify-center text-[#d6b15c]
-                    shadow-md hover:bg-[#d6b15c] hover:text-[#74271E] transition"
-                  aria-label={Icon.name}
+                    shadow-md hover:bg-[#d6b15c] hover:text-[#74271E] transition-all duration-300"
+                  aria-label={`${Icon.name} social link`}
                   title={Icon.name}
                 >
-                  <Icon size={18} />
+                  <Icon size={14} />
                 </motion.a>
               ))}
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* QUICK LINKS */}
-          <div className="space-y-6">
-            <h4 className="text-lg font-bold flex items-center gap-3">
+          <motion.div
+            variants={fadeInUp}
+            className="space-y-4 sm:space-y-5 md:space-y-6"
+          >
+            <h4 className="text-base sm:text-lg font-bold flex items-center gap-2 sm:gap-3">
               Quick Links
-              <span className="w-8 h-[2px] bg-[#d6b15c] rounded-full" />
+              <motion.span
+                initial={{ width: 0 }}
+                whileInView={{ width: 32 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="h-[2px] bg-[#d6b15c] rounded-full"
+              />
             </h4>
 
-            <ul className="space-y-4">
+            <ul className="space-y-2 sm:space-y-3 md:space-y-4">
               {[
                 { label: "Home", to: "/#hero" },
                 { label: "Courses", to: "/allcourses#hero" },
@@ -110,30 +204,46 @@ export default function Footer() {
                 { label: "Faculty", to: "/faculty#hero" },
                 { label: "Contact", to: "/contact#hero" },
               ].map((link) => (
-                <li key={link.label}>
+                <motion.li
+                  key={link.label}
+                  whileHover={{ x: 8 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
                   <Link
                     to={link.to}
-                    className="group flex items-center gap-2 text-sm text-white 
-                      hover:text-[#d6b15c] transition font-bold"
+                    className="group flex items-center gap-2 text-xs sm:text-sm text-white/90 
+                      hover:text-[#d6b15c] transition-colors duration-300 font-medium"
                   >
-                    <span className="w-0 overflow-hidden group-hover:w-4 transition-all duration-300">
-                      <ArrowRight size={12} />
-                    </span>
+                    <motion.span
+                      initial={{ width: 0, opacity: 0 }}
+                      whileHover={{ width: 16, opacity: 1 }}
+                      className="overflow-hidden"
+                    >
+                      <ArrowRight size={10} className="text-[#d6b15c]" />
+                    </motion.span>
                     {link.label}
                   </Link>
-                </li>
+                </motion.li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
           {/* COURSES */}
-          <div className="space-y-6">
-            <h4 className="text-lg font-bold flex items-center gap-3">
+          <motion.div
+            variants={fadeInUp}
+            className="space-y-4 sm:space-y-5 md:space-y-6"
+          >
+            <h4 className="text-base sm:text-lg font-bold flex items-center gap-2 sm:gap-3">
               Courses
-              <span className="w-8 h-[2px] bg-[#d6b15c] rounded-full" />
+              <motion.span
+                initial={{ width: 0 }}
+                whileInView={{ width: 32 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="h-[2px] bg-[#d6b15c] rounded-full"
+              />
             </h4>
 
-            <ul className="space-y-4">
+            <ul className="space-y-2 sm:space-y-3 md:space-y-4">
               {[
                 {
                   label: "Shloks",
@@ -211,125 +321,184 @@ export default function Footer() {
                   },
                 },
               ].map((link) => (
-                <li key={link.label}>
+                <motion.li
+                  key={link.label}
+                  whileHover={{ x: 8 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
                   <Link
                     to={link.to}
                     state={link.state}
-                    className="group flex items-center gap-2 text-sm text-white
-                      hover:text-[#d6b15c] transition font-bold"
+                    className="group flex items-center gap-2 text-xs sm:text-sm text-white/90
+                      hover:text-[#d6b15c] transition-colors duration-300 font-medium"
                   >
-                    <span className="w-0 overflow-hidden group-hover:w-4 transition-all duration-300">
-                      <ArrowRight size={12} />
-                    </span>
+                    <motion.span
+                      initial={{ width: 0, opacity: 0 }}
+                      whileHover={{ width: 16, opacity: 1 }}
+                      className="overflow-hidden"
+                    >
+                      <ArrowRight size={10} className="text-[#d6b15c]" />
+                    </motion.span>
                     {link.label}
                   </Link>
-                </li>
+                </motion.li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
           {/* CONTACT */}
-          <div className="space-y-6">
-            <h4 className="text-lg font-bold flex items-center gap-3">
+          <motion.div
+            variants={fadeInUp}
+            className="space-y-4 sm:space-y-5 md:space-y-6"
+          >
+            <h4 className="text-base sm:text-lg font-bold flex items-center gap-2 sm:gap-3">
               Stay Connected
-              <span className="w-8 h-[2px] bg-[#d6b15c] rounded-full" />
+              <motion.span
+                initial={{ width: 0 }}
+                whileInView={{ width: 32 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="h-[2px] bg-[#d6b15c] rounded-full"
+              />
             </h4>
 
-            <div className="space-y-4 text-sm text-white font-bold">
-              <div className="flex items-start gap-3">
+            <div className="space-y-3 sm:space-y-4 text-xs sm:text-sm text-white/90 font-medium">
+              <motion.div
+                whileHover={{ x: 4 }}
+                className="flex items-start gap-2 sm:gap-3"
+              >
                 <MapPin
-                  size={16}
-                  className="text-white mt-[2px] hover:text-[#d6b15c]"
+                  size={14}
+                  className="text-white/70 mt-[2px] hover:text-[#d6b15c] transition-colors flex-shrink-0"
                 />
                 <p>
-                  108 Vidya Vihar, Sanskrit Marg,
+                  Kadi, Mehsana,
                   <br />
-                  Varanasi, UP, India
+                  Gujarat, India
                 </p>
-              </div>
+              </motion.div>
 
-              <div className="flex items-center gap-3">
+              <motion.div
+                whileHover={{ x: 4 }}
+                className="flex items-center gap-2 sm:gap-3"
+              >
                 <Mail
-                  size={16}
-                  className="text-white hover:text-[#d6b15c] font-bold"
+                  size={14}
+                  className="text-white/70 hover:text-[#d6b15c] transition-colors flex-shrink-0"
                 />
-                <a href="mailto:contact@kaumudi.edu.in">
-                  contact@kaumudi.edu.in
+                <a
+                  href="mailto:contact@kaumudi.edu.in"
+                  className="hover:text-[#d6b15c] transition-colors break-all"
+                >
+                  ksacademy@gmail.com
                 </a>
-              </div>
+              </motion.div>
 
-              <div className="flex items-center gap-3">
+              <motion.div
+                whileHover={{ x: 4 }}
+                className="flex items-center gap-2 sm:gap-3"
+              >
                 <Phone
-                  size={16}
-                  className="text-white hover:text-[#d6b15c] font-bold"
+                  size={14}
+                  className="text-white/70 hover:text-[#d6b15c] transition-colors flex-shrink-0"
                 />
-                <a href="tel:+919876543210">+91 98765 43210</a>
-              </div>
+                <a
+                  href="tel:+9175672 23072"
+                  className="hover:text-[#d6b15c] transition-colors"
+                >
+                  +91 75672 23072
+                </a>
+              </motion.div>
             </div>
 
             {/* NEWSLETTER */}
-            <div className="pt-6 backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-4 shadow-xl">
-              <div className="relative">
-                <input
-                  type="email"
-                  placeholder="Your email address"
-                  className="w-full bg-[#74271E]/90 border border-[#d6b15c]/30
-                    rounded-xl px-4 py-3 text-sm text-[#ecd9c5]
-                    placeholder-[#ecd9c5]/40
-                    focus:outline-none focus:ring-2
-                    focus:ring-[#d6b15c]/40"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    setSent(false);
-                    setError("");
-                  }}
-                />
+            <motion.div whileHover={{ y: -2 }} className="pt-4 sm:pt-5 md:pt-6">
+              <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-xl">
+                <div className="relative">
+                  <input
+                    type="email"
+                    placeholder="Your email"
+                    className="w-full bg-[#74271E]/90 border border-[#d6b15c]/30
+                      rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm
+                      text-[#ecd9c5] placeholder-[#ecd9c5]/40
+                      focus:outline-none focus:ring-2 focus:ring-[#d6b15c]/40
+                      transition-all duration-300"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setSent(false);
+                      setError("");
+                    }}
+                    onKeyPress={(e) => e.key === "Enter" && submitEmail()}
+                  />
 
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2
-                    p-2 bg-[#d6b15c] rounded-lg text-[#74271E]"
-                  onClick={submitEmail}
-                >
-                  <ArrowRight size={16} />
-                </motion.button>
-              </div>
-
-              {error && (
-                <div className="mt-2 text-[#f3c0b7] text-xs">{error}</div>
-              )}
-              {sent && !error && (
-                <div className="mt-2 text-[#d6b15c] text-xs">
-                  Subscribed successfully
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2
+                      p-1.5 sm:p-2 bg-[#d6b15c] rounded-lg text-[#74271E]
+                      hover:shadow-lg transition-shadow"
+                    onClick={submitEmail}
+                    aria-label="Subscribe to newsletter"
+                  >
+                    <ArrowRight size={14} />
+                  </motion.button>
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
+
+                <AnimatePresence>
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="mt-2 text-[#f3c0b7] text-[10px] sm:text-xs"
+                    >
+                      {error}
+                    </motion.div>
+                  )}
+                  {sent && !error && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="mt-2 text-[#d6b15c] text-[10px] sm:text-xs"
+                    >
+                      ✓ Subscribed successfully!
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
 
         {/* BOTTOM BAR */}
-        <div
-          className="pt-8 border-t border-white
-          flex flex-col md:flex-row items-center justify-between
-          gap-4 text-xs text-white font-bold"
+        <motion.div
+          variants={fadeInUp}
+          className="pt-6 sm:pt-7 md:pt-8 border-t border-white/20
+            flex flex-col sm:flex-row items-center justify-between
+            gap-3 sm:gap-4 text-[10px] sm:text-xs text-white/80 font-medium"
         >
           <p>© {year} Kaumudi Sanskrit Academy. All Wisdom Reserved.</p>
 
-          <div className="flex gap-6 font-bold text-white">
-            <Link to="/privacy" className="hover:text-[#d6b15c] transition">
-              Privacy
-            </Link>
-            <Link to="/terms" className="hover:text-[#d6b15c] transition">
-              Terms
-            </Link>
-            <Link to="/cookies" className="hover:text-[#d6b15c] transition">
-              Cookies
-            </Link>
+          <div className="flex gap-4 sm:gap-6">
+            {["Privacy", "Terms", "Cookies"].map((item) => (
+              <Link
+                key={item}
+                to={`/${item.toLowerCase()}`}
+                className="hover:text-[#d6b15c] transition-colors duration-300 relative group"
+              >
+                {item}
+                <motion.span
+                  initial={{ width: 0 }}
+                  whileHover={{ width: "100%" }}
+                  transition={{ duration: 0.3 }}
+                  className="absolute -bottom-1 left-0 h-px bg-[#d6b15c]"
+                />
+              </Link>
+            ))}
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </footer>
   );
 }

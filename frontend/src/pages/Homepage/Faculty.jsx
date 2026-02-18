@@ -49,8 +49,11 @@ const Faculty = () => {
   ];
 
   return (
-    <section id="faculty" className="bg-[#f1e4c8] py-24 overflow-hidden">
-      <div className="mx-auto max-w-[1200px] px-6">
+    <section
+      id="faculty"
+      className="bg-[#f1e4c8] py-6 sm:py-20 md:py-24 overflow-hidden"
+    >
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -59,15 +62,32 @@ const Faculty = () => {
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className="text-center relative"
         >
-          <h3 className="text-3xl md:text-4xl font-extrabold text-[#74271E] tracking-wide font-serif">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#74271E] tracking-wide font-serif">
             Our Distinguished Faculty
           </h3>
+
           <div className="mx-auto mt-4 h-[3px] w-16 rounded-full bg-[#d6b15c]" />
+
+          {/* Background word */}
           <motion.span
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1 }}
-            className="absolute -top-28 left-60 text-[140px] font-black uppercase tracking-widest text-[#74271E]/10 select-none pointer-events-none z-0"
+            className="
+              hidden md:block
+              absolute
+              left-1/2
+              -translate-x-1/2
+              -top-20 lg:-top-28
+              text-[clamp(5rem,12vw,9rem)]
+              font-black
+              uppercase
+              tracking-widest
+              text-[#74271E]/10
+              select-none
+              pointer-events-none
+              z-0
+            "
           >
             Faculty
           </motion.span>
@@ -79,7 +99,15 @@ const Faculty = () => {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
-          className="mt-14 grid gap-10 sm:grid-cols-2 md:grid-cols-4"
+          className="
+            mt-12 sm:mt-14
+            grid
+            gap-8 sm:gap-10
+            grid-cols-2
+            sm:grid-cols-2
+            md:grid-cols-3
+            lg:grid-cols-4
+          "
         >
           {faculty.map((f) => (
             <motion.div
@@ -87,22 +115,50 @@ const Faculty = () => {
               variants={item}
               whileHover={{
                 y: -10,
-                transition: { type: "spring", stiffness: 300, damping: 20 },
+                scale: 1.03,
+                transition: {
+                  type: "spring",
+                  stiffness: 260,
+                  damping: 18,
+                },
               }}
               className="group text-center"
             >
               {/* Avatar */}
-              <div className="mx-auto flex h-28 w-28 items-center justify-center rounded-full bg-[#74271E]/10 p-1 shadow-md transition-transform duration-500 group-hover:scale-110 group-hover:shadow-xl group-hover:bg-[#d6b15c]/20">
+              <div
+                className="
+                  mx-auto
+                  flex
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-[#74271E]/10
+                  p-1
+                  shadow-md
+                  transition-all
+                  duration-500
+                  group-hover:scale-110
+                  group-hover:shadow-xl
+                  group-hover:bg-[#d6b15c]/20
+                  h-24 w-24
+                  sm:h-28 sm:w-28
+                  md:h-32 md:w-32
+                "
+              >
                 <img
                   src={f.image}
                   alt={f.name}
+                  loading="lazy"
                   className="h-full w-full rounded-full object-cover"
                 />
               </div>
 
               {/* Text */}
-              <div className="mt-5 font-bold text-[#74271E]">{f.name}</div>
-              <div className="text-sm text-[#86543f]">{f.role}</div>
+              <div className="mt-4 sm:mt-5 font-bold text-[#74271E] text-sm sm:text-base">
+                {f.name}
+              </div>
+
+              <div className="text-xs sm:text-sm text-[#86543f]">{f.role}</div>
             </motion.div>
           ))}
         </motion.div>

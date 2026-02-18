@@ -30,7 +30,7 @@ const listItem = {
 
 const Learning = () => {
   return (
-    <section className="bg-[#74271E] py-24">
+    <section className="bg-[#74271E] py-24 relative overflow-hidden">
       <div className="mx-auto max-w-[1200px] px-6 grid gap-12 md:grid-cols-3 items-start">
         {/* Left Content */}
         <motion.div
@@ -48,8 +48,9 @@ const Learning = () => {
             <div className="mt-4 h-[3px] w-16 rounded-full bg-[#d6b15c]" />
 
             <p className="mt-5 text-white/90 leading-relaxed">
-              We offer flexible learning environments to suit your lifestyle while
-              maintaining the traditional rigor of classical Sanskrit education.
+              We offer flexible learning environments to suit your lifestyle
+              while maintaining the traditional rigor of classical Sanskrit
+              education.
             </p>
           </motion.div>
 

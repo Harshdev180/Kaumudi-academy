@@ -63,7 +63,7 @@ export default function Testimonials() {
   const active = testimonials[index];
 
   return (
-    <section className="py-28 bg-[#f1e4c8] overflow-hidden">
+    <section className="py-16 bg-[#f1e4c8] overflow-hidden">
       <div className="max-w-[1200px] mx-auto px-6">
         {/* Heading */}
         <motion.h3
@@ -90,7 +90,7 @@ export default function Testimonials() {
           >
             <span
               aria-hidden
-              className="
+              className="hidden sm:block
       select-none
       whitespace-nowrap
       font-black
@@ -116,7 +116,7 @@ export default function Testimonials() {
             >
               {/* Cap */}
               <motion.div
-                className="absolute -top-26 -right-31 w-32 md:w-70 drop-shadow-xl pointer-events-none"
+                className="hidden sm:block absolute -top-26 -right-31 w-32 md:w-70 drop-shadow-xl pointer-events-none"
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.6 }}

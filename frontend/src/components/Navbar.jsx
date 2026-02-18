@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, User, LogOut } from "lucide-react"; // Icons add kiye
+import logo from "../assets/logo-bgremove.png";
 
 /* ------------------ CONFIG ------------------ */
 
@@ -16,16 +17,18 @@ const NAV_ITEMS = [
 /* ------------------ ANIMATIONS ------------------ */
 
 const mobileMenuVariants = {
-  hidden: { opacity: 0, height: 0 },
+  hidden: { opacity: 0, y: -12, height: 0 },
   visible: {
     opacity: 1,
+    y: 0,
     height: "auto",
-    transition: { duration: 0.35, ease: "easeOut" },
+    transition: { type: "spring", stiffness: 300, damping: 30, duration: 0.35 },
   },
   exit: {
     opacity: 0,
+    y: -8,
     height: 0,
-    transition: { duration: 0.25, ease: "easeIn" },
+    transition: { duration: 0.22, ease: "easeIn" },
   },
 };
 
@@ -62,6 +65,13 @@ export default function Navbar() {
 
   // --- LOGIN LOGIC ---
   const isLoggedIn = !!localStorage.getItem("kaumudi_token");
+  const role = localStorage.getItem("kaumudi_role");
+  const profilePath =
+    role === "STUDENT"
+      ? "/student/profile"
+      : role === "ADMIN" || role === "SUPER_ADMIN"
+        ? "/admin"
+        : "/profile";
 
   const handleLogout = () => {
     localStorage.removeItem("kaumudi_token");
@@ -86,6 +96,8 @@ export default function Navbar() {
   }, [pathname]);
 
   /* Body scroll lock when mobile menu is open */
+  const mobileMenuRef = useRef(null);
+
   useEffect(() => {
     try {
       document.body.style.overflow = open ? "hidden" : "";
@@ -95,6 +107,19 @@ export default function Navbar() {
         document.body.style.overflow = "";
       } catch {}
     };
+  }, [open]);
+
+  // Accessibility: focus first menu item when opened and close on Escape
+  useEffect(() => {
+    if (!open) return;
+    const first = mobileMenuRef.current?.querySelector("a,button");
+    first?.focus?.();
+
+    const onKey = (e) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
   return (
@@ -115,9 +140,34 @@ export default function Navbar() {
           to="/"
           className="flex items-center gap-3 group focus:outline-none"
         >
-          <div className="bg-[#d6b15c] text-[#74271E] h-9 w-9 rounded-xl grid place-items-center text-lg shadow-md">
-            🪔
+          <div
+            className="
+    relative
+    bg-[#74271E]
+    h-12 w-12
+    rounded-xl
+    grid place-items-center
+    text-lg
+    p-1
+    overflow-hidden
+    transition-all duration-500
+    group-hover:scale-110
+    shadow-[0_0_18px_rgba(214,177,92,0.55)]
+    before:absolute before:inset-0
+    before:rounded-xl
+    before:bg-[radial-gradient(circle,rgba(214,177,92,0.55),transparent_70%)]
+    before:opacity-70
+    before:blur-md
+    before:animate-pulse
+  "
+          >
+            <img
+              src={logo}
+              alt="logo"
+              className="relative z-10 brightness-110 contrast-110"
+            />
           </div>
+
           <div className="leading-tight">
             <div className="font-black tracking-widest text-white group-hover:text-[#d6b15c] transition">
               KAUMUDI
@@ -128,15 +178,16 @@ export default function Navbar() {
           </div>
         </Link>
 
-        {/* ---------------- DESKTOP NAV ---------------- */}
-        <ul className="hidden md:flex items-center gap-10 font-semibold">
+        {/* ---------------- DESKTOP NAV (visible on large screens) ---------------- */}
+        <ul className="hidden lg:flex items-center gap-10 font-semibold flex-wrap">
           {NAV_ITEMS.map(({ label, to }) => {
             const isActive = pathname === to;
             return (
               <li key={label} className="relative">
                 <Link
                   to={to}
-                  className={`text-sm tracking-wide transition-colors focus:outline-none ${
+                  aria-current={isActive ? "page" : undefined}
+                  className={`text-sm tracking-wide transition-colors duration-200 ease-out focus:outline-none ${
                     isActive
                       ? "text-[#d6b15c]"
                       : "text-white hover:text-[#d6b15c]"
@@ -159,10 +210,10 @@ export default function Navbar() {
         {/* ---------------- RIGHT ACTIONS ---------------- */}
         <div className="flex items-center gap-4">
           {isLoggedIn ? (
-            <div className="hidden md:flex items-center gap-4">
+            <div className="hidden lg:flex items-center gap-4">
               {/* Profile Link */}
               <Link
-                to="/student/profile"
+                to={profilePath}
                 className="flex items-center gap-2 text-[#d6b15c] font-semibold text-sm hover:opacity-90 transition"
               >
                 <div className="w-8 h-8 rounded-full bg-[#74271E]/20 flex items-center justify-center border border-[#d6b15c]/90">
@@ -183,7 +234,7 @@ export default function Navbar() {
               </motion.button>
             </div>
           ) : (
-            <Link to="/auth" className="hidden md:block">
+            <Link to="/auth" className="hidden lg:block">
               <motion.span
                 whileHover={{ scale: 1.06 }}
                 whileTap={{ scale: 0.94 }}
@@ -197,7 +248,7 @@ export default function Navbar() {
           {/* ---------------- MOBILE TOGGLE ---------------- */}
           <button
             onClick={() => setOpen((v) => !v)}
-            className="md:hidden p-2 rounded-xl bg-[#d6b15c]/15 text-[#d6b15c] hover:bg-[#d6b15c]/25 transition-colors focus:outline-none"
+            className="lg:hidden p-2 rounded-xl bg-[#d6b15c]/15 text-[#d6b15c] hover:bg-[#d6b15c]/25 transition-colors focus:outline-none"
             aria-expanded={open}
             aria-controls="mobile-menu"
             aria-label="Toggle navigation"
@@ -222,13 +273,15 @@ export default function Navbar() {
             {/* Panel */}
             <motion.div
               id="mobile-menu"
+              ref={mobileMenuRef}
+              tabIndex={-1}
               role="dialog"
               aria-modal="true"
               variants={mobileMenuVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="md:hidden relative z-50 bg-[#74271E] border-t border-[#dccbb4]/25 overflow-hidden"
+              className="lg:hidden relative z-50 bg-[#74271E] border-t border-[#dccbb4]/25 overflow-hidden"
             >
               <motion.div
                 variants={mobileListContainer}
@@ -240,7 +293,7 @@ export default function Navbar() {
                 {isLoggedIn && (
                   <motion.div variants={mobileItem}>
                     <Link
-                      to="/profile"
+                      to={profilePath}
                       onClick={() => setOpen(false)}
                       className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 text-[#d6b15c]"
                     >

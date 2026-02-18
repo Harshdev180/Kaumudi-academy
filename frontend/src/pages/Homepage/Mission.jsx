@@ -61,10 +61,10 @@ export default function Mission() {
         >
           {/* BACKGROUND WORD */}
           <motion.span
-            initial={{ opacity: 0, x: 100 }}
+            initial={{ opacity: 0, x: -100 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="absolute -top-28 -left-15 text-[140px] font-black uppercase tracking-widest text-[#d6b15c]/10 select-none pointer-events-none z-0"
+            className="hidden sm:block absolute -top-28 -left-15 text-[140px] font-black uppercase tracking-widest text-[#d6b15c]/10 select-none pointer-events-none z-0"
           >
             Mission
           </motion.span>

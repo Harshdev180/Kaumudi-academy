@@ -56,7 +56,7 @@ export default function Contact() {
     fullName: "",
     email: "",
     subject: "",
-    message: ""
+    message: "",
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
@@ -64,15 +64,20 @@ export default function Contact() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
-    
-    if (!formData.fullName || !formData.email || !formData.subject || !formData.message) {
+
+    if (
+      !formData.fullName ||
+      !formData.email ||
+      !formData.subject ||
+      !formData.message
+    ) {
       setError("Please fill all fields");
       return;
     }
@@ -83,7 +88,7 @@ export default function Contact() {
         fullName: formData.fullName,
         email: formData.email,
         subject: formData.subject,
-        message: formData.message
+        message: formData.message,
       });
       setSuccess("Message sent successfully! We'll get back to you soon.");
       setFormData({ fullName: "", email: "", subject: "", message: "" });
@@ -158,11 +163,27 @@ export default function Contact() {
               Send us a Message
             </h2>
 
-            <motion.form variants={stagger} className="space-y-14" onSubmit={handleSubmit}>
+            <motion.form
+              variants={stagger}
+              className="space-y-14"
+              onSubmit={handleSubmit}
+            >
               {[
-                { label: "FULL NAME", name: "fullName", placeholder: "Enter your full name" },
-                { label: "EMAIL ADDRESS", name: "email", placeholder: "your@email.com" },
-                { label: "SUBJECT", name: "subject", placeholder: "Course inquiry, support" },
+                {
+                  label: "FULL NAME",
+                  name: "fullName",
+                  placeholder: "Enter your full name",
+                },
+                {
+                  label: "EMAIL ADDRESS",
+                  name: "email",
+                  placeholder: "your@email.com",
+                },
+                {
+                  label: "SUBJECT",
+                  name: "subject",
+                  placeholder: "Course inquiry, support",
+                },
               ].map((item, i) => (
                 <motion.div key={i} variants={fadeUp}>
                   <label className="block text-xs tracking-[0.3em] font-bold text-[#7b2d1f] mb-2">
@@ -199,8 +220,12 @@ export default function Contact() {
                 />
               </motion.div>
 
-              {error && <div className="text-red-600 font-semibold">{error}</div>}
-              {success && <div className="text-green-700 font-semibold">{success}</div>}
+              {error && (
+                <div className="text-red-600 font-semibold">{error}</div>
+              )}
+              {success && (
+                <div className="text-green-700 font-semibold">{success}</div>
+              )}
 
               <motion.button
                 type="submit"
@@ -230,12 +255,12 @@ export default function Contact() {
               </h3>
 
               <p className="mt-3 text-lg text-black/70">
-                108 Vidya Vihar, Sanskrit Marg, Varanasi, Uttar Pradesh 221001
+                Kadi, Mehsana, Gujarat
               </p>
 
               <iframe
                 title="Kaumudi Academy Map"
-                src="https://www.google.com/maps?q=Varanasi%20Uttar%20Pradesh&output=embed"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2152.510980173506!2d72.32957612395224!3d23.29815853737631!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395c18078321e28f%3A0xdca9292f4989571c!2sKadi%2C%20Gujarat%20384440!5e1!3m2!1sen!2sin!4v1771429182287!5m2!1sen!2sin"
                 className="mt-6 w-full flex-1 rounded-xl border"
                 loading="lazy"
               />
@@ -251,7 +276,7 @@ export default function Contact() {
                   icon: Landmark,
                   title: "Institutional Inquiries",
                   text: "For university partnerships and academic collaborations.",
-                  footer: "admin@kaumudi.edu",
+                  footer: "ksacademy@gmail.com",
                 },
                 {
                   icon: GraduationCap,
@@ -307,9 +332,12 @@ export default function Contact() {
             FOLLOW US
           </p>
 
-          {[Facebook, Linkedin, Twitter, Instagram].map((Icon, i) => (
-            <motion.div
+          {[Instagram].map((Icon, i) => (
+            <motion.a
               key={i}
+              href="https://www.instagram.com/sanskritstation/"
+              target="_blank"
+              rel="noopener noreferrer"
               whileHover={{
                 scale: 1.25,
                 rotate: 8,
@@ -317,11 +345,11 @@ export default function Contact() {
               }}
               whileTap={{ scale: 0.9 }}
               className="h-14 w-14 bg-gradient-to-br from-[#7b2d1f] to-[#5f1f14]
-                         text-white rounded-full flex items-center justify-center
-                         shadow-xl cursor-pointer"
+               text-white rounded-full flex items-center justify-center
+               shadow-xl cursor-pointer transition-all duration-300"
             >
               <Icon size={24} />
-            </motion.div>
+            </motion.a>
           ))}
         </motion.div>
       </div>
@@ -334,17 +362,17 @@ export default function Contact() {
           {
             icon: Phone,
             title: "Call Us",
-            value: "+91 98765 43210",
+            value: "+91 75672 23072",
           },
           {
             icon: Mail,
             title: "Email",
-            value: "info@kaumudi.edu",
+            value: "ksacademy@gmail.com",
           },
           {
             icon: MapPin,
             title: "Visit Campus",
-            value: "Varanasi, Uttar Pradesh",
+            value: "Kadi, Mehsana, Gujarat",
           },
         ].map((item, i) => {
           const Icon = item.icon;

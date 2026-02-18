@@ -1,4 +1,4 @@
-import "./App.css";
+// removed App.css to fix PostCSS import/parse issues
 import { Route, Routes, Outlet, Navigate } from "react-router-dom";
 
 // ================= PUBLIC PAGES =================

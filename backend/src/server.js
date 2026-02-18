@@ -3,14 +3,12 @@
 // import connectDB from "./configs/db.js"
 // import {config} from "./configs/env.js"
 
-
 // connectDB()
 // const PORT = config.PORT || 5000
 
 // app.listen(PORT,()=>{
 //   console.log(`server is running on http://localhost:${PORT}`)
 // })
-
 
 import app from "./app.js";
 import dotenv from "dotenv";
@@ -26,7 +24,7 @@ dotenv.config();
 app.use(express.json());
 
 // --- OTP STORAGE (Temporary) ---
-let otpStore = {}; 
+let otpStore = {};
 
 // --- NODEMAILER CONFIGURATION ---
 const transporter = nodemailer.createTransport({
@@ -42,7 +40,10 @@ const transporter = nodemailer.createTransport({
 // 1. Send OTP API
 app.post("/api/send-otp", async (req, res) => {
   const { email } = req.body;
-  if (!email) return res.status(400).json({ success: false, message: "Email is required" });
+  if (!email)
+    return res
+      .status(400)
+      .json({ success: false, message: "Email is required" });
 
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
   otpStore[email] = otp;

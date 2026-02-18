@@ -204,8 +204,8 @@ const EnrollmentPage = () => {
 
             if (verifyResponse.success) {
               alert("Payment Successful! Enrollment Confirmed!");
-              // Redirect to profile or success page
-              navigate("/profile", {
+              // Redirect to student profile (explicit)
+              navigate("/student/profile", {
                 state: {
                   message: "You have successfully enrolled in the course!",
                 },

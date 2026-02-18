@@ -33,9 +33,9 @@ const bulletItem = {
 
 const About = () => {
   return (
-    <section className="relative bg-[#f1e4c8] py-16 overflow-hidden">
+    <section className="relative bg-[#f1e4c8] py-10 overflow-hidden">
       <div className="mx-auto max-w-[1320px] px-6 grid gap-16 md:grid-cols-[1.25fr_1fr] items-center">
-        {/* IMAGE */}
+        {/* IMAGE (desktop/tablet: visible on md+, hidden on small screens) */}
         <motion.div
           variants={fadeLeft}
           initial="hidden"
@@ -43,7 +43,7 @@ const About = () => {
           viewport={{ once: true }}
           whileHover={{ scale: 1.02 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="rounded-[2.5rem] bg-[#e6d6b8] p-3 shadow-2xl relative z-10"
+          className="hidden md:block rounded-[2.5rem] bg-[#e6d6b8] p-3 shadow-2xl relative z-10"
         >
           <img
             src="https://i.pinimg.com/736x/a9/a2/6b/a9a26bb6a20c90ba9a475714db4525ba.jpg"
@@ -66,11 +66,26 @@ const About = () => {
 
           <div className="h-[3px] w-20 rounded-full bg-[#d6b15c]" />
 
+          {/* Mobile-only image placed immediately after the heading for better small-screen flow */}
+          <motion.div
+            variants={fadeLeft}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            className="block md:hidden rounded-[2rem] bg-[#e6d6b8] p-2 shadow-md mt-4 overflow-hidden"
+          >
+            <img
+              src="https://i.pinimg.com/736x/a9/a2/6b/a9a26bb6a20c90ba9a475714db4525ba.jpg"
+              alt="Kaumudi Academy campus"
+              className="w-full h-[220px] sm:h-[300px] object-cover rounded-[1.5rem]"
+            />
+          </motion.div>
+
           <motion.span
             initial={{ opacity: 0, x: 100 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="absolute -top-28 -left-10 text-[140px] font-black uppercase tracking-widest text-[#74271E]/10 select-none pointer-events-none z-0"
+            className="hidden md:block absolute -top-28 -left-10 text-[140px] font-black uppercase tracking-widest text-[#74271E]/10 select-none pointer-events-none z-0"
           >
             About
           </motion.span>
@@ -116,7 +131,7 @@ const About = () => {
           <motion.button
             whileHover={{ y: -4, scale: 1.05 }}
             whileTap={{ scale: 0.96 }}
-            className="mt-0 inline-flex items-center gap-2 rounded-xl bg-[#74271E] px-7 py-3 font-semibold text-white shadow-lg transition hover:bg-[#5e1f18] focus:outline-none focus:ring-2 focus:ring-[#d6b15c]"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#74271E] px-7 py-3 font-semibold text-white shadow-lg transition hover:bg-[#5e1f18] focus:outline-none focus:ring-2 focus:ring-[#d6b15c]"
           >
             Learn Our Story →
           </motion.button>

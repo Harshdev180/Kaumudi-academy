@@ -17,14 +17,14 @@ export const createCourse = async (req, res) => {
       price,
       language,
       startDate,
-      endDate
+      endDate,
     } = req.body;
 
     // ✅ Industry standard: thumbnail image must be present
     if (!req.file) {
       return res.status(400).json({
         success: false,
-        message: "Course thumbnail image is required"
+        message: "Course thumbnail image is required",
       });
     }
 
@@ -32,7 +32,7 @@ export const createCourse = async (req, res) => {
      * Upload image to Cloudinary
      */
     const upload = await cloudinary.uploader.upload(req.file.path, {
-      folder: "kaumudi/courses"
+      folder: "kaumudi/courses",
     });
 
     // Clean up local file after upload
@@ -42,7 +42,7 @@ export const createCourse = async (req, res) => {
 
     const imageData = {
       public_id: upload.public_id,
-      url: upload.secure_url
+      url: upload.secure_url,
     };
 
     const course = await Course.create({
@@ -56,19 +56,19 @@ export const createCourse = async (req, res) => {
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       image: imageData,
-      createdBy: req.user._id
+      createdBy: req.user._id,
     });
 
     return res.status(201).json({
       success: true,
       message: "Course created successfully",
-      data: course
+      data: course,
     });
   } catch (error) {
     console.error("CREATE COURSE ERROR:", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to create course"
+      message: "Failed to create course",
     });
   }
 };
@@ -84,7 +84,7 @@ export const updateCourse = async (req, res) => {
     if (!course) {
       return res.status(404).json({
         success: false,
-        message: "Course not found"
+        message: "Course not found",
       });
     }
 
@@ -103,7 +103,7 @@ export const updateCourse = async (req, res) => {
       }
 
       const upload = await cloudinary.uploader.upload(req.file.path, {
-        folder: "kaumudi/courses"
+        folder: "kaumudi/courses",
       });
 
       // Cleanup local file
@@ -113,7 +113,7 @@ export const updateCourse = async (req, res) => {
 
       course.image = {
         public_id: upload.public_id,
-        url: upload.secure_url
+        url: upload.secure_url,
       };
     }
 
@@ -124,18 +124,16 @@ export const updateCourse = async (req, res) => {
     return res.json({
       success: true,
       message: "Course updated successfully",
-      data: course
+      data: course,
     });
   } catch (error) {
     console.error("UPDATE COURSE ERROR:", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to update course"
+      message: "Failed to update course",
     });
   }
 };
-
-
 
 export const deleteCourse = async (req, res) => {
   try {
@@ -143,7 +141,7 @@ export const deleteCourse = async (req, res) => {
     if (!course) {
       return res.status(404).json({
         success: false,
-        message: "Course not found"
+        message: "Course not found",
       });
     }
 
@@ -155,17 +153,16 @@ export const deleteCourse = async (req, res) => {
 
     res.json({
       success: true,
-      message: "Course deleted successfully"
+      message: "Course deleted successfully",
     });
   } catch (error) {
     console.error("DELETE COURSE ERROR:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to delete course"
+      message: "Failed to delete course",
     });
   }
 };
-
 
 export const toggleCourseStatus = async (req, res) => {
   try {
@@ -173,79 +170,67 @@ export const toggleCourseStatus = async (req, res) => {
     if (!course) {
       return res.status(404).json({
         success: false,
-        message: "Course not found"
+        message: "Course not found",
       });
     }
 
-    course.status =
-      course.status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+    course.status = course.status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
 
     await course.save();
 
     res.json({
       success: true,
       message: "Course status updated",
-      status: course.status
+      status: course.status,
     });
   } catch (error) {
     res.status(500).json({ success: false });
   }
 };
 
-
 export const getAllCourses = async (req, res) => {
   const courses = await Course.find({
-    status: "ACTIVE"
-  })
-  .sort({ createdAt: -1 });
+    status: "ACTIVE",
+  }).sort({ createdAt: -1 });
 
   res.json({
     success: true,
-    data: courses
+    data: courses,
   });
 };
-
-
 
 export const getCourseDetail = async (req, res) => {
   const now = new Date();
   const course = await Course.findById(req.params.id);
 
-  if (
-    !course ||
-    course.status !== "ACTIVE" ||
-    course.endDate < now
-  ) {
+  if (!course || course.status !== "ACTIVE" || course.endDate < now) {
     return res.status(404).json({
       success: false,
-      message: "Course not found"
+      message: "Course not found",
     });
   }
 
   res.json({
     success: true,
-    data: course
+    data: course,
   });
 };
 
-
 export const getAllCoursesForAdmin = async (req, res) => {
   try {
-    const courses = await Course.find()
-      .sort({ createdAt: -1 });
+    const courses = await Course.find().sort({ createdAt: -1 });
 
     res.json({
       success: true,
-      data: courses
+      data: courses,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Failed to fetch courses"
+      message: "Failed to fetch courses",
     });
   }
 };
-
 
 export const getActiveCoursesForAdmin = async (req, res) => {
   try {
@@ -253,18 +238,17 @@ export const getActiveCoursesForAdmin = async (req, res) => {
 
     const courses = await Course.find({
       status: "ACTIVE",
-      endDate: { $gte: now }
+      endDate: { $gte: now },
     }).sort({ createdAt: -1 });
 
     res.json({
       success: true,
-      data: courses
+      data: courses,
     });
   } catch (error) {
     res.status(500).json({ success: false });
   }
 };
-
 
 import Enrollment from "../models/Enrollment.model.js";
 
@@ -276,25 +260,25 @@ export const getCoursesWithEnrollmentCount = async (req, res) => {
           from: "enrollments",
           localField: "_id",
           foreignField: "course",
-          as: "enrollments"
-        }
+          as: "enrollments",
+        },
       },
       {
         $addFields: {
-          enrollmentCount: { $size: "$enrollments" }
-        }
+          enrollmentCount: { $size: "$enrollments" },
+        },
       },
       {
         $project: {
-          enrollments: 0
-        }
+          enrollments: 0,
+        },
       },
-      { $sort: { createdAt: -1 } }
+      { $sort: { createdAt: -1 } },
     ]);
 
     res.json({
       success: true,
-      data: courses
+      data: courses,
     });
   } catch (error) {
     console.error("COURSE ENROLLMENT COUNT ERROR:", error);
@@ -310,7 +294,7 @@ export const getCourseDashboardStats = async (req, res) => {
 
     const activeCourses = await Course.countDocuments({
       status: "ACTIVE",
-      endDate: { $gte: now }
+      endDate: { $gte: now },
     });
 
     const activeStudents = await Enrollment.distinct("student");
@@ -319,8 +303,8 @@ export const getCourseDashboardStats = async (req, res) => {
       success: true,
       data: {
         totalCourses,
-        activeStudents: activeStudents.length
-      }
+        activeStudents: activeStudents.length,
+      },
     });
   } catch (error) {
     res.status(500).json({ success: false });

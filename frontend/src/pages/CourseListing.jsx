@@ -267,50 +267,112 @@ const AllCoursesPage = () => {
       </header>
 
       {/* ================= SEARCH BAR (BELOW HERO) ================= */}
-      <div className="px-6 lg:px-10 max-w-screen-2xl mx-auto -mt-10 relative z-30">
+      <div className="px-4 sm:px-6 lg:px-10 max-w-screen-2xl mx-auto -mt-8 sm:-mt-10 relative z-30">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="bg-[#FBF4E2] rounded-2xl shadow-lg border border-[#EDE4CF] p-4 flex flex-col lg:flex-row lg:items-center gap-4"
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="
+      bg-[#FBF4E2]
+      rounded-2xl
+      shadow-lg
+      border border-[#EDE4CF]
+      p-4
+      flex flex-col gap-4
+      lg:flex-row lg:items-center
+    "
         >
-          {/* Search Input */}
-          <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
+          {/* SEARCH INPUT */}
+          <motion.div layout className="relative flex-1 min-w-0">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400 pointer-events-none" />
+
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search for courses"
-              className="w-full pl-12 pr-4 py-3 rounded-xl bg-[#FBF8F2] border border-[#E6DDC8] text-sm outline-none focus:border-[#B38B3F]"
+              className="
+          w-full
+          pl-12 pr-4 py-3
+          rounded-xl
+          bg-[#FBF8F2]
+          border border-[#E6DDC8]
+          text-sm
+          outline-none
+          transition-all duration-300
+          focus:border-[#B38B3F]
+          focus:bg-white
+        "
             />
-          </div>
+          </motion.div>
 
-          <div className="flex items-center gap-3 justify-between lg:justify-end">
-            {/* Quick Category Chips */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 px-2 no-scrollbar">
+          {/* CATEGORY + FILTER AREA */}
+          <div
+            className="
+        flex flex-col gap-3
+        sm:flex-row sm:items-center sm:justify-between
+        lg:justify-end
+        w-full lg:w-auto
+      "
+          >
+            {/* CATEGORY CHIPS */}
+            <motion.div
+              layout
+              className="
+          flex items-center gap-2
+          overflow-x-auto
+          scroll-smooth
+          px-1 pb-1
+          no-scrollbar
+          max-w-full
+        "
+            >
               {categories.map((cat) => (
-                <button
+                <motion.button
                   key={cat}
+                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ y: -1 }}
                   onClick={() => setActiveCategory(cat)}
-                  className={`whitespace-nowrap px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                    activeCategory === cat
-                      ? "bg-[#74271E] text-white shadow-md shadow-[#74271E]/20"
-                      : "bg-white text-[#6B5A3E] border border-[#E6DDC8] hover:border-[#B38B3F]"
-                  }`}
+                  className={`
+              whitespace-nowrap
+              px-4 sm:px-5 py-2.5
+              rounded-xl
+              text-xs font-bold
+              transition-all duration-300
+              flex-shrink-0
+              ${
+                activeCategory === cat
+                  ? "bg-[#74271E] text-white shadow-md shadow-[#74271E]/20"
+                  : "bg-white text-[#6B5A3E] border border-[#E6DDC8] hover:border-[#B38B3F]"
+              }
+            `}
                 >
                   {cat}
-                </button>
+                </motion.button>
               ))}
-            </div>
-            <button
-              className="lg:hidden inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#74271E] text-white text-xs font-bold"
+            </motion.div>
+
+            {/* FILTER BUTTON */}
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              className="
+          lg:hidden
+          inline-flex items-center justify-center gap-2
+          px-4 py-2.5
+          rounded-xl
+          bg-[#74271E]
+          text-white
+          text-xs font-bold
+          transition-all duration-300
+          hover:bg-[#5c1f18]
+          w-full sm:w-auto
+        "
               onClick={() => setMobileFiltersOpen(true)}
               aria-label="Open filters"
             >
               <SlidersHorizontal className="w-4 h-4" />
               Filters
-            </button>
+            </motion.button>
           </div>
         </motion.div>
       </div>
@@ -361,8 +423,14 @@ const AllCoursesPage = () => {
                   state: levelFilter,
                   setter: setLevelFilter,
                   options: [
-                    { label: "Prathama (Beginner)", val: "Prathama (Beginner)" },
-                    { label: "Madhyama (Intermediate)", val: "Madhyama (Intermediate)" },
+                    {
+                      label: "Prathama (Beginner)",
+                      val: "Prathama (Beginner)",
+                    },
+                    {
+                      label: "Madhyama (Intermediate)",
+                      val: "Madhyama (Intermediate)",
+                    },
                     { label: "Kovida (Advanced)", val: "Kovida (Advanced)" },
                   ],
                 },
@@ -769,8 +837,14 @@ const AllCoursesPage = () => {
                   state: levelFilter,
                   setter: setLevelFilter,
                   options: [
-                    { label: "Prathama (Beginner)", val: "Prathama (Beginner)" },
-                    { label: "Madhyama (Intermediate)", val: "Madhyama (Intermediate)" },
+                    {
+                      label: "Prathama (Beginner)",
+                      val: "Prathama (Beginner)",
+                    },
+                    {
+                      label: "Madhyama (Intermediate)",
+                      val: "Madhyama (Intermediate)",
+                    },
                     { label: "Kovida (Advanced)", val: "Kovida (Advanced)" },
                   ],
                 },
@@ -813,8 +887,8 @@ const AllCoursesPage = () => {
             <div className="mt-8 flex items-center gap-3">
               <button
                 onClick={() => {
-                  resetFilters();
                   setMobileFiltersOpen(false);
+                  setCurrentPage(1);
                 }}
                 className="flex-1 px-4 py-2 rounded-xl bg-[#74271E] text-white text-sm font-bold"
               >

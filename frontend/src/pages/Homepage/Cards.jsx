@@ -99,7 +99,7 @@ export default function Cards() {
   };
 
   return (
-    <section className="py-24 bg-[#f1e4c8] overflow-hidden">
+    <section className="py-16 bg-[#f1e4c8] overflow-hidden">
       <div className="max-w-[1300px] mx-auto px-6">
         {/* HEADER */}
         <div className="flex items-end justify-between mb-12 relative">
@@ -120,7 +120,7 @@ export default function Cards() {
             initial={{ opacity: 0, x: -100 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="absolute -top-30 -left-10 text-[140px] font-black uppercase tracking-widest text-[#74271E]/10 select-none pointer-events-none z-0"
+            className="hidden md:block absolute -top-30 -left-10 text-[140px] font-black uppercase tracking-widest text-[#74271E]/10 select-none pointer-events-none z-0"
           >
             Courses
           </motion.span>
@@ -185,7 +185,23 @@ export default function Cards() {
               className="group relative bg-[white] rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-[#74271E]/10"
             >
               {/* Image */}
-              <div className="h-56 overflow-hidden">
+              <Link
+                to={`/coursedetail/${encodeURIComponent(
+                  course.title.toLowerCase().replace(/\s+/g, "-")
+                )}`}
+                state={{
+                  course: {
+                    id: course.title.toLowerCase().replace(/\s+/g, "-"),
+                    title: course.title,
+                    description: course.desc,
+                    image: course.img,
+                    instructorName: "Faculty",
+                    level: "All Levels",
+                    mode: "ONLINE",
+                  },
+                }}
+                className="block h-56 overflow-hidden"
+              >
                 <motion.img
                   whileHover={{ scale: 1.06 }}
                   transition={{ duration: 0.5, ease: "easeOut" }}
@@ -193,7 +209,7 @@ export default function Cards() {
                   alt={course.title}
                   className="w-full h-full object-cover"
                 />
-              </div>
+              </Link>
 
               {/* Content */}
               <div className="p-7 relative z-10 bg-white">
@@ -208,7 +224,20 @@ export default function Cards() {
                 </p>
 
                 <Link
-                  to="/coursedetail"
+                  to={`/coursedetail/${encodeURIComponent(
+                    course.title.toLowerCase().replace(/\s+/g, "-")
+                  )}`}
+                  state={{
+                    course: {
+                      id: course.title.toLowerCase().replace(/\s+/g, "-"),
+                      title: course.title,
+                      description: course.desc,
+                      image: course.img,
+                      instructorName: "Faculty",
+                      level: "All Levels",
+                      mode: "ONLINE",
+                    },
+                  }}
                   className="inline-flex items-center bg-[#74271E] p-3 rounded-3xl text-white font-bold text-sm hover:gap-2 transition-all"
                 >
                   View Details <ArrowRight size={14} className="ml-1" />
