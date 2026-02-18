@@ -32,6 +32,7 @@ import AdminStaffSalary from "./pages/AdminDashboard/AdminStaffSalary.jsx";
 import StudentManagement from "./pages/AdminDashboard/Student/StudentManagement.jsx";
 import EnrollmentManagement from "./pages/AdminDashboard/EnrollmentManagement.jsx";
 import InquiryManagement from "./pages/AdminDashboard/InquiryManagement.jsx";
+import FacultyManagement from "./pages/AdminDashboard/FacultyManagement.jsx";
 
 // Public site layout with shared navbar/footer
 function PublicLayout() {
@@ -93,11 +94,12 @@ function App() {
         <Route path="/admin/student-inquiry" element={<InquiryManagement />} />
         <Route path="course" element={<CourseManagement />} />
         <Route path="coupon" element={<CouponPage />} />
-        <Route path="/admin/staff-salary" element={<AdminStaffSalary />} />
+        {/* <Route path="/admin/staff-salary" element={<AdminStaffSalary />} /> */}
         <Route path="/admin/student-management" element={<StudentManagement />} />
         <Route path="/admin/enroll-students" element={<EnrollmentManagement />} />
         <Route path="/admin/settings" element={<AdminSettings />} />
         <Route path="/admin/notifications" element={<NotificationsPage />} />
+        <Route path="/admin/faculty-management" element={<FacultyManagement />} />
       </Route>
 
       {/* Admin login outside admin layout */}

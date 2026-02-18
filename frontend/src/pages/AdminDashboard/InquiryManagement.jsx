@@ -35,6 +35,16 @@ const InquiryManagement = () => {
             message: "Is offline class available?",
             status: "Resolved",
             date: "2026-02-10"
+        },
+        {
+            id: 3,
+            name: "Anita Verma",
+            email: "anita@mail.com",
+            phone: "9898989898",
+            course: "Advanced Kavya Study",
+            message: "Is offline class available?",
+            status: "Resolved",
+            date: "2026-02-10"
         }
     ]);
 
@@ -117,7 +127,7 @@ const InquiryManagement = () => {
                     { label: "Pending", value: stats.pending },
                     { label: "Resolved", value: stats.resolved }
                 ].map((card, i) => (
-                    <div key={i} className="bg-[#efe2d2] rounded-2xl p-6 shadow-md">
+                    <div key={i} className="bg-[#FBF4E2] rounded-2xl p-6 shadow-md">
                         <p className="text-sm text-[#7c5a3c]">{card.label}</p>
                         <h3 className="text-3xl font-black text-[#6b1d14]">
                             {card.value}
@@ -155,7 +165,7 @@ const InquiryManagement = () => {
             </div>
 
             {/* INQUIRY LIST */}
-            <div className="grid lg:grid-cols-2 gap-6">
+            <div className="grid lg:grid-cols-3 gap-3">
                 <AnimatePresence>
                     {filtered.map((inq) => (
                         <motion.div

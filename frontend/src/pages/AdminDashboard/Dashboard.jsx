@@ -3,34 +3,34 @@ import StatsGrid from './StatsGrid'
 import ChartSection from './ChartSection'
 import TableSection from './TableSection'
 import ActivityFeed from './ActivityFeed'
-import RecentOreder from './RecentOreder'
-// import AlertInfo from './AlertInfo'
-
-
 
 function Dashboard() {
     return (
-        <>
+        <div className='space-y-6'>
 
+            {/* Stats */}
+            <StatsGrid />
 
-            <div className=' space-y-6'>
-                {/* Stats Grid */}
-                <StatsGrid />
-                {/* Chart Sections */}
-                <ChartSection />
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                    <div className='xl:col-span-2'>
-                        <TableSection />
-                    </div>
-                    <div>
-                        {/* <AlertInfo /> */}
-                        <ActivityFeed />
-                    </div>
+            {/* Charts */}
+            <ChartSection />
+
+            {/* TOP COURSES + INQUIRIES */}
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+                {/* LEFT — TOP COURSES */}
+                <div className="xl:col-span-2">
+                    <TableSection type="top" />
                 </div>
-                    {/* <RecentOreder/> */}
+
+                {/* RIGHT — INQUIRY */}
+                <ActivityFeed />
+
             </div>
 
-        </>
+            {/* RECENT ORDERS FULL WIDTH */}
+            <TableSection type="orders" />
+
+        </div>
     )
 }
 

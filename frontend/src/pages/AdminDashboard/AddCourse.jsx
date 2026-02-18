@@ -12,7 +12,8 @@ const AddCourse = ({
     form,
     setForm,
     saveCourse,
-    editId
+    editId,
+    savingCourse = false
 }) => {
 
     if (!open) return null;
@@ -117,18 +118,62 @@ const AddCourse = ({
                         />
 
                         {/* VIDEO */}
-                        <div>
-                            <p className="text-xs font-bold text-[#856966] mb-2 uppercase">
-                                Intro Video
+                        <div className="space-y-4">
+
+                            <p className="text-sm font-bold text-[#6b1d14]">
+                                Course Videos
                             </p>
 
-                            <label className="flex items-center justify-between px-4 py-3 bg-[#EFE3D5] rounded-xl cursor-pointer">
-                                <span className="text-sm truncate">
-                                    {form.video || "Upload intro video"}
-                                </span>
-                                <MdVideocam size={22} />
-                                <input type="file" hidden onChange={handleVideo} />
-                            </label>
+                            {/* VIDEO 1 */}
+                            <div className="space-y-1">
+                                <label className="text-xs text-[#856966]">Intro Video</label>
+
+                                <input
+                                    type="file"
+                                    accept="video/*"
+                                    onChange={(e) =>
+                                        setForm({
+                                            ...form,
+                                            video1: URL.createObjectURL(e.target.files[0])
+                                        })
+                                    }
+                                    className="w-full p-3 rounded-xl bg-[#EFE3D5]"
+                                />
+
+                                {form.video1 && (
+                                    <video
+                                        src={form.video1}
+                                        controls
+                                        className="w-full h-32 rounded-xl mt-2 object-cover"
+                                    />
+                                )}
+                            </div>
+
+                            {/* VIDEO 2 */}
+                            <div className="space-y-1">
+                                <label className="text-xs text-[#856966]">Demo Lecture Video</label>
+
+                                <input
+                                    type="file"
+                                    accept="video/*"
+                                    onChange={(e) =>
+                                        setForm({
+                                            ...form,
+                                            video2: URL.createObjectURL(e.target.files[0])
+                                        })
+                                    }
+                                    className="w-full p-3 rounded-xl bg-[#EFE3D5]"
+                                />
+
+                                {form.video2 && (
+                                    <video
+                                        src={form.video2}
+                                        controls
+                                        className="w-full h-32 rounded-xl mt-2 object-cover"
+                                    />
+                                )}
+                            </div>
+
                         </div>
 
                         {/* PRICE + MODE */}
@@ -219,20 +264,51 @@ const AddCourse = ({
 
                         <button
                             onClick={onClose}
-                            className="flex-1 py-3 rounded-xl bg-[#EFE3D5]"
+                            disabled={savingCourse}
+                            className="flex-1 py-3 rounded-xl bg-[#EFE3D5] disabled:opacity-50"
                         >
                             Cancel
                         </button>
 
                         <button
                             onClick={saveCourse}
-                            className="flex-1 py-3 rounded-xl text-white font-bold"
+                            disabled={savingCourse}
+                            className="flex-1 py-3 rounded-xl text-white font-bold disabled:opacity-70 transition"
                             style={{ backgroundColor: "#6b1d14" }}
                         >
-                            SAVE COURSE
+                            {savingCourse ? "SAVING..." : "SAVE COURSE"}
                         </button>
 
                     </div>
+
+                    {/* LOADER OVERLAY */}
+                    <AnimatePresence>
+                        {savingCourse && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 rounded-3xl"
+                            >
+                                <motion.div
+                                    className="bg-white rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4"
+                                >
+                                    <motion.div
+                                        animate={{ rotate: 360 }}
+                                        transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
+                                        className="w-12 h-12 rounded-full border-4 border-[#D1B062] border-t-[#6b1d14]"
+                                    />
+                                    <motion.p
+                                        animate={{ opacity: [0.5, 1, 0.5] }}
+                                        transition={{ repeat: Infinity, duration: 1.4 }}
+                                        className="text-[#6b1d14] font-semibold text-sm"
+                                    >
+                                        Saving Course...
+                                    </motion.p>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                 </motion.div>
             </>

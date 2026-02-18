@@ -21,11 +21,11 @@ function EnrollmentHeader() {
                 {/* LEFT */}
                 <div>
                     <h1 className="text-3xl md:text-4xl font-black tracking-tight">
-                        Enrollment Management
+                        Student Fees
                     </h1>
 
                     <p className="text-sm text-white/80 mt-1">
-                        Manage student enrollments & payments
+                        Manage student Fees payments
                     </p>
                 </div>
             </div>

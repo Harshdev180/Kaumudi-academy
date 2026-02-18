@@ -23,13 +23,6 @@ const recentInquiries = [
         message: "Is offline class available?",
         time: "10 min ago"
     },
-    {
-        id: 3,
-        name: "Rohit Singh",
-        course: "Sanskrit Beginner Course",
-        message: "How to enroll?",
-        time: "30 min ago"
-    }
 ];
 
 function ActivityFeed() {

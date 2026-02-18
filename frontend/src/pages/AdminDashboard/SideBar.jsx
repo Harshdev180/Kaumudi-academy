@@ -11,7 +11,8 @@ import {
   UserRoundPen,
   Menu,
   X,
-  BookUser
+  BookUser,
+  UserStar
 } from "lucide-react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,9 +27,9 @@ function Sidebar({ collapsed, setCollapsed, isMobile }) {
 
   useEffect(() => {
     if (isMobile) {
-      setMobileOpen(!collapsed);
+      setMobileOpen(false);
     }
-  }, [collapsed, isMobile]);
+  }, [isMobile]);
 
   const confirmLogout = () => {
     localStorage.removeItem("adminToken");
@@ -40,11 +41,12 @@ function Sidebar({ collapsed, setCollapsed, isMobile }) {
   const menuItems = [
     { path: "/admin/dashboard", label: "Dashboard", icon: <LayoutDashboard size={18} /> },
     { path: "/admin/student-inquiry", label: "Student Inquiry", icon: <Users size={18} /> },
+    { path: "/admin/faculty-management", label: "Faculty Management", icon: <UserStar size={18} /> },
     { path: "/admin/course", label: "Courses", icon: <BookOpen size={18} /> },
     { path: "/admin/coupon", label: "Coupon", icon: <Tags size={18} /> },
-    { path: "/admin/staff-salary", label: "Staff Management", icon: <UserRoundPlus size={18} /> },
+    // { path: "/admin/staff-salary", label: "Staff Management", icon: <UserRoundPlus size={18} /> },
     { path: "/admin/student-management", label: "Student Management", icon: <UserRoundPen size={18} /> },
-    { path: "/admin/enroll-students", label: "Enroll Students", icon: <BookUser size={18} /> },
+    { path: "/admin/enroll-students", label: "Student Fees ", icon: <BookUser size={18} /> },
   ];
 
   useEffect(() => {
@@ -64,7 +66,6 @@ function Sidebar({ collapsed, setCollapsed, isMobile }) {
         <button
           onClick={() => {
             setMobileOpen(true);
-            setCollapsed(false);
           }}
           className="bg-[#6b1d14] text-white p-2 rounded-xl shadow-lg"
         >
@@ -100,7 +101,7 @@ function Sidebar({ collapsed, setCollapsed, isMobile }) {
                 : -320,
           width: collapsed ? 80 : 288   // ⭐ SMOOTH WIDTH
         }}
-        transition={{ type: "spring", stiffness: 220, damping: 28 }}
+        transition={{ type: "spring", stiffness: 350, damping: 45, mass: 1 }}
         className="fixed lg:sticky top-0 left-0 h-screen z-[999]
           bg-[#FBF4E2] text-[#6b1d14]
           border-r border-slate-200/50
@@ -112,7 +113,6 @@ function Sidebar({ collapsed, setCollapsed, isMobile }) {
           <button
             onClick={() => {
               setMobileOpen(false);
-              setCollapsed(true);
             }}
           >
             <X size={22} />
@@ -158,7 +158,6 @@ function Sidebar({ collapsed, setCollapsed, isMobile }) {
                 to={item.path}
                 onClick={() => {
                   setMobileOpen(false);
-                  setCollapsed(true);
                 }}
                 className={`relative group flex items-center px-4 py-3 rounded-2xl transition-all duration-300
                 ${isActive

@@ -40,25 +40,26 @@ import { motion } from "framer-motion";
 import { MdMenu } from "react-icons/md";
 import Header from "./Header";
 import Sidebar from "./SideBar";
-import ScrollToTop from "../../components/ScrollToTop"
+import ScrollToTop from "../../components/ScrollToTop";
 
 const AdminLayout = () => {
 
   const [sideBarCollapsed, setSideBarCollapsed] = useState(false);
   const [showAlerts, setShowAlerts] = useState(false);
 
-  // ⭐ GLOBAL RESPONSIVE STATE
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  /* ⭐ RESPONSIVE STATE (FIXED — NO HARD WINDOW CALL IN STATE) */
+  const [isMobile, setIsMobile] = useState(false);
 
   const navigate = useNavigate();
 
-  /* ================= AUTO LOGOUT ================= */
+  /* ================= AUTO LOGOUT (STABLE) ================= */
   useEffect(() => {
 
     let timer;
 
     const resetTimer = () => {
-      clearTimeout(timer);
+
+      if (timer) clearTimeout(timer);
 
       timer = setTimeout(() => {
         localStorage.removeItem("adminToken");
@@ -83,42 +84,43 @@ const AdminLayout = () => {
 
   }, [navigate]);
 
-
-  /* ================= RESPONSIVE LISTENER ================= */
+  /* ================= RESPONSIVE LISTENER (OPTIMIZED) ================= */
   useEffect(() => {
 
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 1024);
+    const checkScreen = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
     };
 
-    window.addEventListener("resize", handleResize);
+    checkScreen();
 
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener("resize", checkScreen);
+
+    return () => window.removeEventListener("resize", checkScreen);
 
   }, []);
 
   return (
-    <>
+    <div className="bg-[#f1e4c8] min-h-screen w-full overflow-x-hidden">
+
+      {/* ⭐ SCROLL RESET INSIDE LAYOUT */}
       <ScrollToTop />
-      <div className="bg-[#f1e4c8] min-h-screen w-full overflow-x-hidden">
 
-        <div className="flex h-screen w-full">
+      <div className="flex h-screen w-full">
 
-          {/* SIDEBAR */}
-          <Sidebar
-            collapsed={sideBarCollapsed}
-            setCollapsed={setSideBarCollapsed}
-            isMobile={isMobile}
-          />
+        {/* SIDEBAR */}
+        <Sidebar
+          collapsed={sideBarCollapsed}
+          setCollapsed={setSideBarCollapsed}
+          isMobile={isMobile}
+        />
 
-          {/* ⭐ MOBILE FLOATING HAMBURGER TOGGLE */}
-          {isMobile && (
-            <motion.button
-              onClick={() => setSideBarCollapsed(prev => !prev)}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              whileTap={{ scale: 0.9 }}
-              className="
+        {/* ⭐ MOBILE FLOATING BUTTON — NO RE-ANIMATE EACH RENDER */}
+        {isMobile && (
+          <motion.button
+            onClick={() => setSideBarCollapsed(prev => !prev)}
+            whileTap={{ scale: 0.92 }}
+            className="
               fixed z-[60]
               bottom-6 left-6
               w-14 h-14
@@ -130,34 +132,34 @@ const AdminLayout = () => {
               shadow-xl
               lg:hidden
             "
-            >
-              <MdMenu size={26} />
-            </motion.button>
-          )}
+          >
+            <MdMenu size={26} />
+          </motion.button>
+        )}
 
-          {/* RIGHT AREA */}
-          <div className="flex-1 flex flex-col min-w-0">
+        {/* RIGHT AREA */}
+        <div className="flex-1 flex flex-col min-w-0">
 
-            <Header
-              showAlerts={showAlerts}
-              setShowAlerts={setShowAlerts}
-            />
+          {/* HEADER */}
+          <Header
+            showAlerts={showAlerts}
+            setShowAlerts={setShowAlerts}
+          />
 
-            {/* MAIN CONTENT */}
-            <main
-              className={`flex-1 overflow-x-hidden overflow-y-auto transition-all duration-300
+          {/* MAIN CONTENT */}
+          <main
+            className={`flex-1 overflow-x-hidden overflow-y-auto transition-all duration-300
             ${showAlerts ? "blur-sm scale-[0.99] opacity-80" : ""}`}
-            >
-              <div className="px-3 sm:px-4 md:px-6 py-4 space-y-6">
-                <Outlet />
-              </div>
-            </main>
+          >
+            <div className="px-3 sm:px-4 md:px-6 py-4 space-y-6">
+              <Outlet />
+            </div>
+          </main>
 
-          </div>
         </div>
-      </div>
-    </>
 
+      </div>
+    </div>
   );
 };
 

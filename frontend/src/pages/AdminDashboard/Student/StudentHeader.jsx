@@ -32,13 +32,7 @@ function StudentHeader({ openAdd }) {
                     </div>
                 </div>
 
-                {/* RIGHT BUTTON */}
-                <button
-                    onClick={openAdd}
-                    className="flex items-center gap-2 bg-[#e6b86a] hover:bg-[#d9a956] text-[#4a2b07] px-5 py-2 rounded-xl text-sm font-semibold shadow transition"
-                >
-                    + Add Student
-                </button>
+                
 
             </div>
         </div>

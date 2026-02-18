@@ -170,7 +170,7 @@ const AdminStaffSalary = () => {
                 ].map((card, i) => (
                     <div
                         key={i}
-                        className="bg-[#efe2d2] rounded-2xl p-6 shadow-md flex items-center justify-between"
+                        className="bg-[#FBF4E2] rounded-2xl p-6 shadow-md flex items-center justify-between"
                     >
                         <div>
                             <p className="text-sm text-[#7c5a3c]">{card.label}</p>
@@ -196,36 +196,36 @@ const AdminStaffSalary = () => {
                         <motion.div
                             key={s.id}
                             layout
-                            className="bg-[#FBF4E2] rounded-2xl overflow-hidden border border-[#D1B062]/30 shadow-sm"
+                            className="bg-[#FBF4E2] w-64 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-transform transform hover:scale-105 border border-transparent"
                         >
 
                             {/* IMAGE */}
-                            <div className="h-36 bg-[#EFE3D5] overflow-hidden">
-                                {s.image ? (
-                                    <img src={s.image} className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-[#6b1d14] text-3xl">
-                                        <MdPerson />
-                                    </div>
-                                )}
+                            <div className="flex justify-center mt-4">
+                                <div className="w-32 h-32 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center">
+                                    {s.image ? (
+                                        <img src={s.image} alt="" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <MdPerson className="text-5xl text-gray-500" />
+                                    )}
+                                </div>
                             </div>
 
                             {/* BODY */}
-                            <div className="p-5 space-y-3">
+                            <div className="p-6 text-center space-y-2">
 
-                                <h3 className="font-bold text-[#6b1d14]">{s.name}</h3>
-                                <p className="text-sm text-[#78322a]">{s.role}</p>
+                                <h3 className="text-lg font-semibold text-gray-800">{s.name}</h3>
+                                <p className="text-sm text-gray-500">{s.role}</p>
 
-                                <div className="text-sm text-[#714b47]">
+                                <div className="mt-3 text-md font-medium text-gray-700">
                                     Salary: ₹{finalSalary}
                                 </div>
 
                                 {/* STATUS */}
-                                <div className="flex justify-between items-center">
+                                <div className="flex justify-center items-center mt-4 space-x-2">
 
                                     <button
                                         onClick={() => togglePay(s.id)}
-                                        className={`px-3 py-1 rounded-full text-xs font-semibold ${s.paid
+                                        className={`px-4 py-1 rounded-full text-xs font-semibold ${s.paid
                                             ? "bg-green-100 text-green-600"
                                             : "bg-orange-100 text-orange-500"
                                             }`}
@@ -233,23 +233,24 @@ const AdminStaffSalary = () => {
                                         {s.paid ? "Paid" : "Pending"}
                                     </button>
 
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={() => openEdit(s)}
-                                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
-                                        >
-                                            <MdEdit />
-                                        </button>
-
-                                        <button
-                                            onClick={() => deleteStaff(s.id)}
-                                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-                                        >
-                                            <MdDelete />
-                                        </button>
-                                    </div>
-
                                 </div>
+
+                                <div className="flex justify-center gap-3 mt-3">
+                                    <button
+                                        onClick={() => openEdit(s)}
+                                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                                    >
+                                        <MdEdit />
+                                    </button>
+
+                                    <button
+                                        onClick={() => deleteStaff(s.id)}
+                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                    >
+                                        <MdDelete />
+                                    </button>
+                                </div>
+
                             </div>
 
                         </motion.div>
