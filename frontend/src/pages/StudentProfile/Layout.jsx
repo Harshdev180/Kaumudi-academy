@@ -1,7 +1,13 @@
 import React from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { Bell, Search } from "lucide-react";
+import { motion } from "framer-motion";
+
+const underlineVariants = {
+  hidden: { width: 0, opacity: 0 },
+  visible: { width: "100%", opacity: 1 },
+};
 
 const Layout = () => {
   const location = useLocation();
@@ -15,6 +21,14 @@ const Layout = () => {
         .map((s) => s[0]?.toUpperCase())
         .join("")
     : "ST";
+
+  const NAV_ITEMS = [
+    { label: "Home", to: "/" },
+    { label: "Courses", to: "/allcourses" },
+    { label: "About", to: "/about" },
+    { label: "Faculty", to: "/faculty" },
+    { label: "Contact", to: "/contact" },
+  ];
 
   return (
     <div className="flex h-screen bg-[#f7f1e3] font-sans text-gray-800 overflow-hidden">
@@ -33,12 +47,40 @@ const Layout = () => {
           </div>
           <div className="flex items-center gap-8">
             <div className="hidden md:flex items-center bg-white/60 border border-[#e6d5b8] rounded-2xl px-4 py-2 focus-within:bg-white transition-all shadow-sm">
-              <Search size={18} className="text-gray-400" />
+              {/* <Search size={18} className="text-gray-400" />
               <input
                 type="text"
                 placeholder="Search…"
                 className="bg-transparent border-none outline-none px-3 text-sm w-48"
-              />
+              /> */}
+
+              <ul className="hidden lg:flex items-center gap-10 font-semibold flex-wrap">
+                {NAV_ITEMS.map(({ label, to }) => {
+                  const isActive = location.pathname === to;
+                  return (
+                    <li key={label} className="relative">
+                      <Link
+                        to={to}
+                        aria-current={isActive ? "page" : undefined}
+                        className={`text-sm tracking-wide transition-colors duration-200 ease-out focus:outline-none ${
+                          isActive
+                            ? "text-[#d6b15c]"
+                            : "text-white hover:text-[#d6b15c]"
+                        }`}
+                      >
+                        {label}
+                      </Link>
+                      <motion.span
+                        className="absolute left-0 right-0 -bottom-1 h-[2px] bg-[#d6b15c] rounded"
+                        variants={underlineVariants}
+                        initial="hidden"
+                        animate={isActive ? "visible" : "hidden"}
+                        transition={{ duration: 0.25 }}
+                      />
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
             <div className="flex items-center gap-5">
               <button className="relative p-2 text-[#74271E] hover:bg-[#c9a050]/10 rounded-xl transition-colors">
