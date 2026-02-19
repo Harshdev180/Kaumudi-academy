@@ -202,58 +202,67 @@ const AdminStaffSalary = () => {
     /* ================= UI ================= */
 
     return (
-        <main className="min-h-screen bg-[#F3E6C9] p-8 space-y-8">
+        <main className="min-h-screen bg-[#F3E6C9] p-8 space-y-10">
 
-            {/* ================= HEADING ================= */}
-            <div className="relative rounded-3xl overflow-hidden border border-[#D1B062]/30">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#6b1d14] via-[#7a2318] to-[#6b1d14]" />
+            {/* ================= PREMIUM HEADER ================= */}
+            <div
+                className="relative overflow-hidden rounded-3xl px-8 py-10 text-white shadow-lg"
+                style={{
+                    background:
+                        "linear-gradient(135deg,#7a1f16 0%, #8c2a1e 45%, #6b1d14 100%)",
+                }}
+            >
+                {/* texture overlay */}
+                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_left,#D4AF37,transparent_60%)]" />
 
-                <div className="relative px-8 py-8 flex justify-between items-center text-white">
+                <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+
+                    {/* LEFT */}
                     <div>
-                        <h1 className="text-3xl font-black">Staff Salary Management</h1>
-                        <p className="text-sm text-white/80">
+                        <h1 className="text-3xl md:text-4xl font-black tracking-tight">
+                            Staff Salary Management
+                        </h1>
+                        <p className="text-sm text-white/90 mt-1">
                             Manage staff payroll, schedule payments and control academy salary structure.
                         </p>
                     </div>
 
+                    {/* RIGHT BUTTON */}
                     <button
                         onClick={openAdd}
-                        // className="flex items-center gap-2 px-6 py-3 bg-white/10 rounded-xl"
-                        className="flex items-center gap-2 bg-[#D4AF37] text-[#74271E] px-5 py-2 rounded-full text-sm font-semibold shadow-md hover:scale-105 transition"
-
+                        className="flex items-center gap-2 bg-[#e6b86a] hover:bg-[#d9a956] text-[#4a2b07] px-5 py-2 rounded-xl text-sm font-semibold shadow transition"
                     >
-                        <MdAdd /> Add Staff
+                        <MdAdd />
+                        Add Staff
                     </button>
+
                 </div>
             </div>
 
-            {/* ================= STATS ================= */}
-            <div className="grid md:grid-cols-4 gap-6">
+            {/* ================= FLOATING STATS CARDS ================= */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 -mt-14 relative z-10">
+
                 {[
                     { label: "Total Staff", value: stats.total },
                     { label: "Active", value: stats.active },
                     { label: "Salary Paid", value: stats.paid },
                     { label: "Pending", value: stats.pending }
                 ].map((card, i) => (
-                    <div key={i} className="bg-[#FBF4E2] p-6 rounded-2xl border border-[#D1B062]/30">
-                        <p className="text-xs text-[#856966]">{card.label}</p>
-                        <h3 className="text-3xl font-black text-[#6b1d14]">{card.value}</h3>
+                    <div
+                        key={i}
+                        className="bg-[#FBF4E2] rounded-2xl p-6 shadow-md flex items-center justify-between"
+                    >
+                        <div>
+                            <p className="text-sm text-[#7c5a3c]">{card.label}</p>
+                            <h3 className="text-3xl font-black text-[#6b1d14]">
+                                {card.value}
+                            </h3>
+                        </div>
                     </div>
                 ))}
+
             </div>
 
-            {/* ================= SEARCH ================= */}
-            {/* <div className="relative w-full md:w-[350px]">
-                <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[#856966]" />
-                <input
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search staff..."
-                    className="w-full pl-10 pr-3 py-3 rounded-xl bg-[#FBF4E2]"
-                />
-            </div> */}
-
-            {/* ================= STAFF CARDS ================= */}
             <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {loading && (
                     <div className="text-sm text-[#74271E]/70">Loading staff...</div>
@@ -275,60 +284,61 @@ const AdminStaffSalary = () => {
                         <motion.div
                             key={s.id}
                             layout
-                            className="bg-[#FBF4E2] rounded-2xl overflow-hidden border border-[#D1B062]/30 shadow-sm"
+                            className="bg-[#FBF4E2] w-64 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-transform transform hover:scale-105 border border-transparent"
                         >
 
                             {/* IMAGE */}
-                            <div className="h-36 bg-[#EFE3D5] overflow-hidden">
-                                {s.image ? (
-                                    <img src={s.image} className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-[#6b1d14] text-3xl">
-                                        <MdPerson />
-                                    </div>
-                                )}
+                            <div className="flex justify-center mt-4">
+                                <div className="w-32 h-32 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center">
+                                    {s.image ? (
+                                        <img src={s.image} alt="" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <MdPerson className="text-5xl text-gray-500" />
+                                    )}
+                                </div>
                             </div>
 
                             {/* BODY */}
-                            <div className="p-5 space-y-3">
+                            <div className="p-6 text-center space-y-2">
 
-                                <h3 className="font-bold text-[#6b1d14]">{s.name}</h3>
-                                <p className="text-sm text-[#78322a]">{s.role}</p>
+                                <h3 className="text-lg font-semibold text-gray-800">{s.name}</h3>
+                                <p className="text-sm text-gray-500">{s.role}</p>
 
-                                <div className="text-sm text-[#714b47]">
+                                <div className="mt-3 text-md font-medium text-gray-700">
                                     Salary: ₹{finalSalary}
                                 </div>
 
                                 {/* STATUS */}
-                                <div className="flex justify-between items-center">
+                                <div className="flex justify-center items-center mt-4 space-x-2">
 
                                     <button
                                         onClick={() => togglePay(s.id)}
-                                        className={`px-3 py-1 rounded-full text-xs font-semibold ${s.paid
-                                                ? "bg-green-100 text-green-600"
-                                                : "bg-orange-100 text-orange-500"
+                                        className={`px-4 py-1 rounded-full text-xs font-semibold ${s.paid
+                                            ? "bg-green-100 text-green-600"
+                                            : "bg-orange-100 text-orange-500"
                                             }`}
                                     >
                                         {s.paid ? "Paid" : "Pending"}
                                     </button>
 
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={() => openEdit(s)}
-                                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
-                                        >
-                                            <MdEdit />
-                                        </button>
-
-                                        <button
-                                            onClick={() => deleteStaff(s.id)}
-                                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-                                        >
-                                            <MdDelete />
-                                        </button>
-                                    </div>
-
                                 </div>
+
+                                <div className="flex justify-center gap-3 mt-3">
+                                    <button
+                                        onClick={() => openEdit(s)}
+                                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                                    >
+                                        <MdEdit />
+                                    </button>
+
+                                    <button
+                                        onClick={() => deleteStaff(s.id)}
+                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                    >
+                                        <MdDelete />
+                                    </button>
+                                </div>
+
                             </div>
 
                         </motion.div>

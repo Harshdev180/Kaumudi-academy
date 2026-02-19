@@ -73,7 +73,7 @@ function StatsGrid() {
           }}
           transition={{ duration: 0.5, ease: "easeOut" }}
           whileHover={{ y: -6 }}
-          className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-200/50 hover:shadow-xl hover:shadow-slate-200/20 group"
+          className="relative z-0 bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-slate-200/50 hover:shadow-xl hover:shadow-slate-200/20 group"
         >
           <div className="flex items-start justify-between">
             <div className="flex-1">

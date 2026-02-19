@@ -93,10 +93,10 @@ function RevnueChart() {
                         <YAxis
                             axisLine={false}
                             tickLine={false}
-                            tickFormatter={(v) => `$${v / 1000}k`}
+                            tickFormatter={(v) => `₹${v / 1000}k`}
                         />
                         <Tooltip
-                            formatter={(value) => `$${value.toLocaleString()}`}
+                            formatter={(value) => `₹${value.toLocaleString()}`}
                             cursor={{ fill: "rgba(0,0,0,0.03)" }}
                         />
 
