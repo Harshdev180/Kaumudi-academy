@@ -27,7 +27,7 @@ const Courses = () => {
       students: "850",
       rating: 4.9,
       progress: 0,
-      image: "bg-[#74271E]" // Replaced #1a4571
+      image: "bg-[#74271E]" 
     },
     {
       id: 3,
@@ -62,7 +62,7 @@ const Courses = () => {
               onClick={() => setActiveFilter(cat)}
               className={`px-5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                 activeFilter === cat 
-                ? 'bg-[#74271E] text-white shadow-md' // Replaced #1a4571
+                ? 'bg-[#74271E] text-white shadow-md' 
                 : 'bg-white text-gray-500 hover:bg-gray-100'
               }`}
             >
@@ -115,30 +115,22 @@ const Courses = () => {
                 </div>
               </div>
 
-              {/* Progress or Enroll Button */}
+              {/* Progress Section (Always visible as they are enrolled) */}
               <div className="mt-auto">
-                {course.progress > 0 ? (
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-[10px] font-bold text-gray-500">
-                      <span>Progress: {course.progress}%</span>
-                    </div>
-                    <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                      <div 
-                        className="bg-[#74271E] h-full rounded-full transition-all duration-700" // Replaced #1a4571
-                        style={{ width: `${course.progress}%` }}
-                      ></div>
-                    </div>
-                    {/* Updated Button Colors */}
-                    <button className="w-full mt-4 bg-[#74271E] text-white py-3 rounded-xl font-bold text-sm hover:bg-[#5a1e17] transition-all">
-                      Continue Learning
-                    </button>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-[10px] font-bold text-gray-500">
+                    <span>Progress: {course.progress}%</span>
                   </div>
-                ) : (
-                  /* Updated Outline Button Colors */
-                  <button className="w-full bg-white border-2 border-[#74271E] text-[#74271E] py-3 rounded-xl font-bold text-sm hover:bg-[#74271E] hover:text-white transition-all">
-                    Enroll Now
+                  <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                    <div 
+                      className="bg-[#74271E] h-full rounded-full transition-all duration-700"
+                      style={{ width: `${course.progress}%` }}
+                    ></div>
+                  </div>
+                  <button className="w-full mt-4 bg-[#74271E] text-white py-3 rounded-xl font-bold text-sm hover:bg-[#5a1e17] transition-all">
+                    {course.progress > 0 ? 'Continue Learning' : 'Start Learning'}
                   </button>
-                )}
+                </div>
               </div>
             </div>
           </div>

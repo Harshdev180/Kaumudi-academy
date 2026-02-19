@@ -21,15 +21,6 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 
-// ================= STUDENT DASHBOARD =================
-import StudentLayout from "./pages/StudentProfile/Layout";
-import StudentDashboard from "./pages/StudentProfile/Dashboard";
-import StudentCourses from "./pages/StudentProfile/Courses";
-import Certifications from "./pages/StudentProfile/Certifications";
-import Profile from "./pages/StudentProfile/Profile";
-import Settings from "./pages/StudentProfile/Settings";
-// Removed invalid import: StudentProfile.jsx does not exist
-
 // ================= ADMIN DASHBOARD =================
 import AdminLayout from "./pages/AdminDashboard/AdminLayout";
 import Dashboard from "./pages/AdminDashboard/Dashboard";
@@ -48,7 +39,16 @@ import EnrollmentManagement from "./pages/AdminDashboard/EnrollmentManagement.js
 import InquiryManagement from "./pages/AdminDashboard/InquiryManagement.jsx";
 import FacultyManagement from "./pages/AdminDashboard/FacultyManagement.jsx";
 
-// ================= PUBLIC LAYOUT =================
+// ================= STUDENT DASHBOARD =================
+import StudentLayout from "./pages/StudentProfile/Layout";
+import StudentDashboard from "./pages/StudentProfile/Dashboard";
+import StudentCourses from "./pages/StudentProfile/Courses";
+import Certifications from "./pages/StudentProfile/Certifications";
+import Profile from "./pages/StudentProfile/Profile";
+import Settings from "./pages/StudentProfile/Settings";
+import FeePurchase from "./pages/StudentProfile/Fees.jsx";
+
+// Public site layout with shared navbar/footer
 function PublicLayout() {
   return (
     <>
@@ -100,36 +100,31 @@ function App() {
           }
         />
 
-        <Route
-          path="/profile"
-          element={
-            <RequireAuth>
-              <Navigate to="/student/dashboard" replace />
-            </RequireAuth>
-          }
-        />
+        {/* ========= STUDENT DASHBOARD ========= */} 
+        <Route path="/student" element={<StudentLayout />}>
+          <Route index element={<StudentDashboard />} />
+          <Route path="overview" element={<StudentDashboard />} />
+          <Route path="courses" element={<StudentCourses />} />
+          <Route path="certifications" element={<Certifications />} />
+          <Route path="payments" element={<FeePurchase />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
+
 
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsConditions />} />
         <Route path="/cookies" element={<CookiePolicy />} />
       </Route>
-
-      {/* ========= STUDENT DASHBOARD ========= */}
-      <Route
-        path="/student"
-        element={
-          <RequireAuth>
-            <StudentLayout />
-          </RequireAuth>
-        }
-      >
+      
+      {/* NEW: Student Dashboard Routes (No Public Navbar/Footer) */}
+      {/* <Route path="/student" element={<StudentLayout />}>
         <Route index element={<StudentDashboard />} />
         <Route path="dashboard" element={<StudentDashboard />} />
         <Route path="courses" element={<StudentCourses />} />
         <Route path="certifications" element={<Certifications />} />
         <Route path="profile" element={<Profile />} />
         <Route path="settings" element={<Settings />} />
-      </Route>
+      </Route> */}
 
       {/* ========= AUTH ========= */}
       <Route path="/auth" element={<Sign />} />

@@ -70,7 +70,7 @@ export default function Navbar() {
   const profilePath =
     role === "ADMIN" || role === "SUPER_ADMIN"
       ? "/admin"
-      : "/student/dashboard";
+      : "/student/overview";
 
   const handleLogout = () => {
     localStorage.removeItem("kaumudi_token");
