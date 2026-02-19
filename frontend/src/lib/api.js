@@ -140,7 +140,7 @@ export async function fakeVerifyPayment(courseId) {
 
 // ==================== INQUIRY APIs ====================
 export async function submitInquiry(inquiryData) {
-  const res = await api.post("/inquiry", inquiryData);
+  const res = await api.post("/inquiries", inquiryData);
   return res.data;
 }
 
@@ -152,12 +152,48 @@ export async function submitContact(contactData) {
 
 // ==================== COUPON APIs ====================
 export async function createCoupon(couponData) {
-  const res = await api.post("/coupon", couponData);
+  const discountType = couponData.discountType || couponData.type || "percentage";
+  const discountValue =
+    couponData.discountValue ?? couponData.discountPercentage;
+  const payload = {
+    code: couponData.code,
+    discountType,
+    discountValue,
+    startTime: couponData.startTime,
+    endTime: couponData.endTime,
+  };
+  if (discountType === "percentage") {
+    payload.discountPercentage = discountValue;
+  }
+  const res = await api.post("/coupon", payload);
   return res.data;
 }
 
 export async function getAllCouponsForAdmin() {
   const res = await api.get("/coupon/admin/all");
+  return res.data;
+}
+
+export async function updateCoupon(couponId, couponData) {
+  const discountType = couponData.discountType || couponData.type || "percentage";
+  const discountValue =
+    couponData.discountValue ?? couponData.discountPercentage;
+  const payload = {
+    code: couponData.code,
+    discountType,
+    discountValue,
+    startTime: couponData.startTime,
+    endTime: couponData.endTime,
+  };
+  if (discountType === "percentage") {
+    payload.discountPercentage = discountValue;
+  }
+  const res = await api.put(`/coupon/${couponId}`, payload);
+  return res.data;
+}
+
+export async function deleteCoupon(couponId) {
+  const res = await api.delete(`/coupon/${couponId}`);
   return res.data;
 }
 

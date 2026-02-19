@@ -59,6 +59,13 @@ const AllCoursesPage = () => {
         if (typeof priceValue === "string") {
           priceValue = parseInt(priceValue.replace(/[^0-9]/g, "")) || 0;
         }
+        const language = Array.isArray(c.language)
+          ? c.language.join(", ")
+          : c.language || "";
+        const image =
+          c.image?.url ||
+          c.image ||
+          "https://i.pinimg.com/736x/c6/3c/1d/c63c1d8721a4226db27c8a2b6fd3448e.jpg";
 
         return {
           id: c._id || c.id,
@@ -71,7 +78,8 @@ const AllCoursesPage = () => {
           description: c.description || "",
           price: typeof priceValue === "number" ? priceValue : 0,
           priceFormatted: `₹${(typeof priceValue === "number" ? priceValue : 0).toLocaleString("en-IN")}`,
-          image: c.image?.url || c.image || null,
+          image,
+          language,
           raw: c,
         };
       });

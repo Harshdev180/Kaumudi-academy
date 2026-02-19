@@ -50,8 +50,21 @@ export const createRazorpayOrder = async (req, res) => {
       });
 
       if (coupon) {
-        discountAmount = (originalAmount * coupon.discountPercentage) / 100;
-        appliedCoupon = coupon.code;
+        const type = coupon.discountType || "percentage";
+        const value =
+          coupon.discountValue !== undefined && coupon.discountValue !== null
+            ? Number(coupon.discountValue)
+            : Number(coupon.discountPercentage || 0);
+
+        if (!Number.isNaN(value) && value > 0) {
+          if (type === "flat") {
+            discountAmount = value;
+          } else {
+            discountAmount = (originalAmount * value) / 100;
+          }
+          discountAmount = Math.min(discountAmount, originalAmount);
+          appliedCoupon = coupon.code;
+        }
       }
     }
 

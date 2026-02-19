@@ -6,72 +6,232 @@ import {
   MdAttachMoney,
   MdAdd,
   MdClose,
+  MdEdit,
+  MdDelete,
+  MdToggleOn,
+  MdToggleOff,
   MdBookmark,
 } from "react-icons/md";
 import { IndianRupee } from "lucide-react";
+import {
+  getAllStaff,
+  createStaff,
+  updateStaff,
+  deleteStaff,
+  toggleStaffStatus,
+  toggleStaffPayment,
+} from "../../lib/api";
 
 const FacultyManagement = () => {
   const [loading, setLoading] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [statusUpdatingId, setStatusUpdatingId] = useState(null);
+  const [paymentUpdatingId, setPaymentUpdatingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
-  const [faculty, setFaculty] = useState([
-    {
-      id: 1,
-      name: "Acharya Rahul",
-      course: "Paninian Grammar",
-      salary: 25000,
-    },
-    {
-      id: 2,
-      name: "Dr. Meera",
-      course: "Shlok Studies",
-      salary: 18000,
-    },
-    {
-      id: 3,
-      name: "Prof. Dev",
-      course: "Ved Studies",
-      salary: 21000,
-    },
-  ]);
+  const [faculty, setFaculty] = useState([]);
 
   const [form, setForm] = useState({
     name: "",
-    course: "",
+    role: "",
     salary: "",
+    bonus: "",
+    deduction: "",
+    status: "ACTIVE",
   });
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 800);
-    return () => clearTimeout(t);
+    let mounted = true;
+    const fetchFaculty = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const response = await getAllStaff();
+        const payload = response?.data ?? response;
+        const list = payload?.data ?? payload ?? [];
+        if (mounted) {
+          const mapped = Array.isArray(list)
+            ? list.map((item) => ({
+                id: item?._id || item?.id,
+                name: item?.name || "Unnamed",
+                course: item?.role || "Faculty",
+                salary: item?.salary ?? 0,
+                bonus: item?.bonus ?? 0,
+                deduction: item?.deduction ?? 0,
+                netSalary: item?.netSalary ?? (item?.salary ?? 0),
+                status: item?.status || "ACTIVE",
+                paid: !!item?.paid,
+              }))
+            : [];
+          setFaculty(mapped);
+        }
+      } catch (err) {
+        if (mounted) {
+          setError(
+            err?.response?.data?.message || "Failed to load faculty list.",
+          );
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+    fetchFaculty();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   /* ================= STATS ================= */
 
-  const stats = useMemo(
-    () => ({
-      total: faculty.length,
-    }),
-    [faculty],
-  );
+  const stats = useMemo(() => {
+    const total = faculty.length;
+    const active = faculty.filter((f) => f.status === "ACTIVE").length;
+    const inactive = faculty.filter((f) => f.status === "INACTIVE").length;
+    const paid = faculty.filter((f) => f.paid).length;
+    const pending = total - paid;
+    return { total, active, inactive, paid, pending };
+  }, [faculty]);
 
   /* ================= ADD FACULTY ================= */
 
-  const addFaculty = (e) => {
+  const resetForm = () => {
+    setForm({
+      name: "",
+      role: "",
+      salary: "",
+      bonus: "",
+      deduction: "",
+      status: "ACTIVE",
+    });
+    setEditingId(null);
+  };
+
+  const openCreate = () => {
+    resetForm();
+    setDrawerOpen(true);
+  };
+
+  const openEdit = (item) => {
+    setForm({
+      name: item.name || "",
+      role: item.course || "",
+      salary: item.salary ?? "",
+      bonus: item.bonus ?? "",
+      deduction: item.deduction ?? "",
+      status: item.status || "ACTIVE",
+    });
+    setEditingId(item.id);
+    setDrawerOpen(true);
+  };
+
+  const addFaculty = async (e) => {
     e.preventDefault();
-
-    setFaculty((prev) => [
-      {
-        id: Date.now(),
+    setSubmitting(true);
+    setError("");
+    try {
+      const requestPayload = {
         name: form.name,
-        course: form.course,
+        role: form.role,
         salary: form.salary,
-      },
-      ...prev,
-    ]);
+        bonus: form.bonus || 0,
+        deduction: form.deduction || 0,
+        status: form.status || "ACTIVE",
+      };
 
-    setForm({ name: "", course: "", salary: "" });
-    setDrawerOpen(false);
+      const response = editingId
+        ? await updateStaff(editingId, requestPayload)
+        : await createStaff(requestPayload);
+      const responsePayload = response?.data ?? response;
+      const created = responsePayload?.data ?? responsePayload;
+      const next = created
+        ? {
+            id: created?._id || created?.id,
+            name: created?.name || form.name,
+            course: created?.role || form.role,
+            salary: created?.salary ?? form.salary,
+            bonus: created?.bonus ?? form.bonus ?? 0,
+            deduction: created?.deduction ?? form.deduction ?? 0,
+            netSalary: created?.netSalary ?? created?.salary ?? form.salary,
+            status: created?.status || form.status || "ACTIVE",
+            paid: !!created?.paid,
+          }
+        : {
+            id: Date.now(),
+            name: form.name,
+            course: form.role,
+            salary: form.salary,
+            bonus: form.bonus || 0,
+            deduction: form.deduction || 0,
+            netSalary: Number(form.salary || 0) + Number(form.bonus || 0) - Number(form.deduction || 0),
+            status: form.status || "ACTIVE",
+            paid: false,
+          };
+
+      setFaculty((prev) =>
+        editingId
+          ? prev.map((f) => (f.id === editingId ? next : f))
+          : [next, ...prev],
+      );
+      resetForm();
+      setDrawerOpen(false);
+    } catch (err) {
+      setError(err?.response?.data?.message || "Failed to add faculty.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this faculty member?")) return;
+    try {
+      setDeletingId(id);
+      await deleteStaff(id);
+      setFaculty((prev) => prev.filter((f) => f.id !== id));
+    } catch (err) {
+      setError(err?.response?.data?.message || "Failed to delete faculty.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleToggleStatus = async (item) => {
+    try {
+      setStatusUpdatingId(item.id);
+      const response = await toggleStaffStatus(item.id);
+      const payload = response?.data ?? response;
+      const nextStatus = payload?.status || (item.status === "ACTIVE" ? "INACTIVE" : "ACTIVE");
+      setFaculty((prev) =>
+        prev.map((f) => (f.id === item.id ? { ...f, status: nextStatus } : f)),
+      );
+    } catch (err) {
+      setError(err?.response?.data?.message || "Failed to update status.");
+    } finally {
+      setStatusUpdatingId(null);
+    }
+  };
+
+  const handleTogglePayment = async (item) => {
+    try {
+      setPaymentUpdatingId(item.id);
+      const response = await toggleStaffPayment(item.id);
+      const payload = response?.data ?? response;
+      const paid = typeof payload?.paid === "boolean" ? payload.paid : !item.paid;
+      setFaculty((prev) =>
+        prev.map((f) => (f.id === item.id ? { ...f, paid } : f)),
+      );
+    } catch (err) {
+      setError(err?.response?.data?.message || "Failed to update payment.");
+    } finally {
+      setPaymentUpdatingId(null);
+    }
+  };
+
+  const formatMoney = (value) => {
+    const num = Number(value || 0);
+    return num.toLocaleString("en-IN");
   };
 
   return (
@@ -97,7 +257,7 @@ const FacultyManagement = () => {
           </div>
 
           <button
-            onClick={() => setDrawerOpen(true)}
+            onClick={openCreate}
             className="flex items-center gap-2 bg-[#e6b86a] text-[#4a2b07] px-5 py-2 rounded-xl font-semibold shadow hover:scale-105 transition"
           >
             <MdAdd /> Add Faculty
@@ -106,12 +266,23 @@ const FacultyManagement = () => {
       </div>
 
       {/* STATS */}
-      <div className="grid md:grid-cols-1 gap-6 -mt-14 relative z-10">
-        <div className="bg-[#FBF4E2] rounded-2xl p-6 shadow-md">
-          <p className="text-sm text-[#7c5a3c]">Total Faculty</p>
-          <h3 className="text-3xl font-black text-[#6b1d14]">{stats.total}</h3>
-        </div>
+      <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-6 -mt-14 relative z-10">
+        {[
+          { label: "Total Faculty", value: stats.total },
+          { label: "Active", value: stats.active },
+          { label: "Inactive", value: stats.inactive },
+          { label: "Pending Pay", value: stats.pending },
+        ].map((card) => (
+          <div key={card.label} className="bg-[#FBF4E2] rounded-2xl p-6 shadow-md">
+            <p className="text-sm text-[#7c5a3c]">{card.label}</p>
+            <h3 className="text-3xl font-black text-[#6b1d14]">{card.value}</h3>
+          </div>
+        ))}
       </div>
+
+      {error && (
+        <div className="text-red-600 font-semibold">{error}</div>
+      )}
 
       {/* FACULTY CARDS */}
       {!loading && (
@@ -138,6 +309,27 @@ const FacultyManagement = () => {
                 </div>
               </div>
 
+              <div className="flex flex-wrap gap-2 mb-4">
+                <span
+                  className={`text-[10px] px-2 py-1 rounded-full font-bold ${
+                    f.status === "ACTIVE"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-zinc-200 text-zinc-600"
+                  }`}
+                >
+                  {f.status}
+                </span>
+                <span
+                  className={`text-[10px] px-2 py-1 rounded-full font-bold ${
+                    f.paid
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-orange-100 text-orange-700"
+                  }`}
+                >
+                  {f.paid ? "Paid" : "Pending"}
+                </span>
+              </div>
+
               {/* DETAILS */}
               <div className="space-y-3 text-sm text-[#4A2B07]">
                 <div className="flex items-center gap-2">
@@ -147,8 +339,58 @@ const FacultyManagement = () => {
 
                 <div className="flex items-center gap-2">
                   <IndianRupee className="text-[#6b1d14] size-4" />
-                  <span>{f.salary}</span>
+                  <span>Salary: {formatMoney(f.salary)}</span>
                 </div>
+
+                <div className="flex items-center gap-2">
+                  <IndianRupee className="text-[#6b1d14] size-4" />
+                  <span>Net: {formatMoney(f.netSalary)}</span>
+                </div>
+
+                {(Number(f.bonus) > 0 || Number(f.deduction) > 0) && (
+                  <div className="text-xs text-[#856966]">
+                    Bonus: {formatMoney(f.bonus)} · Deduction: {formatMoney(f.deduction)}
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-5 grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => openEdit(f)}
+                  className="flex items-center justify-center gap-2 text-[#6b1d14] bg-white border border-[#D1B062]/40 rounded-xl py-2 text-xs font-bold hover:bg-[#F3E6C9] transition"
+                >
+                  <MdEdit /> Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(f.id)}
+                  disabled={deletingId === f.id}
+                  className="flex items-center justify-center gap-2 text-red-600 bg-white border border-red-200 rounded-xl py-2 text-xs font-bold hover:bg-red-50 transition disabled:opacity-60"
+                >
+                  <MdDelete /> {deletingId === f.id ? "Deleting..." : "Delete"}
+                </button>
+                <button
+                  onClick={() => handleToggleStatus(f)}
+                  disabled={statusUpdatingId === f.id}
+                  className="flex items-center justify-center gap-2 text-[#6b1d14] bg-[#F9F0DB] border border-[#D1B062]/40 rounded-xl py-2 text-xs font-bold hover:bg-[#F1E3C6] transition disabled:opacity-60"
+                >
+                  {f.status === "ACTIVE" ? <MdToggleOn /> : <MdToggleOff />}
+                  {statusUpdatingId === f.id
+                    ? "Updating..."
+                    : f.status === "ACTIVE"
+                      ? "Deactivate"
+                      : "Activate"}
+                </button>
+                <button
+                  onClick={() => handleTogglePayment(f)}
+                  disabled={paymentUpdatingId === f.id}
+                  className="flex items-center justify-center gap-2 text-[#6b1d14] bg-[#F9F0DB] border border-[#D1B062]/40 rounded-xl py-2 text-xs font-bold hover:bg-[#F1E3C6] transition disabled:opacity-60"
+                >
+                  {paymentUpdatingId === f.id
+                    ? "Updating..."
+                    : f.paid
+                      ? "Mark Unpaid"
+                      : "Mark Paid"}
+                </button>
               </div>
             </motion.div>
           ))}
@@ -240,14 +482,14 @@ const FacultyManagement = () => {
                   >
                     <label className="text-xs font-bold text-[#6b1d14] uppercase tracking-wider flex items-center gap-2">
                       <MdSchool size={14} />
-                      Course Teaching
+                      Faculty Role
                     </label>
                     <input
                       required
                       placeholder="e.g., Paninian Grammar"
-                      value={form.course}
+                      value={form.role}
                       onChange={(e) =>
-                        setForm({ ...form, course: e.target.value })
+                        setForm({ ...form, role: e.target.value })
                       }
                       className="w-full px-4 py-3 rounded-lg bg-white border-2 border-[#D1B062]/30 focus:border-[#D1B062] focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50"
                     />
@@ -281,6 +523,71 @@ const FacultyManagement = () => {
                     </div>
                   </motion.div>
 
+                  {/* BONUS FIELD */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.22 }}
+                    className="space-y-2"
+                  >
+                    <label className="text-xs font-bold text-[#6b1d14] uppercase tracking-wider flex items-center gap-2">
+                      <MdAttachMoney size={14} />
+                      Bonus
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="0"
+                      value={form.bonus}
+                      onChange={(e) => setForm({ ...form, bonus: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg bg-white border-2 border-[#D1B062]/30 focus:border-[#D1B062] focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50"
+                    />
+                  </motion.div>
+
+                  {/* DEDUCTION FIELD */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.24 }}
+                    className="space-y-2"
+                  >
+                    <label className="text-xs font-bold text-[#6b1d14] uppercase tracking-wider flex items-center gap-2">
+                      <MdAttachMoney size={14} />
+                      Deduction
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="0"
+                      value={form.deduction}
+                      onChange={(e) =>
+                        setForm({ ...form, deduction: e.target.value })
+                      }
+                      className="w-full px-4 py-3 rounded-lg bg-white border-2 border-[#D1B062]/30 focus:border-[#D1B062] focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50"
+                    />
+                  </motion.div>
+
+                  {/* STATUS FIELD */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.26 }}
+                    className="space-y-2"
+                  >
+                    <label className="text-xs font-bold text-[#6b1d14] uppercase tracking-wider flex items-center gap-2">
+                      <MdBookmark size={14} />
+                      Status
+                    </label>
+                    <select
+                      value={form.status}
+                      onChange={(e) =>
+                        setForm({ ...form, status: e.target.value })
+                      }
+                      className="w-full px-4 py-3 rounded-lg bg-white border-2 border-[#D1B062]/30 focus:border-[#D1B062] focus:outline-none transition text-[#6b1d14]"
+                    >
+                      <option value="ACTIVE">Active</option>
+                      <option value="INACTIVE">Inactive</option>
+                    </select>
+                  </motion.div>
+
                   {/* SUBMIT BUTTON */}
                   <motion.button
                     type="submit"
@@ -292,16 +599,24 @@ const FacultyManagement = () => {
                       boxShadow: "0 8px 20px rgba(107, 29, 20, 0.15)",
                     }}
                     whileTap={{ scale: 0.98 }}
+                    disabled={submitting}
                     className="w-full py-3.5 mt-6 bg-gradient-to-r from-[#6b1d14] to-[#7a2517] text-white rounded-lg font-bold shadow-lg hover:shadow-xl transition flex items-center justify-center gap-2 uppercase tracking-wider text-sm"
                   >
                     <MdAdd size={18} />
-                    Save Faculty Member
+                    {submitting
+                      ? "Saving..."
+                      : editingId
+                        ? "Update Faculty Member"
+                        : "Save Faculty Member"}
                   </motion.button>
 
                   {/* CANCEL OPTION */}
                   <motion.button
                     type="button"
-                    onClick={() => setDrawerOpen(false)}
+                    onClick={() => {
+                      resetForm();
+                      setDrawerOpen(false);
+                    }}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}

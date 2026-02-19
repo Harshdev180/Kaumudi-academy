@@ -4,7 +4,8 @@ import {
   updateCoupon,
   toggleCouponStatus,
   getAllCoupons,
-  getAllCouponsForAdmin
+  getAllCouponsForAdmin,
+  deleteCoupon
 } from "../controllers/coupon.controller.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
@@ -49,6 +50,13 @@ router.patch(
   authMiddleware,
   roleMiddleware("ADMIN", "SUPER_ADMIN"),
   toggleCouponStatus
+);
+
+router.delete(
+  "/coupon/:id",
+  authMiddleware,
+  roleMiddleware("ADMIN", "SUPER_ADMIN"),
+  deleteCoupon
 );
 
 export default router;

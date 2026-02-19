@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { submitContact } from "../lib/api";
+import { submitContact, submitInquiry } from "../lib/api";
 
 /* ---------------------------------- */
 /* Animation Variants */
@@ -55,6 +55,8 @@ export default function Contact() {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
+    phoneNumber: "",
+    preferredLevel: "BEGINNER",
     subject: "",
     message: "",
   });
@@ -75,6 +77,8 @@ export default function Contact() {
     if (
       !formData.fullName ||
       !formData.email ||
+      !formData.phoneNumber ||
+      !formData.preferredLevel ||
       !formData.subject ||
       !formData.message
     ) {
@@ -84,14 +88,42 @@ export default function Contact() {
 
     try {
       setLoading(true);
-      await submitContact({
+      const inquiryPayload = {
         fullName: formData.fullName,
         email: formData.email,
-        subject: formData.subject,
-        message: formData.message,
+        phoneNumber: formData.phoneNumber,
+        preferredLevel: formData.preferredLevel,
+        message: `Subject: ${formData.subject}\n${formData.message}`,
+      };
+
+      const [inquiryRes, contactRes] = await Promise.allSettled([
+        submitInquiry(inquiryPayload),
+        submitContact({
+          fullName: formData.fullName,
+          email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+        }),
+      ]);
+
+      if (inquiryRes.status === "rejected") {
+        throw inquiryRes.reason;
+      }
+
+      if (contactRes.status === "rejected") {
+        setSuccess("Inquiry submitted. We will get back to you soon.");
+      } else {
+        setSuccess("Message sent successfully! We'll get back to you soon.");
+      }
+
+      setFormData({
+        fullName: "",
+        email: "",
+        phoneNumber: "",
+        preferredLevel: "BEGINNER",
+        subject: "",
+        message: "",
       });
-      setSuccess("Message sent successfully! We'll get back to you soon.");
-      setFormData({ fullName: "", email: "", subject: "", message: "" });
     } catch (err) {
       setError(err?.response?.data?.message || "Failed to send message");
     } finally {
@@ -180,6 +212,11 @@ export default function Contact() {
                   placeholder: "your@email.com",
                 },
                 {
+                  label: "PHONE NUMBER",
+                  name: "phoneNumber",
+                  placeholder: "10-digit number",
+                },
+                {
                   label: "SUBJECT",
                   name: "subject",
                   placeholder: "Course inquiry, support",
@@ -191,7 +228,7 @@ export default function Contact() {
                   </label>
                   <motion.input
                     whileFocus={{ scale: 1.02 }}
-                    type={item.name === "email" ? "email" : "text"}
+                    type={item.name === "email" ? "email" : item.name === "phoneNumber" ? "tel" : "text"}
                     name={item.name}
                     value={formData[item.name]}
                     onChange={handleChange}
@@ -202,6 +239,25 @@ export default function Contact() {
                   />
                 </motion.div>
               ))}
+
+              <motion.div variants={fadeUp}>
+                <label className="block text-xs tracking-[0.3em] font-bold text-[#7b2d1f] mb-2">
+                  PREFERRED LEVEL
+                </label>
+                <motion.select
+                  whileFocus={{ scale: 1.02 }}
+                  name="preferredLevel"
+                  value={formData.preferredLevel}
+                  onChange={handleChange}
+                  className="w-full rounded-xl border border-[#dcc7a1]
+                             px-4 py-4 bg-white shadow-lg
+                             focus:ring-2 focus:ring-[#7b2d1f]"
+                >
+                  <option value="BEGINNER">Beginner</option>
+                  <option value="INTERMEDIATE">Intermediate</option>
+                  <option value="ADVANCED">Advanced</option>
+                </motion.select>
+              </motion.div>
 
               <motion.div variants={fadeUp}>
                 <label className="block text-xs tracking-[0.3em] font-bold text-[#7b2d1f] mb-2">

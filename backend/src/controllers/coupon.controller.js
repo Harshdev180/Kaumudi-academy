@@ -8,6 +8,8 @@ export const createCoupon = async (req, res) => {
   try {
     const {
       code,
+      discountType = "percentage",
+      discountValue,
       discountPercentage,
       startTime,
       endTime
@@ -22,9 +24,31 @@ export const createCoupon = async (req, res) => {
       });
     }
 
+    const normalizedType = String(discountType).toLowerCase();
+    const value =
+      discountValue !== undefined && discountValue !== null
+        ? Number(discountValue)
+        : Number(discountPercentage);
+
+    if (!value || Number.isNaN(value)) {
+      return res.status(400).json({
+        success: false,
+        message: "Discount value is required"
+      });
+    }
+
+    if (normalizedType === "percentage" && value > 100) {
+      return res.status(400).json({
+        success: false,
+        message: "Discount cannot exceed 100%"
+      });
+    }
+
     const coupon = await Coupon.create({
       code,
-      discountPercentage,
+      discountType: normalizedType,
+      discountValue: value,
+      discountPercentage: normalizedType === "percentage" ? value : undefined,
       startTime,
       endTime,
       createdBy: req.user._id
@@ -63,6 +87,8 @@ export const updateCoupon = async (req, res) => {
 
     const updates = [
       "code",
+      "discountType",
+      "discountValue",
       "discountPercentage",
       "startTime",
       "endTime"
@@ -73,6 +99,34 @@ export const updateCoupon = async (req, res) => {
         coupon[field] = req.body[field];
       }
     });
+
+    if (req.body.discountType || req.body.discountValue || req.body.discountPercentage) {
+      const normalizedType = String(
+        coupon.discountType || "percentage"
+      ).toLowerCase();
+      const value =
+        coupon.discountValue !== undefined && coupon.discountValue !== null
+          ? Number(coupon.discountValue)
+          : Number(coupon.discountPercentage);
+
+      if (!value || Number.isNaN(value)) {
+        return res.status(400).json({
+          success: false,
+          message: "Discount value is required"
+        });
+      }
+
+      if (normalizedType === "percentage" && value > 100) {
+        return res.status(400).json({
+          success: false,
+          message: "Discount cannot exceed 100%"
+        });
+      }
+
+      coupon.discountType = normalizedType;
+      coupon.discountValue = value;
+      coupon.discountPercentage = normalizedType === "percentage" ? value : undefined;
+    }
 
     await coupon.save();
 
@@ -147,6 +201,37 @@ export const getAllCoupons = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch coupons"
+    });
+  }
+};
+
+/**
+ * DELETE COUPON (ADMIN)
+ * DELETE /coupon/:id
+ */
+export const deleteCoupon = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const coupon = await Coupon.findById(id);
+
+    if (!coupon) {
+      return res.status(404).json({
+        success: false,
+        message: "Coupon not found"
+      });
+    }
+
+    await coupon.deleteOne();
+
+    return res.status(200).json({
+      success: true,
+      message: "Coupon deleted successfully"
+    });
+  } catch (error) {
+    console.error("DELETE COUPON ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete coupon"
     });
   }
 };

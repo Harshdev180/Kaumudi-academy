@@ -49,8 +49,8 @@ export const sendAdminCredentialsMail = async ({
 
       <p>
         Login URL:<br/>
-        <a href="${config.FRONTEND_URL}/login">
-          ${config.FRONTEND_URL}/login
+        <a href="${config.FRONTEND_URL}/admin-login">
+          ${config.FRONTEND_URL}/admin-login
         </a>
       </p>
 

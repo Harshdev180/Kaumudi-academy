@@ -19,6 +19,25 @@ const generateToken = (id, role) => {
   });
 };
 
+const isBcryptHash = (value) =>
+  typeof value === "string" && /^\$2[aby]\$/.test(value);
+
+const verifyPassword = async (plainPassword, storedPassword, account) => {
+  if (!storedPassword) return false;
+
+  if (isBcryptHash(storedPassword)) {
+    return bcrypt.compare(plainPassword, storedPassword);
+  }
+
+  if (storedPassword === plainPassword) {
+    account.password = await bcrypt.hash(plainPassword, 10);
+    await account.save();
+    return true;
+  }
+
+  return false;
+};
+
 
 
 export const registerSuperAdmin = async (req, res) => {
@@ -131,7 +150,7 @@ export const login = async (req, res) => {
       });
     }
 
-    const isMatch = await bcrypt.compare(password, account.password);
+    const isMatch = await verifyPassword(password, account.password, account);
     if (!isMatch) {
       return res.status(401).json({
         success: false,
@@ -252,7 +271,11 @@ export const forgotPassword = async (req, res) => {
 
     await account.save({ validateBeforeSave: false });
 
-    const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+    const baseUrl =
+      config.FRONTEND_URL ||
+      process.env.CLIENT_URL ||
+      "http://localhost:5173";
+    const resetLink = `${baseUrl}/reset-password/${resetToken}`;
 
     await sendResetPasswordMail({
       userEmail: account.email,

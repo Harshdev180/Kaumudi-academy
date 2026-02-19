@@ -189,8 +189,15 @@ export const toggleCourseStatus = async (req, res) => {
 };
 
 export const getAllCourses = async (req, res) => {
+  const activeStatuses = ["ACTIVE", "Active", "active"];
+  const now = new Date();
   const courses = await Course.find({
-    status: "ACTIVE",
+    status: { $in: activeStatuses },
+    $or: [
+      { endDate: { $gte: now } },
+      { endDate: { $exists: false } },
+      { endDate: null }
+    ]
   }).sort({ createdAt: -1 });
 
   res.json({
@@ -200,10 +207,9 @@ export const getAllCourses = async (req, res) => {
 };
 
 export const getCourseDetail = async (req, res) => {
-  const now = new Date();
   const course = await Course.findById(req.params.id);
 
-  if (!course || course.status !== "ACTIVE" || course.endDate < now) {
+  if (!course) {
     return res.status(404).json({
       success: false,
       message: "Course not found",

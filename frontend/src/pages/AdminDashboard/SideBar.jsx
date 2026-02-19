@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   BookOpen,
   LayoutDashboard,
@@ -41,7 +42,7 @@ function Sidebar({ collapsed, setCollapsed, isMobile }) {
   })();
 
   const displayRole = (() => {
-    if (user?.role === "SUPER_ADMIN") return "Super Admin";
+    if (user?.role === "SUPER_ADMIN") return "Admin";
     if (user?.role === "ADMIN") return "Administrator";
     if (user?.role) return user.role.replace(/_/g, " ");
     return "Administrator";
@@ -261,13 +262,13 @@ function Sidebar({ collapsed, setCollapsed, isMobile }) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 rounded-full bg-[#D4AF37]/20 border-2 border-[#D4AF37] flex items-center justify-center font-bold">
-                    AS
+                    {profileInitials}
                   </div>
 
                   <div>
-                    <p className="text-sm font-bold">Ajay Sharma</p>
+                    <p className="text-sm font-bold">{profileName}</p>
                     <p className="text-[10px] uppercase font-black text-[#6b1d14]/60">
-                      Administrator
+                      {profileRole}
                     </p>
                   </div>
                 </div>

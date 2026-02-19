@@ -11,7 +11,7 @@ import {
   Mail,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { loginAdmin, loginSuperAdmin, forgotPassword } from "../../lib/api";
+import { loginSuperAdmin, forgotPassword } from "../../lib/api";
 import { useAuth } from "../../context/useAuthHook";
 
 const AdminLogin = () => {
@@ -21,11 +21,11 @@ const AdminLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("ADMIN");
   const [error, setError] = useState("");
   const [openForgot, setOpenForgot] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotLoading, setForgotLoading] = useState(false);
+  const role = "SUPER_ADMIN";
   const { login } = useAuth();
 
   const handleLogin = async (e) => {
@@ -37,8 +37,7 @@ const AdminLogin = () => {
     }
     try {
       setIsLoading(true);
-      const loginFn = role === "SUPER_ADMIN" ? loginSuperAdmin : loginAdmin;
-      const data = await loginFn(email, password);
+      const data = await loginSuperAdmin(email, password);
       const token = data?.token;
       if (token) {
         const userPayload = data?.user || data?.admin || data?.data || {};
@@ -122,21 +121,8 @@ const AdminLogin = () => {
 
         <div className="p-6 md:p-10">
           <form onSubmit={handleLogin} className="space-y-6">
-            <div className="flex items-center gap-2 flex-wrap">
-              {["ADMIN", "SUPER_ADMIN"].map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  onClick={() => setRole(item)}
-                  className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex-1 min-w-[140px] ${
-                    role === item
-                      ? "bg-[#5c1c11] text-white shadow"
-                      : "bg-white text-[#5c1c11] border border-[#d4af37]/40"
-                  }`}
-                >
-                  {item === "ADMIN" ? "Admin" : "Super Admin"}
-                </button>
-              ))}
+            <div className="text-xs font-bold uppercase tracking-wider text-[#5c1c11] bg-white border border-[#d4af37]/40 px-4 py-2 rounded-lg text-center">
+              Admin Access
             </div>
 
             {/* Administrator ID Field [cite: 145] */}

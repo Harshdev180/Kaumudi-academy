@@ -4,6 +4,7 @@ import { AlertTriangle, TicketPercent, CreditCard, Tag, Mail } from "lucide-reac
 import { motion, AnimatePresence } from "framer-motion"
 import { Alert } from "./Alert";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../context/useAuthHook";
 
 function Header({ showAlerts, setShowAlerts }) {
 
@@ -11,6 +12,7 @@ function Header({ showAlerts, setShowAlerts }) {
     const searchRef = useRef(null)
     const navigate = useNavigate();
     const location = useLocation();
+    const { user, loading } = useAuth();
 
     /* ================= DYNAMIC TITLE ================= */
     
@@ -46,6 +48,47 @@ function Header({ showAlerts, setShowAlerts }) {
                 return <AlertTriangle className="w-4 h-4" />;
         }
     };
+
+    const displayName = (() => {
+        if (user?.name) return user.name;
+        if (user?.firstName || user?.lastName) {
+            return [user?.firstName, user?.lastName].filter(Boolean).join(" ");
+        }
+        if (user?.email) return user.email;
+        return "Admin";
+    })();
+
+    const displayRole = (() => {
+        if (user?.role === "SUPER_ADMIN") return "Admin";
+        if (user?.role === "ADMIN") return "Administrator";
+        if (user?.role) return user.role.replace(/_/g, " ");
+        return "Administrator";
+    })();
+
+    const initials = (() => {
+        if (user?.name) {
+            const parts = user.name.trim().split(/\s+/).filter(Boolean);
+            if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+            if (parts.length === 1 && parts[0]) return parts[0].slice(0, 2).toUpperCase();
+        }
+        if (user?.firstName || user?.lastName) {
+            const first = user?.firstName?.[0] || "";
+            const last = user?.lastName?.[0] || "";
+            const combined = `${first}${last}`.trim();
+            if (combined) return combined.toUpperCase();
+        }
+        if (user?.email) {
+            const base = user.email.split("@")[0] || "";
+            const letters = base.replace(/[^a-zA-Z0-9]/g, "");
+            if (letters.length >= 2) return letters.slice(0, 2).toUpperCase();
+            if (letters.length === 1) return letters.toUpperCase();
+        }
+        return "AD";
+    })();
+
+    const profileName = loading ? "Loading..." : displayName;
+    const profileRole = loading ? "Checking..." : displayRole;
+    const profileInitials = loading ? "--" : initials;
 
     return (
         <div className='relative z-[9999]'>
@@ -155,12 +198,12 @@ function Header({ showAlerts, setShowAlerts }) {
                         {/* ⭐ PROFILE AVATAR */}
                         <div className='flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-xl'>
                             <div className='w-8 h-8 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37] flex items-center justify-center text-xs font-bold text-[#D4AF37]'>
-                                AS
+                                {profileInitials}
                             </div>
 
                             <div className='hidden md:block'>
-                                <p className='text-xs text-white font-semibold'>Ajay Sharma</p>
-                                <p className='text-[10px] text-[#D4AF37]/80'>Admin</p>
+                                <p className='text-xs text-white font-semibold'>{profileName}</p>
+                                <p className='text-[10px] text-[#D4AF37]/80'>{profileRole}</p>
                             </div>
                         </div>
 
