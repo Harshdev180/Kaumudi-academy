@@ -106,17 +106,18 @@ const Dashboard = () => {
             </span>
           </div>
 
-          <h2 className="text-3xl md:text-4xl font-serif text-white leading-[1.15]">
+          <h2 className="text-3xl md:text-4xl font-serif text-white leading-[1.25]">
             Welcome back, <br />
-            <span className="font-bold bg-gradient-to-r from-white via-white to-[#c9a050]/50 bg-clip-text text-transparent">
+            <span className="font-bold bg-gradient-to-r from-white via-white to-[#c9a050] bg-clip-text text-transparent py-10">
               Arjun Sharma | अर्जुन शर्मा
             </span>
           </h2>
 
           {/* Quick Status Sub-line */}
-          {/* <p className="text-[11px] text-white/50 font-medium tracking-wide">
-            You have <span className="text-[#c9a050]">2 sessions</span> scheduled for this week.
-          </p> */}
+          <p className="text-[11px] text-white/50 font-medium tracking-wide">
+            You have <span className="text-[#f7f1e3]">2 sessions</span>{" "}
+            scheduled for this week.
+          </p>
         </div>
 
         {/* Bottom subtle accent gradient */}
