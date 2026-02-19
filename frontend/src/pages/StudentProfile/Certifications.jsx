@@ -1,27 +1,54 @@
-import React from 'react';
-import { Award, Download, ExternalLink, ShieldCheck, CheckCircle2, FileText, BadgeCheck } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import {
+  Award,
+  Download,
+  ExternalLink,
+  CheckCircle2,
+  BadgeCheck,
+} from "lucide-react";
+import { getProfileCertificates } from "../../lib/api";
 
 const Certifications = () => {
-  const certificates = [
-    {
-      id: "CERT-987654",
-      title: "Rigveda Bhashya",
-      sanskritTitle: "ऋग्वेद भाष्य",
-      date: "December 20, 2023",
-      grade: "A+",
-      issuer: "Kaumudi Sanskrit Academy",
-      type: "Vedic Studies"
-    },
-    {
-      id: "CERT-102938",
-      title: "Sanskrit Grammar Foundation",
-      sanskritTitle: "संस्कृत व्याकरण आधार",
-      date: "January 15, 2024",
-      grade: "O",
-      issuer: "Kaumudi Sanskrit Academy",
-      type: "Linguistics"
-    }
-  ];
+  const [certificates, setCertificates] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    const loadCertificates = async () => {
+      try {
+        const res = await getProfileCertificates();
+        const list = res?.data || res || [];
+        if (!active) return;
+        const mapped = Array.isArray(list)
+          ? list.map((item) => ({
+              id: item?._id || item?.id || item?.certificateId,
+              certificateId: item?.certificateId || item?._id,
+              title: item?.course?.title || "Certificate",
+              sanskritTitle: item?.sanskritTitle || "",
+              date: item?.issuedAt
+                ? new Date(item.issuedAt).toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })
+                : "—",
+              grade: item?.grade || "—",
+              issuer: "Kaumudi Sanskrit Academy",
+              type: item?.type || "Course Completion",
+            }))
+          : [];
+        setCertificates(mapped);
+      } catch (error) {
+        console.error("Failed to load certificates:", error);
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    loadCertificates();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-12 mt-6">
@@ -48,12 +75,17 @@ const Certifications = () => {
       </div>
 
       {/* 2. CERTIFICATE GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {certificates.map((cert) => (
-          <div 
-            key={cert.id} 
-            className="group bg-white rounded-[2.5rem] p-8 shadow-sm border border-black/5 flex flex-col relative overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-[#c9a050]/10 hover:-translate-y-1"
-          >
+      {loading ? (
+        <div className="text-sm text-gray-500">Loading certificates...</div>
+      ) : certificates.length === 0 ? (
+        <div className="text-sm text-gray-500">No certificates found.</div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {certificates.map((cert) => (
+            <div 
+              key={cert.id} 
+              className="group bg-white rounded-[2.5rem] p-8 shadow-sm border border-black/5 flex flex-col relative overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-[#c9a050]/10 hover:-translate-y-1"
+            >
             
             {/* Artistic Mandala Watermark Background */}
             <div className="absolute -right-16 -top-16 opacity-[0.03] text-[#74271E] duration-1000 select-none pointer-events-none">
@@ -123,9 +155,10 @@ const Certifications = () => {
                 <span className="text-[10px] font-black uppercase tracking-widest hidden sm:block">Verify</span>
               </button>
             </div>
-          </div>
-        ))}
-      </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

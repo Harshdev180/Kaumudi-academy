@@ -331,3 +331,44 @@ export async function updateStudentProfile(profileData) {
 export async function getStudentEnrollments() {
   return getMyEnrollments();
 }
+
+// ==================== PROFILE APIs ====================
+export async function getProfileStats() {
+  const res = await api.get("/profile/stats");
+  return res.data;
+}
+
+export async function getProfileRecentEnrollments() {
+  const res = await api.get("/profile/recent");
+  return res.data;
+}
+
+export async function getProfileEnrollments() {
+  const res = await api.get("/profile/enrollments");
+  return res.data;
+}
+
+export async function getProfileCertificates() {
+  const res = await api.get("/profile/certificates");
+  return res.data;
+}
+
+export async function getProfileMe() {
+  const res = await api.get("/profile/me");
+  return res.data;
+}
+
+export async function updateProfileMe(profileData) {
+  const res = await api.put("/profile/me", profileData);
+  return res.data;
+}
+
+export async function getProfileSettings() {
+  const res = await api.get("/profile/settings");
+  return res.data;
+}
+
+export async function updateProfileSettings(settingsData) {
+  const res = await api.put("/profile/settings", settingsData);
+  return res.data;
+}
