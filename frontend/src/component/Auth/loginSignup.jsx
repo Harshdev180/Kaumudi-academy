@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useParams, useLocation } from "react-router-dom"; 
 import { api } from "../../lib/api";
@@ -21,6 +21,22 @@ const AuthPage = () => {
   const location = useLocation();
   const { login } = useAuth();
   const { token } = useParams(); // URL se reset token pakadne ke liye
+
+  useEffect(() => {
+    if (token) return;
+    const params = new URLSearchParams(location.search);
+    const mode = params.get("mode");
+    if (mode === "signup") {
+      setIsLogin(false);
+      setIsForgot(false);
+    } else if (mode === "login") {
+      setIsLogin(true);
+      setIsForgot(false);
+    } else if (mode === "forgot") {
+      setIsLogin(true);
+      setIsForgot(true);
+    }
+  }, [location.search, token]);
 
   // --- INITIAL FORM STATE ---
   const initialFormData = {

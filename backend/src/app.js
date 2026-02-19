@@ -12,6 +12,8 @@ import staffRoutes from "./routes/staff.routes.js";
 import adminStudentRoutes from "./routes/adminStudent.routes.js";
 import inquiryRoutes from "./routes/inquiry.routes.js";
 import adminInquiryRoutes from "./routes/adminInquiry.routes.js";
+import profileRoutes from "./routes/profile.routes.js";
+import { config } from "./configs/env.js";
 
 
 
@@ -26,8 +28,9 @@ import cors from "cors"
 // dotenv.config();
 
 
+const allowedOrigin = config.FRONTEND_URL || "http://localhost:5173";
 app.use(cors({
-  origin: "http://localhost:5173", // Aapka frontend URL
+  origin: allowedOrigin,
   credentials: true
 }));
 app.use(express.json())
@@ -51,6 +54,7 @@ app.use("/api", staffRoutes);
 app.use("/api", adminStudentRoutes);
 app.use("/api", inquiryRoutes);
 app.use("/api", adminInquiryRoutes);
+app.use("/api/profile", profileRoutes);
 
 
 app.use("/health",(_,res)=>{

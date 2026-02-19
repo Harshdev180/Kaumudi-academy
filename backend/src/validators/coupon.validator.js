@@ -15,16 +15,30 @@ export const createCouponSchema = Joi.object({
       "any.required": "Coupon code is required"
     }),
 
+  discountType: Joi.string()
+    .valid("percentage", "flat")
+    .default("percentage")
+    .messages({
+      "any.only": "Discount type must be percentage or flat"
+    }),
+
+  discountValue: Joi.number()
+    .integer()
+    .min(1)
+    .messages({
+      "number.base": "Discount must be a number",
+      "number.min": "Discount must be at least 1"
+    }),
+
+  // Backward compatibility for older clients
   discountPercentage: Joi.number()
     .integer()
     .min(1)
     .max(100)
-    .required()
     .messages({
       "number.base": "Discount must be a number",
       "number.min": "Discount must be at least 1%",
-      "number.max": "Discount cannot exceed 100%",
-      "any.required": "Discount percentage is required"
+      "number.max": "Discount cannot exceed 100%"
     }),
 
   startTime: Joi.date()
@@ -42,4 +56,21 @@ export const createCouponSchema = Joi.object({
       "date.greater": "End time must be after start time",
       "any.required": "End time is required"
     })
-});
+})
+  .custom((value, helpers) => {
+    const type = value.discountType || "percentage";
+    const providedValue =
+      value.discountValue !== undefined
+        ? value.discountValue
+        : value.discountPercentage;
+
+    if (providedValue === undefined || providedValue === null) {
+      return helpers.message("Discount value is required");
+    }
+
+    if (type === "percentage" && providedValue > 100) {
+      return helpers.message("Discount cannot exceed 100%");
+    }
+
+    return value;
+  });

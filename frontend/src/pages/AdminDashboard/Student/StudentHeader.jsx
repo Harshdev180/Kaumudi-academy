@@ -1,4 +1,4 @@
-import { MdSchool } from "react-icons/md";
+import { MdSchool, MdAdd } from "react-icons/md";
 
 function StudentHeader({ openAdd }) {
 
@@ -31,8 +31,12 @@ function StudentHeader({ openAdd }) {
                         </p>
                     </div>
                 </div>
-
-                
+                <button
+                    onClick={openAdd}
+                    className="self-start md:self-center flex items-center gap-2 bg-[#e6b86a] text-[#4a2b07] px-5 py-2 rounded-xl font-semibold shadow hover:scale-105 transition"
+                >
+                    <MdAdd /> Add Student
+                </button>
 
             </div>
         </div>

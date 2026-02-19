@@ -1,11 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  getProfileRecentEnrollments,
+  getProfileStats,
+} from "../../lib/api";
+import { useAuth } from "../../context/useAuthHook";
 
 const Dashboard = () => {
+  const { user } = useAuth();
   // --- CALENDAR LOGIC START ---
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState(new Date().getDate());
+  const [stats, setStats] = useState({
+    total: 0,
+    active: 0,
+    completed: 0,
+    avgProgress: 0,
+  });
+  const [recentEnrollments, setRecentEnrollments] = useState([]);
+  const [loadingStats, setLoadingStats] = useState(true);
 
   const daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
   const firstDayOfMonth = new Date(
@@ -22,6 +36,90 @@ const Dashboard = () => {
   const handleNextMonth = () =>
     setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)));
   // --- CALENDAR LOGIC END ---
+
+  useEffect(() => {
+    let active = true;
+    const loadDashboard = async () => {
+      try {
+        const [statsRes, recentRes] = await Promise.all([
+          getProfileStats(),
+          getProfileRecentEnrollments(),
+        ]);
+        const statsData = statsRes?.data || statsRes || {};
+        const recentData = recentRes?.data || recentRes || [];
+        if (!active) return;
+        setStats({
+          total: statsData.total || 0,
+          active: statsData.active || 0,
+          completed: statsData.completed || 0,
+          avgProgress: statsData.avgProgress || 0,
+        });
+        setRecentEnrollments(Array.isArray(recentData) ? recentData : []);
+      } catch (error) {
+        console.error("Failed to load student dashboard:", error);
+      } finally {
+        if (active) setLoadingStats(false);
+      }
+    };
+    loadDashboard();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const displayName = useMemo(() => {
+    if (user?.name) return user.name;
+    const first = user?.firstName || "";
+    const last = user?.lastName || "";
+    const combined = [first, last].filter(Boolean).join(" ").trim();
+    return combined || "Student";
+  }, [user]);
+
+  const summaryStats = useMemo(() => {
+    const total = stats.total || 0;
+    const active = stats.active || 0;
+    const completed = stats.completed || 0;
+    const avgProgress = stats.avgProgress || 0;
+    return [
+      {
+        label: "Active Courses",
+        val: String(active).padStart(2, "0"),
+        total: String(total || active || 0).padStart(2, "0"),
+        percent: total ? Math.round((active / total) * 100) : 0,
+      },
+      {
+        label: "Completed Courses",
+        val: String(completed).padStart(2, "0"),
+        total: String(total || completed || 0).padStart(2, "0"),
+        percent: total ? Math.round((completed / total) * 100) : 0,
+      },
+      {
+        label: "Avg Progress",
+        val: `${avgProgress}%`,
+        total: "100",
+        percent: avgProgress,
+      },
+    ];
+  }, [stats]);
+
+  const featuredEnrollment = recentEnrollments[0];
+  const featuredCourse = featuredEnrollment?.course || {};
+  const featuredTitle = featuredCourse.title || "No active course yet";
+  const featuredProgress =
+    typeof featuredEnrollment?.progress === "number"
+      ? featuredEnrollment.progress
+      : 0;
+  const featuredImage = featuredCourse.image?.url || "";
+  const formatShortDate = (value) => {
+    if (!value) return "—";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "—";
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
   return (
     <div className="grid grid-cols-12 gap-6 mt-6">
@@ -109,14 +207,14 @@ const Dashboard = () => {
           <h2 className="text-3xl md:text-4xl font-serif text-white leading-[1.25]">
             Welcome back, <br />
             <span className="font-bold bg-gradient-to-r from-white via-white to-[#c9a050] bg-clip-text text-transparent py-10">
-              Arjun Sharma | अर्जुन शर्मा
+              {displayName}
             </span>
           </h2>
 
           {/* Quick Status Sub-line */}
           <p className="text-[11px] text-white/50 font-medium tracking-wide">
-            You have <span className="text-[#f7f1e3]">2 sessions</span>{" "}
-            scheduled for this week.
+            You are enrolled in{" "}
+            <span className="text-[#f7f1e3]">{stats.total}</span> courses.
           </p>
         </div>
 
@@ -222,11 +320,7 @@ const Dashboard = () => {
 
         {/* Main Metrics Content */}
         <div className="flex-1 flex flex-col justify-center gap-8">
-          {[
-            { label: "Courses Completed", val: "04", total: "10", percent: 40 },
-            { label: "Learning Hours", val: "120", total: "160", percent: 75 },
-            { label: "Current Streak", val: "15", total: "30", percent: 50 },
-          ].map((stat, idx) => (
+          {summaryStats.map((stat, idx) => (
             <div
               key={idx}
               className="flex items-center gap-6 group/item cursor-default"
@@ -287,7 +381,9 @@ const Dashboard = () => {
         <div className="mt-6">
           <p className="text-[11px] text-gray-400 flex items-center gap-1.5">
             <span className="w-1 h-1 rounded-full bg-[#c9a050] animate-pulse" />
-            You are in the top 5% of active students this week
+            {loadingStats
+              ? "Updating progress insights..."
+              : `Active courses: ${stats.active} · Avg progress: ${stats.avgProgress}%`}
           </p>
         </div>
       </motion.div>
@@ -324,21 +420,31 @@ const Dashboard = () => {
 
         {/* Course Thumbnail Area */}
         <div className="relative h-44 rounded-[2rem] mb-6 overflow-hidden group/thumb cursor-pointer">
-          {/* Background Image / Pattern Overlay */}
-          <div className="absolute inset-0 bg-[#2a1b0a] flex items-center justify-center">
-            {/* Subtle Geometric Pattern */}
-            <div
-              className="absolute inset-0 opacity-10"
-              style={{
-                backgroundImage:
-                  "radial-gradient(#c9a050 1px, transparent 1px)",
-                backgroundSize: "20px 20px",
-              }}
-            />
-
+          <div
+            className="absolute inset-0 flex items-center justify-center bg-[#2a1b0a]"
+            style={
+              featuredImage
+                ? {
+                    backgroundImage: `url(${featuredImage})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }
+                : undefined
+            }
+          >
+            <div className="absolute inset-0 bg-black/35" />
+            {!featuredImage && (
+              <div
+                className="absolute inset-0 opacity-10"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(#c9a050 1px, transparent 1px)",
+                  backgroundSize: "20px 20px",
+                }}
+              />
+            )}
             <p className="relative z-10 text-[#c9a050] font-serif text-lg text-center px-6 leading-relaxed">
-              Introduction to <br />
-              <span className="font-bold">Sanskrit Grammar</span>
+              {featuredTitle}
             </p>
           </div>
         </div>
@@ -346,16 +452,16 @@ const Dashboard = () => {
         {/* Progress Info */}
         <div className="flex-1">
           <div className="flex justify-between items-end mb-3">
-            <p className="text-sm font-bold text-gray-800">
-              Vyākaraṇa Prārambha
-            </p>
-            <span className="text-xs font-bold text-[#74271E]">65%</span>
+            <p className="text-sm font-bold text-gray-800">{featuredTitle}</p>
+            <span className="text-xs font-bold text-[#74271E]">
+              {featuredProgress}%
+            </span>
           </div>
 
           <div className="w-full bg-gray-50 h-2 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
-              whileInView={{ width: "65%" }}
+              whileInView={{ width: `${featuredProgress}%` }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="bg-gradient-to-r from-[#74271E] to-[#c9a050] h-full rounded-full"
@@ -363,17 +469,18 @@ const Dashboard = () => {
           </div>
           <p className="text-[11px] text-gray-400 mt-3 flex items-center gap-1.5">
             <span className="w-1 h-1 rounded-full bg-gray-300" />
-            Last studied: 2 days ago
+            Enrolled: {formatShortDate(featuredEnrollment?.createdAt)}
           </p>
         </div>
 
         {/* Action Button */}
         <motion.button
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.98 }}
-          className="mt-8 w-full bg-[#74271E] text-white py-4 rounded-2xl font-bold text-sm shadow-lg hover:bg-[#5a1e17] transition-all flex items-center justify-center gap-2"
+          whileHover={{ scale: featuredEnrollment ? 1.01 : 1 }}
+          whileTap={{ scale: featuredEnrollment ? 0.98 : 1 }}
+          disabled={!featuredEnrollment}
+          className="mt-8 w-full bg-[#74271E] text-white py-4 rounded-2xl font-bold text-sm shadow-lg hover:bg-[#5a1e17] transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          Resume Course
+          {featuredEnrollment ? "Resume Course" : "No Active Course"}
         </motion.button>
       </motion.div>
 

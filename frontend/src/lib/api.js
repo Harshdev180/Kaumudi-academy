@@ -140,7 +140,7 @@ export async function fakeVerifyPayment(courseId) {
 
 // ==================== INQUIRY APIs ====================
 export async function submitInquiry(inquiryData) {
-  const res = await api.post("/inquiry", inquiryData);
+  const res = await api.post("/inquiries", inquiryData);
   return res.data;
 }
 
@@ -152,12 +152,48 @@ export async function submitContact(contactData) {
 
 // ==================== COUPON APIs ====================
 export async function createCoupon(couponData) {
-  const res = await api.post("/coupon", couponData);
+  const discountType = couponData.discountType || couponData.type || "percentage";
+  const discountValue =
+    couponData.discountValue ?? couponData.discountPercentage;
+  const payload = {
+    code: couponData.code,
+    discountType,
+    discountValue,
+    startTime: couponData.startTime,
+    endTime: couponData.endTime,
+  };
+  if (discountType === "percentage") {
+    payload.discountPercentage = discountValue;
+  }
+  const res = await api.post("/coupon", payload);
   return res.data;
 }
 
 export async function getAllCouponsForAdmin() {
   const res = await api.get("/coupon/admin/all");
+  return res.data;
+}
+
+export async function updateCoupon(couponId, couponData) {
+  const discountType = couponData.discountType || couponData.type || "percentage";
+  const discountValue =
+    couponData.discountValue ?? couponData.discountPercentage;
+  const payload = {
+    code: couponData.code,
+    discountType,
+    discountValue,
+    startTime: couponData.startTime,
+    endTime: couponData.endTime,
+  };
+  if (discountType === "percentage") {
+    payload.discountPercentage = discountValue;
+  }
+  const res = await api.put(`/coupon/${couponId}`, payload);
+  return res.data;
+}
+
+export async function deleteCoupon(couponId) {
+  const res = await api.delete(`/coupon/${couponId}`);
   return res.data;
 }
 
@@ -294,4 +330,45 @@ export async function updateStudentProfile(profileData) {
 // alias kept for backward compatibility with older import names
 export async function getStudentEnrollments() {
   return getMyEnrollments();
+}
+
+// ==================== PROFILE APIs ====================
+export async function getProfileStats() {
+  const res = await api.get("/profile/stats");
+  return res.data;
+}
+
+export async function getProfileRecentEnrollments() {
+  const res = await api.get("/profile/recent");
+  return res.data;
+}
+
+export async function getProfileEnrollments() {
+  const res = await api.get("/profile/enrollments");
+  return res.data;
+}
+
+export async function getProfileCertificates() {
+  const res = await api.get("/profile/certificates");
+  return res.data;
+}
+
+export async function getProfileMe() {
+  const res = await api.get("/profile/me");
+  return res.data;
+}
+
+export async function updateProfileMe(profileData) {
+  const res = await api.put("/profile/me", profileData);
+  return res.data;
+}
+
+export async function getProfileSettings() {
+  const res = await api.get("/profile/settings");
+  return res.data;
+}
+
+export async function updateProfileSettings(settingsData) {
+  const res = await api.put("/profile/settings", settingsData);
+  return res.data;
 }

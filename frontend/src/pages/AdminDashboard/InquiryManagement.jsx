@@ -9,80 +9,157 @@ import {
     MdDelete,
     MdCheckCircle
 } from "react-icons/md";
+import {
+    getAdminInquiries,
+    updateAdminInquiryStatus,
+    deleteAdminInquiry
+} from "../../lib/api";
 
 const InquiryManagement = () => {
 
     // ================= STATE =================
     const [loading, setLoading] = useState(true);
-
-    const [inquiries, setInquiries] = useState([
-        {
-            id: 1,
-            name: "Rahul Sharma",
-            email: "rahul@mail.com",
-            phone: "9876543210",
-            course: "Paninian Grammar Basics",
-            message: "I want more details about online batch.",
-            status: "Pending",
-            date: "2026-02-12"
-        },
-        {
-            id: 2,
-            name: "Anita Verma",
-            email: "anita@mail.com",
-            phone: "9898989898",
-            course: "Advanced Kavya Study",
-            message: "Is offline class available?",
-            status: "Resolved",
-            date: "2026-02-10"
-        },
-        {
-            id: 3,
-            name: "Anita Verma",
-            email: "anita@mail.com",
-            phone: "9898989898",
-            course: "Advanced Kavya Study",
-            message: "Is offline class available?",
-            status: "Resolved",
-            date: "2026-02-10"
-        }
-    ]);
+    const [error, setError] = useState("");
+    const [inquiries, setInquiries] = useState([]);
+    const [updatingId, setUpdatingId] = useState(null);
+    const [deletingId, setDeletingId] = useState(null);
 
     const [search, setSearch] = useState("");
     const [filter, setFilter] = useState("All");
 
     // ================= LOADER =================
     useEffect(() => {
-        const timer = setTimeout(() => setLoading(false), 1200);
-        return () => clearTimeout(timer);
+        let mounted = true;
+        const fetchInquiries = async () => {
+            try {
+                setLoading(true);
+                setError("");
+                const all = [];
+                let page = 1;
+                const limit = 50;
+                let total = null;
+
+                while (true) {
+                    const response = await getAdminInquiries({ page, limit });
+                    const payload = response?.data ?? response;
+                    const list = payload?.data ?? payload ?? [];
+                    const pagination = payload?.pagination ?? response?.pagination;
+                    if (Array.isArray(list)) all.push(...list);
+                    total = pagination?.total ?? total;
+                    if (!pagination) break;
+                    if (list.length < limit) break;
+                    if (typeof total === "number" && all.length >= total) break;
+                    page += 1;
+                }
+
+                if (mounted) {
+                    setInquiries(Array.isArray(all) ? all : []);
+                }
+            } catch (err) {
+                if (mounted) {
+                    setError(err?.response?.data?.message || "Failed to load inquiries.");
+                }
+            } finally {
+                if (mounted) setLoading(false);
+            }
+        };
+
+        fetchInquiries();
+        return () => {
+            mounted = false;
+        };
     }, []);
+
+    const formatPreferredLevel = (level) => {
+        if (!level) return "General";
+        return level.charAt(0) + level.slice(1).toLowerCase();
+    };
+
+    const formatStatus = (status) => {
+        if (status === "CONTACTED") return "Contacted";
+        if (status === "CLOSED") return "Closed";
+        return "New";
+    };
+
+    const normalized = useMemo(() => {
+        return (inquiries || []).map((item) => ({
+            id: item?._id || item?.id,
+            name: item?.fullName || "Unnamed",
+            email: item?.email || "",
+            phone: item?.phoneNumber || "",
+            level: formatPreferredLevel(item?.preferredLevel),
+            message: item?.message || "",
+            status: item?.status || "NEW",
+            createdAt: item?.createdAt || ""
+        }));
+    }, [inquiries]);
 
     // ================= FILTER =================
     const filtered = useMemo(() => {
-        return inquiries.filter(i =>
-            i.name.toLowerCase().includes(search.toLowerCase()) &&
-            (filter === "All" || i.status === filter)
-        );
-    }, [search, filter, inquiries]);
+        const term = search.trim().toLowerCase();
+        return normalized.filter(i => {
+            const matchSearch = !term || [
+                i.name,
+                i.email,
+                i.phone,
+                i.level,
+                i.message
+            ].some(val => (val || "").toLowerCase().includes(term));
+            const matchFilter = filter === "All" || i.status === filter;
+            return matchSearch && matchFilter;
+        });
+    }, [search, filter, normalized]);
 
     // ================= STATS =================
     const stats = {
-        total: inquiries.length,
-        pending: inquiries.filter(i => i.status === "Pending").length,
-        resolved: inquiries.filter(i => i.status === "Resolved").length
+        total: normalized.length,
+        new: normalized.filter(i => i.status === "NEW").length,
+        contacted: normalized.filter(i => i.status === "CONTACTED").length,
+        closed: normalized.filter(i => i.status === "CLOSED").length
     };
 
     // ================= ACTIONS =================
-    const markResolved = (id) => {
-        setInquiries(prev =>
-            prev.map(i =>
-                i.id === id ? { ...i, status: "Resolved" } : i
-            )
-        );
+    const updateStatus = async (id, status) => {
+        try {
+            setUpdatingId(id);
+            const response = await updateAdminInquiryStatus(id, status);
+            const payload = response?.data ?? response;
+            const updated = payload?.data ?? payload;
+            if (updated && (updated?._id || updated?.id)) {
+                setInquiries(prev =>
+                    prev.map(i =>
+                        (i?._id || i?.id) === id ? updated : i
+                    )
+                );
+            } else {
+                setInquiries(prev =>
+                    prev.map(i =>
+                        (i?._id || i?.id) === id ? { ...i, status } : i
+                    )
+                );
+            }
+        } catch (err) {
+            console.error("Failed to update status:", err);
+            alert(err?.response?.data?.message || "Failed to update status.");
+        } finally {
+            setUpdatingId(null);
+        }
     };
 
-    const deleteInquiry = (id) => {
-        setInquiries(prev => prev.filter(i => i.id !== id));
+    const deleteInquiry = async (id) => {
+        if (!window.confirm("Delete this inquiry?")) return;
+        try {
+            setDeletingId(id);
+            await deleteAdminInquiry(id);
+            setInquiries(prev =>
+                prev.filter(i => (i?._id || i?.id) !== id)
+            );
+        } catch (err) {
+            console.error("Failed to delete inquiry:", err);
+            alert(err?.response?.data?.message || "Failed to delete inquiry.");
+        } finally {
+            setDeletingId(null);
+        }
     };
 
     // ================= LOADER UI =================
@@ -121,13 +198,14 @@ const InquiryManagement = () => {
             </motion.div>
 
             {/* STATS */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 -mt-14 relative z-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 -mt-14 relative z-10">
                 {[
                     { label: "Total Inquiries", value: stats.total },
-                    { label: "Pending", value: stats.pending },
-                    { label: "Resolved", value: stats.resolved }
+                    { label: "New", value: stats.new },
+                    { label: "Contacted", value: stats.contacted },
+                    { label: "Closed", value: stats.closed }
                 ].map((card, i) => (
-                    <div key={i} className="bg-[#FBF4E2] rounded-2xl p-6 shadow-md">
+                    <div key={i} className="bg-[#FBF4E2] rounded-2xl p-6 shadow-md flex flex-col justify-between min-h-[110px]">
                         <p className="text-sm text-[#7c5a3c]">{card.label}</p>
                         <h3 className="text-3xl font-black text-[#6b1d14]">
                             {card.value}
@@ -149,7 +227,7 @@ const InquiryManagement = () => {
                 </div>
 
                 <div className="flex gap-3">
-                    {["All", "Pending", "Resolved"].map(tab => (
+                    {["All", "NEW", "CONTACTED", "CLOSED"].map(tab => (
                         <button
                             key={tab}
                             onClick={() => setFilter(tab)}
@@ -158,15 +236,28 @@ const InquiryManagement = () => {
                                     : "bg-[#FBF4E2] text-[#856966]"
                                 }`}
                         >
-                            {tab}
+                            {tab === "All" ? "All" : formatStatus(tab)}
                         </button>
                     ))}
                 </div>
             </div>
 
+            {error && (
+                <div className="text-red-600 font-semibold">{error}</div>
+            )}
+
             {/* INQUIRY LIST */}
             <div className="grid lg:grid-cols-3 gap-3">
                 <AnimatePresence>
+                    {!error && filtered.length === 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="col-span-full text-[#856966] text-sm"
+                        >
+                            No inquiries found.
+                        </motion.div>
+                    )}
                     {filtered.map((inq) => (
                         <motion.div
                             key={inq.id}
@@ -181,16 +272,18 @@ const InquiryManagement = () => {
                                     {inq.name}
                                 </h3>
 
-                                <span className={`text-xs px-3 py-1 rounded-full ${inq.status === "Resolved"
-                                        ? "bg-green-100 text-green-600"
-                                        : "bg-orange-100 text-orange-600"
+                                <span className={`text-xs px-3 py-1 rounded-full ${inq.status === "CLOSED"
+                                        ? "bg-zinc-200 text-zinc-600"
+                                        : inq.status === "CONTACTED"
+                                            ? "bg-blue-100 text-blue-700"
+                                            : "bg-green-100 text-green-700"
                                     }`}>
-                                    {inq.status}
+                                    {formatStatus(inq.status)}
                                 </span>
                             </div>
 
                             <div className="text-sm text-[#856966] space-y-1">
-                                <p className="flex items-center gap-2"><MdSchool /> {inq.course}</p>
+                                <p className="flex items-center gap-2"><MdSchool /> {inq.level}</p>
                                 <p className="flex items-center gap-2"><MdEmail /> {inq.email}</p>
                                 <p className="flex items-center gap-2"><MdPhone /> {inq.phone}</p>
                             </div>
@@ -201,17 +294,30 @@ const InquiryManagement = () => {
 
                             <div className="flex justify-between pt-2">
                                 <button
-                                    onClick={() => markResolved(inq.id)}
-                                    className="flex items-center gap-1 text-green-600 hover:bg-green-50 px-3 py-2 rounded-lg"
+                                    onClick={() => {
+                                        const nextStatus = inq.status === "NEW" ? "CONTACTED" : "CLOSED";
+                                        updateStatus(inq.id, nextStatus);
+                                    }}
+                                    disabled={inq.status === "CLOSED" || updatingId === inq.id}
+                                    className={`flex items-center gap-1 px-3 py-2 rounded-lg ${inq.status === "CLOSED"
+                                            ? "text-zinc-400 cursor-not-allowed"
+                                            : "text-green-700 hover:bg-green-50"
+                                        }`}
                                 >
-                                    <MdCheckCircle /> Resolve
+                                    <MdCheckCircle />
+                                    {inq.status === "NEW"
+                                        ? (updatingId === inq.id ? "Updating..." : "Mark Contacted")
+                                        : inq.status === "CONTACTED"
+                                            ? (updatingId === inq.id ? "Updating..." : "Close")
+                                            : "Closed"}
                                 </button>
 
                                 <button
                                     onClick={() => deleteInquiry(inq.id)}
-                                    className="flex items-center gap-1 text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg"
+                                    disabled={deletingId === inq.id}
+                                    className="flex items-center gap-1 text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg disabled:opacity-60"
                                 >
-                                    <MdDelete /> Delete
+                                    <MdDelete /> {deletingId === inq.id ? "Deleting..." : "Delete"}
                                 </button>
                             </div>
                         </motion.div>

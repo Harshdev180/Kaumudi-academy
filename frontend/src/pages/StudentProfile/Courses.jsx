@@ -1,62 +1,75 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import {
-  Search,
-  Filter,
-  Clock,
-  Users,
-  Star,
-  PlayCircle,
-  SearchX,
-} from "lucide-react";
-import { getMyEnrollments } from "../../lib/api";
+import { motion } from "framer-motion";
+import { Search, Clock, Monitor, PlayCircle } from "lucide-react";
+import { getProfileEnrollments } from "../../lib/api";
+
 const Courses = () => {
-  const navigate = useNavigate();
-  const [activeFilter, setActiveFilter] = useState("All");
+  const [activeFilter, setActiveFilter] = useState("ALL");
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [courses, setCourses] = useState([]);
-  const [notification, setNotification] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const categories = ["All", "Grammar", "Literature", "Chanting", "Philosophy"];
+  const filters = ["ALL", "ACTIVE", "COMPLETED", "DROPPED"];
 
-  const staticFallback = [
-    {
-      id: "course-1",
-      title: "Introduction to Sanskrit Grammar",
-      category: "Grammar",
-      instructor: "Dr. Ananya Rao",
-      duration: "12 Hours",
-      students: "1.2k",
-      rating: 4.8,
-      progress: 65,
-      image: "bg-[#2a1b0a]",
-    },
-    {
-      id: "course-2",
-      title: "Vedic Chanting Basics",
-      category: "Chanting",
-      instructor: "Acharya Shastri",
-      duration: "8 Hours",
-      students: "850",
-      rating: 4.9,
-      progress: 0,
-      image: "bg-[#74271E]",
-    },
-    {
-      id: "course-3",
-      title: "Panini's Ashtadhyayi - Vol 1",
-      category: "Grammar",
-      instructor: "Dr. Ananya Rao",
-      duration: "24 Hours",
-      students: "500",
-      rating: 5.0,
-      progress: 10,
-      image: "bg-[#c9a050]",
-    },
-  ];
+  useEffect(() => {
+    let active = true;
+    const loadEnrollments = async () => {
+      try {
+        const res = await getProfileEnrollments();
+        const list = res?.data || res || [];
+        if (!active) return;
+        const mapped = Array.isArray(list)
+          ? list.map((item) => ({
+              id: item?._id || item?.id,
+              title: item?.course?.title || "Untitled Course",
+              category: item?.course?.category || "General",
+              instructor: item?.course?.instructor || "Faculty",
+              duration: item?.course?.duration || "",
+              mode: item?.course?.mode || "",
+              level: item?.course?.level || "",
+              status: item?.status || "ACTIVE",
+              progress: typeof item?.progress === "number" ? item.progress : 0,
+              imageUrl: item?.course?.image?.url || "",
+              startDate: item?.course?.startDate,
+              endDate: item?.course?.endDate,
+            }))
+          : [];
+        setCourses(mapped);
+      } catch (error) {
+        console.error("Failed to load enrollments:", error);
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    loadEnrollments();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const filteredCourses = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    return courses.filter((course) => {
+      const matchesFilter =
+        activeFilter === "ALL" || course.status === activeFilter;
+      const matchesSearch =
+        !term ||
+        course.title.toLowerCase().includes(term) ||
+        course.instructor.toLowerCase().includes(term);
+      return matchesFilter && matchesSearch;
+    });
+  }, [activeFilter, courses, search]);
+
+  const formatDate = (value) => {
+    if (!value) return "—";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "—";
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
   useEffect(() => {
     const fetchEnrollments = async () => {
@@ -165,19 +178,21 @@ const Courses = () => {
         </div>
 
         <div className="flex items-center gap-2 overflow-x-auto pb-2">
-          {categories.map((cat) => (
+          {filters.map((status) => (
             <motion.button
-              key={cat}
-              onClick={() => setActiveFilter(cat)}
+              key={status}
+              onClick={() => setActiveFilter(status)}
               className={`px-5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-                activeFilter === cat
+                activeFilter === status
                   ? "bg-[#74271E] text-white shadow-md"
                   : "bg-white text-gray-500 hover:bg-gray-100"
               }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              {cat}
+              {status === "ALL"
+                ? "All"
+                : status.charAt(0) + status.slice(1).toLowerCase()}
             </motion.button>
           ))}
         </div>
@@ -185,40 +200,12 @@ const Courses = () => {
 
       {/* Course Grid */}
       {loading ? (
-        <div className="text-sm text-gray-500">Loading your courses...</div>
-      ) : error && !filtered.length ? (
-        <div className="text-sm text-red-600">{error}</div>
-      ) : filtered.length === 0 ? (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="w-full max-w-md mx-auto mt-10 bg-[#FBF8F2] border border-[#E6DDC8] rounded-2xl shadow-md p-8 text-center"
-        >
-          {/* Icon */}
-          <div className="mx-auto mb-4 h-14 w-14 rounded-full bg-[#74271E]/10 grid place-items-center">
-            <SearchX className="w-7 h-7 text-[#74271E]" />
-          </div>
-
-          {/* Title */}
-          <h3 className="text-lg font-semibold text-[#74271E] mb-2">
-            No courses found
-          </h3>
-
-          {/* Message */}
-          <p className="text-sm text-[#6B5A3E] leading-relaxed">
-            We couldn’t find any courses matching your filters. Try adjusting
-            your search or selecting a different category.
-          </p>
-
-          {/* Hint */}
-          <div className="mt-5 text-xs text-gray-500">
-            Tip: Clear filters to explore all courses
-          </div>
-        </motion.div>
+        <div className="text-sm text-gray-500">Loading enrollments...</div>
+      ) : filteredCourses.length === 0 ? (
+        <div className="text-sm text-gray-500">No enrollments found.</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filtered.map((course) => (
+          {filteredCourses.map((course) => (
             <motion.div
               key={course.id}
               initial={{ opacity: 0, y: 16 }}
@@ -228,34 +215,36 @@ const Courses = () => {
               className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all border border-black/5 flex flex-col group"
             >
               {/* Course Image/Hero Section */}
-              <div
-                className={`h-44 relative flex items-center justify-center p-6 text-center ${
-                  course.image && !String(course.image).startsWith("url(")
-                    ? course.image
-                    : ""
-                }`}
-                style={
-                  course.image && String(course.image).startsWith("url(")
-                    ? {
-                        backgroundImage: course.image,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                      }
-                    : {}
-                }
-              >
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors" />
+              <div className="h-44 relative flex items-center justify-center p-6 text-center bg-[#2a1b0a] overflow-hidden">
+                {course.imageUrl && (
+                  <img
+                    src={course.imageUrl}
+                    alt={course.title}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                )}
+                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors" />
                 <p className="relative z-10 text-[#c9a050] font-serif text-sm border-b border-[#c9a050]/30 pb-1">
                   {course.title}
                 </p>
-                <motion.button
-                  onClick={() => goToCourse(course)}
+                <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="absolute bottom-4 right-4 bg-white/20 backdrop-blur-md p-2 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  <PlayCircle size={24} />
-                </motion.button>
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors" />
+                  <p className="relative z-10 text-[#c9a050] font-serif text-sm border-b border-[#c9a050]/30 pb-1">
+                    {course.title}
+                  </p>
+                  <motion.button
+                    onClick={() => goToCourse(course)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="absolute bottom-4 right-4 bg-white/20 backdrop-blur-md p-2 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <PlayCircle size={24} />
+                  </motion.button>
+                </motion.div>
               </div>
 
               {/* Course Details */}
@@ -264,12 +253,10 @@ const Courses = () => {
                   <span className="text-[10px] font-bold text-[#c9a050] uppercase tracking-widest bg-[#c9a050]/10 px-2 py-1 rounded">
                     {course.category}
                   </span>
-                  <div className="flex items-center gap-1 text-yellow-500">
-                    <Star size={12} fill="currentColor" />
-                    <span className="text-xs font-bold text-gray-700">
-                      {course.rating}
-                    </span>
-                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                    {course.status.charAt(0) +
+                      course.status.slice(1).toLowerCase()}
+                  </span>
                 </div>
 
                 <h3 className="font-bold text-lg text-gray-800 mb-1 leading-snug">
@@ -279,14 +266,18 @@ const Courses = () => {
                   By {course.instructor}
                 </p>
 
-                <div className="flex items-center gap-4 text-gray-500 text-[11px] font-medium mb-6">
-                  <div className="flex items-center gap-1">
+                <div className="flex flex-col gap-2 text-gray-500 text-[11px] font-medium mb-6">
+                  <div className="flex items-center gap-2">
                     <Clock size={14} />
-                    <span>{course.duration}</span>
+                    <span>{course.duration || "Duration TBA"}</span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Users size={14} />
-                    <span>{course.students} Students</span>
+                  <div className="flex items-center gap-2">
+                    <Monitor size={14} />
+                    <span>{course.mode || "Mode TBA"}</span>
+                  </div>
+                  <div className="text-[10px] text-gray-400">
+                    {formatDate(course.startDate)} -{" "}
+                    {formatDate(course.endDate)}
                   </div>
                 </div>
 
@@ -296,25 +287,52 @@ const Courses = () => {
                     <div className="flex justify-between text-[10px] font-bold text-gray-500">
                       <span>Progress: {course.progress}%</span>
                     </div>
-                    <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${course.progress}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="bg-[#74271E] h-full rounded-full"
-                      />
+                  </div>
+
+                  <h3 className="font-bold text-lg text-gray-800 mb-1 leading-snug">
+                    {course.title}
+                  </h3>
+                  <p className="text-xs text-gray-400 mb-4">
+                    By {course.instructor}
+                  </p>
+
+                  <div className="flex items-center gap-4 text-gray-500 text-[11px] font-medium mb-6">
+                    <div className="flex items-center gap-1">
+                      <Clock size={14} />
+                      <span>{course.duration}</span>
                     </div>
-                    <motion.button
-                      onClick={() => goToCourse(course)}
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="w-full mt-4 bg-[#74271E] text-white py-3 rounded-xl font-bold text-sm hover:bg-[#5a1e17] transition-all"
-                    >
-                      {course.progress > 0
-                        ? "Continue Learning"
-                        : "Start Learning"}
-                    </motion.button>
+                    <div className="flex items-center gap-1">
+                      <Users size={14} />
+                      <span>{course.students} Students</span>
+                    </div>
+                  </div>
+
+                  {/* Progress Section (Always visible as they are enrolled) */}
+                  <div className="mt-auto">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-[10px] font-bold text-gray-500">
+                        <span>Progress: {course.progress}%</span>
+                      </div>
+                      <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${course.progress}%` }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.8, ease: "easeOut" }}
+                          className="bg-[#74271E] h-full rounded-full"
+                        />
+                      </div>
+                      <motion.button
+                        onClick={() => goToCourse(course)}
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="w-full mt-4 bg-[#74271E] text-white py-3 rounded-xl font-bold text-sm hover:bg-[#5a1e17] transition-all"
+                      >
+                        {course.progress > 0
+                          ? "Continue Learning"
+                          : "Start Learning"}
+                      </motion.button>
+                    </div>
                   </div>
                 </div>
               </div>

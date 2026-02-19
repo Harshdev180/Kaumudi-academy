@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   User,
@@ -13,23 +13,87 @@ import {
   BookOpen,
   Clock,
 } from "lucide-react";
+import { getProfileMe, updateProfileMe } from "../../lib/api";
+import { useAuth } from "../../context/useAuthHook";
 
 const Profile = () => {
+  const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState({
-    name: "Arjun Sharma",
-    sanskritName: "अर्जुन शर्मा",
-    id: "KSA-2026-088",
-    email: "arjun.sharma@example.com",
-    phone: "+91 98765 43210",
-    location: "Pune, Maharashtra",
-    joinDate: "October 2025",
+    name: "",
+    sanskritName: "",
+    id: "",
+    email: "",
+    phone: "",
+    location: "",
+    joinDate: "",
     level: "Intermediate (Madhyama)",
-    bio: "Passionate about classical Sanskrit literature and Vedic chanting. Currently focusing on Panini's grammar and the Upanishads.",
+    bio: "",
   });
 
+  const normalizeProfile = (data) => {
+    const firstName = data?.firstName || "";
+    const lastName = data?.lastName || "";
+    const name =
+      data?.name ||
+      [firstName, lastName].filter(Boolean).join(" ").trim() ||
+      user?.name ||
+      "Student";
+    const phone = data?.phone || data?.phoneNumber || "";
+    const location =
+      [data?.city, data?.state].filter(Boolean).join(", ") ||
+      data?.address ||
+      "";
+    const joinDate = data?.createdAt
+      ? new Date(data.createdAt).toLocaleDateString("en-US", {
+          month: "long",
+          year: "numeric",
+        })
+      : "";
+    return {
+      name,
+      sanskritName: data?.sanskritName || "",
+      id: data?._id || data?.id || "",
+      email: data?.email || user?.email || "",
+      phone,
+      location,
+      joinDate,
+      level: data?.level || "Intermediate (Madhyama)",
+      bio: data?.bio || "",
+    };
+  };
+
+  useEffect(() => {
+    let active = true;
+    const loadProfile = async () => {
+      try {
+        const res = await getProfileMe();
+        const data = res?.data || res || {};
+        if (!active) return;
+        setProfile(normalizeProfile(data));
+      } catch (error) {
+        console.error("Failed to load profile:", error);
+        if (active) {
+          setProfile((prev) => ({
+            ...prev,
+            name: user?.name || prev.name,
+            email: user?.email || prev.email,
+          }));
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    loadProfile();
+    return () => {
+      active = false;
+    };
+  }, [user]);
+
   const getInitials = (name) => {
+    if (!name) return "ST";
     return name
       .split(" ")
       .map((n) => n[0])
@@ -40,6 +104,31 @@ const Profile = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProfile((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      setSaving(true);
+      const locationParts = profile.location
+        ? profile.location.split(",").map((part) => part.trim())
+        : [];
+      const payload = {
+        name: profile.name,
+        phone: profile.phone,
+        bio: profile.bio,
+        address: profile.location || "",
+        city: locationParts[0] || undefined,
+        state: locationParts[1] || undefined,
+      };
+      const res = await updateProfileMe(payload);
+      const data = res?.data || res || {};
+      setProfile(normalizeProfile(data));
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -85,16 +174,23 @@ const Profile = () => {
 
             <div className="flex gap-3 md:self-start">
               <button
-                onClick={() => setIsEditing(!isEditing)}
-                className="flex items-center gap-2 px-5 py-2 rounded-xl font-bold text-[11px] bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 transition-all shadow-md uppercase tracking-wider"
+                onClick={() => {
+                  if (isEditing) {
+                    handleSaveProfile();
+                  } else {
+                    setIsEditing(true);
+                  }
+                }}
+                disabled={saving || loading}
+                className="flex items-center gap-2 px-5 py-2 rounded-xl font-bold text-[11px] bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 transition-all shadow-md uppercase tracking-wider disabled:opacity-60"
               >
                 {isEditing ? (
                   <>
-                    <Save size={14} /> Save
+                    <Save size={14} /> {saving ? "Saving..." : "Save"}
                   </>
                 ) : (
                   <>
-                    <Edit3 size={14} /> Edit Profile
+                    <Edit3 size={14} /> {loading ? "Loading..." : "Edit Profile"}
                   </>
                 )}
               </button>
@@ -146,6 +242,7 @@ const Profile = () => {
                   label: "Email",
                   value: profile.email,
                   name: "email",
+                  readOnly: true,
                 },
                 {
                   icon: <Phone size={16} />,
@@ -164,6 +261,7 @@ const Profile = () => {
                   label: "Joined",
                   value: profile.joinDate,
                   name: "joinDate",
+                  readOnly: true,
                 },
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-4">
@@ -172,7 +270,7 @@ const Profile = () => {
                     <p className="text-[9px] uppercase tracking-widest text-[#c9a050]/70 font-black mb-1">
                       {item.label}
                     </p>
-                    {isEditing ? (
+                    {isEditing && !item.readOnly ? (
                       <input
                         name={item.name}
                         value={item.value}

@@ -35,6 +35,45 @@ const studentSchema = new mongoose.Schema(
       maxlength: 15
     },
 
+    dob: {
+      type: Date
+    },
+
+    address: {
+      type: String,
+      trim: true
+    },
+
+    city: {
+      type: String,
+      trim: true
+    },
+
+    state: {
+      type: String,
+      trim: true
+    },
+
+    country: {
+      type: String,
+      trim: true
+    },
+
+    bio: {
+      type: String,
+      trim: true
+    },
+
+    sanskritKnowledge: {
+      type: String,
+      trim: true
+    },
+
+    occupation: {
+      type: String,
+      trim: true
+    },
+
     // 🔹 ADMIN MANAGEMENT FIELDS
     course: {
       type: mongoose.Schema.Types.ObjectId,

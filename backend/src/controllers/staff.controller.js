@@ -14,11 +14,6 @@ const parseMoney = (value) => {
   return Number(cleaned);
 };
 
-/**
- * @desc    Create staff member
- * @route   POST /staff
- * @access  Admin
- */
 export const createStaff = async (req, res) => {
   try {
     const {

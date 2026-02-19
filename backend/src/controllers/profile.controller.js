@@ -46,7 +46,10 @@ export const getRecentEnrollments = async (req, res) => {
     const enrollments = await Enrollment.find({
       student: req.user._id
     })
-      .populate("course", "title image startDate endDate")
+      .populate(
+        "course",
+        "title image startDate endDate category instructor duration level mode"
+      )
       .sort({ createdAt: -1 })
       .limit(5);
 
@@ -73,7 +76,10 @@ export const getMyEnrollments = async (req, res) => {
     const enrollments = await Enrollment.find({
       student: req.user._id
     })
-      .populate("course", "title image startDate endDate")
+      .populate(
+        "course",
+        "title image startDate endDate category instructor duration level mode"
+      )
       .sort({ createdAt: -1 });
 
     res.json({
@@ -125,6 +131,14 @@ export const getMyProfile = async (req, res) => {
     // remove sensitive fields
     delete userObj.password;
     delete userObj.__v;
+    if (!userObj.name) {
+      const first = userObj.firstName || "";
+      const last = userObj.lastName || "";
+      userObj.name = [first, last].filter(Boolean).join(" ").trim();
+    }
+    if (!userObj.phone && userObj.phoneNumber) {
+      userObj.phone = userObj.phoneNumber;
+    }
 
     res.json({
       success: true,
@@ -144,20 +158,35 @@ export const getMyProfile = async (req, res) => {
  */
 export const updateMyProfile = async (req, res) => {
   try {
+    const payload = { ...req.body };
+
+    if (payload.name && !payload.firstName && !payload.lastName) {
+      const parts = String(payload.name).trim().split(/\s+/);
+      payload.firstName = parts.shift() || "";
+      payload.lastName = parts.join(" ");
+    }
+
+    if (payload.phone && !payload.phoneNumber) {
+      payload.phoneNumber = payload.phone;
+    }
+
     const allowedFields = [
-      "name",
-      "phone",
+      "firstName",
+      "lastName",
+      "phoneNumber",
       "dob",
       "address",
       "city",
       "state",
       "country",
-      "bio"
+      "bio",
+      "sanskritKnowledge",
+      "occupation"
     ];
 
     allowedFields.forEach((field) => {
-      if (req.body[field] !== undefined) {
-        req.user[field] = req.body[field];
+      if (payload[field] !== undefined) {
+        req.user[field] = payload[field];
       }
     });
 

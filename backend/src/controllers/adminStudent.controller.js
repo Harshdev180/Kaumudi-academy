@@ -1,4 +1,5 @@
 import Student from "../models/Student.model.js";
+import bcrypt from "bcryptjs";
 import cloudinary from "../configs/cloudinary.js";
 import fs from "fs";
 
@@ -48,10 +49,12 @@ export const createStudentByAdmin = async (req, res) => {
     fs.unlinkSync(req.file.path);
   }
 
-  const student = await Student.create({
-    ...req.body,
-    image: imageData
-  });
+  const payload = { ...req.body, image: imageData };
+  if (payload.password) {
+    payload.password = await bcrypt.hash(payload.password, 10);
+  }
+
+  const student = await Student.create(payload);
 
   res.status(201).json({
     success: true,
@@ -86,7 +89,11 @@ export const updateStudentByAdmin = async (req, res) => {
     fs.unlinkSync(req.file.path);
   }
 
-  Object.assign(student, req.body);
+  const payload = { ...req.body };
+  if (payload.password) {
+    payload.password = await bcrypt.hash(payload.password, 10);
+  }
+  Object.assign(student, payload);
   await student.save();
 
   res.json({
