@@ -64,8 +64,8 @@ const Layout = () => {
                         aria-current={isActive ? "page" : undefined}
                         className={`text-sm tracking-wide transition-colors duration-200 ease-out focus:outline-none ${
                           isActive
-                            ? "text-[#d6b15c]"
-                            : "text-white hover:text-[#d6b15c]"
+                            ? "text-[#74271E] font-bold"
+                            : "text-white hover:text-[#74271E] hover:font-medium"
                         }`}
                       >
                         {label}

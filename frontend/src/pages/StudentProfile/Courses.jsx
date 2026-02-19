@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Search, Clock, Monitor, PlayCircle } from "lucide-react";
 import { getProfileEnrollments } from "../../lib/api";
 
@@ -8,6 +8,8 @@ const Courses = () => {
   const [search, setSearch] = useState("");
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [notification, setNotification] = useState(null);
+  const [error, setError] = useState("");
 
   const filters = ["ALL", "ACTIVE", "COMPLETED", "DROPPED"];
 

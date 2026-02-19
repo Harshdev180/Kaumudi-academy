@@ -26,6 +26,7 @@ const CourseManagement = () => {
     syllabus: "",
     duration: "",
     faculty: "",
+    level: "Beginner",
     mode: "ONLINE",
     price: "",
     status: "Draft",
@@ -54,6 +55,7 @@ const CourseManagement = () => {
       title: "Paninian Grammar Basics",
       description: "Foundation Course",
       faculty: "Acharya Rahul",
+      level: "Beginner",
       dur: "6 Months",
       mode: "ONLINE",
       price: 240,
@@ -65,6 +67,7 @@ const CourseManagement = () => {
       title: "Advanced Kavya Study",
       description: "Poetry Course",
       faculty: "Dr Meera",
+      level: "Advanced",
       dur: "4 Months",
       mode: "HYBRID",
       price: 350,
@@ -92,6 +95,7 @@ const CourseManagement = () => {
         title: course.title,
         description: course.description,
         faculty: course.faculty || "",
+        level: course.level || "Beginner",
         dur: course.duration,
         mode: course.mode,
         price: course.price,
@@ -149,6 +153,7 @@ const CourseManagement = () => {
       title: form.title,
       description: form.description,
       faculty: form.faculty,
+      level: form.level,
       dur: form.duration,
       mode: form.mode,
       price: form.price,
@@ -164,6 +169,7 @@ const CourseManagement = () => {
       payload.append("description", form.description);
       payload.append("duration", form.duration);
       payload.append("faculty", form.faculty);
+      payload.append("level", form.level);
       payload.append("mode", form.mode);
       payload.append("price", Number(form.price));
 
@@ -269,6 +275,9 @@ const CourseManagement = () => {
 
             <h3 className="font-bold text-[#6b1d14]">{course.title}</h3>
             <p className="text-sm text-[#856966]">Faculty: {course.faculty}</p>
+            <p className="text-xs text-[#6b1d14] bg-[#EFE3D5] inline-block px-3 py-1 rounded-full">
+              Level: {course.level}
+            </p>
 
             <div className="flex justify-between">
               <button
