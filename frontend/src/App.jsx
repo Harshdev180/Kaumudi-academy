@@ -100,31 +100,29 @@ function App() {
           }
         />
 
-        {/* ========= STUDENT DASHBOARD ========= */} 
-        <Route path="/student" element={<StudentLayout />}>
-          <Route index element={<StudentDashboard />} />
-          <Route path="overview" element={<StudentDashboard />} />
-          <Route path="courses" element={<StudentCourses />} />
-          <Route path="certifications" element={<Certifications />} />
-          <Route path="payments" element={<FeePurchase />} />
-          <Route path="settings" element={<Settings />} />
-        </Route>
-
-
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsConditions />} />
         <Route path="/cookies" element={<CookiePolicy />} />
       </Route>
-      
-      {/* NEW: Student Dashboard Routes (No Public Navbar/Footer) */}
-      {/* <Route path="/student" element={<StudentLayout />}>
+
+      {/* Student dashboard — show SITE Navbar only (no Footer) and protect routes */}
+      <Route
+        path="/student"
+        element={
+          <RequireAuth role="STUDENT">
+            <StudentLayout />
+          </RequireAuth>
+        }
+      >
         <Route index element={<StudentDashboard />} />
+        <Route path="overview" element={<StudentDashboard />} />
         <Route path="dashboard" element={<StudentDashboard />} />
         <Route path="courses" element={<StudentCourses />} />
         <Route path="certifications" element={<Certifications />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="payments" element={<FeePurchase />} />
         <Route path="settings" element={<Settings />} />
-      </Route> */}
+      </Route>
 
       {/* ========= AUTH ========= */}
       <Route path="/auth" element={<Sign />} />

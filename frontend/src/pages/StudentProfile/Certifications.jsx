@@ -24,7 +24,7 @@ const Certifications = () => {
   ];
 
   return (
-    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-12">
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-12 mt-6">
       
       {/* 1. HEADER SECTION */}
       <div className="flex flex-col md:flex-row justify-between items-end gap-6 px-2">

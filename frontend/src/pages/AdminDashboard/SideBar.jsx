@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuthHook";
-import { AnimatePresence, motion } from "framer-motion";
 
 function Sidebar({ collapsed, setCollapsed, isMobile }) {
   const location = useLocation();
