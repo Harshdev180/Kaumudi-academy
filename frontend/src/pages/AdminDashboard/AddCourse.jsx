@@ -24,7 +24,7 @@ const AddCourse = ({
         if (file) {
             const url = URL.createObjectURL(file);
 
-            // IMPORTANT FIX — image key same as CourseManagement
+            // IMPORTANT FIX: image key same as CourseManagement
             setForm({ ...form, imageFile: file, imagePreview: url });
         }
     };
@@ -97,7 +97,7 @@ const AddCourse = ({
                                     </div>
                                 )}
 
-                                <input type="file" hidden onChange={handleImage} />
+                                <input type="file" hidden accept="image/*" onChange={handleImage} />
                             </label>
                         </div>
 
@@ -115,6 +115,14 @@ const AddCourse = ({
                             value={form.description}
                             onChange={e => setForm({ ...form, description: e.target.value })}
                             className="w-full p-3 rounded-xl bg-[#EFE3D5] h-28 outline-none"
+                        />
+
+                        {/* SYLLABUS */}
+                        <textarea
+                            placeholder="Syllabus (optional)"
+                            value={form.syllabus || ""}
+                            onChange={e => setForm({ ...form, syllabus: e.target.value })}
+                            className="w-full p-3 rounded-xl bg-[#EFE3D5] h-24 outline-none"
                         />
 
                         {/* VIDEO */}
@@ -187,6 +195,8 @@ const AddCourse = ({
                         {/* PRICE + MODE */}
                         <div className="grid grid-cols-2 gap-3">
                             <input
+                                type="number"
+                                min="0"
                                 placeholder="Price"
                                 value={form.price}
                                 onChange={e => setForm({ ...form, price: e.target.value })}
@@ -214,7 +224,7 @@ const AddCourse = ({
 
                             <input
                                 placeholder="Languages (comma separated)"
-                                value={form.language}
+                                value={form.language || ""}
                                 onChange={e => setForm({ ...form, language: e.target.value })}
                                 className="p-3 rounded-xl bg-[#EFE3D5] outline-none"
                             />

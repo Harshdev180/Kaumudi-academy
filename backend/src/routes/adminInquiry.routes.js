@@ -11,19 +11,11 @@ import { roleMiddleware } from "../middlewares/role.middleware.js";
 
 const router = express.Router();
 
-<<<<<<< HEAD
-router.use(authMiddleware, roleMiddleware("ADMIN", "SUPER_ADMIN"));
-=======
 /**
  * 🔐 Admin Protected Routes
  * Only ADMIN & SUPER_ADMIN can access
  */
-
-router.use(
-  authMiddleware,
-  roleMiddleware("ADMIN")
-);
->>>>>>> 9a3e0c6e7d138eb193aa122457f10197a9d8b415
+router.use(authMiddleware, roleMiddleware("ADMIN", "SUPER_ADMIN"));
 
 router.get("/admin/inquiries", getAllInquiries);
 router.get("/admin/inquiries/:id", getInquiryById);

@@ -4,9 +4,7 @@ import {
   MdSearch,
   MdAdd,
   MdEdit,
-  MdDelete,
-  MdAutoStories,
-  MdTranslate
+  MdDelete
 } from "react-icons/md";
 
 import AddCourse from "./AddCourse";
@@ -17,6 +15,25 @@ import {
   deleteCourse,
   toggleCourseStatus
 } from "../../lib/api";
+
+const toDateInputValue = (value) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const offset = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 10);
+};
+
+const parseLanguageInput = (value) => {
+  if (Array.isArray(value)) {
+    return value.map((lang) => String(lang).trim()).filter(Boolean);
+  }
+  if (!value) return [];
+  return String(value)
+    .split(",")
+    .map((lang) => lang.trim())
+    .filter(Boolean);
+};
 
 const CourseManagement = () => {
 
@@ -36,7 +53,9 @@ const CourseManagement = () => {
     imageFile: null,
     imagePreview: "",
     video1: "",
-    video2: ""
+    video2: "",
+    videoFile: null,
+    videoName: ""
   };
 
   /* ================= STATE ================= */
@@ -47,31 +66,7 @@ const CourseManagement = () => {
   const [savingCourse, setSavingCourse] = useState(false);
   const [error, setError] = useState("");
 
-  /* ⭐ STATIC COURSES WAPAS */
-  const [courses, setCourses] = useState([
-    {
-      id: 1,
-      title: "Paninian Grammar Basics",
-      description: "Foundation Course",
-      faculty: "Acharya Rahul",
-      dur: "6 Months",
-      mode: "ONLINE",
-      price: 240,
-      status: "Published",
-      icon: <MdAutoStories />
-    },
-    {
-      id: 2,
-      title: "Advanced Kavya Study",
-      description: "Poetry Course",
-      faculty: "Dr Meera",
-      dur: "4 Months",
-      mode: "HYBRID",
-      price: 350,
-      status: "Draft",
-      icon: <MdAutoStories />
-    }
-  ]);
+  const [courses, setCourses] = useState([]);
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -79,30 +74,43 @@ const CourseManagement = () => {
 
   /* ================= FETCH COURSES ================= */
 
+  const mapCourse = (course) => {
+    const languageValue = Array.isArray(course?.language)
+      ? course.language.join(", ")
+      : course?.language || "";
+
+    return {
+      id: course?._id || course?.id,
+      title: course?.title || "Untitled Course",
+      description: course?.description || "",
+      syllabus: course?.syllabus || "",
+      duration: course?.duration || "",
+      faculty: course?.instructor || course?.faculty || "",
+      mode: course?.mode || "ONLINE",
+      price: course?.price ?? "",
+      status: course?.status === "ACTIVE" ? "Published" : "Draft",
+      language: languageValue,
+      startDate: toDateInputValue(course?.startDate),
+      endDate: toDateInputValue(course?.endDate),
+      image: course?.image?.url || course?.image || "",
+      imagePreview: course?.image?.url || course?.image || ""
+    };
+  };
+
   const fetchCourses = async () => {
     try {
+      setLoading(true);
+      setError("");
       const response = await getAllCoursesForAdmin();
       const payload = response?.data ?? response;
       const data = Array.isArray(payload) ? payload : payload?.data || [];
-
-      if (!data.length) return; // static courses safe
-
-      const formatted = data.map((course, index) => ({
-        id: course._id || index,
-        title: course.title,
-        description: course.description,
-        faculty: course.faculty || "",
-        dur: course.duration,
-        mode: course.mode,
-        price: course.price,
-        status: course.status === "ACTIVE" ? "Published" : "Draft",
-        icon: <MdAutoStories />
-      }));
-
+      const formatted = Array.isArray(data) ? data.map(mapCourse) : [];
       setCourses(formatted);
 
     } catch (err) {
-      console.log("API fail → static courses used");
+      console.error("Failed to load courses:", err);
+      setError("Failed to load courses. Please try again.");
+      setCourses([]);
     } finally {
       setLoading(false);
     }
@@ -115,11 +123,13 @@ const CourseManagement = () => {
   /* ================= FILTER ================= */
 
   const filteredCourses = useMemo(() => {
-    return courses.filter(
-      (c) =>
-        c.title.toLowerCase().includes(search.toLowerCase()) &&
-        (filter === "All" || c.status === filter)
-    );
+    const term = search.trim().toLowerCase();
+    return courses.filter((course) => {
+      const title = (course.title || "").toLowerCase();
+      const matchSearch = !term || title.includes(term);
+      const matchFilter = filter === "All" || course.status === filter;
+      return matchSearch && matchFilter;
+    });
   }, [search, filter, courses]);
 
   /* ================= ACTIONS ================= */
@@ -127,6 +137,7 @@ const CourseManagement = () => {
   const openAdd = () => {
     setEditId(null);
     setForm(initialForm);
+    setError("");
     setDrawerOpen(true);
   };
 
@@ -135,77 +146,118 @@ const CourseManagement = () => {
     setForm({
       ...initialForm,
       ...course,
-      duration: course.dur
+      imageFile: null,
+      imagePreview: course.image || course.imagePreview || ""
     });
+    setError("");
     setDrawerOpen(true);
   };
 
-  /* ⭐ SAVE FIXED */
+  const buildCoursePayload = (data) => {
+    const payload = new FormData();
+    const languages = parseLanguageInput(data.language);
+    payload.append("title", data.title.trim());
+    payload.append("description", data.description.trim());
+    payload.append("syllabus", data.syllabus?.trim() || "");
+    payload.append("duration", data.duration.trim());
+    payload.append("mode", data.mode);
+    payload.append("price", String(Number(data.price)));
+    payload.append("language", JSON.stringify(languages));
+    payload.append("startDate", data.startDate);
+    payload.append("endDate", data.endDate);
+    if (data.imageFile) {
+      payload.append("image", data.imageFile);
+    }
+    return payload;
+  };
+
+  const validateCourse = (data, isEdit) => {
+    if (!data.title.trim()) return "Course title is required.";
+    if (data.title.trim().length < 3) return "Course title must be at least 3 characters.";
+    if (!data.description.trim()) return "Description is required.";
+    if (data.description.trim().length < 10) return "Description must be at least 10 characters.";
+    if (!data.duration.trim()) return "Duration is required.";
+    if (!data.mode) return "Course mode is required.";
+    if (data.price === "" || data.price === null) return "Price is required.";
+    const priceValue = Number(data.price);
+    if (Number.isNaN(priceValue)) return "Valid price is required.";
+    if (!data.startDate) return "Start date is required.";
+    if (!data.endDate) return "End date is required.";
+    if (new Date(data.endDate) <= new Date(data.startDate)) {
+      return "End date must be after start date.";
+    }
+    const languages = parseLanguageInput(data.language);
+    if (!languages.length) return "At least one language is required.";
+    if (!isEdit && !data.imageFile && !data.image) {
+      return "Course thumbnail image is required.";
+    }
+    return null;
+  };
+
   const saveCourse = async (e) => {
     e.preventDefault();
-
-    const newCourse = {
-      id: editId || Date.now(),
-      title: form.title,
-      description: form.description,
-      faculty: form.faculty,
-      dur: form.duration,
-      mode: form.mode,
-      price: form.price,
-      status: "Draft",
-      icon: <MdTranslate />
-    };
+    const validationError = validateCourse(form, !!editId);
+    if (validationError) {
+      alert(validationError);
+      return;
+    }
 
     try {
       setSavingCourse(true);
-
-      const payload = new FormData();
-      payload.append("title", form.title);
-      payload.append("description", form.description);
-      payload.append("duration", form.duration);
-      payload.append("faculty", form.faculty);
-      payload.append("mode", form.mode);
-      payload.append("price", Number(form.price));
-
-      if (editId) await updateCourse(editId, payload);
-      else await createCourse(payload);
-
-    } catch {
-      console.log("API fail but UI updated");
+      const payload = buildCoursePayload(form);
+      if (editId) {
+        await updateCourse(editId, payload);
+      } else {
+        await createCourse(payload);
+      }
+      await fetchCourses();
+      setDrawerOpen(false);
+      setEditId(null);
+      setForm(initialForm);
+    } catch (err) {
+      console.error("Failed to save course:", err);
+      alert(err?.response?.data?.message || "Failed to save course.");
+    } finally {
+      setSavingCourse(false);
     }
+  };
 
-    /* ⭐ ALWAYS UPDATE UI */
-    if (editId) {
+  const toggleStatus = async (id) => {
+    try {
+      const response = await toggleCourseStatus(id);
+      const nextStatus = response?.status || response?.data?.status;
       setCourses(prev =>
-        prev.map(c => (c.id === editId ? newCourse : c))
+        prev.map(course =>
+          course.id === id
+            ? {
+              ...course,
+              status: nextStatus
+                ? (nextStatus === "ACTIVE" ? "Published" : "Draft")
+                : (course.status === "Published" ? "Draft" : "Published")
+            }
+            : course
+        )
       );
-    } else {
-      setCourses(prev => [newCourse, ...prev]);
+    } catch (err) {
+      console.error("Failed to update course status:", err);
+      alert("Failed to update course status.");
     }
-
-    setDrawerOpen(false);
-    setEditId(null);
-    setForm(initialForm);
-    setSavingCourse(false);
   };
 
-  const toggleStatus = (id) => {
-    setCourses(prev =>
-      prev.map(c =>
-        c.id === id
-          ? { ...c, status: c.status === "Published" ? "Draft" : "Published" }
-          : c
-      )
-    );
-  };
-
-  const deleteCourseItem = (id) => {
-    setCourses(prev => prev.filter(c => c.id !== id));
+  const deleteCourseItem = async (id) => {
+    if (!window.confirm("Delete this course?")) return;
+    try {
+      await deleteCourse(id);
+      setCourses(prev => prev.filter(course => course.id !== id));
+    } catch (err) {
+      console.error("Failed to delete course:", err);
+      alert("Failed to delete course.");
+    }
   };
 
   /* ================= UI ================= */
 
-  if (loading) {
+  if (loading && courses.length === 0) {
     return (
       <div className="flex justify-center py-40">
         <motion.div
@@ -261,6 +313,13 @@ const CourseManagement = () => {
         </div>
 
       </div>
+
+      {error && (
+        <div className="text-sm text-red-600">{error}</div>
+      )}
+      {!error && filteredCourses.length === 0 && (
+        <div className="text-sm text-[#74271E]/70">No courses found.</div>
+      )}
 
       {/* GRID */}
       <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">

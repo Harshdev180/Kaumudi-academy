@@ -11,13 +11,11 @@ import studentRoutes from "./routes/student.routes.js"
 import staffRoutes from "./routes/staff.routes.js";
 import adminStudentRoutes from "./routes/adminStudent.routes.js";
 import adminInquiryRoutes from "./routes/adminInquiry.routes.js";
-<<<<<<< HEAD
+import inquiryRoutes from "./routes/inquiry.routes.js";
 import profileRoutes from "./routes/profile.routes.js";
+import notificationRoutes from "./routes/notification.routes.js";
 import { config } from "./configs/env.js";
 
-=======
-import notificationRoutes from "./routes/notification.routes.js";
->>>>>>> 9a3e0c6e7d138eb193aa122457f10197a9d8b415
 
 
 // import mongoSanitize from "express-mongo-sanitize";
@@ -57,12 +55,8 @@ app.use("/api", staffRoutes);
 app.use("/api", adminStudentRoutes);
 app.use("/api", inquiryRoutes);
 app.use("/api", adminInquiryRoutes);
-<<<<<<< HEAD
 app.use("/api/profile", profileRoutes);
-
-=======
 app.use("/api", notificationRoutes);
->>>>>>> 9a3e0c6e7d138eb193aa122457f10197a9d8b415
 
 app.use("/health",(_,res)=>{
   res.status(200).json({
