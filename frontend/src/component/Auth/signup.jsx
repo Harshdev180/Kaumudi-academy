@@ -19,7 +19,7 @@ export default function Signup() {
     e.preventDefault();
     setError("");
     setSuccess("");
-    if (!firstName || !email || !password || !confirm) {
+    if (!firstName || !lastName || !email || !password || !confirm) {
       setError("Please fill all required fields");
       return;
     }
@@ -47,7 +47,10 @@ export default function Signup() {
       setSuccess("Account created successfully. Redirecting to login...");
       setTimeout(() => navigate("/login"), 1200);
     } catch (err) {
-      const msg = err?.response?.data?.message || "Registration failed. Please try again.";
+      const msg =
+        err?.response?.data?.errors?.[0]?.message ||
+        err?.response?.data?.message ||
+        "Registration failed. Please try again.";
       setError(msg);
     } finally {
       setLoading(false);

@@ -143,19 +143,54 @@ const AuthPage = () => {
             : "/profile";
         navigate(intended || fallback);
       } else {
+        if (!formData.firstName.trim() || !formData.lastName.trim() || !formData.email.trim()) {
+          alert("Please fill first name, last name, and email.");
+          setLoading(false);
+          return;
+        }
+        if (formData.password.length < 8) {
+          alert("Password must be at least 8 characters.");
+          setLoading(false);
+          return;
+        }
+        if (!/[A-Za-z]/.test(formData.password)) {
+          alert("Password must contain at least one letter.");
+          setLoading(false);
+          return;
+        }
+        if (!/\d/.test(formData.password)) {
+          alert("Password must contain at least one number.");
+          setLoading(false);
+          return;
+        }
+        if (formData.phoneNumber?.trim() && !/^[6-9]\d{9}$/.test(formData.phoneNumber.trim())) {
+          alert("Phone number must be a valid 10-digit Indian number.");
+          setLoading(false);
+          return;
+        }
+        if (formData.address?.trim() && formData.address.trim().length < 5) {
+          alert("Address must be at least 5 characters.");
+          setLoading(false);
+          return;
+        }
         if (formData.password !== formData.confirmPassword) {
           alert("Passwords do not match!");
           setLoading(false);
           return;
         }
-        await api.post("/auth/student/register", {
+        const payload = {
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
-          password: formData.password,
-          phoneNumber: formData.phoneNumber,
-          address: formData.address
-        });
+          password: formData.password
+        };
+        if (formData.phoneNumber?.trim()) {
+          payload.phoneNumber = formData.phoneNumber.trim();
+        }
+        if (formData.address?.trim()) {
+          payload.address = formData.address.trim();
+        }
+        await api.post("/auth/student/register", payload);
         setFormData(initialFormData);
         setIsLogin(true);
         alert("Registration Successful! Please Login.");
