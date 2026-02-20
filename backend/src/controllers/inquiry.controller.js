@@ -12,6 +12,14 @@ export const submitInquiry = async (req, res, next) => {
 
     await sendInquiryMailToAdmin(inquiry);
 
+    await Notification.create({
+      title: "New Inquiry",
+      message: `Asked about ${inquiry.subject || "course details"}`,
+      type: "INQUIRY",
+      recipientRole: "ADMIN",
+      actionUrl: "/admin/inquiries"
+    });
+
     res.status(201).json({
       success: true,
       message: "Inquiry submitted successfully"
