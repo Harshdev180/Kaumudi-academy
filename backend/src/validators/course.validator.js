@@ -61,6 +61,15 @@ export const createCourseSchema = Joi.object({
     .valid("ONLINE", "OFFLINE")
     .required(),
 
+  level: Joi.string()
+    .valid("Prathama (Beginner)", "Madhyama (Intermediate)", "Kovida (Advanced)")
+    .optional(),
+
+  instructor: Joi.string()
+    .trim()
+    .allow("", null)
+    .optional(),
+
   price: Joi.number()
     .min(0)
     .required(),
@@ -79,6 +88,8 @@ export const updateCourseSchema = Joi.object({
   duration: Joi.string().trim(),
 
   mode: Joi.string().valid("ONLINE", "OFFLINE"),
+  level: Joi.string().valid("Prathama (Beginner)", "Madhyama (Intermediate)", "Kovida (Advanced)"),
+  instructor: Joi.string().trim().allow("", null),
   price: Joi.number().min(0),
 
   language: languageSchema,

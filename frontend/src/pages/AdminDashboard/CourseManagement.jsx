@@ -43,7 +43,7 @@ const CourseManagement = () => {
     syllabus: "",
     duration: "",
     faculty: "",
-    level: "Beginner",
+    level: "Prathama (Beginner)",
     mode: "ONLINE",
     price: "",
     status: "Draft",
@@ -67,37 +67,7 @@ const CourseManagement = () => {
   const [savingCourse, setSavingCourse] = useState(false);
   const [error, setError] = useState("");
 
-<<<<<<< HEAD
   const [courses, setCourses] = useState([]);
-=======
-  /* ⭐ STATIC COURSES WAPAS */
-  const [courses, setCourses] = useState([
-    {
-      id: 1,
-      title: "Paninian Grammar Basics",
-      description: "Foundation Course",
-      faculty: "Acharya Rahul",
-      level: "Beginner",
-      dur: "6 Months",
-      mode: "ONLINE",
-      price: 240,
-      status: "Published",
-      icon: <MdAutoStories />
-    },
-    {
-      id: 2,
-      title: "Advanced Kavya Study",
-      description: "Poetry Course",
-      faculty: "Dr Meera",
-      level: "Advanced",
-      dur: "4 Months",
-      mode: "HYBRID",
-      price: 350,
-      status: "Draft",
-      icon: <MdAutoStories />
-    }
-  ]);
->>>>>>> 179226e4be5d43c1de456ab3423874f34e9aee25
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -117,6 +87,7 @@ const CourseManagement = () => {
       syllabus: course?.syllabus || "",
       duration: course?.duration || "",
       faculty: course?.instructor || course?.faculty || "",
+      level: course?.level || "Prathama (Beginner)",
       mode: course?.mode || "ONLINE",
       price: course?.price ?? "",
       status: course?.status === "ACTIVE" ? "Published" : "Draft",
@@ -135,26 +106,7 @@ const CourseManagement = () => {
       const response = await getAllCoursesForAdmin();
       const payload = response?.data ?? response;
       const data = Array.isArray(payload) ? payload : payload?.data || [];
-<<<<<<< HEAD
       const formatted = Array.isArray(data) ? data.map(mapCourse) : [];
-=======
-
-      if (!data.length) return; // static courses safe
-
-      const formatted = data.map((course, index) => ({
-        id: course._id || index,
-        title: course.title,
-        description: course.description,
-        faculty: course.faculty || "",
-        level: course.level || "Beginner",
-        dur: course.duration,
-        mode: course.mode,
-        price: course.price,
-        status: course.status === "ACTIVE" ? "Published" : "Draft",
-        icon: <MdAutoStories />
-      }));
-
->>>>>>> 179226e4be5d43c1de456ab3423874f34e9aee25
       setCourses(formatted);
 
     } catch (err) {
@@ -210,6 +162,10 @@ const CourseManagement = () => {
     payload.append("description", data.description.trim());
     payload.append("syllabus", data.syllabus?.trim() || "");
     payload.append("duration", data.duration.trim());
+    if (data.faculty?.trim()) {
+      payload.append("instructor", data.faculty.trim());
+    }
+    payload.append("level", data.level || "Prathama (Beginner)");
     payload.append("mode", data.mode);
     payload.append("price", String(Number(data.price)));
     payload.append("language", JSON.stringify(languages));
@@ -227,6 +183,7 @@ const CourseManagement = () => {
     if (!data.description.trim()) return "Description is required.";
     if (data.description.trim().length < 10) return "Description must be at least 10 characters.";
     if (!data.duration.trim()) return "Duration is required.";
+    if (!data.level) return "Course level is required.";
     if (!data.mode) return "Course mode is required.";
     if (data.price === "" || data.price === null) return "Price is required.";
     const priceValue = Number(data.price);
@@ -246,7 +203,6 @@ const CourseManagement = () => {
 
   const saveCourse = async (e) => {
     e.preventDefault();
-<<<<<<< HEAD
     const validationError = validateCourse(form, !!editId);
     if (validationError) {
       alert(validationError);
@@ -270,39 +226,6 @@ const CourseManagement = () => {
       alert(err?.response?.data?.message || "Failed to save course.");
     } finally {
       setSavingCourse(false);
-=======
-
-    const newCourse = {
-      id: editId || Date.now(),
-      title: form.title,
-      description: form.description,
-      faculty: form.faculty,
-      level: form.level,
-      dur: form.duration,
-      mode: form.mode,
-      price: form.price,
-      status: "Draft",
-      icon: <MdTranslate />
-    };
-
-    try {
-      setSavingCourse(true);
-
-      const payload = new FormData();
-      payload.append("title", form.title);
-      payload.append("description", form.description);
-      payload.append("duration", form.duration);
-      payload.append("faculty", form.faculty);
-      payload.append("level", form.level);
-      payload.append("mode", form.mode);
-      payload.append("price", Number(form.price));
-
-      if (editId) await updateCourse(editId, payload);
-      else await createCourse(payload);
-
-    } catch {
-      console.log("API fail but UI updated");
->>>>>>> 179226e4be5d43c1de456ab3423874f34e9aee25
     }
   };
 

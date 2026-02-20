@@ -11,19 +11,10 @@ import studentRoutes from "./routes/student.routes.js";
 import staffRoutes from "./routes/staff.routes.js";
 import adminStudentRoutes from "./routes/adminStudent.routes.js";
 import adminInquiryRoutes from "./routes/adminInquiry.routes.js";
-<<<<<<< HEAD
 import inquiryRoutes from "./routes/inquiry.routes.js";
-=======
->>>>>>> 179226e4be5d43c1de456ab3423874f34e9aee25
 import profileRoutes from "./routes/profile.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
 import { config } from "./configs/env.js";
-<<<<<<< HEAD
-
-
-=======
-import notificationRoutes from "./routes/notification.routes.js";
->>>>>>> 179226e4be5d43c1de456ab3423874f34e9aee25
 
 // import mongoSanitize from "express-mongo-sanitize";
 // import xss from "xss-clean";
@@ -62,10 +53,6 @@ app.use("/api", studentRoutes);
 app.use("/api", staffRoutes);
 app.use("/api", adminStudentRoutes);
 app.use("/api", adminInquiryRoutes);
-<<<<<<< HEAD
-=======
-app.use("/api", adminInquiryRoutes);
->>>>>>> 179226e4be5d43c1de456ab3423874f34e9aee25
 app.use("/api/profile", profileRoutes);
 app.use("/api", notificationRoutes);
 
