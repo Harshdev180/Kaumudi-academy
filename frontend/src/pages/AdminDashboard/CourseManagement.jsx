@@ -43,6 +43,7 @@ const CourseManagement = () => {
     syllabus: "",
     duration: "",
     faculty: "",
+    level: "Beginner",
     mode: "ONLINE",
     price: "",
     status: "Draft",
@@ -66,7 +67,37 @@ const CourseManagement = () => {
   const [savingCourse, setSavingCourse] = useState(false);
   const [error, setError] = useState("");
 
+<<<<<<< HEAD
   const [courses, setCourses] = useState([]);
+=======
+  /* ⭐ STATIC COURSES WAPAS */
+  const [courses, setCourses] = useState([
+    {
+      id: 1,
+      title: "Paninian Grammar Basics",
+      description: "Foundation Course",
+      faculty: "Acharya Rahul",
+      level: "Beginner",
+      dur: "6 Months",
+      mode: "ONLINE",
+      price: 240,
+      status: "Published",
+      icon: <MdAutoStories />
+    },
+    {
+      id: 2,
+      title: "Advanced Kavya Study",
+      description: "Poetry Course",
+      faculty: "Dr Meera",
+      level: "Advanced",
+      dur: "4 Months",
+      mode: "HYBRID",
+      price: 350,
+      status: "Draft",
+      icon: <MdAutoStories />
+    }
+  ]);
+>>>>>>> 179226e4be5d43c1de456ab3423874f34e9aee25
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -104,7 +135,26 @@ const CourseManagement = () => {
       const response = await getAllCoursesForAdmin();
       const payload = response?.data ?? response;
       const data = Array.isArray(payload) ? payload : payload?.data || [];
+<<<<<<< HEAD
       const formatted = Array.isArray(data) ? data.map(mapCourse) : [];
+=======
+
+      if (!data.length) return; // static courses safe
+
+      const formatted = data.map((course, index) => ({
+        id: course._id || index,
+        title: course.title,
+        description: course.description,
+        faculty: course.faculty || "",
+        level: course.level || "Beginner",
+        dur: course.duration,
+        mode: course.mode,
+        price: course.price,
+        status: course.status === "ACTIVE" ? "Published" : "Draft",
+        icon: <MdAutoStories />
+      }));
+
+>>>>>>> 179226e4be5d43c1de456ab3423874f34e9aee25
       setCourses(formatted);
 
     } catch (err) {
@@ -196,6 +246,7 @@ const CourseManagement = () => {
 
   const saveCourse = async (e) => {
     e.preventDefault();
+<<<<<<< HEAD
     const validationError = validateCourse(form, !!editId);
     if (validationError) {
       alert(validationError);
@@ -219,6 +270,39 @@ const CourseManagement = () => {
       alert(err?.response?.data?.message || "Failed to save course.");
     } finally {
       setSavingCourse(false);
+=======
+
+    const newCourse = {
+      id: editId || Date.now(),
+      title: form.title,
+      description: form.description,
+      faculty: form.faculty,
+      level: form.level,
+      dur: form.duration,
+      mode: form.mode,
+      price: form.price,
+      status: "Draft",
+      icon: <MdTranslate />
+    };
+
+    try {
+      setSavingCourse(true);
+
+      const payload = new FormData();
+      payload.append("title", form.title);
+      payload.append("description", form.description);
+      payload.append("duration", form.duration);
+      payload.append("faculty", form.faculty);
+      payload.append("level", form.level);
+      payload.append("mode", form.mode);
+      payload.append("price", Number(form.price));
+
+      if (editId) await updateCourse(editId, payload);
+      else await createCourse(payload);
+
+    } catch {
+      console.log("API fail but UI updated");
+>>>>>>> 179226e4be5d43c1de456ab3423874f34e9aee25
     }
   };
 
@@ -328,6 +412,9 @@ const CourseManagement = () => {
 
             <h3 className="font-bold text-[#6b1d14]">{course.title}</h3>
             <p className="text-sm text-[#856966]">Faculty: {course.faculty}</p>
+            <p className="text-xs text-[#6b1d14] bg-[#EFE3D5] inline-block px-3 py-1 rounded-full">
+              Level: {course.level}
+            </p>
 
             <div className="flex justify-between">
               <button

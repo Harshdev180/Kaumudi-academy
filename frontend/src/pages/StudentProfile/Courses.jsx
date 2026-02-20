@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Search, Clock, Monitor, PlayCircle } from "lucide-react";
 import { getProfileEnrollments } from "../../lib/api";
 
@@ -8,6 +8,8 @@ const Courses = () => {
   const [search, setSearch] = useState("");
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [notification, setNotification] = useState(null);
+  const [error, setError] = useState("");
 
   const filters = ["ALL", "ACTIVE", "COMPLETED", "DROPPED"];
 
@@ -28,8 +30,7 @@ const Courses = () => {
               mode: item?.course?.mode || "",
               level: item?.course?.level || "",
               status: item?.status || "ACTIVE",
-              progress:
-                typeof item?.progress === "number" ? item.progress : 0,
+              progress: typeof item?.progress === "number" ? item.progress : 0,
               imageUrl: item?.course?.image?.url || "",
               startDate: item?.course?.startDate,
               endDate: item?.course?.endDate,
@@ -72,8 +73,96 @@ const Courses = () => {
     });
   };
 
+  useEffect(() => {
+    const fetchEnrollments = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const response = await getMyEnrollments();
+        const payload = response?.data ?? response;
+        const list = Array.isArray(payload) ? payload : payload?.data || [];
+
+        const mapped = list.map((en) => {
+          const c = en.course || en;
+          return {
+            id: c._id || c.id || en.id,
+            title: c.title || en.courseTitle || "Untitled Course",
+            category: c.category || "General",
+            instructor: c.instructor || en.instructor || "Faculty",
+            duration: c.duration || "",
+            students: c.enrolledCount || en.students || "—",
+            rating: c.rating || 4.8,
+            progress: en.progress ?? c.progress ?? 0,
+            image: c.image?.url ? `url(${c.image.url})` : null,
+            raw: en,
+          };
+        });
+
+        setCourses(mapped.length ? mapped : staticFallback);
+        setNotification({
+          type: "success",
+          message: `Loaded ${mapped.length || staticFallback.length} courses`,
+        });
+        setTimeout(() => setNotification(null), 2500);
+      } catch (err) {
+        console.error("Failed to load enrollments:", err);
+        setError("Unable to load your courses right now.");
+        setCourses(staticFallback);
+        setNotification({
+          type: "warning",
+          message: "Showing fallback courses",
+        });
+        setTimeout(() => setNotification(null), 3000);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEnrollments();
+  }, []);
+
+  const filtered = useMemo(() => {
+    return courses.filter((c) => {
+      const matchesCat = activeFilter === "All" || c.category === activeFilter;
+      const q = search.trim().toLowerCase();
+      const matchesSearch =
+        !q ||
+        c.title.toLowerCase().includes(q) ||
+        (c.instructor || "").toLowerCase().includes(q);
+      return matchesCat && matchesSearch;
+    });
+  }, [courses, activeFilter, search]);
+
+  const goToCourse = (course) => {
+    const id =
+      course.id ||
+      course.raw?.course?._id ||
+      course.raw?.courseId ||
+      "panini-01";
+    setNotification({ type: "info", message: "Opening course…" });
+    setTimeout(() => setNotification(null), 1500);
+    navigate(`/coursedetail/${id}`, { state: { course } });
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-6 space-y-8 mt-6">
+      <AnimatePresence>
+        {notification && (
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 ${
+              notification.type === "success"
+                ? "bg-green-500"
+                : notification.type === "warning"
+                  ? "bg-yellow-500"
+                  : "bg-[#74271E]"
+            } text-white`}
+          >
+            <span className="text-sm font-medium">{notification.message}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* Search & Filter Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="relative w-full md:w-96">
@@ -119,97 +208,138 @@ const Courses = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredCourses.map((course) => (
-          <motion.div
-            key={course.id}
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all border border-black/5 flex flex-col group"
-          >
-            {/* Course Image/Hero Section */}
-            <div className="h-44 relative flex items-center justify-center p-6 text-center bg-[#2a1b0a] overflow-hidden">
-              {course.imageUrl && (
-                <img
-                  src={course.imageUrl}
-                  alt={course.title}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-              )}
-              <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors" />
-              <p className="relative z-10 text-[#c9a050] font-serif text-sm border-b border-[#c9a050]/30 pb-1">
-                {course.title}
-              </p>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="absolute bottom-4 right-4 bg-white/20 backdrop-blur-md p-2 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
-              >
-                <PlayCircle size={24} />
-              </motion.button>
-            </div>
-
-            {/* Course Details */}
-            <div className="p-6 flex-1 flex flex-col">
-              <div className="flex justify-between items-start mb-2">
-                <span className="text-[10px] font-bold text-[#c9a050] uppercase tracking-widest bg-[#c9a050]/10 px-2 py-1 rounded">
-                  {course.category}
-                </span>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
-                  {course.status.charAt(0) + course.status.slice(1).toLowerCase()}
-                </span>
-              </div>
-
-              <h3 className="font-bold text-lg text-gray-800 mb-1 leading-snug">
-                {course.title}
-              </h3>
-              <p className="text-xs text-gray-400 mb-4">
-                By {course.instructor}
-              </p>
-
-              <div className="flex flex-col gap-2 text-gray-500 text-[11px] font-medium mb-6">
-                <div className="flex items-center gap-2">
-                  <Clock size={14} />
-                  <span>{course.duration || "Duration TBA"}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Monitor size={14} />
-                  <span>{course.mode || "Mode TBA"}</span>
-                </div>
-                <div className="text-[10px] text-gray-400">
-                  {formatDate(course.startDate)} - {formatDate(course.endDate)}
-                </div>
-              </div>
-
-              {/* Progress Section (Always visible as they are enrolled) */}
-              <div className="mt-auto">
-                <div className="space-y-2">
-                  <div className="flex justify-between text-[10px] font-bold text-gray-500">
-                    <span>Progress: {course.progress}%</span>
-                  </div>
-                  <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      whileInView={{ width: `${course.progress}%` }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.8, ease: "easeOut" }}
-                      className="bg-[#74271E] h-full rounded-full"
-                    />
-                  </div>
+            <motion.div
+              key={course.id}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all border border-black/5 flex flex-col group"
+            >
+              {/* Course Image/Hero Section */}
+              <div className="h-44 relative flex items-center justify-center p-6 text-center bg-[#2a1b0a] overflow-hidden">
+                {course.imageUrl && (
+                  <img
+                    src={course.imageUrl}
+                    alt={course.title}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                )}
+                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors" />
+                <p className="relative z-10 text-[#c9a050] font-serif text-sm border-b border-[#c9a050]/30 pb-1">
+                  {course.title}
+                </p>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="absolute bottom-4 right-4 bg-white/20 backdrop-blur-md p-2 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors" />
+                  <p className="relative z-10 text-[#c9a050] font-serif text-sm border-b border-[#c9a050]/30 pb-1">
+                    {course.title}
+                  </p>
                   <motion.button
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full mt-4 bg-[#74271E] text-white py-3 rounded-xl font-bold text-sm hover:bg-[#5a1e17] transition-all"
+                    onClick={() => goToCourse(course)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="absolute bottom-4 right-4 bg-white/20 backdrop-blur-md p-2 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
                   >
-                    {course.progress > 0
-                      ? "Continue Learning"
-                      : "Start Learning"}
+                    <PlayCircle size={24} />
                   </motion.button>
+                </motion.div>
+              </div>
+
+              {/* Course Details */}
+              <div className="p-6 flex-1 flex flex-col">
+                <div className="flex justify-between items-start mb-2">
+                  <span className="text-[10px] font-bold text-[#c9a050] uppercase tracking-widest bg-[#c9a050]/10 px-2 py-1 rounded">
+                    {course.category}
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                    {course.status.charAt(0) +
+                      course.status.slice(1).toLowerCase()}
+                  </span>
+                </div>
+
+                <h3 className="font-bold text-lg text-gray-800 mb-1 leading-snug">
+                  {course.title}
+                </h3>
+                <p className="text-xs text-gray-400 mb-4">
+                  By {course.instructor}
+                </p>
+
+                <div className="flex flex-col gap-2 text-gray-500 text-[11px] font-medium mb-6">
+                  <div className="flex items-center gap-2">
+                    <Clock size={14} />
+                    <span>{course.duration || "Duration TBA"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Monitor size={14} />
+                    <span>{course.mode || "Mode TBA"}</span>
+                  </div>
+                  <div className="text-[10px] text-gray-400">
+                    {formatDate(course.startDate)} -{" "}
+                    {formatDate(course.endDate)}
+                  </div>
+                </div>
+
+                {/* Progress Section (Always visible as they are enrolled) */}
+                <div className="mt-auto">
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-[10px] font-bold text-gray-500">
+                      <span>Progress: {course.progress}%</span>
+                    </div>
+                  </div>
+
+                  <h3 className="font-bold text-lg text-gray-800 mb-1 leading-snug">
+                    {course.title}
+                  </h3>
+                  <p className="text-xs text-gray-400 mb-4">
+                    By {course.instructor}
+                  </p>
+
+                  <div className="flex items-center gap-4 text-gray-500 text-[11px] font-medium mb-6">
+                    <div className="flex items-center gap-1">
+                      <Clock size={14} />
+                      <span>{course.duration}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Users size={14} />
+                      <span>{course.students} Students</span>
+                    </div>
+                  </div>
+
+                  {/* Progress Section (Always visible as they are enrolled) */}
+                  <div className="mt-auto">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-[10px] font-bold text-gray-500">
+                        <span>Progress: {course.progress}%</span>
+                      </div>
+                      <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${course.progress}%` }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.8, ease: "easeOut" }}
+                          className="bg-[#74271E] h-full rounded-full"
+                        />
+                      </div>
+                      <motion.button
+                        onClick={() => goToCourse(course)}
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="w-full mt-4 bg-[#74271E] text-white py-3 rounded-xl font-bold text-sm hover:bg-[#5a1e17] transition-all"
+                      >
+                        {course.progress > 0
+                          ? "Continue Learning"
+                          : "Start Learning"}
+                      </motion.button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          ))}
         </div>
       )}
     </div>

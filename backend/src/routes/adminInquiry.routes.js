@@ -3,7 +3,7 @@ import {
   getAllInquiries,
   getInquiryById,
   updateInquiryStatus,
-  deleteInquiry
+  deleteInquiry,
 } from "../controllers/adminInquiry.controller.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
@@ -15,7 +15,8 @@ const router = express.Router();
  * 🔐 Admin Protected Routes
  * Only ADMIN & SUPER_ADMIN can access
  */
-router.use(authMiddleware, roleMiddleware("ADMIN", "SUPER_ADMIN"));
+
+router.use(authMiddleware, roleMiddleware("ADMIN"));
 
 router.get("/admin/inquiries", getAllInquiries);
 router.get("/admin/inquiries/:id", getInquiryById);
