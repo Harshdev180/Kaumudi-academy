@@ -100,9 +100,11 @@ const CourseManagement = () => {
         mode: course.mode,
         price: course.price,
         status: course.status === "ACTIVE" ? "Published" : "Draft",
+        image: course.image,
+        video1: course.video1,
+        video2: course.video2,
         icon: <MdAutoStories />
       }));
-
       setCourses(formatted);
 
     } catch (err) {
@@ -151,6 +153,7 @@ const CourseManagement = () => {
     const newCourse = {
       id: editId || Date.now(),
       title: form.title,
+      image: form.imagePreview || form.image || "",
       description: form.description,
       faculty: form.faculty,
       level: form.level,
@@ -257,8 +260,8 @@ const CourseManagement = () => {
               key={tab}
               onClick={() => setFilter(tab)}
               className={`px-5 py-2 rounded-lg text-sm font-semibold ${filter === tab
-                  ? "bg-[#6b1d14] text-white"
-                  : "text-[#6b1d14] border border-[#D1B062]/40"
+                ? "bg-[#6b1d14] text-white"
+                : "text-[#6b1d14] border border-[#D1B062]/40"
                 }`}
             >
               {tab}
@@ -271,29 +274,68 @@ const CourseManagement = () => {
       {/* GRID */}
       <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
         {filteredCourses.map(course => (
-          <div key={course.id} className="bg-[#FBF4E2] rounded-3xl p-5 space-y-3">
+          <div key={course.id} className="rounded-3xl overflow-hidden shadow-lg bg-white">
 
-            <h3 className="font-bold text-[#6b1d14]">{course.title}</h3>
-            <p className="text-sm text-[#856966]">Faculty: {course.faculty}</p>
-            <p className="text-xs text-[#6b1d14] bg-[#EFE3D5] inline-block px-3 py-1 rounded-full">
-              Level: {course.level}
-            </p>
+            {/* Image / hero */}
+            <div className="relative h-44 bg-gradient-to-r from-[#7a1f16] to-[#6b1d14]">
+              {course.imagePreview || course.image ? (
+                <img
+                  src={course.imagePreview || course.image}
+                  alt={course.title}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-white text-4xl opacity-90">
+                  {course.icon}
+                </div>
+              )}
 
-            <div className="flex justify-between">
-              <button
-                onClick={() => toggleStatus(course.id)}
-                className="px-3 py-1 bg-[#EFE3D5] rounded-full text-xs"
-              >
-                {course.status}
-              </button>
+              <div className="absolute top-3 left-3">
+                <span className={`text-xs font-semibold px-3 py-1 rounded-full ${course.status === 'Published' ? 'bg-green-600 text-white' : 'bg-[#EFE3D5] text-[#6b1d14]'}`}>
+                  {course.status}
+                </span>
+              </div>
+            </div>
 
-              <div className="flex gap-2 text-xl text-[#6b1d14]">
-                <button onClick={() => openEdit(course)}>
-                  <MdEdit />
-                </button>
-                <button onClick={() => deleteCourseItem(course.id)}>
-                  <MdDelete />
-                </button>
+            {/* Content */}
+            <div className="p-4 bg-[#FBF4E2] space-y-3">
+              <div>
+                <h3 className="text-lg font-bold text-[#6b1d14] leading-tight">{course.title}</h3>
+                <p className="text-sm text-[#856966] mt-1 line-clamp-2">{course.description || 'No description available'}</p>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="text-xs text-[#6b1d14] bg-white/60 px-2 py-1 rounded-full">{course.level}</div>
+                  <div className="text-xs text-[#6b1d14] bg-white/60 px-2 py-1 rounded-full">{course.mode}</div>
+                  <div className="text-xs text-[#6b1d14] bg-white/60 px-2 py-1 rounded-full">{course.dur}</div>
+                </div>
+
+                <div className="text-right">
+                  <div className="text-sm font-extrabold text-[#6b1d14]">₹{course.price ?? '—'}</div>
+                  <div className="text-xs text-[#856966]">Faculty: {course.faculty || 'TBA'}</div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex gap-2">
+                  <button onClick={() => openEdit(course)} className="px-3 py-2 bg-white rounded-lg border border-[#E6D9C4] text-[#6b1d14] hover:bg-[#EFE3D5] transition">
+                    <MdEdit />
+                  </button>
+                  <button onClick={() => deleteCourseItem(course.id)} className="px-3 py-2 bg-white rounded-lg border border-[#E6D9C4] text-[#6b1d14] hover:bg-red-50 transition">
+                    <MdDelete />
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => toggleStatus(course.id)}
+                    className={`px-4 py-2 rounded-xl font-semibold transition-colors ${course.status === 'Published' ? 'bg-green-600/80 text-white' : 'bg-[#6b1d14]/80 text-white'}`}
+                    aria-pressed={course.status === 'Published'}
+                  >
+                    {course.status === 'Published' ? 'Active' : 'Activate'}
+                  </button>
+                </div>
               </div>
             </div>
 
