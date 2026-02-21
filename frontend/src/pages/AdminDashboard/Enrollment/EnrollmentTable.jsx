@@ -36,8 +36,8 @@ function EnrollmentTable({
     return (
         <div className="bg-[#FBF4E2] rounded-3xl border border-[#D1B062]/30 overflow-hidden">
 
-            {/* ================= HEADER ================= */}
-            <div className="grid grid-cols-[2fr_1.5fr_1fr_1fr_1.5fr_2fr] px-6 py-4 text-sm font-bold text-[#6b1d14] bg-[#EFE3D5]/60">
+            {/* ================= HEADER (desktop only) ================= */}
+            <div className="hidden md:grid grid-cols-[2fr_1.5fr_1fr_1fr_1.5fr_2fr] px-6 py-4 text-sm font-bold text-[#6b1d14] bg-[#EFE3D5]/60">
                 <span>Student</span>
                 <span>Course</span>
                 <span>Price</span>
@@ -47,89 +47,122 @@ function EnrollmentTable({
             </div>
 
             {/* ================= ROW LIST ================= */}
-            {enrollments.map((row) => (
-                <motion.div
-                    key={row.id}
-                    layout
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    whileHover={{ backgroundColor: "#EFE3D540" }}
-                    className="grid grid-cols-[2fr_1.5fr_1fr_1fr_1.5fr_2fr] px-6 py-4 items-center border-t border-[#D1B062]/20 transition"
-                >
 
-                    {/* STUDENT */}
-                    <div>
-                        <p className="font-bold text-[#6b1d14]">{row.name}</p>
-                        <p className="text-xs text-[#856966]">{row.email}</p>
-                    </div>
-
-                    {/* COURSE */}
-                    <p className="text-[#6b1d14]/80">{row.course}</p>
-
-                    {/* PRICE */}
-                    <p className="font-semibold">₹ {row.price}</p>
-
-                    {/* PAYMENT STATUS */}
-                    <span
-                        className={`px-3 py-1 rounded-lg text-xs font-bold w-fit ${row.payment === "Paid"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-yellow-100 text-yellow-700"
-                            }`}
+            {/* Mobile cards */}
+            <div className="md:hidden divide-y border-t border-[#D1B062]/20">
+                {enrollments.map((row) => (
+                    <motion.div
+                        key={row.id}
+                        layout
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="px-4 py-4 bg-[#FBF4E2]"
                     >
-                        ₹ {row.payment}
-                    </span>
+                        <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1">
+                                <p className="font-bold text-[#6b1d14]">{row.name}</p>
+                                <p className="text-xs text-[#856966]">{row.email}</p>
+                                <p className="text-sm text-[#6b1d14] mt-2">{row.course}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="font-semibold">₹ {row.price}</p>
+                                <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-bold ${row.payment === "Paid" ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                    {row.payment}
+                                </span>
+                            </div>
+                        </div>
 
-                    {/* DATE */}
-                    <div>
-                        <p>{row.date}</p>
-                        <p className="text-xs text-[#856966]">{row.time}</p>
-                    </div>
+                        <div className="flex items-center justify-between mt-3 gap-3">
+                            <div className="text-xs text-[#856966]">
+                                <div>{row.date}</div>
+                                <div>{row.time}</div>
+                            </div>
 
-                    {/* ACTIONS */}
-                    <div className="flex justify-end items-center gap-2 whitespace-nowrap">
+                            <div className="flex items-center gap-2">
+                                <button onClick={() => onView(row)} className="px-3 py-2 rounded-lg bg-[#EFE3D5] text-[#6b1d14] font-semibold text-sm"><MdVisibility /></button>
+                                <button onClick={() => onEdit(row)} className="px-3 py-2 rounded-lg bg-[#EFE3D5] text-[#6b1d14] font-semibold text-sm"><MdEdit /></button>
+                                <button onClick={() => onDelete(row.id)} className="p-2 rounded-lg bg-red-100 text-red-600"><MdDelete /></button>
+                            </div>
+                        </div>
+                    </motion.div>
+                ))}
+            </div>
 
-                        {/* VIEW */}
-                        <motion.button
-                            whileTap={{ scale: 0.92 }}
-                            onClick={() => onView(row)}
-                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#EFE3D5] text-[#6b1d14] font-semibold text-sm"
+            {/* Desktop rows */}
+            <div className="hidden md:block">
+                {enrollments.map((row) => (
+                    <motion.div
+                        key={row.id}
+                        layout
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        whileHover={{ backgroundColor: "#EFE3D540" }}
+                        className="grid grid-cols-[2fr_1.5fr_1fr_1fr_1.5fr_2fr] px-6 py-4 items-center border-t border-[#D1B062]/20 transition"
+                    >
+
+                        {/* STUDENT */}
+                        <div>
+                            <p className="font-bold text-[#6b1d14]">{row.name}</p>
+                            <p className="text-xs text-[#856966]">{row.email}</p>
+                        </div>
+
+                        {/* COURSE */}
+                        <p className="text-[#6b1d14]/80">{row.course}</p>
+
+                        {/* PRICE */}
+                        <p className="font-semibold">₹ {row.price}</p>
+
+                        {/* PAYMENT STATUS */}
+                        <span
+                            className={`px-3 py-1 rounded-lg text-xs font-bold w-fit ${row.payment === "Paid"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-yellow-100 text-yellow-700"
+                                }`}
                         >
-                            <MdVisibility />
-                        </motion.button>
+                            ₹ {row.payment}
+                        </span>
 
-                        {/* EDIT */}
-                        <motion.button
-                            whileTap={{ scale: 0.92 }}
-                            onClick={() => onEdit(row)}
-                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#EFE3D5] text-[#6b1d14] font-semibold text-sm"
-                        >
-                            <MdEdit />
-                        </motion.button>
+                        {/* DATE */}
+                        <div>
+                            <p>{row.date}</p>
+                            <p className="text-xs text-[#856966]">{row.time}</p>
+                        </div>
 
-                        {/* DELETE */}
-                        <motion.button
-                            whileTap={{ scale: 0.85 }}
-                            onClick={() => onDelete(row.id)}
-                            className="p-2 rounded-lg bg-red-100 text-red-600"
-                        >
-                            <MdDelete />
-                        </motion.button>
+                        {/* ACTIONS */}
+                        <div className="flex justify-end items-center gap-6 whitespace-nowrap">
 
-                        {/* ⭐ MARK PAID — SAME ROW STYLE */}
-                        {row.payment === "Pending" && (
+                            {/* VIEW */}
                             <motion.button
-                                whileTap={{ scale: 0.9 }}
-                                onClick={() => onMarkPaid(row.id)}
-                                className="px-4 py-2 rounded-lg bg-[#6b1d14]/80 text-white text-sm font-semibold hover:bg-[#6b1d14]"
+                                whileTap={{ scale: 0.92 }}
+                                onClick={() => onView(row)}
+                                className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#EFE3D5] text-[#6b1d14] font-semibold text-sm"
                             >
-                                ₹ Mark Paid
+                                <MdVisibility />
                             </motion.button>
-                        )}
 
-                    </div>
+                            {/* EDIT */}
+                            <motion.button
+                                whileTap={{ scale: 0.92 }}
+                                onClick={() => onEdit(row)}
+                                className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#EFE3D5] text-[#6b1d14] font-semibold text-sm"
+                            >
+                                <MdEdit />
+                            </motion.button>
 
-                </motion.div>
-            ))}
+                            {/* DELETE */}
+                            <motion.button
+                                whileTap={{ scale: 0.85 }}
+                                onClick={() => onDelete(row.id)}
+                                className="p-2 rounded-lg bg-red-100 text-red-600"
+                            >
+                                <MdDelete />
+                            </motion.button>
+
+                        </div>
+
+                    </motion.div>
+                ))}
+            </div>
 
 
         </div>

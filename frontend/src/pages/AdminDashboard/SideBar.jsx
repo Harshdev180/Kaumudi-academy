@@ -15,22 +15,28 @@ import {
   BookUser,
   UserStar,
 } from "lucide-react";
+import logo from "../../assets/logo-bgremove.png";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuthHook";
 
-function Sidebar({ collapsed, setCollapsed, isMobile }) {
+function Sidebar({ collapsed, setCollapsed, isMobile, mobileOpen, setMobileOpen }) {
   const location = useLocation();
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
 
+  // whenever screen resizes to desktop ensure sidebar is closed (this mirrors
+  // behaviour in layout and avoids leaving mobileOpen true on wide screens)
   useEffect(() => {
-    if (isMobile) {
-      setMobileOpen(false);
-    }
-  }, [isMobile]);
+    const handleResize = () => {
+      if (window.innerWidth >= 1024 && mobileOpen) {
+        setMobileOpen(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [mobileOpen, setMobileOpen]);
 
   const displayName = (() => {
     if (user?.name) return user.name;
@@ -123,17 +129,6 @@ function Sidebar({ collapsed, setCollapsed, isMobile }) {
 
   return (
     <>
-      {/* MOBILE MENU BUTTON */}
-      <div className="lg:hidden fixed top-4 left-4 z-[9999]">
-        <button
-          onClick={() => {
-            setMobileOpen(true);
-          }}
-          className="bg-[#6b1d14] text-white p-2 rounded-xl shadow-lg"
-        >
-          <Menu size={20} />
-        </button>
-      </div>
 
       {/* MOBILE OVERLAY */}
       <AnimatePresence>
@@ -155,19 +150,16 @@ function Sidebar({ collapsed, setCollapsed, isMobile }) {
       <motion.div
         initial={false}
         animate={{
-          x:
-            typeof window !== "undefined" && window.innerWidth >= 1024
-              ? 0
-              : mobileOpen
-                ? 0
-                : -320,
-          width: collapsed ? 80 : 288, // ⭐ SMOOTH WIDTH
+          x: isMobile ? (mobileOpen ? 0 : -288) : 0,
+
+          // ⭐ MOBILE PAR COLLAPSE IGNORE
+          width: isMobile ? 288 : collapsed ? 80 : 288,
         }}
         transition={{ type: "spring", stiffness: 350, damping: 45, mass: 1 }}
         className="fixed lg:sticky top-0 left-0 h-screen z-[999]
-          bg-[#FBF4E2] text-[#6b1d14]
-          border-r border-slate-200/50
-          flex flex-col flex-shrink-0 lg:translate-x-0"
+  bg-[#FBF4E2] text-[#6b1d14]
+  border-r border-slate-200/50
+  flex flex-col flex-shrink-0 lg:translate-x-0 overflow-hidden"
       >
         {/* CLOSE BTN MOBILE */}
         <div className="lg:hidden absolute top-4 right-4">
@@ -188,10 +180,38 @@ function Sidebar({ collapsed, setCollapsed, isMobile }) {
         </div>
 
         {/* LOGO */}
-        <div
+        <motion.div
+          layout // animate padding/justify changes
           className={`border-b border-slate-200/50 flex items-center ${collapsed ? "pt-16 pb-6 justify-center" : "p-6"}`}
         >
-          <BookOpen className="text-[#6b1d14]" />
+          <motion.div
+            layout // animate size/scale
+            className="
+                relative
+                bg-[#74271E]
+                h-12 w-12
+                rounded-xl
+                grid place-items-center
+                text-lg
+                p-1
+                overflow-hidden
+                transition-all duration-500
+                group-hover:scale-110
+                shadow-[0_0_18px_rgba(214,177,92,0.55)]
+                before:absolute before:inset-0
+                before:rounded-xl
+                before:bg-[radial-gradient(circle,rgba(214,177,92,0.55),transparent_70%)]
+                before:opacity-70
+                before:blur-md
+                before:animate-pulse
+              "
+          >
+            <img
+              src={logo}
+              alt="logo"
+              className="relative z-10 brightness-110 contrast-110 object-contain h-full w-full"
+            />
+          </motion.div>
 
           <AnimatePresence>
             {!collapsed && (
@@ -208,7 +228,7 @@ function Sidebar({ collapsed, setCollapsed, isMobile }) {
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
+        </motion.div>
 
         {/* NAVIGATION */}
         <nav
@@ -225,11 +245,10 @@ function Sidebar({ collapsed, setCollapsed, isMobile }) {
                   setMobileOpen(false);
                 }}
                 className={`relative group flex items-center px-4 py-3 rounded-2xl transition-all duration-300
-                ${
-                  isActive
+                ${isActive
                     ? "bg-[#6b1d14] text-[#D4AF37]"
                     : "hover:bg-[#F3E6C9] text-[#6b1d14]/70"
-                }`}
+                  }`}
               >
                 <div>{item.icon}</div>
 
@@ -294,14 +313,14 @@ function Sidebar({ collapsed, setCollapsed, isMobile }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowLogoutModal(false)}
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[999]"
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-999"
             />
 
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[360px] bg-[#FBF4E2] rounded-3xl shadow-2xl z-[1000] p-6 text-center"
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-90 bg-[#FBF4E2] rounded-3xl shadow-2xl z-[1000] p-6 text-center"
             >
               <h2 className="text-xl font-bold text-[#6b1d14] mb-2">
                 Confirm Logout
