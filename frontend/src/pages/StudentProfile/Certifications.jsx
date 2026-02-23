@@ -53,8 +53,8 @@ const Certifications = () => {
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-12 mt-6">
       {/* 1. HEADER SECTION */}
-      <div className="flex flex-col md:flex-row justify-between items-end gap-6 px-2">
-        <div className="space-y-2">
+      {/* <div className="flex flex-col md:flex-row justify-between items-end gap-6 px-2"> */}
+        {/* <div className="space-y-2">
           <div className="flex items-center gap-3">
             <div className="w-2 h-8 bg-[#c9a050] rounded-full" />
             <h3 className="text-3xl font-serif font-bold text-gray-800 tracking-tight">
@@ -64,9 +64,9 @@ const Certifications = () => {
           <p className="text-[11px] text-gray-400 font-black uppercase tracking-[0.2em]">
             Pramana-Patra | प्रमाण-पत्राणि
           </p>
-        </div>
+        </div> */}
 
-        <div className="flex items-center gap-4 bg-[#fdfbf7] border border-[#e6d5b8]/30 px-6 py-3 rounded-2xl">
+        {/* <div className="flex items-center gap-4 bg-[#fdfbf7] border border-[#e6d5b8]/30 px-6 py-3 rounded-2xl">
           <BadgeCheck className="text-[#c9a050]" size={20} />
           <div className="text-left">
             <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">
@@ -76,8 +76,8 @@ const Certifications = () => {
               All Credentials Verified
             </p>
           </div>
-        </div>
-      </div>
+        </div> */}
+      {/* </div> */}
 
       {/* 2. CERTIFICATE GRID */}
       {loading ? (
