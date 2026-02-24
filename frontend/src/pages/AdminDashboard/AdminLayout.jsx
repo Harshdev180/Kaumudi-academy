@@ -1,39 +1,3 @@
-// import React, { useState } from "react";
-// import { Outlet } from "react-router-dom";
-// import Header from "./Header";
-// import Sidebar from "./SideBar";
-
-// const AdminLayout = () => {
-//   const [sideBarCollapsed, setSideBarCollapsed] = useState(false);
-
-//   return (
-//     <div className="bg-[#f1e4c8] min-h-screen transition-all duration-500">
-//       <div className="flex h-screen overflow-hidden">
-//         {/* Sidebar */}
-//         <Sidebar collapsed={sideBarCollapsed} />
-
-//         {/* Right Area */}
-//         <div className="flex-1 flex flex-col overflow-hidden">
-//           {/* Header */}
-//           <Header
-//             sidebarCollapsed={sideBarCollapsed}
-//             onToggleSidebar={() => setSideBarCollapsed(!sideBarCollapsed)}
-//           />
-
-//           {/* Main Content */}
-//           <main className="flex-1 overflow-y-auto bg-transparent">
-//             <div className="p-6 space-y-6">
-//               <Outlet />
-//             </div>
-//           </main>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default AdminLayout;
-
 import React, { useState, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -47,12 +11,13 @@ const AdminLayout = () => {
   const [sideBarCollapsed, setSideBarCollapsed] = useState(false);
   const [showAlerts, setShowAlerts] = useState(false);
 
-  /* ⭐ RESPONSIVE STATE (FIXED — NO HARD WINDOW CALL IN STATE) */
+  /* ⭐ RESPONSIVE STATE */
   const [isMobile, setIsMobile] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const navigate = useNavigate();
 
-  /* ================= AUTO LOGOUT (STABLE) ================= */
+  /* ================= AUTO LOGOUT ================= */
   useEffect(() => {
 
     let timer;
@@ -84,7 +49,7 @@ const AdminLayout = () => {
 
   }, [navigate]);
 
-  /* ================= RESPONSIVE LISTENER (OPTIMIZED) ================= */
+  /* ================= RESPONSIVE LISTENER ================= */
   useEffect(() => {
 
     const checkScreen = () => {
@@ -100,10 +65,16 @@ const AdminLayout = () => {
 
   }, []);
 
+  /* ⭐⭐⭐ MAIN FIX — SYNC SIDEBAR WITH SCREEN SIZE ⭐⭐⭐ */
+  useEffect(() => {
+    if (!isMobile) {
+      setSideBarCollapsed(false);
+    }
+  }, [isMobile]);
+
   return (
     <div className="bg-[#f1e4c8] min-h-screen w-full overflow-x-hidden">
 
-      {/* ⭐ SCROLL RESET INSIDE LAYOUT */}
       <ScrollToTop />
 
       <div className="flex h-screen w-full">
@@ -113,25 +84,19 @@ const AdminLayout = () => {
           collapsed={sideBarCollapsed}
           setCollapsed={setSideBarCollapsed}
           isMobile={isMobile}
+          mobileOpen={mobileOpen}
+          setMobileOpen={setMobileOpen}
         />
 
-        {/* ⭐ MOBILE FLOATING BUTTON — NO RE-ANIMATE EACH RENDER */}
+        {/* ⭐ FLOATING TOGGLE BUTTON */}
         {isMobile && (
           <motion.button
-            onClick={() => setSideBarCollapsed(prev => !prev)}
+            onClick={() => {
+              setMobileOpen(true);
+              setSideBarCollapsed(false); // ⭐ THIS LINE FIXES EVERYTHING
+            }}
             whileTap={{ scale: 0.92 }}
-            className="
-              fixed z-[60]
-              bottom-6 left-6
-              w-14 h-14
-              rounded-full
-              bg-[#D1B062]
-              text-[#6b1d14]
-              border-4 border-[#FBF4E2]
-              flex items-center justify-center
-              shadow-xl
-              lg:hidden
-            "
+            className=" fixed z-[60] bottom-6 left-6 w-14 h-14 rounded-full bg-[#D1B062] text-[#6b1d14] border-4 border-[#FBF4E2] flex items-center justify-center shadow-xl lg:hidden"
           >
             <MdMenu size={26} />
           </motion.button>
@@ -140,13 +105,11 @@ const AdminLayout = () => {
         {/* RIGHT AREA */}
         <div className="flex-1 flex flex-col min-w-0">
 
-          {/* HEADER */}
           <Header
             showAlerts={showAlerts}
             setShowAlerts={setShowAlerts}
           />
 
-          {/* MAIN CONTENT */}
           <main
             className={`flex-1 overflow-x-hidden overflow-y-auto transition-all duration-300
             ${showAlerts ? "blur-sm scale-[0.99] opacity-80" : ""}`}

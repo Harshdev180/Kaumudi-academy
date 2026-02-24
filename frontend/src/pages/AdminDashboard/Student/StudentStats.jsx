@@ -14,7 +14,7 @@ export default function StudentStats({ students }) {
       {cards.map((c, i) => (
         <div
           key={i}
-          className="bg-[#efe2d2] rounded-2xl p-6 shadow-md flex items-center justify-between"
+          className="bg-[#FBF4E2] rounded-2xl p-6 shadow-md flex items-center justify-between"
         >
           <div>
             <p className="text-sm text-[#7c5a3c]">{c.label}</p>
