@@ -132,7 +132,7 @@ const FeePurchase = () => {
  
 
   return (
-    <div className="max-w-6xl mx-auto space-y-12 pb-16 mt-8 px-4">
+    <div className="max-w-6xl mx-auto space-y-8 pb-8 mt-4 px-2 sm:px-4">
       {/* PAGE HEADER */}
       {/* <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
@@ -150,7 +150,7 @@ const FeePurchase = () => {
       </div> */}
 
       {/* SUMMARY CARDS - Compact Premium */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
         {feeSummary.map((item, idx) => (
           <div
             key={idx}
@@ -182,9 +182,9 @@ const FeePurchase = () => {
       </div>
 
       {/* PAYMENT HISTORY TABLE */}
-      <div className="bg-white rounded-3xl shadow-xl shadow-[#74271E]/5 border border-[#e8dfd0] overflow-hidden">
+      <div className="bg-white rounded-3xl shadow-xl shadow-[#74271E]/5 border border-[#e8dfd0] overflow-x-auto">
         {/* Header */}
-        <div className="px-8 py-6 border-b border-[#f0e9dc] flex justify-between items-center bg-[#faf7f2]">
+        <div className="px-4 md:px-8 py-4 md:py-6 border-b border-[#f0e9dc] flex flex-col md:flex-row justify-between items-start md:items-center gap-2 bg-[#faf7f2]">
           <div className="flex items-center gap-3">
             <History className="text-[#c9a050]" size={20} />
             <h4 className="text-sm font-black uppercase tracking-widest text-gray-700">
@@ -198,7 +198,7 @@ const FeePurchase = () => {
 
         {/* Table */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="min-w-[600px] w-full text-left border-collapse text-xs md:text-sm">
   <thead>
     <tr className="text-xs uppercase tracking-widest text-gray-400 bg-[#faf7f2]">
       <th className="px-8 py-4">Date</th>
@@ -275,7 +275,7 @@ const FeePurchase = () => {
 
       {/* PAGINATION UI ADDED */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-8 py-4 border-t border-[#f0e9dc] bg-white">
+          <div className="flex flex-col sm:flex-row items-center justify-between px-4 md:px-8 py-4 border-t border-[#f0e9dc] bg-white gap-2">
             
             {/* LEFT SIDE - PAGE INFO */}
             <div className="text-sm font-medium text-gray-600">
