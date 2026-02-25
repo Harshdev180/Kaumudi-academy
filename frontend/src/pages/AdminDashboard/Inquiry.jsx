@@ -42,14 +42,20 @@ export default function Inquiry() {
         setSuccess("");
         try {
             setLoading(true);
-            await submitInquiry({
-                fullName: form.fullName,
-                vedicName: form.vedicName,
-                phoneNumber: form.phoneNumber,
-                email: form.email,
-                preferredLevel: form.preferredLevel,
-                message: form.message
-            });
+        await submitInquiry({
+  fullName: form.fullName,
+  vedicName: form.vedicName || "",
+  email: form.email,
+  phoneNumber: form.phoneNumber,
+  preferredLevel: form.preferredLevel.toUpperCase(), // ✅ FIX
+  message: form.message || "",
+  course: {
+    title: courseData.title,
+    duration: courseData.duration,
+    language: courseData.language,
+    level: courseData.level,
+  } // ✅ FIX
+});
             setSuccess("Inquiry submitted successfully. Our team will reach out soon.");
             setForm({
                 fullName: "",

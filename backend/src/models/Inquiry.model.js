@@ -10,7 +10,8 @@ const inquirySchema = new mongoose.Schema(
 
     vedicName: {
       type: String,
-      trim: true
+      trim: true,
+      default: null
     },
 
     email: {
@@ -21,12 +22,11 @@ const inquirySchema = new mongoose.Schema(
       index: true
     },
 
-    phoneNumber: {
-      type: String,
-      required: true,
-      trim: true,
-      index: true
-    },
+   whatsappNumber: {
+  type: String,
+  required: true,
+  alias: "phoneNumber"
+},
 
     preferredLevel: {
       type: String,
@@ -36,8 +36,27 @@ const inquirySchema = new mongoose.Schema(
 
     message: {
       type: String,
-      required: true,
-      trim: true
+      trim: true,
+      default: ""
+    },
+
+    course: {
+      title: {
+        type: String,
+        required: true
+      },
+      duration: {
+        type: String,
+        required: true
+      },
+      language: {
+        type: String,
+        required: true
+      },
+      level: {
+        type: String,
+        required: true
+      }
     },
 
     status: {
@@ -45,7 +64,10 @@ const inquirySchema = new mongoose.Schema(
       enum: ["NEW", "CONTACTED", "CLOSED"],
       default: "NEW",
       index: true
-    }
+    },
+
+    ipAddress: String,
+    userAgent: String
   },
   { timestamps: true }
 );
