@@ -47,6 +47,7 @@ import Certifications from "./pages/StudentProfile/Certifications";
 import Profile from "./pages/StudentProfile/Profile";
 import Settings from "./pages/StudentProfile/Settings";
 import FeePurchase from "./pages/StudentProfile/Fees.jsx";
+import Notifications from "./pages/StudentProfile/Notifications.jsx";
 
 // Public site layout with shared navbar/footer
 function PublicLayout() {
@@ -123,6 +124,7 @@ function App() {
         <Route path="profile" element={<Profile />} />
         <Route path="payments" element={<FeePurchase />} />
         <Route path="settings" element={<Settings />} />
+        <Route path="notifications" element={<Notifications />} />
       </Route>
 
       {/* ========= AUTH ========= */}
