@@ -69,10 +69,17 @@ const EnrollmentPage = () => {
 
   // --- DATA HANDLING ---
   const courseData = useMemo(() => {
+    const rawPrice = location.state?.price || 14999;
+
+    const numericPrice =
+      typeof rawPrice === "number"
+        ? rawPrice
+        : parseInt(String(rawPrice).replace(/[^0-9]/g, "")) || 0;
+
     return {
       courseId: location.state?.courseId || null,
       courseName: location.state?.courseName || "Advanced Paninian Grammar",
-      price: location.state?.price || "14,999",
+      price: numericPrice, // always number now
       duration: location.state?.duration || "6 Months",
       level: location.state?.level || "Advanced",
       language: location.state?.language || "Sanskrit/Hindi",

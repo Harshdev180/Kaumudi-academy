@@ -52,7 +52,7 @@ app.use("/api", studentRoutes);
 app.use("/api", staffRoutes);
 app.use("/api", adminStudentRoutes);
 app.use("/api", adminInquiryRoutes);
-app.use("/api", adminInquiryRoutes);
+// app.use("/api", adminInquiryRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api", notificationRoutes);
 
