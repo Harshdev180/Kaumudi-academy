@@ -12,17 +12,20 @@ const brevoClient = axios.create({
 
 
 const sendEmail = async ({ to, subject, html }) => {
-  await brevoClient.post("/smtp/email", {
-    sender: {
-      name: "Kaumudi Sanskrit Academy",
-      email: config.BREVO_SENDER_EMAIL
-    },
-    to: [{ email: to }],
-    subject,
-    htmlContent: html
-  });
+  try {
+    await brevoClient.post("/smtp/email", {
+      sender: {
+        name: config.BREVO_SENDER_NAME,
+        email: config.BREVO_SENDER_EMAIL
+      },
+      to: [{ email: to }],
+      subject,
+      htmlContent: html
+    });
+  } catch (err) {
+    console.error("Brevo email error:", err.response?.data || err.message);
+  }
 };
-
 
 
 export const sendAdminCredentialsMail = async ({
@@ -133,8 +136,8 @@ export const sendInquiryMailToAdmin = async (inquiry) => {
     <small>Kaumudi Sanskrit Academy – Inquiry System</small>
   `;
 
-  await axios.post(
-    "https://api.brevo.com/v3/smtp/email",
+  await brevoClient.post(
+    "/smtp/email",
     {
       sender: {
         name: "Kaumudi Website",

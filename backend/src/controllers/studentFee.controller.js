@@ -1,21 +1,26 @@
-import StudentFee from "../models/StudentFee.model.js";
+import Student from "../models/Student.model.js";
+import StudentFee from "../models/StudentFee.model.js"
 
-/**
- * GET /api/admin/student-fees
- * List student fee records (table + search + filters)
- */
 export const getAllStudentFees = async (req, res) => {
   const { search, status } = req.query;
 
   const query = {};
 
-  if (status) query.paymentStatus = status;
+  if (status) {
+    query.paymentStatus = status;
+  }
 
   if (search) {
-    query.$or = [
-      { "student.firstName": { $regex: search, $options: "i" } },
-      { "student.lastName": { $regex: search, $options: "i" } }
-    ];
+    const students = await Student.find({
+      $or: [
+        { firstName: { $regex: search, $options: "i" } },
+        { lastName: { $regex: search, $options: "i" } }
+      ]
+    }).select("_id");
+
+    const studentIds = students.map(s => s._id);
+
+    query.student = { $in: studentIds };
   }
 
   const fees = await StudentFee.find(query)
