@@ -151,22 +151,6 @@ function EnrollmentFilters({ search, setSearch, status, setStatus, course, setCo
                     "This Month"
                 ]}
             />
-
-            {/* SEARCH BUTTON */}
-            <button
-                className="
-                flex items-center gap-2
-                px-5 py-3 rounded-xl
-                bg-[#C07A1C] text-white font-semibold
-                hover:scale-[1.03]
-                active:scale-[0.96]
-                transition
-                "
-            >
-                <MdSearch size={18} />
-                Search
-            </button>
-
         </div>
     );
 }

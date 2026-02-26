@@ -6,12 +6,9 @@ import { submitInquiry } from "../../lib/api";
 
 export default function Inquiry() {
     const location = useLocation();
-    
-    // --- DYNAMIC DATA FIX ---
-    // Hum check kar rahe hain ki data state.course mein hai ya direct state mein
+
     const incoming = location.state?.course || location.state;
-    
-    // Course Details page se data receive karna
+
     const courseData = {
         title: incoming?.title || incoming?.courseName || "Sanskrit for Beginners",
         language: incoming?.language || "Sanskrit/Hindi",
@@ -22,7 +19,7 @@ export default function Inquiry() {
     const [form, setForm] = useState({
         fullName: "",
         vedicName: "",
-        phoneNumber: "",
+        whatsappNumber: "",   // ✅ FIXED: matches schema field name directly
         email: "",
         preferredLevel: "BEGINNER",
         message: ""
@@ -42,25 +39,25 @@ export default function Inquiry() {
         setSuccess("");
         try {
             setLoading(true);
-        await submitInquiry({
-  fullName: form.fullName,
-  vedicName: form.vedicName || "",
-  email: form.email,
-  phoneNumber: form.phoneNumber,
-  preferredLevel: form.preferredLevel.toUpperCase(), // ✅ FIX
-  message: form.message || "",
-  course: {
-    title: courseData.title,
-    duration: courseData.duration,
-    language: courseData.language,
-    level: courseData.level,
-  } // ✅ FIX
-});
+            await submitInquiry({
+                fullName: form.fullName,
+                vedicName: form.vedicName || "",
+                email: form.email,
+                whatsappNumber: form.whatsappNumber,   // ✅ FIXED: correct field name for schema
+                preferredLevel: form.preferredLevel.toUpperCase(),
+                message: form.message || "",
+                course: {
+                    title: courseData.title,
+                    duration: courseData.duration,
+                    language: courseData.language,
+                    level: courseData.level,
+                }
+            });
             setSuccess("Inquiry submitted successfully. Our team will reach out soon.");
             setForm({
                 fullName: "",
                 vedicName: "",
-                phoneNumber: "",
+                whatsappNumber: "",
                 email: "",
                 preferredLevel: "BEGINNER",
                 message: ""
@@ -73,7 +70,6 @@ export default function Inquiry() {
         }
     };
 
-    // Scroll to top on load
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
@@ -83,7 +79,7 @@ export default function Inquiry() {
 
     return (
         <div className="min-h-screen bg-[#f1e4c8] text-[#2b1d1b] font-sans-serif relative overflow-hidden">
-            
+
             {/* --- Decorative Background Elements --- */}
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
                 <div className="absolute -top-24 -left-24 w-96 h-96 bg-[#641e16]/5 rounded-full blur-3xl" />
@@ -109,10 +105,10 @@ export default function Inquiry() {
                     transition={{ duration: 0.6 }}
                     className="text-4xl md:text-6xl font-bold text-[#641e16] leading-tight"
                 >
-                    Begin Your <span className="italic font-sans-serif text-[#b38b3f]">Journey</span> <br /> 
+                    Begin Your <span className="italic font-sans-serif text-[#b38b3f]">Journey</span> <br />
                     with Kaumudi
                 </motion.h2>
-                <motion.p 
+                <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.3 }}
@@ -132,11 +128,10 @@ export default function Inquiry() {
                     transition={{ duration: 0.8, ease: "easeOut" }}
                     className="lg:col-span-8 lg:col-start-3 relative"
                 >
-                    {/* Floating Accent */}
                     <div className="absolute -top-6 -right-6 w-20 h-20 bg-[#d6b15c] rounded-2xl rotate-12 -z-10 shadow-lg hidden md:block opacity-50" />
-                    
+
                     <div className="bg-white/50 backdrop-blur-md rounded-3xl shadow-[0_20px_50px_rgba(100,30,22,0.15)] border border-white/50 p-6 md:p-12 overflow-hidden relative">
-                        
+
                         {/* Form Header */}
                         <div className="flex items-center gap-4 mb-10 border-b border-[#641e16]/10 pb-6">
                             <div className="w-12 h-12 bg-[#641e16] rounded-xl flex items-center justify-center text-white shadow-lg">
@@ -152,7 +147,7 @@ export default function Inquiry() {
                             {/* User Basic Info Group */}
                             <div className="grid md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
-                                    <label className={labelStyle}><User size={14}/> Full Name</label>
+                                    <label className={labelStyle}><User size={14} /> Full Name</label>
                                     <input
                                         className={inputStyle}
                                         placeholder="E.g. Rahul Sharma"
@@ -163,12 +158,12 @@ export default function Inquiry() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className={labelStyle}><MessageCircle size={14}/> WhatsApp Number</label>
+                                    <label className={labelStyle}><MessageCircle size={14} /> WhatsApp Number</label>
                                     <input
                                         className={inputStyle}
                                         placeholder="10-digit number"
-                                        name="phoneNumber"
-                                        value={form.phoneNumber}
+                                        name="whatsappNumber"
+                                        value={form.whatsappNumber}
                                         onChange={handleChange}
                                         required
                                     />
@@ -176,7 +171,7 @@ export default function Inquiry() {
                             </div>
 
                             <div className="space-y-2">
-                                <label className={labelStyle}><Mail size={14}/> Email Address</label>
+                                <label className={labelStyle}><Mail size={14} /> Email Address</label>
                                 <input
                                     className={inputStyle}
                                     placeholder="rahul@example.com"
@@ -190,7 +185,7 @@ export default function Inquiry() {
 
                             <div className="grid md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
-                                    <label className={labelStyle}><Award size={14}/> Preferred Level</label>
+                                    <label className={labelStyle}><Award size={14} /> Preferred Level</label>
                                     <select
                                         name="preferredLevel"
                                         value={form.preferredLevel}
@@ -203,7 +198,7 @@ export default function Inquiry() {
                                     </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className={labelStyle}><User size={14}/> Vedic Name (optional)</label>
+                                    <label className={labelStyle}><User size={14} /> Vedic Name (optional)</label>
                                     <input
                                         className={inputStyle}
                                         placeholder="If any"
@@ -219,55 +214,55 @@ export default function Inquiry() {
                                 <div className="absolute top-0 right-0 p-4 opacity-30 group-hover:opacity-40 transition-opacity">
                                     <BookOpen size={80} />
                                 </div>
-                                
+
                                 <p className="text-xs font-black text-[#641e16]/80 mb-6 uppercase tracking-[3px] opacity-70">Selected Course Details</p>
-                                
+
                                 <div className="grid md:grid-cols-2 gap-y-6 gap-x-10">
                                     <div className="flex flex-col border-l-2 border-[#641e16]/20 pl-4">
                                         <label className="text-[10px] text-[#8d6e6a] uppercase font-bold">Course Title</label>
-                                        <input 
-                                            className="bg-transparent text-[#641e16] font-bold text-lg outline-none py-1 cursor-default" 
-                                            value={courseData.title} 
-                                            readOnly 
+                                        <input
+                                            className="bg-transparent text-[#641e16] font-bold text-lg outline-none py-1 cursor-default"
+                                            value={courseData.title}
+                                            readOnly
                                         />
                                     </div>
 
                                     <div className="flex flex-col border-l-2 border-[#641e16]/20 pl-4">
-                                        <label className="text-[10px] text-[#8d6e6a] uppercase font-bold flex items-center gap-1"><Clock size={10}/> Duration</label>
-                                        <input 
-                                            className="bg-transparent text-[#641e16] font-bold outline-none py-1 cursor-default" 
-                                            value={courseData.duration} 
-                                            readOnly 
+                                        <label className="text-[10px] text-[#8d6e6a] uppercase font-bold flex items-center gap-1"><Clock size={10} /> Duration</label>
+                                        <input
+                                            className="bg-transparent text-[#641e16] font-bold outline-none py-1 cursor-default"
+                                            value={courseData.duration}
+                                            readOnly
                                         />
                                     </div>
 
                                     <div className="flex flex-col border-l-2 border-[#641e16]/20 pl-4">
-                                        <label className="text-[10px] text-[#8d6e6a] uppercase font-bold flex items-center gap-1"><Globe size={10}/> Language</label>
-                                        <input 
-                                            className="bg-transparent text-[#641e16] font-bold outline-none py-1 cursor-default" 
-                                            value={courseData.language} 
-                                            readOnly 
+                                        <label className="text-[10px] text-[#8d6e6a] uppercase font-bold flex items-center gap-1"><Globe size={10} /> Language</label>
+                                        <input
+                                            className="bg-transparent text-[#641e16] font-bold outline-none py-1 cursor-default"
+                                            value={courseData.language}
+                                            readOnly
                                         />
                                     </div>
 
                                     <div className="flex flex-col border-l-2 border-[#641e16]/20 pl-4">
-                                        <label className="text-[10px] text-[#8d6e6a] uppercase font-bold flex items-center gap-1"><Award size={10}/> Level</label>
-                                        <input 
-                                            className="bg-transparent text-[#641e16] font-bold outline-none py-1 cursor-default" 
-                                            value={courseData.level} 
-                                            readOnly 
+                                        <label className="text-[10px] text-[#8d6e6a] uppercase font-bold flex items-center gap-1"><Award size={10} /> Level</label>
+                                        <input
+                                            className="bg-transparent text-[#641e16] font-bold outline-none py-1 cursor-default"
+                                            value={courseData.level}
+                                            readOnly
                                         />
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Concern Box */}
+                            {/* Message */}
                             <div className="space-y-2">
-                                <label className={labelStyle}><MessageCircle size={14}/> Your Message</label>
-                                <textarea 
-                                    className={`${inputStyle} rounded-lg`} 
-                                    rows="4" 
-                                    placeholder="Tell us about your learning goals or any specific concerns..." 
+                                <label className={labelStyle}><MessageCircle size={14} /> Your Message</label>
+                                <textarea
+                                    className={`${inputStyle} rounded-lg`}
+                                    rows="4"
+                                    placeholder="Tell us about your learning goals or any specific concerns..."
                                     name="message"
                                     value={form.message}
                                     onChange={handleChange}

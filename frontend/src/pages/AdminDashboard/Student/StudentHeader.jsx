@@ -17,13 +17,13 @@ function StudentHeader({ openAdd }) {
             <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
 
                 {/* LEFT */}
-                <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center text-2xl">
+                <div className="flex items-center gap-3">
+                    <div className="w-16 h-10 md:w-14 md:h-14 rounded-2xl bg-white/10 flex items-center justify-center text-2xl md:text-2xl">
                         <MdSchool />
                     </div>
 
                     <div>
-                        <h1 className="text-3xl md:text-4xl font-black tracking-tight">
+                        <h1 className="md:text-3xl md:text-4xl font-black tracking-tight">
                             Student Management
                         </h1>
                         <p className="text-sm text-white/90">

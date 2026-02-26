@@ -7,7 +7,7 @@ export const submitInquirySchema = Joi.object({
 
   email: Joi.string().email().required(),
 
- phoneNumber: Joi.string()
+ whatsappNumber: Joi.string()
   .pattern(/^[6-9]\d{9}$/)
   .required(),
 

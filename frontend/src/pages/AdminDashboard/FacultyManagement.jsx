@@ -55,16 +55,16 @@ const FacultyManagement = () => {
         if (mounted) {
           const mapped = Array.isArray(list)
             ? list.map((item) => ({
-                id: item?._id || item?.id,
-                name: item?.name || "Unnamed",
-                course: item?.role || "Faculty",
-                salary: item?.salary ?? 0,
-                bonus: item?.bonus ?? 0,
-                deduction: item?.deduction ?? 0,
-                netSalary: item?.netSalary ?? (item?.salary ?? 0),
-                status: item?.status || "ACTIVE",
-                paid: !!item?.paid,
-              }))
+              id: item?._id || item?.id,
+              name: item?.name || "Unnamed",
+              course: item?.role || "Faculty",
+              salary: item?.salary ?? 0,
+              bonus: item?.bonus ?? 0,
+              deduction: item?.deduction ?? 0,
+              netSalary: item?.netSalary ?? (item?.salary ?? 0),
+              status: item?.status || "ACTIVE",
+              paid: !!item?.paid,
+            }))
             : [];
           setFaculty(mapped);
         }
@@ -148,27 +148,27 @@ const FacultyManagement = () => {
       const created = responsePayload?.data ?? responsePayload;
       const next = created
         ? {
-            id: created?._id || created?.id,
-            name: created?.name || form.name,
-            course: created?.role || form.role,
-            salary: created?.salary ?? form.salary,
-            bonus: created?.bonus ?? form.bonus ?? 0,
-            deduction: created?.deduction ?? form.deduction ?? 0,
-            netSalary: created?.netSalary ?? created?.salary ?? form.salary,
-            status: created?.status || form.status || "ACTIVE",
-            paid: !!created?.paid,
-          }
+          id: created?._id || created?.id,
+          name: created?.name || form.name,
+          course: created?.role || form.role,
+          salary: created?.salary ?? form.salary,
+          bonus: created?.bonus ?? form.bonus ?? 0,
+          deduction: created?.deduction ?? form.deduction ?? 0,
+          netSalary: created?.netSalary ?? created?.salary ?? form.salary,
+          status: created?.status || form.status || "ACTIVE",
+          paid: !!created?.paid,
+        }
         : {
-            id: Date.now(),
-            name: form.name,
-            course: form.role,
-            salary: form.salary,
-            bonus: form.bonus || 0,
-            deduction: form.deduction || 0,
-            netSalary: Number(form.salary || 0) + Number(form.bonus || 0) - Number(form.deduction || 0),
-            status: form.status || "ACTIVE",
-            paid: false,
-          };
+          id: Date.now(),
+          name: form.name,
+          course: form.role,
+          salary: form.salary,
+          bonus: form.bonus || 0,
+          deduction: form.deduction || 0,
+          netSalary: Number(form.salary || 0) + Number(form.bonus || 0) - Number(form.deduction || 0),
+          status: form.status || "ACTIVE",
+          paid: false,
+        };
 
       setFaculty((prev) =>
         editingId
@@ -286,22 +286,22 @@ const FacultyManagement = () => {
 
       {/* FACULTY CARDS */}
       {!loading && (
-        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6 ">
           {faculty.map((f) => (
             <motion.div
               key={f.id}
               layout
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-[#FBF4E2] rounded-3xl p-6 shadow-md border border-[#D1B062]/40"
+              className="bg-[#FBF4E2] rounded-3xl p-6 shadow-md border border-[#D1B062]/40 "
             >
               {/* TOP */}
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 rounded-xl bg-[#D4AF37]/20 text-[#6b1d14] flex items-center justify-center">
+                <div className="w-12 h-12 rounded-xl bg-[#D4AF37]/20 text-[#6b1d14] flex items-center justify-center flex-shrink-0">
                   <MdPerson size={24} />
                 </div>
 
-                <div>
+                <div className="flex-1">
                   <h3 className="font-bold text-[#6b1d14] text-base">
                     {f.name}
                   </h3>
@@ -311,86 +311,83 @@ const FacultyManagement = () => {
 
               <div className="flex flex-wrap gap-2 mb-4">
                 <span
-                  className={`text-[10px] px-2 py-1 rounded-full font-bold ${
-                    f.status === "ACTIVE"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-zinc-200 text-zinc-600"
-                  }`}
+                  className={`text-[10px] px-2 py-1 rounded-full font-bold ${f.status === "ACTIVE"
+                    ? "bg-green-100 text-green-700"
+                    : "bg-zinc-200 text-zinc-600"
+                    }`}
                 >
                   {f.status}
                 </span>
                 <span
-                  className={`text-[10px] px-2 py-1 rounded-full font-bold ${
-                    f.paid
-                      ? "bg-blue-100 text-blue-700"
-                      : "bg-orange-100 text-orange-700"
-                  }`}
+                  className={`text-[10px] px-2 py-1 rounded-full font-bold ${f.paid
+                    ? "bg-blue-100 text-blue-700"
+                    : "bg-orange-100 text-orange-700"
+                    }`}
                 >
                   {f.paid ? "Paid" : "Pending"}
                 </span>
               </div>
 
-              {/* DETAILS */}
-              <div className="space-y-3 text-sm text-[#4A2B07]">
-                <div className="flex items-center gap-2">
-                  <MdSchool className="text-[#6b1d14]" />
-                  <span>{f.course}</span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <IndianRupee className="text-[#6b1d14] size-4" />
-                  <span>Salary: {formatMoney(f.salary)}</span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <IndianRupee className="text-[#6b1d14] size-4" />
-                  <span>Net: {formatMoney(f.netSalary)}</span>
-                </div>
-
-                {(Number(f.bonus) > 0 || Number(f.deduction) > 0) && (
-                  <div className="text-xs text-[#856966]">
-                    Bonus: {formatMoney(f.bonus)} · Deduction: {formatMoney(f.deduction)}
+              {/* DETAILS WITH ACTIONS */}
+              <div className="flex justify-between items-start gap-1 ">
+                {/* LEFT: DETAILS */}
+                <div className="space-y-2.5 text-xs md:text-sm text-[#4A2B07] flex-1">
+                  <div className="flex items-center gap-2">
+                    <MdSchool className="text-[#6b1d14] flex-shrink-0" size={18} />
+                    <span>{f.course}</span>
                   </div>
-                )}
-              </div>
 
-              <div className="mt-5 grid grid-cols-2 gap-3">
-                <button
-                  onClick={() => openEdit(f)}
-                  className="flex items-center justify-center gap-2 text-[#6b1d14] bg-white border border-[#D1B062]/40 rounded-xl py-2 text-xs font-bold hover:bg-[#F3E6C9] transition"
-                >
-                  <MdEdit /> Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(f.id)}
-                  disabled={deletingId === f.id}
-                  className="flex items-center justify-center gap-2 text-red-600 bg-white border border-red-200 rounded-xl py-2 text-xs font-bold hover:bg-red-50 transition disabled:opacity-60"
-                >
-                  <MdDelete /> {deletingId === f.id ? "Deleting..." : "Delete"}
-                </button>
-                <button
-                  onClick={() => handleToggleStatus(f)}
-                  disabled={statusUpdatingId === f.id}
-                  className="flex items-center justify-center gap-2 text-[#6b1d14] bg-[#F9F0DB] border border-[#D1B062]/40 rounded-xl py-2 text-xs font-bold hover:bg-[#F1E3C6] transition disabled:opacity-60"
-                >
-                  {f.status === "ACTIVE" ? <MdToggleOn /> : <MdToggleOff />}
-                  {statusUpdatingId === f.id
-                    ? "Updating..."
-                    : f.status === "ACTIVE"
-                      ? "Deactivate"
-                      : "Activate"}
-                </button>
-                <button
-                  onClick={() => handleTogglePayment(f)}
-                  disabled={paymentUpdatingId === f.id}
-                  className="flex items-center justify-center gap-2 text-[#6b1d14] bg-[#F9F0DB] border border-[#D1B062]/40 rounded-xl py-2 text-xs font-bold hover:bg-[#F1E3C6] transition disabled:opacity-60"
-                >
-                  {paymentUpdatingId === f.id
-                    ? "Updating..."
-                    : f.paid
-                      ? "Mark Unpaid"
-                      : "Mark Paid"}
-                </button>
+                  <div className="flex items-center gap-2">
+                    <IndianRupee className="text-[#6b1d14] flex-shrink-0" size={18} />
+                    <span>Salary: {formatMoney(f.salary)}</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <IndianRupee className="text-[#6b1d14] flex-shrink-0" size={18} />
+                    <span>Net: {formatMoney(f.netSalary)}</span>
+                  </div>
+
+                  {(Number(f.bonus) > 0 || Number(f.deduction) > 0) && (
+                    <div className="text-xs text-[#856966] pt-1">
+                      Bonus: {formatMoney(f.bonus)} · Deduction: {formatMoney(f.deduction)}
+                    </div>
+                  )}
+                </div>
+
+                {/* RIGHT: ACTION ICONS */}
+                <div className="flex flex-col gap-2 pt-1 -mr-1">
+                  <motion.button
+                    onClick={() => openEdit(f)}
+                    title="Edit"
+                    whileHover={{ scale: 1.2, color: "#8a2a1f" }}
+                    whileTap={{ scale: 0.9 }}
+                    className="text-[#6b1d14] hover:text-[#8a2a1f] transition flex-shrink-0"
+                  >
+                    <MdEdit size={22} />
+                  </motion.button>
+
+                  <motion.button
+                    onClick={() => handleDelete(f.id)}
+                    disabled={deletingId === f.id}
+                    title="Delete"
+                    whileHover={{ scale: 1.2, color: "#dc2626" }}
+                    whileTap={{ scale: 0.9 }}
+                    className="text-red-600 hover:text-red-700 transition disabled:opacity-60 flex-shrink-0"
+                  >
+                    <MdDelete size={22} />
+                  </motion.button>
+
+                  <motion.button
+                    onClick={() => handleToggleStatus(f)}
+                    disabled={statusUpdatingId === f.id}
+                    title={f.status === "ACTIVE" ? "Deactivate" : "Activate"}
+                    whileHover={{ scale: 1.2, color: "#8a2a1f" }}
+                    whileTap={{ scale: 0.9 }}
+                    className="text-[#6b1d14] hover:text-[#8a2a1f] transition disabled:opacity-60 flex-shrink-0"
+                  >
+                    {f.status === "ACTIVE" ? <MdToggleOn size={22} /> : <MdToggleOff size={22} />}
+                  </motion.button>
+                </div>
               </div>
             </motion.div>
           ))}

@@ -1,6 +1,6 @@
 import Inquiry from "../models/Inquiry.model.js";
 import { sendInquiryMailToAdmin } from "../services/mail.service.js";
-
+import Notification from "../models/Notification.model.js";
 /**
  * @desc Submit course inquiry
  * @route POST /api/inquiries
