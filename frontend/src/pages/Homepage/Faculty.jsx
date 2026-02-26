@@ -1,4 +1,8 @@
 import { motion } from "framer-motion";
+import faculty1 from "../../assets/home/faculty1.webp";
+import faculty2 from "../../assets/home/faculty2.webp";
+import faculty3 from "../../assets/home/faculty3.webp";
+import faculty4 from "../../assets/home/faculty4.webp";
 
 const container = {
   hidden: {},
@@ -26,25 +30,25 @@ const Faculty = () => {
       name: "Acharya V. Shastri",
       role: "Dean of Vyakarana",
       image:
-        "https://i.pinimg.com/736x/00/e9/23/00e923faba6f97291983890a831443f2.jpg",
+        faculty1,
     },
     {
       name: "Dr. Meera Iyer",
       role: "Head of Sahitya",
       image:
-        "https://i.pinimg.com/736x/1f/bb/0e/1fbb0e761ada8399ea3031b75972a293.jpg",
+        faculty2,
     },
     {
       name: "Swami Vidyananda",
       role: "Chief of Darshana Studies",
       image:
-        "https://i.pinimg.com/1200x/4d/ce/47/4dce475c98aa927bd3bc5186fea452f0.jpg",
+        faculty3,
     },
     {
       name: "Prof. Rahul Dev",
       role: "Spoken Sanskrit Expert",
       image:
-        "https://i.pinimg.com/736x/36/d1/33/36d133d60e678d1888838aaa7778fe58.jpg",
+        faculty4,
     },
   ];
 

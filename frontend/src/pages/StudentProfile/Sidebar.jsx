@@ -13,9 +13,9 @@ import {
   Menu,
   IndianRupee,
 } from "lucide-react";
-import logo from "../../assets/logo-bgremove.png";
+import logo from "../../assets/logo-bgremove.webp";
 import { motion, AnimatePresence } from "framer-motion";
-import wheel from "../../assets/wheel.jpg";
+import wheel from "../../assets/wheel.webp";
 
 const Sidebar = () => {
   const navigate = useNavigate();
