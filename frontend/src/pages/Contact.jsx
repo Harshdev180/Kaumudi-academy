@@ -195,7 +195,6 @@ export default function Contact() {
               Send us a Message
             </h2>
             <div>
-
               <motion.form
                 variants={stagger}
                 className="md:space-y-14 grid md:grid-cols-2 gap-3 "
@@ -247,8 +246,6 @@ export default function Contact() {
                 {success && (
                   <div className="text-green-700 font-semibold">{success}</div>
                 )}
-
-
               </motion.form>
             </div>
             <div>
@@ -282,7 +279,6 @@ export default function Contact() {
                 {loading ? "SENDING..." : "SEND MESSAGE"}
               </motion.button>
             </div>
-
           </motion.div>
 
           {/* RIGHT — MAP + INFO */}
