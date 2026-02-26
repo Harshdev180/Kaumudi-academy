@@ -131,7 +131,7 @@ function TableSection({ type }) {
       {type === "orders" && (
         <div className="bg-white/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 overflow-hidden">
           <div className="p-6 border-b border-slate-200/50">
-            <h3 className="text-lg font-bold text-slate-800">Recent Orders</h3>
+            <h3 className="text-lg font-bold text-slate-800">Recent Enrollment</h3>
             <p className="text-sm text-slate-500">Latest course orders</p>
           </div>
 
@@ -187,9 +187,6 @@ function TableSection({ type }) {
                       </span>
                     </td>
                     <td className="p-4 text-sm text-slate-600">{order.date}</td>
-                    <td className="p-4 text-slate-600">
-                      <MoreHorizontal className="w-4 h-4 cursor-pointer" />
-                    </td>
                   </tr>
                 ))}
               </tbody>

@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   MdPerson,
   MdSchool,
-  MdAttachMoney,
   MdAdd,
   MdClose,
   MdEdit,
@@ -500,7 +499,7 @@ const FacultyManagement = () => {
                     className="space-y-2"
                   >
                     <label className="text-xs font-bold text-[#6b1d14] uppercase tracking-wider flex items-center gap-2">
-                      <MdAttachMoney size={14} />
+                      <IndianRupee size={14} />
                       Monthly Salary
                     </label>
                     <div className="relative">
@@ -528,7 +527,7 @@ const FacultyManagement = () => {
                     className="space-y-2"
                   >
                     <label className="text-xs font-bold text-[#6b1d14] uppercase tracking-wider flex items-center gap-2">
-                      <MdAttachMoney size={14} />
+                      <IndianRupee size={14} />
                       Bonus
                     </label>
                     <input
@@ -548,7 +547,7 @@ const FacultyManagement = () => {
                     className="space-y-2"
                   >
                     <label className="text-xs font-bold text-[#6b1d14] uppercase tracking-wider flex items-center gap-2">
-                      <MdAttachMoney size={14} />
+                      <IndianRupee size={14} />
                       Deduction
                     </label>
                     <input
