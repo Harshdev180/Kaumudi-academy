@@ -190,7 +190,8 @@ const Profile = () => {
                   </>
                 ) : (
                   <>
-                    <Edit3 size={14} /> {loading ? "Loading..." : "Edit Profile"}
+                    <Edit3 size={14} />{" "}
+                    {loading ? "Loading..." : "Edit Profile"}
                   </>
                 )}
               </button>

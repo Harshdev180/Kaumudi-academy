@@ -1,10 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import {
-  getProfileRecentEnrollments,
-  getProfileStats,
-} from "../../lib/api";
+import { getProfileRecentEnrollments, getProfileStats } from "../../lib/api";
 import { useAuth } from "../../context/useAuthHook";
 
 const Dashboard = () => {

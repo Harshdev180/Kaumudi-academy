@@ -7,11 +7,12 @@ import {
   AlertCircle,
   Coins,
   ShieldCheck,
-  Landmark, ChevronLeft, ChevronRight
+  Landmark,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 const FeePurchase = () => {
-
   const initialData = [
     {
       id: "FEE001",
@@ -63,19 +64,18 @@ const FeePurchase = () => {
     },
   ];
 
-
   const [paymentHistory, setPaymentHistory] = useState(initialData);
 
   /* CALCULATION */
 
   const totalFee = paymentHistory.reduce(
     (sum, item) => sum + item.totalAmount,
-    0
+    0,
   );
 
   const totalPaid = paymentHistory.reduce(
     (sum, item) => sum + item.paidAmount,
-    0
+    0,
   );
 
   const totalPending = totalFee - totalPaid;
@@ -106,18 +106,13 @@ const FeePurchase = () => {
 
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-  const currentRows = paymentHistory.slice(
-    indexOfFirstRow,
-    indexOfLastRow
-  );
+  const currentRows = paymentHistory.slice(indexOfFirstRow, indexOfLastRow);
 
   const handlePayment = (item) => {
     setPaymentHistory((prev) =>
       prev.map((p) =>
-        p.id === item.id
-          ? { ...p, paidAmount: p.totalAmount }
-          : p
-      )
+        p.id === item.id ? { ...p, paidAmount: p.totalAmount } : p,
+      ),
     );
   };
 
@@ -129,10 +124,8 @@ const FeePurchase = () => {
     if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
 
- 
-
   return (
-    <div className="max-w-6xl mx-auto space-y-8 pb-8 mt-4 px-2 sm:px-4">
+    <div className="max-w-6xl mx-auto space-y-12 pb-16 mt-8 px-4">
       {/* PAGE HEADER */}
       {/* <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
@@ -150,7 +143,7 @@ const FeePurchase = () => {
       </div> */}
 
       {/* SUMMARY CARDS - Compact Premium */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {feeSummary.map((item, idx) => (
           <div
             key={idx}
@@ -182,9 +175,9 @@ const FeePurchase = () => {
       </div>
 
       {/* PAYMENT HISTORY TABLE */}
-      <div className="bg-white rounded-3xl shadow-xl shadow-[#74271E]/5 border border-[#e8dfd0] overflow-x-auto">
+      <div className="bg-white rounded-3xl shadow-xl shadow-[#74271E]/5 border border-[#e8dfd0] overflow-hidden">
         {/* Header */}
-        <div className="px-4 md:px-8 py-4 md:py-6 border-b border-[#f0e9dc] flex flex-col md:flex-row justify-between items-start md:items-center gap-2 bg-[#faf7f2]">
+        <div className="px-8 py-6 border-b border-[#f0e9dc] flex justify-between items-center bg-[#faf7f2]">
           <div className="flex items-center gap-3">
             <History className="text-[#c9a050]" size={20} />
             <h4 className="text-sm font-black uppercase tracking-widest text-gray-700">
@@ -198,85 +191,84 @@ const FeePurchase = () => {
 
         {/* Table */}
         <div className="overflow-x-auto">
-          <table className="min-w-[600px] w-full text-left border-collapse text-xs md:text-sm">
-  <thead>
-    <tr className="text-xs uppercase tracking-widest text-gray-400 bg-[#faf7f2]">
-      <th className="px-8 py-4">Date</th>
-      <th className="px-6 py-4">Description</th>
-      <th className="px-6 py-4">Total Amount</th>
-      <th className="px-6 py-4">Remaining</th>
-      <th className="px-6 py-4 text-center">Status</th>
-      <th className="px-8 py-4 text-right">Receipt</th>
-    </tr>
-  </thead>
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="text-xs uppercase tracking-widest text-gray-400 bg-[#faf7f2]">
+                <th className="px-8 py-4">Date</th>
+                <th className="px-6 py-4">Description</th>
+                <th className="px-6 py-4">Total Amount</th>
+                <th className="px-6 py-4">Remaining</th>
+                <th className="px-6 py-4 text-center">Status</th>
+                <th className="px-8 py-4 text-right">Receipt</th>
+              </tr>
+            </thead>
 
-  <tbody className="divide-y divide-[#f3ede3]">
-    {currentRows.map((item) => {
-      const isPaid = item.paidAmount >= item.totalAmount;
-      const remaining = item.totalAmount - item.paidAmount;
+            <tbody className="divide-y divide-[#f3ede3]">
+              {currentRows.map((item) => {
+                const isPaid = item.paidAmount >= item.totalAmount;
+                const remaining = item.totalAmount - item.paidAmount;
 
-      return (
-        <tr
-          key={item.id}
-          className="hover:bg-[#fbf7f1] transition-all duration-300"
-        >
-          <td className="px-8 py-5 text-sm font-medium text-gray-600">
-            {item.date}
-          </td>
+                return (
+                  <tr
+                    key={item.id}
+                    className="hover:bg-[#fbf7f1] transition-all duration-300"
+                  >
+                    <td className="px-8 py-5 text-sm font-medium text-gray-600">
+                      {item.date}
+                    </td>
 
-          <td className="px-6 py-5">
-            <div>
-              <p className="text-sm font-semibold text-gray-800">
-                {item.desc}
-              </p>
-              <span className="text-[10px] uppercase tracking-widest text-[#c9a050]/70 font-bold">
-                {item.type}
-              </span>
-            </div>
-          </td>
+                    <td className="px-6 py-5">
+                      <div>
+                        <p className="text-sm font-semibold text-gray-800">
+                          {item.desc}
+                        </p>
+                        <span className="text-[10px] uppercase tracking-widest text-[#c9a050]/70 font-bold">
+                          {item.type}
+                        </span>
+                      </div>
+                    </td>
 
-          <td className="px-6 py-5 text-base font-serif font-bold text-[#74271E]">
-            ₹ {item.totalAmount.toLocaleString()}
-          </td>
+                    <td className="px-6 py-5 text-base font-serif font-bold text-[#74271E]">
+                      ₹ {item.totalAmount.toLocaleString()}
+                    </td>
 
-          <td className="px-6 py-5 text-base font-serif font-bold text-[#74271E]">
-            ₹ {remaining.toLocaleString()}
-          </td>
+                    <td className="px-6 py-5 text-base font-serif font-bold text-[#74271E]">
+                      ₹ {remaining.toLocaleString()}
+                    </td>
 
-          <td className="px-6 py-5 text-center">
-            {isPaid ? (
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#ecf7f1] text-emerald-600 rounded-full text-xs font-semibold border border-emerald-100">
-                <CheckCircle2 size={14} />
-                Paid
-              </span>
-            ) : (
-              <button
-                onClick={() => handlePayment(item)}
-                className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#74271E] text-white rounded-full text-xs font-semibold hover:bg-[#5c1f17] transition"
-              >
-                <Wallet size={14} />
-                Pay Now
-              </button>
-            )}
-          </td>
+                    <td className="px-6 py-5 text-center">
+                      {isPaid ? (
+                        <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#ecf7f1] text-emerald-600 rounded-full text-xs font-semibold border border-emerald-100">
+                          <CheckCircle2 size={14} />
+                          Paid
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => handlePayment(item)}
+                          className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#74271E] text-white rounded-full text-xs font-semibold hover:bg-[#5c1f17] transition"
+                        >
+                          <Wallet size={14} />
+                          Pay Now
+                        </button>
+                      )}
+                    </td>
 
-          <td className="px-8 py-5 text-right">
-            <button className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-[#e8dfd0] text-gray-600 rounded-xl text-xs font-semibold hover:border-[#74271E] hover:text-[#74271E] transition-all hover:shadow-md">
-              <Download size={14} />
-              Download
-            </button>
-          </td>
-        </tr>
-      );
-    })}
-  </tbody>
-</table>
+                    <td className="px-8 py-5 text-right">
+                      <button className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-[#e8dfd0] text-gray-600 rounded-xl text-xs font-semibold hover:border-[#74271E] hover:text-[#74271E] transition-all hover:shadow-md">
+                        <Download size={14} />
+                        Download
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
 
-      {/* PAGINATION UI ADDED */}
+        {/* PAGINATION UI ADDED */}
         {totalPages > 1 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between px-4 md:px-8 py-4 border-t border-[#f0e9dc] bg-white gap-2">
-            
+          <div className="flex items-center justify-between px-8 py-4 border-t border-[#f0e9dc] bg-white">
             {/* LEFT SIDE - PAGE INFO */}
             <div className="text-sm font-medium text-gray-600">
               Page {currentPage} of {totalPages}

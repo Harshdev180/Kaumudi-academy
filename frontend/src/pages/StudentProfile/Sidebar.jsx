@@ -143,14 +143,16 @@ const Sidebar = () => {
                 />
               </div>
               <div>
-                <div className="text-sm font-black tracking-widest uppercase">KAUMUDI</div>
+                <div className="text-sm font-black tracking-widest uppercase">
+                  KAUMUDI
+                </div>
                 <div className="text-[10px] tracking-[0.18em] text-white/75">
                   SANSKRIT ACADEMY
                 </div>
               </div>
             </div>
             {/* Close button inside sidebar on Mobile */}
-            <button 
+            <button
               className="lg:hidden p-2 text-white/50 hover:text-white"
               onClick={() => setIsMobileOpen(false)}
             >
@@ -214,7 +216,7 @@ const Sidebar = () => {
       <AnimatePresence>
         {showDeleteModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
@@ -225,7 +227,9 @@ const Sidebar = () => {
                   <AlertTriangle size={40} />
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-2xl font-serif font-bold text-gray-800">Are you sure?</h3>
+                  <h3 className="text-2xl font-serif font-bold text-gray-800">
+                    Are you sure?
+                  </h3>
                   <p className="text-sm text-gray-500 leading-relaxed">
                     This action is permanent. All your progress, certifications,
                     and course access will be lost forever.

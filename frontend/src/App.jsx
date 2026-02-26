@@ -88,10 +88,10 @@ function App() {
         <Route path="/allcourses" element={<AllCoursesPage />} />
         <Route path="/coursedetail/:id" element={<CourseDetail />} />
 
-      <Route path="/about" element={<About />} />
-      <Route path="/faculty" element={<FacultyPage />} />
-      <Route path="/contact" element={<Contact />} />
-      <Route path="/inquiry" element={<Inquiry />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/faculty" element={<FacultyPage />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/inquiry" element={<Inquiry />} />
 
         <Route
           path="/courseBuy"
@@ -131,7 +131,10 @@ function App() {
       <Route path="/auth" element={<Sign />} />
       <Route path="/reset-password/:token" element={<Sign />} />
       <Route path="/login" element={<Navigate to="/auth" replace />} />
-      <Route path="/signup" element={<Navigate to="/auth?mode=signup" replace />} />
+      <Route
+        path="/signup"
+        element={<Navigate to="/auth?mode=signup" replace />}
+      />
 
       {/* ========= ADMIN DASHBOARD ========= */}
       <Route

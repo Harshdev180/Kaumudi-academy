@@ -14,7 +14,7 @@ import adminInquiryRoutes from "./routes/adminInquiry.routes.js";
 import profileRoutes from "./routes/profile.routes.js";
 import { config } from "./configs/env.js";
 import notificationRoutes from "./routes/notification.routes.js";
-
+import inquiryRoutes from "./routes/inquiry.routes.js";
 // import mongoSanitize from "express-mongo-sanitize";
 // import xss from "xss-clean";
 import contactRoutes from "./routes/contact.routes.js";
@@ -40,19 +40,39 @@ app.use(express.json());
 // );
 // app.use(xss())
 
+// app.use("/api", authRoutes);
+// app.use("/api", courseRoutes);
+// app.use("/api", paymentRoutes);
+// app.use("/api", couponRoutes);
+// app.use("/api", enrollmentRoutes);
+// app.use("/api", dashboardRoutes);
+// app.use("/api", testimonialRoutes);
+// app.use("/api", contactRoutes);
+// app.use("/api", studentRoutes);
+// app.use("/api", staffRoutes);
+// app.use("/api", adminStudentRoutes);
+// app.use("/api", adminInquiryRoutes);
+// // app.use("/api", adminInquiryRoutes);
+// app.use("/api/profile", profileRoutes);
+// app.use("/api", notificationRoutes);
+// app.use("/api", inquiryRoutes);
+
+// 🔓 PUBLIC ROUTES (ALWAYS FIRST)
+app.use("/api", inquiryRoutes);
+app.use("/api", contactRoutes);
 app.use("/api", authRoutes);
+
+// 🔐 PROTECTED / ADMIN ROUTES (AFTER)
+app.use("/api", adminInquiryRoutes);
+app.use("/api", adminStudentRoutes);
+app.use("/api", staffRoutes);
+app.use("/api", studentRoutes);
 app.use("/api", courseRoutes);
 app.use("/api", paymentRoutes);
 app.use("/api", couponRoutes);
 app.use("/api", enrollmentRoutes);
 app.use("/api", dashboardRoutes);
 app.use("/api", testimonialRoutes);
-app.use("/api", contactRoutes);
-app.use("/api", studentRoutes);
-app.use("/api", staffRoutes);
-app.use("/api", adminStudentRoutes);
-app.use("/api", adminInquiryRoutes);
-// app.use("/api", adminInquiryRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api", notificationRoutes);
 

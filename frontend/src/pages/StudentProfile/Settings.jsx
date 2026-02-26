@@ -51,15 +51,15 @@ const Settings = () => {
   const tabs = ["student details", "change password", "notification settings"];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6 animate-in fade-in duration-700 pb-10 mt-4 sm:mt-6 px-4 sm:px-6">
+    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-700 pb-10 mt-6">
       {/* TOP SECTION: Header & Status Card */}
       <div className="grid grid-cols-12 gap-4 sm:gap-6 items-stretch">
         {/* Profile Identity Left */}
-        <div className="col-span-12 lg:col-span-8 flex flex-col sm:flex-row items-center gap-4 sm:gap-8 p-4 sm:p-6 bg-white/50 rounded-[2rem]">
-          <div className="relative shrink-0">
-            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-[#c9a050] p-1 shadow-xl">
+        <div className="col-span-12 lg:col-span-8 flex flex-col md:flex-row items-center gap-8 p-6">
+          <div className="relative">
+            <div className="w-28 h-28 rounded-full border-2 border-[#c9a050] p-1 shadow-xl">
               <div className="w-full h-full bg-[#fdfbf7] rounded-full flex items-center justify-center border border-[#c9a050]/20">
-                <span className="text-2xl sm:text-3xl font-serif font-bold text-[#74271E]">
+                <span className="text-3xl font-serif font-bold text-[#74271E]">
                   {profile.firstName.charAt(0)}
                   {profile.lastName.charAt(0)}
                 </span>
@@ -67,8 +67,8 @@ const Settings = () => {
             </div>
           </div>
 
-          <div className="text-center sm:text-left space-y-2 w-full min-w-0">
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-gray-800 tracking-tight break-words">
+          <div className="text-center md:text-left space-y-2">
+            <h2 className="text-3xl font-serif font-bold text-gray-800 tracking-tight">
               {profile.firstName} {profile.lastName}{" "}
               <span className="text-gray-300 mx-1 sm:mx-2 font-light">/</span>{" "}
               <span className="block sm:inline">{profile.hindiName}</span>
@@ -85,7 +85,7 @@ const Settings = () => {
         </div>
 
         {/* Student Status Card */}
-        <div className="col-span-12 lg:col-span-4 bg-[#fdfbf7] rounded-[2rem] p-6 sm:p-8 text-[#74271E] shadow-xl relative overflow-hidden group flex flex-col justify-center min-h-[160px] sm:min-h-[180px]">
+        <div className="col-span-12 lg:col-span-4 bg-[#fdfbf7] rounded-[2rem] p-8 text-[#74271E] shadow-xl relative overflow-hidden group flex flex-col justify-center min-h-[180px]">
           <Shield
             className="absolute -right-4 -bottom-4 text-[#74271E]/5 opacity-20"
             size={120}
@@ -94,7 +94,7 @@ const Settings = () => {
             <p className="text-[#74271E]/70 text-[9px] font-black uppercase tracking-[0.2em] mb-2">
               Student Status
             </p>
-            <h4 className="text-base sm:text-lg font-serif font-bold mb-4 sm:mb-6 leading-tight">
+            <h4 className="text-lg font-serif font-bold mb-6 leading-tight">
               {profile.level}
             </h4>
             <div className="bg-[#74271E]/10 p-3 sm:p-4 rounded-2xl border border-[#74271E]/10 backdrop-blur-sm transition-transform group-hover:scale-[1.02] duration-500">
@@ -110,30 +110,28 @@ const Settings = () => {
       </div>
 
       {/* MAIN SETTINGS CARD WITH TABS */}
-      <div className="bg-white rounded-[1.5rem] sm:rounded-[2rem] shadow-sm border border-black/5 overflow-hidden min-h-[500px] sm:min-h-[550px]">
-        <div className="flex overflow-x-auto no-scrollbar border-b border-gray-100 bg-gray-50/30">
-          <div className="flex min-w-full">
-            {tabs.map((tab) => (
-              <button
-                key={tab}
-                disabled={isEditing && tab !== "student details"}
-                onClick={() => setActiveTab(tab)}
-                className={`px-6 sm:px-8 py-4 sm:py-5 text-[10px] sm:text-[12px] font-black uppercase tracking-[0.15em] transition-all relative whitespace-nowrap flex-1 sm:flex-none ${
-                  activeTab === tab
-                    ? "text-[#74271E]"
-                    : "text-gray-400 hover:text-gray-600"
-                } ${isEditing && tab !== "student details" ? "opacity-50 cursor-not-allowed" : ""}`}
-              >
-                {tab}
-                {activeTab === tab && (
-                  <div className="absolute bottom-0 left-4 right-4 sm:left-8 sm:right-8 h-1 bg-[#74271E] rounded-t-full shadow-[0_-2px_10px_rgba(116,39,30,0.3)]" />
-                )}
-              </button>
-            ))}
-          </div>
+      <div className="bg-white rounded-[2rem] shadow-sm border border-black/5 overflow-hidden min-h-[550px]">
+        <div className="flex border-b border-gray-100 px-6 pt-5 bg-gray-50/30">
+          {tabs.map((tab) => (
+            <button
+              key={tab}
+              disabled={isEditing && tab !== "student details"} // Disable tabs during edit
+              onClick={() => setActiveTab(tab)}
+              className={`px-8 py-5 text-[12px] font-black uppercase tracking-[0.15em] transition-all relative ${
+                activeTab === tab
+                  ? "text-[#74271E]"
+                  : "text-gray-400 hover:text-gray-600"
+              } ${isEditing && tab !== "student details" ? "opacity-50 cursor-not-allowed" : ""}`}
+            >
+              {tab}
+              {activeTab === tab && (
+                <div className="absolute bottom-0 left-8 right-8 h-1 bg-[#74271E] rounded-t-full shadow-[0_-2px_10px_rgba(116,39,30,0.3)]" />
+              )}
+            </button>
+          ))}
         </div>
 
-        <div className="p-6 sm:p-10 relative">
+        <div className="p-10 relative">
           {/* 1. STUDENT DETAILS TAB */}
           {activeTab === "student details" && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-8 sm:space-y-12">
@@ -151,7 +149,7 @@ const Settings = () => {
                     <>
                       <button
                         onClick={() => setIsEditing(false)}
-                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-600 rounded-2xl font-bold text-xs hover:bg-gray-200 transition-all"
+                        className="flex items-center gap-2 px-5 py-2.5 bg-gray-100 text-gray-600 rounded-2xl font-bold text-xs hover:bg-gray-200 transition-all active:scale-95"
                       >
                         <X size={14} /> Cancel
                       </button>
@@ -241,7 +239,7 @@ const Settings = () => {
 };
 
 const DetailItem = ({ icon, label, val, isEditing, onChange }) => (
-  <div className="flex items-start gap-4 group w-full min-w-0">
+  <div className="flex items-start gap-4 group">
     <div className="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-[#f7f1e3] group-hover:text-[#c9a050] transition-colors shrink-0">
       {icon}
     </div>
@@ -258,16 +256,18 @@ const DetailItem = ({ icon, label, val, isEditing, onChange }) => (
           className="w-full text-sm sm:text-base font-bold text-gray-700 border-b-2 border-[#c9a050]/30 focus:border-[#c9a050] outline-none bg-transparent py-1 transition-all"
         />
       ) : (
-        <p className="text-sm sm:text-base font-bold text-gray-700 break-words">{val}</p>
+        <p className="text-sm sm:text-base font-bold text-gray-700 break-words">
+          {val}
+        </p>
       )}
     </div>
   </div>
 );
 
 const ChangePasswordView = () => (
-  <div className="animate-in fade-in slide-in-from-right-4 duration-700 max-w-2xl mx-auto py-3">
-    <div className="bg-[#fdfbf7] p-6 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] border border-[#e6d5b8]/30 relative overflow-hidden">
-      <div className="absolute top-0 right-0 p-8 opacity-[0.03] text-[#74271E] hidden sm:block">
+  <div className="animate-in fade-in slide-in-from-right-4 duration-700 max-w-7xl mx-auto py-3">
+    <div className="bg-[#fdfbf7] p-8 rounded-[2.5rem] border border-[#e6d5b8]/30 relative overflow-hidden">
+      <div className="absolute top-0 right-0 p-8 opacity-[0.03] text-[#74271E]">
         <Lock size={120} />
       </div>
       <div className="relative z-10 space-y-6 sm:space-y-8">
@@ -335,10 +335,10 @@ const NotificationView = ({ notifications, setNotifications }) => (
         ].map((pref) => (
           <div
             key={pref.id}
-            className="flex items-center justify-between p-4 sm:p-5 rounded-[1.5rem] sm:rounded-[2rem] bg-gray-50/50 hover:bg-white border border-transparent hover:border-gray-100 transition-all group"
+            className="flex items-center justify-between p-5 rounded-[2rem] bg-gray-50/50 hover:bg-white border border-transparent hover:border-gray-100 transition-all group"
           >
-            <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-              <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-gray-400 group-hover:text-[#c9a050] shadow-sm shrink-0">
+            <div className="flex items-center gap-4">
+              <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-gray-400 group-hover:text-[#c9a050] shadow-sm">
                 {pref.icon}
               </div>
               <div className="min-w-0">
@@ -364,8 +364,8 @@ const NotificationView = ({ notifications, setNotifications }) => (
           </div>
         ))}
       </div>
-      <div className="bg-[#fdfbf7] p-6 sm:p-8 rounded-[2rem] sm:rounded-[3rem] border border-[#e6d5b8]/30 flex flex-col justify-center text-center space-y-4 sm:space-y-6">
-        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center mx-auto text-[#c9a050] shadow-sm">
+      <div className="bg-[#fdfbf7] p-8 rounded-[3rem] border border-[#e6d5b8]/30 flex flex-col justify-center text-center space-y-6">
+        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto text-[#c9a050] shadow-sm">
           <ShieldCheck size={28} />
         </div>
         <div>
