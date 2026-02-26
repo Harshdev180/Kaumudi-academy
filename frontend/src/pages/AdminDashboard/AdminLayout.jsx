@@ -88,26 +88,14 @@ const AdminLayout = () => {
           setMobileOpen={setMobileOpen}
         />
 
-        {/* ⭐ FLOATING TOGGLE BUTTON */}
-        {isMobile && (
-          <motion.button
-            onClick={() => {
-              setMobileOpen(true);
-              setSideBarCollapsed(false); // ⭐ THIS LINE FIXES EVERYTHING
-            }}
-            whileTap={{ scale: 0.92 }}
-            className=" fixed z-[60] bottom-6 left-6 w-14 h-14 rounded-full bg-[#D1B062] text-[#6b1d14] border-4 border-[#FBF4E2] flex items-center justify-center shadow-xl lg:hidden"
-          >
-            <MdMenu size={26} />
-          </motion.button>
-        )}
-
         {/* RIGHT AREA */}
         <div className="flex-1 flex flex-col min-w-0">
 
           <Header
             showAlerts={showAlerts}
             setShowAlerts={setShowAlerts}
+            mobileOpen={mobileOpen}
+            setMobileOpen={setMobileOpen}
           />
 
           <main

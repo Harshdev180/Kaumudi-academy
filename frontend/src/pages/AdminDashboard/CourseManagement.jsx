@@ -231,11 +231,11 @@ const CourseManagement = () => {
 
       {/* HEADER */}
       <div className="bg-gradient-to-r from-[#7a1f16] to-[#6b1d14] text-white rounded-3xl p-6 flex justify-between">
-        <h1 className="text-3xl font-black">Course Management</h1>
+        <h1 className="text-sm md:text-3xl font-black">Course Management</h1>
 
         <button
           onClick={openAdd}
-          className="flex items-center gap-2 bg-[#e6b86a] text-[#4a2b07] px-5 py-2 rounded-xl font-semibold"
+          className="flex items-center gap-1 bg-[#e6b86a] text-[#4a2b07] px-2 md:px-5 md:py-2 rounded-xl font-semibold text-xs md:text-xl"
         >
           <MdAdd /> Add Course
         </button>

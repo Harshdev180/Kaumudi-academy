@@ -68,17 +68,17 @@ function CouponPage() {
         if (mounted) {
           const mapped = Array.isArray(list)
             ? list.map((c) => ({
-                id: c?._id || c?.id,
-                code: c?.code || "",
-                type: c?.discountType || "percentage",
-                discount:
-                  c?.discountValue ??
-                  c?.discountPercentage ??
-                  0,
-                startTime: c?.startTime,
-                endTime: c?.endTime,
-                isActive: !!c?.isActive,
-              }))
+              id: c?._id || c?.id,
+              code: c?.code || "",
+              type: c?.discountType || "percentage",
+              discount:
+                c?.discountValue ??
+                c?.discountPercentage ??
+                0,
+              startTime: c?.startTime,
+              endTime: c?.endTime,
+              isActive: !!c?.isActive,
+            }))
             : [];
           setCoupons(mapped);
         }
@@ -149,26 +149,26 @@ function CouponPage() {
 
       const nextCoupon = created
         ? {
-            id: created?._id || created?.id,
-            code: created?.code || payload.code,
-            type: created?.discountType || payload.discountType,
-            discount:
-              created?.discountValue ??
-              created?.discountPercentage ??
-              payload.discountValue,
-            startTime: created?.startTime || payload.startTime,
-            endTime: created?.endTime || payload.endTime,
-            isActive: !!created?.isActive,
-          }
+          id: created?._id || created?.id,
+          code: created?.code || payload.code,
+          type: created?.discountType || payload.discountType,
+          discount:
+            created?.discountValue ??
+            created?.discountPercentage ??
+            payload.discountValue,
+          startTime: created?.startTime || payload.startTime,
+          endTime: created?.endTime || payload.endTime,
+          isActive: !!created?.isActive,
+        }
         : {
-            id: editId || Date.now(),
-            code: payload.code,
-            type: payload.discountType,
-            discount: payload.discountValue,
-            startTime: payload.startTime,
-            endTime: payload.endTime,
-            isActive: true,
-          };
+          id: editId || Date.now(),
+          code: payload.code,
+          type: payload.discountType,
+          discount: payload.discountValue,
+          startTime: payload.startTime,
+          endTime: payload.endTime,
+          isActive: true,
+        };
 
       setCoupons((prev) =>
         editId
@@ -255,8 +255,8 @@ function CouponPage() {
       )}
 
       {/* HEADER */}
-      <div className="rounded-3xl bg-gradient-to-r from-[#74271E] via-[#8a2a1f] to-[#5a1b14] text-white p-8 flex justify-between">
-        <h2 className="text-3xl font-black">Coupon Control Center</h2>
+      <div className="rounded-3xl bg-gradient-to-r from-[#74271E] via-[#8a2a1f] to-[#5a1b14] text-white p-6 md:p-8 flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4">
+        <h2 className="text-sm md:text-3xl font-black w-full md:w-auto">Coupon Control Center</h2>
 
         <button
           onClick={() => {
@@ -270,9 +270,11 @@ function CouponPage() {
             });
             setShowForm(true);
           }}
-          className="flex items-center gap-2 bg-[#D4AF37] text-[#74271E] px-5 py-2 rounded-full font-semibold"
+          className="flex items-center gap-1 bg-[#D4AF37] text-[#74271E] px-3 py-2 md:px-5 md:py-2 rounded-full font-semibold text-xs md:text-sm w-full md:w-auto justify-center"
         >
-          <Plus size={16} /> Create Coupon
+          <Plus size={18} />
+          <span className="hidden md:inline">Create Coupon</span>
+          <span className="md:hidden">New Coupon</span>
         </button>
       </div>
 

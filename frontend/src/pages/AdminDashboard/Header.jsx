@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Bell, Settings, BellRing, X } from "lucide-react";
 import {
   AlertTriangle,
@@ -11,13 +11,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Alert } from "./Alert";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/useAuthHook";
+import { MdMenu } from "react-icons/md";
 
-function Header({ showAlerts, setShowAlerts }) {
+function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
   const alertRef = useRef(null);
   const searchRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading } = useAuth();
+
+  const [isMobile, setIsMobile] = useState(false);
 
   /* ================= DYNAMIC TITLE ================= */
 
@@ -94,6 +97,23 @@ function Header({ showAlerts, setShowAlerts }) {
   const profileRole = loading ? "Checking..." : displayRole;
   const profileInitials = loading ? "--" : initials;
 
+  useEffect(() => {
+
+    const checkScreen = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+    };
+
+    checkScreen();
+
+    window.addEventListener("resize", checkScreen);
+
+    return () => window.removeEventListener("resize", checkScreen);
+
+  }, []);
+
+
+
   return (
     <div className="relative z-[9999]">
       {/* ⭐ GOLDEN GLOW TOP BORDER */}
@@ -102,19 +122,32 @@ function Header({ showAlerts, setShowAlerts }) {
       <div className="bg-gradient-to-r from-[#74271E] via-[#8a2a1f] to-[#5a1b14] border-b border-[#D4AF37]/20 px-4 md:px-6 py-4">
         <div className="flex items-center justify-between">
           {/* LEFT TITLE */}
-          <div className="flex flex-col">
-            <motion.h1
-              key={location.pathname}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-xl md:text-2xl font-black text-white tracking-wide"
-            >
-              Admin Dashboard
-            </motion.h1>
+          <div className="flex items-center gap-3">
+            {isMobile && (
+              <motion.button
+                onClick={() => setMobileOpen(!mobileOpen)}
+                whileTap={{ scale: 0.92 }}
+                className="p-2 rounded-lg bg-[#D1B062]/20 text-[#D4AF37] hover:bg-[#D1B062] hover:text-[#6b1d14] transition lg:hidden"
+              >
+                <MdMenu size={20} />
+              </motion.button>
+            )}
+            <div className="flex flex-col">
+              <motion.h1
+                key={location.pathname}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className=" text-md md:text-2xl font-black text-white tracking-wide"
+              >
+                {isMobile ? "Dashboard" : "Admin Dashboard"}
+              </motion.h1>
 
-            <span className="text-[11px] text-[#D4AF37]/80 font-medium">
-              Kaumudi Sanskrit Academy Panel
-            </span>
+              {!isMobile && (
+                <span className="text-[11px] text-[#D4AF37]/80 font-medium">
+                  Kaumudi Sanskrit Academy Panel
+                </span>
+              )}
+            </div>
           </div>
 
           {/* RIGHT ACTIONS */}
@@ -138,8 +171,7 @@ function Header({ showAlerts, setShowAlerts }) {
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
-                    className="absolute right-0 mt-3 w-80 rounded-3xl shadow-xl bg- text-[#6b1d14] overflow-hidden"
-                  >
+                    className="fixed left-1/2 -translate-x-1/2 top-20 w-[92vw] max-w-sm md:absolute md:left-auto md:translate-x-0 md:right-0 md:top-auto md:mt-3 md:w-80 rounded-3xl shadow-xl text-[#6b1d14] overflow-hidden z-[9999]">
                     <div className="px-5 py-4  flex items-center bg-[#EFE3D5] justify-between">
                       <div className="flex items-start  gap-3">
                         <BellRing className="w-5 h-5 text-[#6b1d14]" />
@@ -153,7 +185,7 @@ function Header({ showAlerts, setShowAlerts }) {
                       </button>
                     </div>
 
-                    <div className="px-3 py-2 space-y-2 max-h-72 bg-[#6b1d14]  overflow-y-auto">
+                    <div className=" px-3 py-2 space-y-2 max-h-72 bg-[#6b1d14]  overflow-y-auto">
                       {latestAlerts.map((alert) => (
                         <motion.div
                           key={alert.id}
