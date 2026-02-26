@@ -6,11 +6,15 @@ export const api = axios.create({
   baseURL: API_BASE,
 });
 
-const token = localStorage.getItem("token");
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
 
-if (token) {
-  api.defaults.headers.common.Authorization = `Bearer ${token}`;
-}
+  if (token && token !== "null" && token !== "undefined") {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
 
 export function setAuthToken(token) {
   if (token) {
