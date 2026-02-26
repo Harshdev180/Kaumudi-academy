@@ -47,6 +47,8 @@ const EnrollmentPage = () => {
   const [couponError, setCouponError] = useState("");
   const [isApplying, setIsApplying] = useState(false);
   const [appliedCouponName, setAppliedCouponName] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(!!user?.email);
+  const [couponStatus, setCouponStatus] = useState({ type: "", msg: "" });
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -69,10 +71,17 @@ const EnrollmentPage = () => {
 
   // --- DATA HANDLING ---
   const courseData = useMemo(() => {
+    const rawPrice = location.state?.price || 14999;
+
+    const numericPrice =
+      typeof rawPrice === "number"
+        ? rawPrice
+        : parseInt(String(rawPrice).replace(/[^0-9]/g, "")) || 0;
+
     return {
       courseId: location.state?.courseId || null,
       courseName: location.state?.courseName || "Advanced Paninian Grammar",
-      price: location.state?.price || "14,999",
+      price: numericPrice, // always number now
       duration: location.state?.duration || "6 Months",
       level: location.state?.level || "Advanced",
       language: location.state?.language || "Sanskrit/Hindi",
@@ -82,12 +91,34 @@ const EnrollmentPage = () => {
 
   // --- DYNAMIC PRICE LOGIC ---
   const basePrice = useMemo(() => {
-    return parseInt(courseData.price.replace(/,/g, "")) || 0;
+    const p = courseData?.price;
+    if (typeof p === "number") return p;
+    return parseInt(String(p).replace(/[^0-9]/g, "")) || 0;
   }, [courseData.price]);
 
   // finalPayableAmount = Discount amount is applied via setDiscount() function
 
   // --- COUPON HANDLER ---
+  const applyCoupon = () => {
+    if (!couponCode) {
+      setCouponStatus({ type: "error", msg: "Please enter a code" });
+      return;
+    }
+    const code = couponCode.trim().toUpperCase();
+    if (code === "KAUMUDI10") {
+      const savings = Math.round(basePrice * 0.1);
+      setDiscount(savings);
+      setAppliedCouponName(code);
+      setCouponStatus({
+        type: "success",
+        msg: `Applied ₹${savings.toLocaleString("en-IN")} off`,
+      });
+    } else {
+      setDiscount(0);
+      setAppliedCouponName("");
+      setCouponStatus({ type: "error", msg: "Invalid or Expired Code" });
+    }
+  };
   const handleApplyCoupon = async () => {
     if (!couponCode) {
       setCouponError("Please enter a code");

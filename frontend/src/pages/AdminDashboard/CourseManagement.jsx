@@ -6,7 +6,7 @@ import {
   MdEdit,
   MdDelete,
   MdAutoStories,
-  MdTranslate
+  MdTranslate,
 } from "react-icons/md";
 
 import AddCourse from "./AddCourse";
@@ -15,11 +15,10 @@ import {
   createCourse,
   updateCourse,
   deleteCourse,
-  toggleCourseStatus
+  toggleCourseStatus,
 } from "../../lib/api";
 
 const CourseManagement = () => {
-
   const initialForm = {
     title: "",
     description: "",
@@ -37,7 +36,7 @@ const CourseManagement = () => {
     imageFile: null,
     imagePreview: "",
     video1: "",
-    video2: ""
+    video2: "",
   };
 
   /* ================= STATE ================= */
@@ -60,7 +59,7 @@ const CourseManagement = () => {
       mode: "ONLINE",
       price: 240,
       status: "Published",
-      icon: <MdAutoStories />
+      icon: <MdAutoStories />,
     },
     {
       id: 2,
@@ -72,8 +71,8 @@ const CourseManagement = () => {
       mode: "HYBRID",
       price: 350,
       status: "Draft",
-      icon: <MdAutoStories />
-    }
+      icon: <MdAutoStories />,
+    },
   ]);
 
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -103,10 +102,9 @@ const CourseManagement = () => {
         image: course.image,
         video1: course.video1,
         video2: course.video2,
-        icon: <MdAutoStories />
+        icon: <MdAutoStories />,
       }));
       setCourses(formatted);
-
     } catch (err) {
       console.log("API fail → static courses used");
     } finally {
@@ -124,7 +122,7 @@ const CourseManagement = () => {
     return courses.filter(
       (c) =>
         c.title.toLowerCase().includes(search.toLowerCase()) &&
-        (filter === "All" || c.status === filter)
+        (filter === "All" || c.status === filter),
     );
   }, [search, filter, courses]);
 
@@ -141,7 +139,7 @@ const CourseManagement = () => {
     setForm({
       ...initialForm,
       ...course,
-      duration: course.dur
+      duration: course.dur,
     });
     setDrawerOpen(true);
   };
@@ -161,7 +159,7 @@ const CourseManagement = () => {
       mode: form.mode,
       price: form.price,
       status: "Draft",
-      icon: <MdTranslate />
+      icon: <MdTranslate />,
     };
 
     try {
@@ -178,18 +176,15 @@ const CourseManagement = () => {
 
       if (editId) await updateCourse(editId, payload);
       else await createCourse(payload);
-
     } catch {
       console.log("API fail but UI updated");
     }
 
     /* ⭐ ALWAYS UPDATE UI */
     if (editId) {
-      setCourses(prev =>
-        prev.map(c => (c.id === editId ? newCourse : c))
-      );
+      setCourses((prev) => prev.map((c) => (c.id === editId ? newCourse : c)));
     } else {
-      setCourses(prev => [newCourse, ...prev]);
+      setCourses((prev) => [newCourse, ...prev]);
     }
 
     setDrawerOpen(false);
@@ -199,17 +194,17 @@ const CourseManagement = () => {
   };
 
   const toggleStatus = (id) => {
-    setCourses(prev =>
-      prev.map(c =>
+    setCourses((prev) =>
+      prev.map((c) =>
         c.id === id
           ? { ...c, status: c.status === "Published" ? "Draft" : "Published" }
-          : c
-      )
+          : c,
+      ),
     );
   };
 
   const deleteCourseItem = (id) => {
-    setCourses(prev => prev.filter(c => c.id !== id));
+    setCourses((prev) => prev.filter((c) => c.id !== id));
   };
 
   /* ================= UI ================= */
@@ -228,7 +223,6 @@ const CourseManagement = () => {
 
   return (
     <main className="w-full bg-[#F3E6C9] p-6 space-y-8">
-
       {/* HEADER */}
       <div className="bg-gradient-to-r from-[#7a1f16] to-[#6b1d14] text-white rounded-3xl p-6 flex justify-between">
         <h1 className="text-sm md:text-3xl font-black">Course Management</h1>
@@ -243,7 +237,6 @@ const CourseManagement = () => {
 
       {/* SEARCH + FILTER */}
       <div className="bg-[#FBF4E2] rounded-2xl p-6 space-y-4">
-
         <div className="relative">
           <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[#856966]" />
           <input
@@ -255,27 +248,29 @@ const CourseManagement = () => {
         </div>
 
         <div className="flex gap-3">
-          {["All", "Published", "Draft"].map(tab => (
+          {["All", "Published", "Draft"].map((tab) => (
             <button
               key={tab}
               onClick={() => setFilter(tab)}
-              className={`px-5 py-2 rounded-lg text-sm font-semibold ${filter === tab
-                ? "bg-[#6b1d14] text-white"
-                : "text-[#6b1d14] border border-[#D1B062]/40"
-                }`}
+              className={`px-5 py-2 rounded-lg text-sm font-semibold ${
+                filter === tab
+                  ? "bg-[#6b1d14] text-white"
+                  : "text-[#6b1d14] border border-[#D1B062]/40"
+              }`}
             >
               {tab}
             </button>
           ))}
         </div>
-
       </div>
 
       {/* GRID */}
       <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
-        {filteredCourses.map(course => (
-          <div key={course.id} className="rounded-3xl overflow-hidden shadow-lg bg-white">
-
+        {filteredCourses.map((course) => (
+          <div
+            key={course.id}
+            className="rounded-3xl overflow-hidden shadow-lg bg-white"
+          >
             {/* Image / hero */}
             <div className="relative h-44 bg-gradient-to-r from-[#7a1f16] to-[#6b1d14]">
               {course.imagePreview || course.image ? (
@@ -291,7 +286,9 @@ const CourseManagement = () => {
               )}
 
               <div className="absolute top-3 left-3">
-                <span className={`text-xs font-semibold px-3 py-1 rounded-full ${course.status === 'Published' ? 'bg-green-600 text-white' : 'bg-[#EFE3D5] text-[#6b1d14]'}`}>
+                <span
+                  className={`text-xs font-semibold px-3 py-1 rounded-full ${course.status === "Published" ? "bg-green-600 text-white" : "bg-[#EFE3D5] text-[#6b1d14]"}`}
+                >
                   {course.status}
                 </span>
               </div>
@@ -300,29 +297,49 @@ const CourseManagement = () => {
             {/* Content */}
             <div className="p-4 bg-[#FBF4E2] space-y-3">
               <div>
-                <h3 className="text-lg font-bold text-[#6b1d14] leading-tight">{course.title}</h3>
-                <p className="text-sm text-[#856966] mt-1 line-clamp-2">{course.description || 'No description available'}</p>
+                <h3 className="text-lg font-bold text-[#6b1d14] leading-tight">
+                  {course.title}
+                </h3>
+                <p className="text-sm text-[#856966] mt-1 line-clamp-2">
+                  {course.description || "No description available"}
+                </p>
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="text-xs text-[#6b1d14] bg-white/60 px-2 py-1 rounded-full">{course.level}</div>
-                  <div className="text-xs text-[#6b1d14] bg-white/60 px-2 py-1 rounded-full">{course.mode}</div>
-                  <div className="text-xs text-[#6b1d14] bg-white/60 px-2 py-1 rounded-full">{course.dur}</div>
+                  <div className="text-xs text-[#6b1d14] bg-white/60 px-2 py-1 rounded-full">
+                    {course.level}
+                  </div>
+                  <div className="text-xs text-[#6b1d14] bg-white/60 px-2 py-1 rounded-full">
+                    {course.mode}
+                  </div>
+                  <div className="text-xs text-[#6b1d14] bg-white/60 px-2 py-1 rounded-full">
+                    {course.dur}
+                  </div>
                 </div>
 
                 <div className="text-right">
-                  <div className="text-sm font-extrabold text-[#6b1d14]">₹{course.price ?? '—'}</div>
-                  <div className="text-xs text-[#856966]">Faculty: {course.faculty || 'TBA'}</div>
+                  <div className="text-sm font-extrabold text-[#6b1d14]">
+                    ₹{course.price ?? "—"}
+                  </div>
+                  <div className="text-xs text-[#856966]">
+                    Faculty: {course.faculty || "TBA"}
+                  </div>
                 </div>
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="flex gap-2">
-                  <button onClick={() => openEdit(course)} className="px-3 py-2 bg-white rounded-lg border border-[#E6D9C4] text-[#6b1d14] hover:bg-[#EFE3D5] transition">
+                  <button
+                    onClick={() => openEdit(course)}
+                    className="px-3 py-2 bg-white rounded-lg border border-[#E6D9C4] text-[#6b1d14] hover:bg-[#EFE3D5] transition"
+                  >
                     <MdEdit />
                   </button>
-                  <button onClick={() => deleteCourseItem(course.id)} className="px-3 py-2 bg-white rounded-lg border border-[#E6D9C4] text-[#6b1d14] hover:bg-red-50 transition">
+                  <button
+                    onClick={() => deleteCourseItem(course.id)}
+                    className="px-3 py-2 bg-white rounded-lg border border-[#E6D9C4] text-[#6b1d14] hover:bg-red-50 transition"
+                  >
                     <MdDelete />
                   </button>
                 </div>
@@ -330,15 +347,14 @@ const CourseManagement = () => {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => toggleStatus(course.id)}
-                    className={`px-4 py-2 rounded-xl font-semibold transition-colors ${course.status === 'Published' ? 'bg-green-600/80 text-white' : 'bg-[#6b1d14]/80 text-white'}`}
-                    aria-pressed={course.status === 'Published'}
+                    className={`px-4 py-2 rounded-xl font-semibold transition-colors ${course.status === "Published" ? "bg-green-600/80 text-white" : "bg-[#6b1d14]/80 text-white"}`}
+                    aria-pressed={course.status === "Published"}
                   >
-                    {course.status === 'Published' ? 'Active' : 'Activate'}
+                    {course.status === "Published" ? "Active" : "Activate"}
                   </button>
                 </div>
               </div>
             </div>
-
           </div>
         ))}
       </div>
@@ -352,7 +368,6 @@ const CourseManagement = () => {
         editId={editId}
         savingCourse={savingCourse}
       />
-
     </main>
   );
 };

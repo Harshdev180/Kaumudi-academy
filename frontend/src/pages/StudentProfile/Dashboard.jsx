@@ -1,10 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import {
-  getProfileRecentEnrollments,
-  getProfileStats,
-} from "../../lib/api";
+import { getProfileRecentEnrollments, getProfileStats } from "../../lib/api";
 import { useAuth } from "../../context/useAuthHook";
 
 const Dashboard = () => {
@@ -228,9 +225,9 @@ const Dashboard = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, ease: "easeOut", delay: 0.05 }}
-        className="col-span-4 bg-white rounded-3xl p-6 shadow-sm border border-black/5 flex flex-col"
+        className="col-span-12 md:col-span-6 lg:col-span-4 bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-black/5 flex flex-col min-w-0"
       >
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2 gap-2 sm:gap-0">
           <h3 className="font-bold text-lg text-gray-800">Calendar</h3>
           <div className="flex gap-1">
             <button
@@ -247,11 +244,11 @@ const Dashboard = () => {
             </button>
           </div>
         </div>
-        <p className="text-xs text-gray-400 mb-4">
+        <p className="text-xs text-gray-400 mb-2 sm:mb-4">
           {monthName} {year}
         </p>
 
-        <div className="grid grid-cols-7 text-center text-[10px] gap-y-2 font-bold text-gray-400 uppercase tracking-tighter">
+        <div className="grid grid-cols-7 text-center text-[10px] gap-y-2 gap-x-0.5 font-bold text-gray-400 uppercase tracking-tighter w-full overflow-x-auto">
           {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
             <div key={d}>{d}</div>
           ))}
@@ -288,8 +285,8 @@ const Dashboard = () => {
           })}
         </div>
 
-        <div className="mt-4 space-y-2">
-          <div className="bg-red-50/50 border-l-4 border-[#74271E] p-2 rounded-r flex justify-between items-center">
+        <div className="mt-3 sm:mt-4 space-y-2">
+          <div className="bg-red-50/50 border-l-4 border-[#74271E] p-2 rounded-r flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1">
             <span className="text-[10px] font-bold text-[#74271E]">
               Next Session: Oct 25, 4:00 PM
             </span>

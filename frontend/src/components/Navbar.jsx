@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, User, LogOut } from "lucide-react"; // Icons add kiye
 import logo from "../assets/logo-bgremove.png";
+import { useAuth } from "../context/useAuthHook";
 
 /* ------------------ CONFIG ------------------ */
 
@@ -59,16 +60,20 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
+  const { isAuthenticated, user, loading } = useAuth();
 
   const { pathname } = useLocation();
   const isHome = pathname === "/";
 
-  // --- LOGIN LOGIC ---
-  const isLoggedIn = !!localStorage.getItem("kaumudi_token");
-  const role = (localStorage.getItem("kaumudi_role") || "").toUpperCase();
+  // --- LOGIN LOGIC (use AuthContext first, fallback to storage) ---
+  const storedEmail = localStorage.getItem("kaumudi_user_email");
+  const storedRole = (localStorage.getItem("kaumudi_role") || "").toUpperCase();
+  const role = (user?.role || storedRole || "").toUpperCase();
+  const isLoggedIn =
+    !loading && isAuthenticated && !!(user?.email || storedEmail);
 
   const profilePath =
-    role === "ADMIN" || role === "SUPER_ADMIN" ? "/admin" : "/student/profile";
+    role === "ADMIN" || role === "SUPER_ADMIN" ? "/admin" : "/student/overview";
 
   const handleLogout = () => {
     localStorage.removeItem("kaumudi_token");

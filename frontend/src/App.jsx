@@ -47,6 +47,7 @@ import Certifications from "./pages/StudentProfile/Certifications";
 import Profile from "./pages/StudentProfile/Profile";
 import Settings from "./pages/StudentProfile/Settings";
 import FeePurchase from "./pages/StudentProfile/Fees.jsx";
+import Notifications from "./pages/StudentProfile/Notifications.jsx";
 
 // Public site layout with shared navbar/footer
 function PublicLayout() {
@@ -87,10 +88,10 @@ function App() {
         <Route path="/allcourses" element={<AllCoursesPage />} />
         <Route path="/coursedetail/:id" element={<CourseDetail />} />
 
-      <Route path="/about" element={<About />} />
-      <Route path="/faculty" element={<FacultyPage />} />
-      <Route path="/contact" element={<Contact />} />
-      <Route path="/inquiry" element={<Inquiry />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/faculty" element={<FacultyPage />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/inquiry" element={<Inquiry />} />
 
         <Route
           path="/courseBuy"
@@ -123,13 +124,17 @@ function App() {
         <Route path="profile" element={<Profile />} />
         <Route path="payments" element={<FeePurchase />} />
         <Route path="settings" element={<Settings />} />
+        <Route path="notifications" element={<Notifications />} />
       </Route>
 
       {/* ========= AUTH ========= */}
       <Route path="/auth" element={<Sign />} />
       <Route path="/reset-password/:token" element={<Sign />} />
       <Route path="/login" element={<Navigate to="/auth" replace />} />
-      <Route path="/signup" element={<Navigate to="/auth?mode=signup" replace />} />
+      <Route
+        path="/signup"
+        element={<Navigate to="/auth?mode=signup" replace />}
+      />
 
       {/* ========= ADMIN DASHBOARD ========= */}
       <Route

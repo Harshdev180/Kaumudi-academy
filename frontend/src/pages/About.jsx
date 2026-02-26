@@ -30,7 +30,7 @@ export default function About() {
         className="relative min-h-[90vh] flex items-center justify-center text-center overflow-hidden bg-cover bg-center"
         style={{
           backgroundImage:
-            'url("https://i.pinimg.com/1200x/03/8a/e7/038ae754aa9442afe56e51560cab8bb6.jpg")',
+            'url("https://i.pinimg.com/736x/60/5e/49/605e494a0d065722f8f13458c2aa328a.jpg")',
         }}
       >
         <div className="absolute inset-0 bg-[#2c2820]/60" />
