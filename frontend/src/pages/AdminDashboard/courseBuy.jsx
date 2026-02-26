@@ -30,6 +30,7 @@ import {
   verifyPayment,
   updateStudentProfile,
 } from "../../lib/api";
+import SEO from "../../components/SEO";
 
 /**
  * EnrollmentPage Component
@@ -331,6 +332,13 @@ const EnrollmentPage = () => {
 
   return (
     <div className="min-h-screen bg-[#f1e4c8] py-16 px-4 md:px-11 font-sans-serif relative overflow-hidden">
+      <SEO
+        title="Checkout | Kaumudi Sanskrit Academy"
+        description="Secure enrollment checkout."
+        canonicalPath="/courseBuy"
+        robots="noindex, nofollow"
+        og={{ type: "website" }}
+      />
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0 opacity-20">
         <div className="absolute top-10 left-10 w-64 h-64 bg-[#d6b15c] rounded-full blur-[120px]" />
         <div className="absolute bottom-10 right-10 w-96 h-96 bg-[#631D11] rounded-full blur-[150px]" />

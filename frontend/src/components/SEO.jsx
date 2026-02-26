@@ -42,7 +42,8 @@ export default function SEO({
     }
     // canonical
     if (canonicalPath) {
-      const origin = typeof window !== "undefined" ? window.location.origin : "";
+      const origin =
+        typeof window !== "undefined" ? window.location.origin : "";
       const href = canonicalPath.startsWith("http")
         ? canonicalPath
         : `${origin}${canonicalPath.startsWith("/") ? "" : "/"}${canonicalPath}`;
@@ -57,9 +58,14 @@ export default function SEO({
       ogUrl.setAttribute("property", "og:url");
       ogUrl.setAttribute("content", href);
     }
-    // OpenGraph
+    // OpenGraph + Twitter
     const siteName = "Kaumudi Sanskrit Academy";
-    const ogImage = og.image;
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    let ogImage = og.image;
+    if (ogImage && !/^https?:\/\//i.test(ogImage)) {
+      ogImage = `${origin}${ogImage.startsWith("/") ? "" : "/"}${ogImage}`;
+    }
+    const twitterCard = og.twitterCard || "summary_large_image";
     const setOg = (prop, content) => {
       if (!content) return;
       const el =
@@ -68,9 +74,21 @@ export default function SEO({
       el.setAttribute("property", prop);
       el.setAttribute("content", content);
     };
+    const setTw = (name, content) => {
+      if (!content) return;
+      const el =
+        document.querySelector(`meta[name="${name}"]`) ||
+        document.head.appendChild(document.createElement("meta"));
+      el.setAttribute("name", name);
+      el.setAttribute("content", content);
+    };
     setOg("og:type", og.type || "website");
     setOg("og:site_name", siteName);
     if (ogImage) setOg("og:image", ogImage);
+    setTw("twitter:card", twitterCard);
+    if (title) setTw("twitter:title", title);
+    if (description) setTw("twitter:description", description);
+    if (ogImage) setTw("twitter:image", ogImage);
     // JSON-LD
     let ldScript;
     if (jsonLd) {
