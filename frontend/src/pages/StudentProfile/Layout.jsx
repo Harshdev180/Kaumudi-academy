@@ -93,17 +93,32 @@ const Layout = () => {
       <Sidebar />
 
       <div className="flex-1 flex flex-col min-w-0 relative">
-        <header className="h-20 flex items-center justify-between px-4 md:px-10 bg-gradient-to-r from-[#f3e6c9] to-[#FBF4E2] border-b border-[#e6d5b8]/50 shrink-0 z-40">
-          <div className="flex flex-col justify-center items-center md:items-start text-center md:text-left gap-2 font-serif w-full">
-            <h2 className="text-2xl font-bold capitalize tracking-tight text-[#74271E]">
-              {pageTitle}
-            </h2>
-            <div className="h-1 w-8 bg-[#c9a050] rounded-full"></div>
+        <header
+          className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between 
+    gap-4 sm:gap-0 
+    px-4 sm:px-6 md:px-10 
+    py-4 sm:py-0 
+    sm:h-20
+    bg-gradient-to-r from-[#f3e6c9] to-[#FBF4E2] 
+    border-b border-[#e6d5b8]/50 
+    shrink-0 z-40"
+        >
+          {/* LEFT SECTION */}
+          <div className="flex items-center justify-between sm:justify-start gap-4 w-full sm:w-auto">
+            <div className="flex flex-col min-w-0">
+              <h2
+                className="text-lg sm:text-xl md:text-2xl font-bold capitalize 
+          tracking-tight text-[#74271E] truncate"
+              >
+                {pageTitle}
+              </h2>
+              <div className="h-1 w-8 bg-[#c9a050] rounded-full mt-1"></div>
+            </div>
           </div>
 
           <div className="flex items-center gap-8">
             <div className="hidden md:flex items-center bg-white/60 border border-[#e6d5b8] rounded-2xl px-4 py-2 focus-within:bg-white transition-all shadow-sm">
-              <ul className="hidden lg:flex items-center gap-10 font-semibold flex-wrap">
+              <ul className="hidden lg:flex items-center gap-4 font-semibold flex-wrap">
                 {NAV_ITEMS.map(({ label, to }) => {
                   const isActive = location.pathname === to;
                   return (

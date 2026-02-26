@@ -90,11 +90,17 @@ const FacultyPage = () => {
           </p>
 
           <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <Link className="px-8 py-4 rounded-full bg-[#d6b15c] text-[#74271E] font-bold hover:scale-105 transition">
+            <Link
+              className="px-8 py-4 rounded-full bg-[#d6b15c] text-[#74271E] font-bold hover:scale-105 transition"
+              to="/allcourses"
+            >
               Explore Courses
             </Link>
 
-            <Link className="px-8 py-4 rounded-full border border-white text-white hover:bg-white hover:text-[#74271E] transition">
+            <Link
+              className="px-8 py-4 rounded-full border border-white text-white hover:bg-white hover:text-[#74271E] transition"
+              to={"/contact"}
+            >
               Contact Academy
             </Link>
           </div>
@@ -162,9 +168,12 @@ const FacultyPage = () => {
             Join our courses and receive mentorship from distinguished scholars.
           </p>
 
-          <button className="bg-[#d6b15c] text-[#7b2d1f] px-10 py-4 rounded-full font-bold hover:scale-105 transition">
+          <Link
+            className="bg-[#d6b15c] text-[#7b2d1f] px-10 py-4 rounded-full font-bold hover:scale-105 transition"
+            to="/allcourses"
+          >
             Explore Courses
-          </button>
+          </Link>
         </motion.div>
       </section>
 

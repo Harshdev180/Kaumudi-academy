@@ -30,8 +30,8 @@ const Sidebar = () => {
     },
     { path: "courses", label: "Courses", icon: <BookOpen size={20} /> },
     {
-      path: "certifications",
-      label: "Certifications",
+      path: "certificates",
+      label: "Certificates",
       icon: <Award size={20} />,
     },
     { path: "profile", label: "Profile", icon: <User size={20} /> },

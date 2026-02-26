@@ -34,7 +34,7 @@ export default function About() {
       />
       <section
         id="hero"
-        className="relative min-h-[90vh] flex items-center justify-center text-center overflow-hidden bg-cover bg-center"
+        className="relative min-h-[90vh] flex items-center justify-center text-center overflow-hidden bg-cover bg-center overflow-x-hidden"
         style={{
           backgroundImage:
             'url("https://i.pinimg.com/736x/60/5e/49/605e494a0d065722f8f13458c2aa328a.jpg")',
@@ -77,7 +77,7 @@ export default function About() {
 
       {/* ============ OUR HERITAGE SECTION ============ */}
 
-      <section className="w-full bg-[#7b2d1f] py-24">
+      <section className="w-full bg-[#7b2d1f] py-24 overflow-x-hidden">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div
@@ -142,10 +142,10 @@ export default function About() {
                 <img
                   src="https://i.pinimg.com/736x/43/d5/9b/43d59b6ffea25e44cb1092a10e43a78b.jpg"
                   alt="Sanskrit Scholar"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="absolute inset-0 w-full h-full object-cover max-w-none transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#7b2d1f]/50 via-transparent to-transparent"></div>
-                <div className="absolute -bottom-6 -right-6 h-24 w-24 rounded-full bg-[#d6b25e]/20 blur-xl"></div>
+                <div className="absolute -bottom-6 -right-6 h-24 w-24 rounded-full bg-[#d6b25e]/20 blur-xl sm:-right-6"></div>
               </div>
             </motion.div>
           </div>
