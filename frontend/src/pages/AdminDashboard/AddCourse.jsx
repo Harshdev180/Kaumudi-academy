@@ -18,8 +18,6 @@ const AddCourse = ({
     const file = e.target.files[0];
     if (file) {
       const url = URL.createObjectURL(file);
-
-      // IMPORTANT FIX — image key same as CourseManagement
       setForm({ ...form, imageFile: file, imagePreview: url });
     }
   };
@@ -88,7 +86,7 @@ const AddCourse = ({
                   </div>
                 )}
 
-                <input type="file" hidden onChange={handleImage} />
+                <input type="file" accept="image/*" hidden onChange={handleImage} />
               </label>
             </div>
 
@@ -107,6 +105,14 @@ const AddCourse = ({
               onChange={(e) =>
                 setForm({ ...form, description: e.target.value })
               }
+              className="w-full p-3 rounded-xl bg-[#EFE3D5] h-28 outline-none"
+            />
+
+            {/* SYLLABUS */}
+            <textarea
+              placeholder="Syllabus"
+              value={form.syllabus || ""}
+              onChange={(e) => setForm({ ...form, syllabus: e.target.value })}
               className="w-full p-3 rounded-xl bg-[#EFE3D5] h-28 outline-none"
             />
 
@@ -129,9 +135,9 @@ const AddCourse = ({
                   onChange={(e) => setForm({ ...form, level: e.target.value })}
                   className="p-3 rounded-xl bg-[#EFE3D5] outline-none"
                 >
-                  <option value="Beginner">Beginner</option>
-                  <option value="Intermediate">Intermediate</option>
-                  <option value="Advanced">Advanced</option>
+                  <option value="Prathama (Beginner)">Prathama (Beginner)</option>
+                  <option value="Madhyama (Intermediate)">Madhyama (Intermediate)</option>
+                  <option value="Kovida (Advanced)">Kovida (Advanced)</option>
                 </select>
               </div>
             </div>
@@ -147,12 +153,15 @@ const AddCourse = ({
                 <input
                   type="file"
                   accept="video/*"
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      video1: URL.createObjectURL(e.target.files[0]),
-                    })
-                  }
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file)
+                      setForm({
+                        ...form,
+                        video1File: file,
+                        video1: URL.createObjectURL(file),
+                      });
+                  }}
                   className="w-full p-3 rounded-xl bg-[#EFE3D5]"
                 />
 
@@ -174,12 +183,15 @@ const AddCourse = ({
                 <input
                   type="file"
                   accept="video/*"
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      video2: URL.createObjectURL(e.target.files[0]),
-                    })
-                  }
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file)
+                      setForm({
+                        ...form,
+                        video2File: file,
+                        video2: URL.createObjectURL(file),
+                      });
+                  }}
                   className="w-full p-3 rounded-xl bg-[#EFE3D5]"
                 />
 
@@ -205,6 +217,7 @@ const AddCourse = ({
             <div className="grid grid-cols-2 gap-3">
               <input
                 placeholder="Price"
+                type="number"
                 value={form.price}
                 onChange={(e) => setForm({ ...form, price: e.target.value })}
                 className="p-3 rounded-xl bg-[#EFE3D5] outline-none"
@@ -223,7 +236,7 @@ const AddCourse = ({
             {/* DURATION + LANGUAGE */}
             <div className="grid grid-cols-2 gap-3">
               <input
-                placeholder="Duration"
+                placeholder="Duration (e.g. 3 Months)"
                 value={form.duration}
                 onChange={(e) => setForm({ ...form, duration: e.target.value })}
                 className="p-3 rounded-xl bg-[#EFE3D5] outline-none"
@@ -231,8 +244,18 @@ const AddCourse = ({
 
               <input
                 placeholder="Languages (comma separated)"
-                value={form.language}
-                onChange={(e) => setForm({ ...form, language: e.target.value })}
+                value={
+                  Array.isArray(form.language)
+                    ? form.language.join(", ")
+                    : form.language || ""
+                }
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    // Keep as string in form state; CourseManagement splits before sending
+                    language: e.target.value,
+                  })
+                }
                 className="p-3 rounded-xl bg-[#EFE3D5] outline-none"
               />
             </div>

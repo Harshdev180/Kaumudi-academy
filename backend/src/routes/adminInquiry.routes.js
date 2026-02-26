@@ -16,7 +16,7 @@ const router = express.Router();
  * Only ADMIN & SUPER_ADMIN can access
  */
 
-router.use(authMiddleware, roleMiddleware("ADMIN"));
+router.use(authMiddleware, roleMiddleware("admin", "ADMIN", "SUPER_ADMIN"),);
 
 router.get("/admin/inquiries", getAllInquiries);
 router.get("/admin/inquiries/:id", getInquiryById);

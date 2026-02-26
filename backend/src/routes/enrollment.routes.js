@@ -21,7 +21,7 @@ router.get(
 router.get(
   "/enrollment",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("admin", "ADMIN", "SUPER_ADMIN"),
   getAllEnrollments
 );
 
