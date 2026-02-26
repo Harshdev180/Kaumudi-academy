@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import SEO from "../components/SEO";
+import home2 from "../assets/home/home2.webp";
 
 export default function TermsCondition() {
   return (
@@ -19,7 +20,7 @@ export default function TermsCondition() {
           className="relative h-[280px] w-full max-w-7xl bg-cover bg-center overflow-hidden rounded-3xl"
           style={{
             backgroundImage:
-              "url('https://thumbs.dreamstime.com/b/antique-literature-collection-old-fashioned-wisdom-preserved-generative-ai-antique-literature-collection-old-fashioned-wisdom-274867858.jpg')",
+              `url(${home2})`,
           }}
         >
           {/* <div className="absolute inset-0 bg-black/55" /> */}

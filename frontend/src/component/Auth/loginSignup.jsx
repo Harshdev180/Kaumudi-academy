@@ -11,6 +11,7 @@ import {
   Flower2,
   ArrowLeft,
 } from "lucide-react";
+import authHeroImg from "../../assets/login.webp";
 
 const AuthPage = () => {
   // --- STATES ---
@@ -275,7 +276,7 @@ const AuthPage = () => {
               repeat: Infinity,
               repeatType: "reverse",
             }}
-            src="https://i.pinimg.com/736x/9a/70/b1/9a70b1c6dd4d5ad5d59a3d5723c43ba9.jpg"
+            src={authHeroImg}
             className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay"
           />
 

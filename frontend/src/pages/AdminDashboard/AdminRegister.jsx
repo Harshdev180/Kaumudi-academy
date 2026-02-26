@@ -3,6 +3,7 @@ import { User, Mail, Lock, Eye, EyeOff, Camera, Loader2, Key } from "lucide-reac
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { registerSuperAdmin, loginSuperAdmin, setAuthToken } from "../../lib/api";
+import adminregister from "../../assets/adminregister.webp";
 
 const AdminRegister = () => {
     const navigate = useNavigate();
@@ -104,7 +105,7 @@ const AdminRegister = () => {
                 {/* LEFT IMAGE PANEL */}
                 <div className="relative hidden md:block">
                     <img
-                        src="https://i.pinimg.com/736x/66/99/b5/6699b5c6934f090a7cfffd43f387af24.jpg"
+                        src={adminregister}
                         alt="Sanskrit Guru"
                         className="w-full h-full object-cover"
                     />
