@@ -51,7 +51,7 @@ const Settings = () => {
   const tabs = ["student details", "change password", "notification settings"];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-700 pb-10 mt-6">
+    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-700 pb-10 ">
       {/* TOP SECTION: Header & Status Card */}
       <div className="grid grid-cols-12 gap-4 sm:gap-6 items-stretch">
         {/* Profile Identity Left */}
@@ -111,13 +111,13 @@ const Settings = () => {
 
       {/* MAIN SETTINGS CARD WITH TABS */}
       <div className="bg-white rounded-[2rem] shadow-sm border border-black/5 overflow-hidden min-h-[550px]">
-        <div className="flex border-b border-gray-100 px-6 pt-5 bg-gray-50/30">
+        <div className="flex border-b border-gray-100 px-4 sm:px-6 pt-5 bg-gray-50/30 overflow-x-auto no-scrollbar whitespace-nowrap">
           {tabs.map((tab) => (
             <button
               key={tab}
-              disabled={isEditing && tab !== "student details"} // Disable tabs during edit
+              disabled={isEditing && tab !== "student details"}
               onClick={() => setActiveTab(tab)}
-              className={`px-8 py-5 text-[12px] font-black uppercase tracking-[0.15em] transition-all relative ${
+              className={`shrink-0 px-6 sm:px-8 py-5 text-[11px] sm:text-[12px] font-black uppercase tracking-[0.15em] transition-all relative ${
                 activeTab === tab
                   ? "text-[#74271E]"
                   : "text-gray-400 hover:text-gray-600"
@@ -125,7 +125,7 @@ const Settings = () => {
             >
               {tab}
               {activeTab === tab && (
-                <div className="absolute bottom-0 left-8 right-8 h-1 bg-[#74271E] rounded-t-full shadow-[0_-2px_10px_rgba(116,39,30,0.3)]" />
+                <div className="absolute bottom-0 left-4 right-4 sm:left-8 sm:right-8 h-1 bg-[#74271E] rounded-t-full shadow-[0_-2px_10px_rgba(116,39,30,0.3)]" />
               )}
             </button>
           ))}

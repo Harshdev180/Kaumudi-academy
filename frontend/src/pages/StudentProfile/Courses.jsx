@@ -179,12 +179,12 @@ const Courses = () => {
           />
         </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 mt-2 md:mt-0">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 mt-2 md:mt-0 no-scrollbar">
           {filters.map((status) => (
             <motion.button
               key={status}
               onClick={() => setActiveFilter(status)}
-              className={`px-5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+              className={`px-5 py-2 rounded-xl text-xs font-bold whitespace-nowrap shrink-0 transition-all ${
                 activeFilter === status
                   ? "bg-[#74271E] text-white shadow-md"
                   : "bg-white text-gray-500 hover:bg-gray-100"
@@ -192,9 +192,7 @@ const Courses = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              {status === "ALL"
-                ? "All"
-                : status.charAt(0) + status.slice(1).toLowerCase()}
+              {status === "ALL" ? "All" : status.charAt(0) + status.slice(1).toLowerCase()}
             </motion.button>
           ))}
         </div>

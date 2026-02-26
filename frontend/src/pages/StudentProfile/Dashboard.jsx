@@ -248,7 +248,7 @@ const Dashboard = () => {
           {monthName} {year}
         </p>
 
-        <div className="grid grid-cols-7 text-center text-[10px] gap-y-2 gap-x-0.5 font-bold text-gray-400 uppercase tracking-tighter w-full overflow-x-auto">
+        <div className="grid grid-cols-7 text-center text-[10px] gap-y-2 gap-x-1 font-bold text-gray-400 uppercase tracking-tighter w-full overflow-hidden">
           {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
             <div key={d}>{d}</div>
           ))}

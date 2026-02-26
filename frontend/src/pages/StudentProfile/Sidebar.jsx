@@ -34,7 +34,7 @@ const Sidebar = () => {
       label: "Certificates",
       icon: <Award size={20} />,
     },
-    { path: "profile", label: "Profile", icon: <User size={20} /> },
+    // { path: "profile", label: "Profile", icon: <User size={20} /> },
     { path: "payments", label: "Payments", icon: <IndianRupee size={20} /> },
     { path: "settings", label: "Settings", icon: <Settings size={20} /> },
   ];
