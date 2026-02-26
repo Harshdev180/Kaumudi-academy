@@ -43,11 +43,12 @@ import FacultyManagement from "./pages/AdminDashboard/FacultyManagement.jsx";
 import StudentLayout from "./pages/StudentProfile/Layout";
 import StudentDashboard from "./pages/StudentProfile/Dashboard";
 import StudentCourses from "./pages/StudentProfile/Courses";
-import Certifications from "./pages/StudentProfile/Certifications";
+import Certifications from "./pages/StudentProfile/Certifications.jsx";
 import Profile from "./pages/StudentProfile/Profile";
 import Settings from "./pages/StudentProfile/Settings";
 import FeePurchase from "./pages/StudentProfile/Fees.jsx";
 import Notifications from "./pages/StudentProfile/Notifications.jsx";
+import Certificates from "./pages/StudentProfile/Certifications.jsx";
 
 // Public site layout with shared navbar/footer
 function PublicLayout() {
@@ -120,7 +121,7 @@ function App() {
         <Route path="overview" element={<StudentDashboard />} />
         <Route path="dashboard" element={<StudentDashboard />} />
         <Route path="courses" element={<StudentCourses />} />
-        <Route path="certifications" element={<Certifications />} />
+        <Route path="certificates" element={<Certificates />} />
         <Route path="profile" element={<Profile />} />
         <Route path="payments" element={<FeePurchase />} />
         <Route path="settings" element={<Settings />} />

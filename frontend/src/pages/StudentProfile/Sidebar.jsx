@@ -11,6 +11,7 @@ import {
   AlertTriangle,
   X,
   Menu,
+  IndianRupee,
 } from "lucide-react";
 import logo from "../../assets/logo-bgremove.png";
 import { motion, AnimatePresence } from "framer-motion";
@@ -29,11 +30,12 @@ const Sidebar = () => {
     },
     { path: "courses", label: "Courses", icon: <BookOpen size={20} /> },
     {
-      path: "certifications",
-      label: "Certifications",
+      path: "certificates",
+      label: "Certificates",
       icon: <Award size={20} />,
     },
-    { path: "payments", label: "Payments", icon: <User size={20} /> },
+    { path: "profile", label: "Profile", icon: <User size={20} /> },
+    { path: "payments", label: "Payments", icon: <IndianRupee size={20} /> },
     { path: "settings", label: "Settings", icon: <Settings size={20} /> },
   ];
 
@@ -56,7 +58,7 @@ const Sidebar = () => {
           onClick={() => setIsMobileOpen(true)}
           className="p-3 bg-[#74271E] text-white rounded-xl shadow-lg border border-white/10"
         >
-          <Menu size={24} />
+          <Menu size={20} />
         </button>
       </div>
 
@@ -153,7 +155,7 @@ const Sidebar = () => {
             </div>
             {/* Close button inside sidebar on Mobile */}
             <button
-              className="lg:hidden p-2 text-white/50 hover:text-white"
+              className="lg:hidden p-2 text-white"
               onClick={() => setIsMobileOpen(false)}
             >
               <X size={20} />

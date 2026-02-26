@@ -1,8 +1,15 @@
 import { motion } from "framer-motion";
+import SEO from "../components/SEO";
 
 export default function TermsCondition() {
   return (
     <section className="bg-[#f1e4c8] min-h-screen py-10">
+      <SEO
+        title="Terms & Conditions | Kaumudi Sanskrit Academy"
+        description="Review the terms and conditions for using Kaumudi Sanskrit Academy’s services."
+        canonicalPath="/terms"
+        og={{ type: "website" }}
+      />
       {/* HERO SECTION */}
       <div className="flex justify-center">
         <motion.div

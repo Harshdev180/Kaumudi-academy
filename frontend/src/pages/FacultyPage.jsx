@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { BookOpen, GraduationCap, Award, ScrollText } from "lucide-react";
 import { Link } from "react-router-dom";
 import imgg from "../assets/fac.png";
+import SEO from "../components/SEO";
 
 const FacultyPage = () => {
   const facultyMembers = [
@@ -49,9 +50,18 @@ const FacultyPage = () => {
       bio: "Unlocking history through inscriptions.",
     },
   ];
+  const seo = (
+    <SEO
+      title="Faculty | Kaumudi Sanskrit Academy"
+      description="Meet our Acharyas and faculty who guide students across Vyakarana, Vedanta, Kavya and more."
+      canonicalPath="/faculty"
+      og={{ type: "website" }}
+    />
+  );
 
   return (
     <>
+      {seo}
       {/* HERO */}
       <section
         className="relative min-h-[85vh] flex items-center justify-center text-center overflow-hidden bg-cover bg-center"
@@ -80,11 +90,17 @@ const FacultyPage = () => {
           </p>
 
           <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <Link className="px-8 py-4 rounded-full bg-[#d6b15c] text-[#74271E] font-bold hover:scale-105 transition">
+            <Link
+              className="px-8 py-4 rounded-full bg-[#d6b15c] text-[#74271E] font-bold hover:scale-105 transition"
+              to="/allcourses"
+            >
               Explore Courses
             </Link>
 
-            <Link className="px-8 py-4 rounded-full border border-white text-white hover:bg-white hover:text-[#74271E] transition">
+            <Link
+              className="px-8 py-4 rounded-full border border-white text-white hover:bg-white hover:text-[#74271E] transition"
+              to={"/contact"}
+            >
               Contact Academy
             </Link>
           </div>
@@ -152,9 +168,12 @@ const FacultyPage = () => {
             Join our courses and receive mentorship from distinguished scholars.
           </p>
 
-          <button className="bg-[#d6b15c] text-[#7b2d1f] px-10 py-4 rounded-full font-bold hover:scale-105 transition">
+          <Link
+            className="bg-[#d6b15c] text-[#7b2d1f] px-10 py-4 rounded-full font-bold hover:scale-105 transition"
+            to="/allcourses"
+          >
             Explore Courses
-          </button>
+          </Link>
         </motion.div>
       </section>
 

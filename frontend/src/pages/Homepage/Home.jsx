@@ -10,6 +10,7 @@ import Testimonials from "./Testimonials";
 import heroImg from "../../assets/wheel.jpg";
 import Typewriter from "./Typewriter";
 import Stats from "./stats";
+import SEO from "../../components/SEO";
 
 /* ------------------ Animations ------------------ */
 
@@ -53,6 +54,34 @@ export default function Home() {
 
   return (
     <main className="bg-[#f1e4c8] text-neutral-900 overflow-x-hidden">
+      <SEO
+        title="Kaumudi Sanskrit Academy | Learn Sanskrit with Scholars"
+        description="Study Sanskrit with expert Acharyas: Paninian Grammar, Kavya, Vedanta and more. Live online courses, structured curriculum, and certifications."
+        canonicalPath="/"
+        og={{ type: "website" }}
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "Kaumudi Sanskrit Academy",
+            url: typeof window !== "undefined" ? window.location.origin : "",
+            logo: "/src/assets/logo-bgremove.png",
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "Kaumudi Sanskrit Academy",
+            url: typeof window !== "undefined" ? window.location.origin : "",
+            potentialAction: {
+              "@type": "SearchAction",
+              target:
+                (typeof window !== "undefined" ? window.location.origin : "") +
+                "/allcourses?search={search_term_string}",
+              "query-input": "required name=search_term_string",
+            },
+          },
+        ]}
+      />
       {/* ================= HERO ================= */}
 
       <section

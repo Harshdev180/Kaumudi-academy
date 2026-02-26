@@ -1,8 +1,15 @@
 import { motion } from "framer-motion";
+import SEO from "../components/SEO";
 
 export default function PrivacyPolicy() {
   return (
     <section className="bg-[#f1e4c8] min-h-screen py-10">
+      <SEO
+        title="Privacy Policy | Kaumudi Sanskrit Academy"
+        description="Read how Kaumudi Sanskrit Academy collects, uses, and protects your information."
+        canonicalPath="/privacy"
+        og={{ type: "website" }}
+      />
       {/* HERO SECTION */}
 
       <div className="flex justify-center">
