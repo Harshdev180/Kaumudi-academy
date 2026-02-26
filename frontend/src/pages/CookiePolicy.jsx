@@ -10,6 +10,7 @@ import {
   Lock,
   Info,
 } from "lucide-react";
+import SEO from "../components/SEO";
 
 /* animation presets */
 const pageFade = {
@@ -41,6 +42,12 @@ export default function CookiePolicy() {
       className="min-h-screen px-6 py-24 bg-[#fcefd4]"
     >
       <div className="max-w-5xl mx-auto">
+        <SEO
+          title="Cookie Policy | Kaumudi Sanskrit Academy"
+          description="Learn how Kaumudi Sanskrit Academy uses cookies and how you can control them."
+          canonicalPath="/cookies"
+          og={{ type: "website" }}
+        />
 
         {/* HEADER */}
         <motion.div

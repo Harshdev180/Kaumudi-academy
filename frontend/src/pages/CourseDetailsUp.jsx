@@ -9,6 +9,7 @@ import CurriculumAccordion from "../component/CourseDetailsUpdated/CurriculumAcc
 import ScheduleTable from "../component/CourseDetailsUpdated/ScheduleTable";
 import Suggetion from "../component/CourseDetailsUpdated/suggetion";
 import { getCourseDetail } from "../lib/api";
+import SEO from "../components/SEO";
 
 const CourseDetails = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -200,6 +201,29 @@ const CourseDetails = () => {
 
   return (
     <div className="bg-[#f1e4c8] min-h-screen font-sans-serif text-[#e6d0bd]">
+      <SEO
+        title={`${courseData.title} | Kaumudi Sanskrit Academy`}
+        description={
+          courseData.description?.slice(0, 160) ||
+          "Explore this Sanskrit course with our expert Acharyas."
+        }
+        canonicalPath={`/coursedetail/${id || courseData.id || courseData._id || ""}`}
+        og={{ type: "article" }}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Course",
+          name: courseData.title,
+          description:
+            courseData.description ||
+            "Sanskrit course by Kaumudi Sanskrit Academy",
+          provider: {
+            "@type": "Organization",
+            name: "Kaumudi Sanskrit Academy",
+          },
+          educationalLevel: courseData.level || "All Levels",
+          inLanguage: courseData.language || "sa",
+        }}
+      />
       <div className="max-w-7xl mx-auto p-10 md:p-10">
         <HeroSection data={courseData} />
       </div>

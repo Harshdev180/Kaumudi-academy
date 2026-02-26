@@ -2,6 +2,7 @@ import { Hourglass, Users, BookOpen, CloudUpload } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
+import SEO from "../components/SEO";
 
 export default function About() {
   const [openIndex, setOpenIndex] = useState(null);
@@ -25,6 +26,12 @@ export default function About() {
   ];
   return (
     <>
+      <SEO
+        title="About | Kaumudi Sanskrit Academy"
+        description="Kaumudi Sanskrit Academy blends guru–śiṣya parampara with modern pedagogy to nurture Sanskrit scholars worldwide."
+        canonicalPath="/about"
+        og={{ type: "website" }}
+      />
       <section
         id="hero"
         className="relative min-h-[90vh] flex items-center justify-center text-center overflow-hidden bg-cover bg-center"

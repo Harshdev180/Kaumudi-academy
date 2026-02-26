@@ -5,6 +5,7 @@ import { MdMenu } from "react-icons/md";
 import Header from "./Header";
 import Sidebar from "./SideBar";
 import ScrollToTop from "../../components/ScrollToTop";
+import SEO from "../../components/SEO";
 
 const AdminLayout = () => {
 
@@ -74,6 +75,13 @@ const AdminLayout = () => {
 
   return (
     <div className="bg-[#f1e4c8] min-h-screen w-full overflow-x-hidden">
+      <SEO
+        title="Admin • Dashboard | Kaumudi Sanskrit Academy"
+        description="Admin dashboard."
+        canonicalPath="/admin"
+        robots="noindex, nofollow"
+        og={{ type: "website" }}
+      />
 
       <ScrollToTop />
 

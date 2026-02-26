@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { BookOpen, GraduationCap, Award, ScrollText } from "lucide-react";
 import { Link } from "react-router-dom";
 import imgg from "../assets/fac.png";
+import SEO from "../components/SEO";
 
 const FacultyPage = () => {
   const facultyMembers = [
@@ -49,9 +50,18 @@ const FacultyPage = () => {
       bio: "Unlocking history through inscriptions.",
     },
   ];
+  const seo = (
+    <SEO
+      title="Faculty | Kaumudi Sanskrit Academy"
+      description="Meet our Acharyas and faculty who guide students across Vyakarana, Vedanta, Kavya and more."
+      canonicalPath="/faculty"
+      og={{ type: "website" }}
+    />
+  );
 
   return (
     <>
+      {seo}
       {/* HERO */}
       <section
         className="relative min-h-[85vh] flex items-center justify-center text-center overflow-hidden bg-cover bg-center"

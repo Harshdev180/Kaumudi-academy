@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { getProfileCertificates } from "../../lib/api";
 
-const Certifications = () => {
+const Certificates = () => {
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -54,7 +54,7 @@ const Certifications = () => {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-8 px-2 sm:px-4 mt-4">
       {/* 1. HEADER SECTION */}
       {/* <div className="flex flex-col md:flex-row justify-between items-end gap-6 px-2"> */}
-        {/* <div className="space-y-2">
+      {/* <div className="space-y-2">
           <div className="flex items-center gap-3">
             <div className="w-2 h-8 bg-[#c9a050] rounded-full" />
             <h3 className="text-3xl font-serif font-bold text-gray-800 tracking-tight">
@@ -66,7 +66,7 @@ const Certifications = () => {
           </p>
         </div> */}
 
-        {/* <div className="flex items-center gap-4 bg-[#fdfbf7] border border-[#e6d5b8]/30 px-6 py-3 rounded-2xl">
+      {/* <div className="flex items-center gap-4 bg-[#fdfbf7] border border-[#e6d5b8]/30 px-6 py-3 rounded-2xl">
           <BadgeCheck className="text-[#c9a050]" size={20} />
           <div className="text-left">
             <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">
@@ -186,4 +186,4 @@ const Certifications = () => {
   );
 };
 
-export default Certifications;
+export default Certificates;

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Clock, Monitor, PlayCircle } from "lucide-react";
-import { getProfileEnrollments } from "../../lib/api";
+import { getMyEnrollments, getProfileEnrollments } from "../../lib/api";
 
 const Courses = () => {
   const [activeFilter, setActiveFilter] = useState("ALL");
