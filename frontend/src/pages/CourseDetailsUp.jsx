@@ -208,21 +208,57 @@ const CourseDetails = () => {
           "Explore this Sanskrit course with our expert Acharyas."
         }
         canonicalPath={`/coursedetail/${id || courseData.id || courseData._id || ""}`}
-        og={{ type: "article" }}
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Course",
-          name: courseData.title,
-          description:
-            courseData.description ||
-            "Sanskrit course by Kaumudi Sanskrit Academy",
-          provider: {
-            "@type": "Organization",
-            name: "Kaumudi Sanskrit Academy",
+        og={{ type: "article", image: courseData.image }}
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Course",
+            name: courseData.title,
+            description:
+              courseData.description ||
+              "Sanskrit course by Kaumudi Sanskrit Academy",
+            provider: {
+              "@type": "Organization",
+              name: "Kaumudi Sanskrit Academy",
+            },
+            educationalLevel: courseData.level || "All Levels",
+            inLanguage: courseData.language || "sa",
           },
-          educationalLevel: courseData.level || "All Levels",
-          inLanguage: courseData.language || "sa",
-        }}
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item:
+                  (typeof window !== "undefined"
+                    ? window.location.origin
+                    : "") + "/",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Courses",
+                item:
+                  (typeof window !== "undefined"
+                    ? window.location.origin
+                    : "") + "/allcourses",
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: courseData.title,
+                item:
+                  (typeof window !== "undefined"
+                    ? window.location.origin
+                    : "") +
+                  `/coursedetail/${id || courseData.id || courseData._id || ""}`,
+              },
+            ],
+          },
+        ]}
       />
       <div className="max-w-7xl mx-auto p-10 md:p-10">
         <HeroSection data={courseData} />

@@ -177,7 +177,7 @@ const FacultyPage = () => {
         </motion.div>
       </section>
 
-      <div className="h-16 bg-[#fff9e9]" />
+      <div className="h-10 bg-[#fff9e9]" />
     </>
   );
 };

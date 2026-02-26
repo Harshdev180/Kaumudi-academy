@@ -140,7 +140,7 @@ export default function Contact() {
         canonicalPath="/contact"
         og={{ type: "website" }}
       />
-      <section className="relative w-full bg-gradient-to-b from-[#f6edd7] to-[#ead9b8] py-24 overflow-hidden">
+      <section className="relative w-full bg-gradient-to-b mb-[-6rem] from-[#f6edd7] to-[#ead9b8] py-24 overflow-hidden">
         {/* FLOATING ORBS */}
         <motion.div
           animate={{ y: [0, 30, 0] }}
@@ -163,7 +163,7 @@ export default function Contact() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
-            className="mb-20 max-w-3xl"
+            className="mb-20 max-w-5xl"
           >
             <motion.h1
               variants={fadeUp}
@@ -188,13 +188,13 @@ export default function Contact() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-16"
+            className="grid grid-cols-1 lg:grid-cols-1 gap-16"
           >
             {/* LEFT — FORM */}
             <motion.div
               variants={fadeLeft}
               whileHover={{ y: -8 }}
-              className="relative bg-gradient-to-br from-[#fff8e5] to-[#ead9b8]
+              className="relative  bg-gradient-to-br from-[#fff8e5] to-[#ead9b8]
                        rounded-[3rem] border border-[#7b2d1f]/70
                        p-10 lg:p-14 shadow-[0_40px_120px_rgba(0,0,0,0.25)]
                        overflow-hidden"
@@ -202,79 +202,71 @@ export default function Contact() {
               <h2 className="text-[#7b2d1f] font-bold mb-10 text-3xl">
                 Send us a Message
               </h2>
-
-              <motion.form
-                variants={stagger}
-                className="space-y-14"
-                onSubmit={handleSubmit}
-              >
-                {[
-                  {
-                    label: "FULL NAME",
-                    name: "fullName",
-                    placeholder: "Enter your full name",
-                  },
-                  {
-                    label: "EMAIL ADDRESS",
-                    name: "email",
-                    placeholder: "your@email.com",
-                  },
-                  {
-                    label: "PHONE NUMBER",
-                    name: "phoneNumber",
-                    placeholder: "10-digit number",
-                  },
-                  {
-                    label: "SUBJECT",
-                    name: "subject",
-                    placeholder: "Course inquiry, support",
-                  },
-                ].map((item, i) => (
-                  <motion.div key={i} variants={fadeUp}>
-                    <label className="block text-xs tracking-[0.3em] font-bold text-[#7b2d1f] mb-2">
-                      {item.label}
-                    </label>
-                    <motion.input
-                      whileFocus={{ scale: 1.02 }}
-                      type={
-                        item.name === "email"
-                          ? "email"
-                          : item.name === "phoneNumber"
-                            ? "tel"
-                            : "text"
-                      }
-                      name={item.name}
-                      value={formData[item.name]}
-                      onChange={handleChange}
-                      className="w-full rounded-xl border border-[#dcc7a1]
+              <div>
+                <motion.form
+                  variants={stagger}
+                  className="md:space-y-14 grid md:grid-cols-2 gap-3 "
+                  onSubmit={handleSubmit}
+                >
+                  {[
+                    {
+                      label: "FULL NAME",
+                      name: "fullName",
+                      placeholder: "Enter your full name",
+                    },
+                    {
+                      label: "EMAIL ADDRESS",
+                      name: "email",
+                      placeholder: "your@email.com",
+                    },
+                    {
+                      label: "PHONE NUMBER",
+                      name: "phoneNumber",
+                      placeholder: "10-digit number",
+                    },
+                    {
+                      label: "SUBJECT",
+                      name: "subject",
+                      placeholder: "Course inquiry, support",
+                    },
+                  ].map((item, i) => (
+                    <motion.div key={i} variants={fadeUp}>
+                      <label className="block text-xs tracking-[0.3em] font-bold text-[#7b2d1f] mb-2">
+                        {item.label}
+                      </label>
+                      <motion.input
+                        whileFocus={{ scale: 1.02 }}
+                        type={
+                          item.name === "email"
+                            ? "email"
+                            : item.name === "phoneNumber"
+                              ? "tel"
+                              : "text"
+                        }
+                        name={item.name}
+                        value={formData[item.name]}
+                        onChange={handleChange}
+                        className="w-full rounded-xl border border-[#dcc7a1]
                                px-4 py-4 bg-white shadow-lg
                                focus:ring-2 focus:ring-[#7b2d1f]"
-                      placeholder={item.placeholder}
-                    />
-                  </motion.div>
-                ))}
+                        placeholder={item.placeholder}
+                      />
+                    </motion.div>
+                  ))}
 
+                  {error && (
+                    <div className="text-red-600 font-semibold">{error}</div>
+                  )}
+                  {success && (
+                    <div className="text-green-700 font-semibold">
+                      {success}
+                    </div>
+                  )}
+                </motion.form>
+              </div>
+              <div>
                 <motion.div variants={fadeUp}>
-                  <label className="block text-xs tracking-[0.3em] font-bold text-[#7b2d1f] mb-2">
-                    PREFERRED LEVEL
-                  </label>
-                  <motion.select
-                    whileFocus={{ scale: 1.02 }}
-                    name="preferredLevel"
-                    value={formData.preferredLevel}
-                    onChange={handleChange}
-                    className="w-full rounded-xl border border-[#dcc7a1]
-                             px-4 py-4 bg-white shadow-lg
-                             focus:ring-2 focus:ring-[#7b2d1f]"
-                  >
-                    <option value="BEGINNER">Beginner</option>
-                    <option value="INTERMEDIATE">Intermediate</option>
-                    <option value="ADVANCED">Advanced</option>
-                  </motion.select>
-                </motion.div>
-
-                <motion.div variants={fadeUp}>
-                  <label className="block text-xs tracking-[0.3em] font-bold text-[#7b2d1f] mb-2">
+                  <label className="block text-xs tracking-[0.3em] mt-3 font-bold text-[#7b2d1f] mb-2 ">
                     MESSAGE
                   </label>
                   <motion.textarea
@@ -289,26 +281,20 @@ export default function Contact() {
                     placeholder="Write your message..."
                   />
                 </motion.div>
-
-                {error && (
-                  <div className="text-red-600 font-semibold">{error}</div>
-                )}
-                {success && (
-                  <div className="text-green-700 font-semibold">{success}</div>
-                )}
-
+              </div>
+              <div>
                 <motion.button
                   type="submit"
                   disabled={loading}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="w-full bg-gradient-to-r from-[#7b2d1f] to-[#5f1f14]
-                           text-white py-4 rounded-2xl font-bold tracking-[0.25em]
+                           text-white mt-4 py-4 rounded-2xl font-bold tracking-[0.25em]
                            disabled:opacity-60"
                 >
                   {loading ? "SENDING..." : "SEND MESSAGE"}
                 </motion.button>
-              </motion.form>
+              </div>
             </motion.div>
 
             {/* RIGHT — MAP + INFO */}
@@ -426,7 +412,7 @@ export default function Contact() {
         {/* CONTACT STRIP BELOW CARDS */}
         <motion.div
           variants={stagger}
-          className="grid md:grid-cols-3 gap-10 py-18 mx-auto max-w-7xl"
+          className="grid md:grid-cols-3 gap-10 py-18 mx-7 xl:mx-auto max-w-7xl"
         >
           {[
             {

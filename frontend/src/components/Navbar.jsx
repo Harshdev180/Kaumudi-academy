@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X, User, LogOut } from "lucide-react"; // Icons add kiye
 import logo from "../assets/logo-bgremove.png";
 import { useAuth } from "../context/useAuthHook";
@@ -59,8 +59,7 @@ const mobileItem = {
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const navigate = useNavigate();
-  const { isAuthenticated, user, loading } = useAuth();
+  const { isAuthenticated, user, loading, logout } = useAuth();
 
   const { pathname } = useLocation();
   const isHome = pathname === "/";
@@ -76,12 +75,8 @@ export default function Navbar() {
     role === "ADMIN" || role === "SUPER_ADMIN" ? "/admin" : "/student/overview";
 
   const handleLogout = () => {
-    localStorage.removeItem("kaumudi_token");
-    localStorage.removeItem("kaumudi_role");
-    localStorage.removeItem("kaumudi_user_email");
-    localStorage.removeItem("kaumudi_user_id");
     setOpen(false);
-    navigate("/");
+    logout("/");
   };
 
   /* Scroll shadow */
@@ -101,14 +96,12 @@ export default function Navbar() {
   const mobileMenuRef = useRef(null);
 
   useEffect(() => {
-    try {
+    if (typeof document !== "undefined" && document.body) {
       document.body.style.overflow = open ? "hidden" : "";
-    } catch {}
-    return () => {
-      try {
+      return () => {
         document.body.style.overflow = "";
-      } catch {}
-    };
+      };
+    }
   }, [open]);
 
   // Accessibility: focus first menu item when opened and close on Escape

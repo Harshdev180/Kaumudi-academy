@@ -21,6 +21,17 @@ export function AuthProvider({ children }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!sessionStorage.getItem('kaumudi_session_started')) {
+      localStorage.removeItem('kaumudi_token');
+      localStorage.removeItem('kaumudi_user_email');
+      localStorage.removeItem('kaumudi_user_id');
+      localStorage.removeItem('kaumudi_role');
+      localStorage.removeItem('kaumudi_user_first_name');
+      localStorage.removeItem('kaumudi_user_last_name');
+      localStorage.removeItem('kaumudi_user_name');
+      setAuthToken(null);
+      sessionStorage.setItem('kaumudi_session_started', '1');
+    }
     const storedToken = localStorage.getItem('kaumudi_token');
     const storedEmail = localStorage.getItem('kaumudi_user_email');
     const storedRole = localStorage.getItem('kaumudi_role');
