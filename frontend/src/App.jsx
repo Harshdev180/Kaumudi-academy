@@ -142,7 +142,7 @@ function App() {
         path="/admin"
         element={
           <RequireAuth
-            roles={["ADMIN", "SUPER_ADMIN"]}
+            roles={["admin", "ADMIN", "SUPER_ADMIN"]}
             redirectTo="/admin-login"
           >
             <AdminLayout />
