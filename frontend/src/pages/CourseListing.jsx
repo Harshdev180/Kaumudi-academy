@@ -45,7 +45,7 @@ const AllCoursesPage = () => {
     try {
       setLoading(true);
       const response = await getAllCourses();
-
+      console.log(response)
       // Normalize possible shapes: array, { courses: [...] }, { items: [...] }, { data: [...] }
       const payload = response;
       const list = Array.isArray(payload)

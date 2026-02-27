@@ -280,16 +280,22 @@ const EnrollmentPage = () => {
       const [firstName, ...lastNameParts] = formData.fullName.split(" ");
       const lastName = lastNameParts.join(" ") || "Student";
 
-      await updateStudentProfile({
+      const profilePayload = {
         firstName,
         lastName,
-        phoneNumber: formData.whatsapp,
         address: formData.address,
         city: formData.city,
         state: formData.state,
         sanskritKnowledge: formData.sanskritKnowledge,
         occupation: formData.occupation,
-      });
+      };
+
+      // Only send phone if valid
+      if (formData.whatsapp && formData.whatsapp.length >= 10) {
+        profilePayload.phoneNumber = formData.whatsapp;
+      }
+
+      await updateStudentProfile(profilePayload);
 
       // ================= CREATE ORDER =================
 
