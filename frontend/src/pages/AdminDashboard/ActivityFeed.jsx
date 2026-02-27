@@ -20,10 +20,10 @@ function ActivityFeed({ inquiries = [] }) {
 
   const statusDot = (status) => {
     switch (status) {
-      case "NEW":       return "bg-emerald-400";
+      case "NEW": return "bg-emerald-400";
       case "CONTACTED": return "bg-yellow-400";
-      case "CLOSED":    return "bg-slate-300";
-      default:          return "bg-slate-300";
+      case "CLOSED": return "bg-slate-300";
+      default: return "bg-slate-300";
     }
   };
 

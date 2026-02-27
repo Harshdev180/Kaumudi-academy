@@ -4,7 +4,7 @@ import home5 from "../assets/home/home5.webp";
 
 export default function PrivacyPolicy() {
   return (
-    <section className="bg-[#f1e4c8] min-h-screen py-10">
+    <section className="bg-[#f1e4c8] min-h-screen py-10 mb-[-70px]">
       <SEO
         title="Privacy Policy | Kaumudi Sanskrit Academy"
         description="Read how Kaumudi Sanskrit Academy collects, uses, and protects your information."
@@ -18,18 +18,18 @@ export default function PrivacyPolicy() {
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="relative h-[280px] w-full max-w-7xl bg-cover bg-center overflow-hidden rounded-3xl"
+          className="relative h-44 mx-[15px] md:w-[350px] lg:h-[280px] md:w-full  max-w-7xl bg-cover bg-center overflow-hidden rounded-3xl"
           style={{
             backgroundImage: `url(${home5})`,
           }}
         >
-          <div className="absolute inset-0 bg-[#7b2d1f]/60 pointer-events-none" />
+          <div className="absolute inset-0 bg-[#7b2d1f]/60 pointer-events-none " />
 
           <div className="relative z-10 h-full flex flex-col items-center justify-center text-white text-center">
-            <h1 className="text-4xl md:text-5xl font-serif font-bold mb-2">
+            <h1 className="text-3xl md:text-5xl font-serif font-bold mb-2">
               Privacy Policy
             </h1>
-            <p className="text-sm tracking-wide opacity-90 font-bold">
+            <p className=" md:text-sm tracking-wide opacity-90 font-bold ">
               How We Collect, Use, and Protect Your Information
             </p>
           </div>
@@ -44,7 +44,7 @@ export default function PrivacyPolicy() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="bg-[#7b2d1f] rounded-2xl p-6 h-fit sticky top-24 shadow-lg"
+          className="bg-[#7b2d1f] rounded-2xl p-6 h-fit lg:sticky top-24 shadow-lg"
         >
           <h3 className="font-serif font-bold text-[white] mb-2 text-2xl">
             Table of Contents
@@ -67,16 +67,10 @@ export default function PrivacyPolicy() {
                     block px-3 py-2 rounded-md border-l-4 border-transparent
                     transition-all duration-200
 
-<<<<<<< HEAD
                     hover:bg-[white]/5
                     hover:text-[white]
                     hover:border-[white]
                     hover:translate-x-1
-=======
-                    hover:bg-[#d6b25e]/10
-                    hover:text-white
-                    hover:border-[#d6b25e]
->>>>>>> 5c9762aade1f85808f79848e32adde8b091c3031
                   "
                 >
                   {item.label}
