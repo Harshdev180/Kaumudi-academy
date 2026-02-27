@@ -15,6 +15,7 @@ import profileRoutes from "./routes/profile.routes.js";
 import { config } from "./configs/env.js";
 import notificationRoutes from "./routes/notification.routes.js";
 import inquiryRoutes from "./routes/inquiry.routes.js";
+import subscriptionRoutes from './routes/subscription.routes.js';
 // import mongoSanitize from "express-mongo-sanitize";
 // import xss from "xss-clean";
 import contactRoutes from "./routes/contact.routes.js";
@@ -62,7 +63,7 @@ app.use("/api", courseRoutes);
 app.use("/api", inquiryRoutes);
 app.use("/api", contactRoutes);
 app.use("/api", authRoutes);
-
+app.use('/api', subscriptionRoutes);
 // 🔐 PROTECTED / ADMIN ROUTES (AFTER)
 app.use("/api", paymentRoutes);
 app.use("/api", studentRoutes);
