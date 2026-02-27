@@ -50,28 +50,19 @@ const CourseDetails = () => {
       try {
         const response = await getAllCourses();
 
-        const list =
-          response?.courses ||
-          response?.data ||
-          response ||
-          [];
+        const list = response?.courses || response?.data || response || [];
 
         // Remove current course
         const filtered = list.filter(
-          (c) =>
-            (c._id || c.id) !==
-            (courseData._id || courseData.id)
+          (c) => (c._id || c.id) !== (courseData._id || courseData.id),
         );
 
         // Optional: same category match
         const sameCategory = filtered.filter(
-          (c) => c.category === courseData.category
+          (c) => c.category === courseData.category,
         );
 
-        const finalCourses =
-          sameCategory.length > 0
-            ? sameCategory
-            : filtered;
+        const finalCourses = sameCategory.length > 0 ? sameCategory : filtered;
 
         setRecommendedCourses(finalCourses.slice(0, 6));
       } catch (err) {
@@ -395,7 +386,7 @@ const CourseDetails = () => {
             <SidebarCard price={courseData.price} courseData={courseData} />
           </div>
         </div>
-        <div className="max-w-7xl mx-auto">
+        <div className="w-full">
           <Suggetion courses={recommendedCourses} />
         </div>
       </div>

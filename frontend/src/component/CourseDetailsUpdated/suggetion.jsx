@@ -19,10 +19,9 @@ import { useNavigate } from "react-router-dom";
 // import course9 from "../../assets/suggestion/course9.webp";
 // import course10 from "../../assets/suggestion/course10.webp";
 
-
 const CourseCard = ({ course, index }) => {
   const navigate = useNavigate();
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -45,19 +44,26 @@ const CourseCard = ({ course, index }) => {
           />
           <div className="absolute top-4 left-4">
             <span className="bg-white text-[#6b1d14] text-[10px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 uppercase">
-              <Globe size={12} /> {Array.isArray(course.language)
+              <Globe size={12} />{" "}
+              {Array.isArray(course.language)
                 ? course.language.join(", ")
                 : course.language}
             </span>
           </div>
           <div className="absolute top-4 right-4">
-            <span className="bg-[#74271E] text-white text-[10px] font-bold px-3 py-1 rounded-md shadow-sm">{course.mode}</span>
+            <span className="bg-[#74271E] text-white text-[10px] font-bold px-3 py-1 rounded-md shadow-sm">
+              {course.mode}
+            </span>
           </div>
         </div>
 
         <div className="p-5 flex flex-col flex-grow text-left">
-          <h3 className="text-[#74271E] font-bold text-lg leading-tight mb-3 font-serif line-clamp-1">{course.title}</h3>
-          <p className="text-gray-500 text-sm leading-relaxed mb-6 line-clamp-2">{course.description}</p>
+          <h3 className="text-[#74271E] font-bold text-lg leading-tight mb-3 font-serif line-clamp-1">
+            {course.title}
+          </h3>
+          <p className="text-gray-500 text-sm leading-relaxed mb-6 line-clamp-2">
+            {course.description}
+          </p>
 
           <div className="flex items-center justify-between text-gray-600 mb-6">
             <div className="flex items-center gap-1.5 text-sm">
@@ -71,7 +77,9 @@ const CourseCard = ({ course, index }) => {
           </div>
 
           <div className="mt-auto flex justify-between items-center">
-            <span className="text-xl font-bold text-[#74271E]">₹{Number(course.price).toLocaleString("en-IN")}</span>
+            <span className="text-xl font-bold text-[#74271E]">
+              ₹{Number(course.price).toLocaleString("en-IN")}
+            </span>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -80,7 +88,7 @@ const CourseCard = ({ course, index }) => {
                 navigate(`/coursedetail/${course._id || course.id}`, {
                   state: { course },
                 });
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                window.scrollTo({ top: 0, behavior: "smooth" });
               }}
               className="bg-[#74271E] text-white text-[12px] font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 hover:bg-[#d6b15c] transition-colors"
             >
@@ -98,14 +106,16 @@ export default function CourseCarousel({ courses = [] }) {
 
   const scroll = (dir) => {
     if (scrollRef.current) {
-      const cardWidth = scrollRef.current.offsetWidth / (window.innerWidth >= 1024 ? 4 : window.innerWidth >= 640 ? 2 : 1);
+      const cardWidth =
+        scrollRef.current.offsetWidth /
+        (window.innerWidth >= 1024 ? 4 : window.innerWidth >= 640 ? 2 : 1);
       scrollRef.current.scrollBy({
         left: dir === "left" ? -cardWidth : cardWidth,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     }
   };
-  
+
   if (!courses || courses.length === 0) return null;
   return (
     <section className="w-full py-8 font-sans-serif pb-2 overflow-hidden">
@@ -113,7 +123,9 @@ export default function CourseCarousel({ courses = [] }) {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3 mb-1 mt-2">
             <div className="w-1.5 h-8 bg-[#d6b15c]"></div>
-            <h2 className="text-[28px] font-bold text-[#74271E]">Recommended Courses</h2>
+            <h2 className="text-[28px] font-bold text-[#74271E]">
+              Recommended Courses
+            </h2>
           </div>
 
           <div className="flex pr-4 sm:pr-10 gap-3">
@@ -138,10 +150,14 @@ export default function CourseCarousel({ courses = [] }) {
           <div
             ref={scrollRef}
             className="flex overflow-x-hidden no-scrollbar scroll-smooth py-3"
-            style={{ scrollbarWidth: 'none' }}
+            style={{ scrollbarWidth: "none" }}
           >
             {courses.map((course, index) => (
-              <CourseCard key={course._id || course.id} course={course} index={index} />
+              <CourseCard
+                key={course._id || course.id}
+                course={course}
+                index={index}
+              />
             ))}
           </div>
         </div>
