@@ -8,7 +8,6 @@ import ScrollToTop from "../../components/ScrollToTop";
 import SEO from "../../components/SEO";
 
 const AdminLayout = () => {
-
   const [sideBarCollapsed, setSideBarCollapsed] = useState(false);
   const [showAlerts, setShowAlerts] = useState(false);
 
@@ -20,19 +19,20 @@ const AdminLayout = () => {
 
   /* ================= AUTO LOGOUT ================= */
   useEffect(() => {
-
     let timer;
 
     const resetTimer = () => {
-
       if (timer) clearTimeout(timer);
 
-      timer = setTimeout(() => {
-        localStorage.removeItem("adminToken");
-        localStorage.removeItem("adminData");
-        sessionStorage.clear();
-        navigate("/admin-login", { replace: true });
-      }, 30 * 60 * 1000);
+      timer = setTimeout(
+        () => {
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("adminData");
+          sessionStorage.clear();
+          navigate("/admin-login", { replace: true });
+        },
+        30 * 60 * 1000,
+      );
     };
 
     window.addEventListener("mousemove", resetTimer);
@@ -47,12 +47,10 @@ const AdminLayout = () => {
       window.removeEventListener("keydown", resetTimer);
       window.removeEventListener("click", resetTimer);
     };
-
   }, [navigate]);
 
   /* ================= RESPONSIVE LISTENER ================= */
   useEffect(() => {
-
     const checkScreen = () => {
       const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
@@ -63,7 +61,6 @@ const AdminLayout = () => {
     window.addEventListener("resize", checkScreen);
 
     return () => window.removeEventListener("resize", checkScreen);
-
   }, []);
 
   /* ⭐⭐⭐ MAIN FIX — SYNC SIDEBAR WITH SCREEN SIZE ⭐⭐⭐ */
@@ -86,7 +83,6 @@ const AdminLayout = () => {
       <ScrollToTop />
 
       <div className="flex h-screen w-full">
-
         {/* SIDEBAR */}
         <Sidebar
           collapsed={sideBarCollapsed}
@@ -98,7 +94,6 @@ const AdminLayout = () => {
 
         {/* RIGHT AREA */}
         <div className="flex-1 flex flex-col min-w-0">
-
           <Header
             showAlerts={showAlerts}
             setShowAlerts={setShowAlerts}
@@ -114,9 +109,7 @@ const AdminLayout = () => {
               <Outlet />
             </div>
           </main>
-
         </div>
-
       </div>
     </div>
   );

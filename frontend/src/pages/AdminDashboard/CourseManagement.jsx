@@ -139,11 +139,15 @@ const CourseManagement = () => {
       payload.append("price", Number(form.price));
 
       // ✅ language → JSON stringified array (validator parses JSON.parse on string)
-      const langs = typeof form.language === "string"
-        ? form.language.split(",").map((l) => l.trim()).filter(Boolean)
-        : Array.isArray(form.language)
+      const langs =
+        typeof form.language === "string"
           ? form.language
-          : ["Sanskrit"];
+              .split(",")
+              .map((l) => l.trim())
+              .filter(Boolean)
+          : Array.isArray(form.language)
+            ? form.language
+            : ["Sanskrit"];
       payload.append("language", JSON.stringify(langs));
 
       // ✅ dates → ISO 8601 format
@@ -170,21 +174,21 @@ const CourseManagement = () => {
           prev.map((c) =>
             c.id === editId
               ? {
-                ...c,
-                title: updated.title,
-                description: updated.description,
-                faculty: updated.instructor || updated.faculty || "",
-                level: updated.level || c.level,
-                dur: updated.duration,
-                mode: updated.mode,
-                price: updated.price,
-                status: updated.status === "ACTIVE" ? "Published" : "Draft",
-                image: updated.image?.url || updated.image || c.image,
-                language: updated.language,
-                syllabus: updated.syllabus,
-                startDate: updated.startDate?.split("T")[0] || c.startDate,
-                endDate: updated.endDate?.split("T")[0] || c.endDate,
-              }
+                  ...c,
+                  title: updated.title,
+                  description: updated.description,
+                  faculty: updated.instructor || updated.faculty || "",
+                  level: updated.level || c.level,
+                  dur: updated.duration,
+                  mode: updated.mode,
+                  price: updated.price,
+                  status: updated.status === "ACTIVE" ? "Published" : "Draft",
+                  image: updated.image?.url || updated.image || c.image,
+                  language: updated.language,
+                  syllabus: updated.syllabus,
+                  startDate: updated.startDate?.split("T")[0] || c.startDate,
+                  endDate: updated.endDate?.split("T")[0] || c.endDate,
+                }
               : c,
           ),
         );
@@ -244,15 +248,15 @@ const CourseManagement = () => {
         prev.map((c) =>
           c.id === id
             ? {
-              ...c,
-              status: newStatus
-                ? newStatus === "ACTIVE"
-                  ? "Published"
-                  : "Draft"
-                : c.status === "Published"
-                  ? "Draft"
-                  : "Published",
-            }
+                ...c,
+                status: newStatus
+                  ? newStatus === "ACTIVE"
+                    ? "Published"
+                    : "Draft"
+                  : c.status === "Published"
+                    ? "Draft"
+                    : "Published",
+              }
             : c,
         ),
       );
@@ -333,10 +337,11 @@ const CourseManagement = () => {
             <button
               key={tab}
               onClick={() => setFilter(tab)}
-              className={`px-5 py-2 rounded-lg text-sm font-semibold ${filter === tab
-                ? "bg-[#6b1d14] text-white"
-                : "text-[#6b1d14] border border-[#D1B062]/40"
-                }`}
+              className={`px-5 py-2 rounded-lg text-sm font-semibold ${
+                filter === tab
+                  ? "bg-[#6b1d14] text-white"
+                  : "text-[#6b1d14] border border-[#D1B062]/40"
+              }`}
             >
               {tab}
             </button>

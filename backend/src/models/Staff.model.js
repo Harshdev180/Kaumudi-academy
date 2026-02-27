@@ -14,6 +14,12 @@ const staffSchema = new mongoose.Schema(
       trim: true
     },
 
+    description: {
+      type: String,
+      trim: true,
+      default: ""
+    },
+
     salary: {
       type: Number,
       required: true,

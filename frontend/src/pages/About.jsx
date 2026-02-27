@@ -41,8 +41,7 @@ export default function About() {
         id="hero"
         className="relative min-h-[90vh] flex items-center justify-center text-center overflow-hidden bg-cover bg-center overflow-x-hidden"
         style={{
-          backgroundImage:
-            `url(${about1})`,
+          backgroundImage: `url(${about1})`,
         }}
       >
         <div className="absolute inset-0 bg-[#2c2820]/60" />

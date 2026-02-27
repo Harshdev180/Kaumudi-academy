@@ -16,43 +16,37 @@ const FacultyPage = () => {
     {
       name: "Dr. Ananth Narayan",
       role: "HOD · Vyakarana Shastra",
-      image:
-        faculty1,
+      image: faculty1,
       bio: "A PhD from BHU with 20 years of experience in Paninian Grammar. Expert in the Mahabhashya tradition.",
     },
     {
       name: "Acharya Meera Iyer",
       role: "Dean · Vedic Studies",
-      image:
-        faculty2,
+      image: faculty2,
       bio: "Specializes in Rigveda Bhashya and Advaita Vedanta.",
     },
     {
       name: "Pandit Rajiv Misra",
       role: "Senior Lecturer · Sahitya",
-      image:
-        faculty3,
+      image: faculty3,
       bio: "Scholar in Kavyashastra and Dramaturgy.",
     },
     {
       name: "Vidushi Priya Sharma",
       role: "Instructor · Spoken Sanskrit",
-      image:
-        faculty4,
+      image: faculty4,
       bio: "Dedicated to conversational Sanskrit.",
     },
     {
       name: "Swami Vidyananda",
       role: "Chief of Darshana Studies",
-      image:
-        faculty5,
+      image: faculty5,
       bio: "Master of Nyaya & Vedanta philosophy.",
     },
     {
       name: "Prof. Rahul Dev",
       role: "Expert · Epigraphy",
-      image:
-        faculty6,
+      image: faculty6,
       bio: "Unlocking history through inscriptions.",
     },
   ];

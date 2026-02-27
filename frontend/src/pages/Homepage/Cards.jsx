@@ -192,7 +192,7 @@ export default function Cards() {
               {/* Image */}
               <Link
                 to={`/coursedetail/${encodeURIComponent(
-                  course.title.toLowerCase().replace(/\s+/g, "-")
+                  course.title.toLowerCase().replace(/\s+/g, "-"),
                 )}`}
                 state={{
                   course: {
@@ -230,7 +230,7 @@ export default function Cards() {
 
                 <Link
                   to={`/coursedetail/${encodeURIComponent(
-                    course.title.toLowerCase().replace(/\s+/g, "-")
+                    course.title.toLowerCase().replace(/\s+/g, "-"),
                   )}`}
                   state={{
                     course: {

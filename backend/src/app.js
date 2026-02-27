@@ -64,11 +64,11 @@ app.use("/api", contactRoutes);
 app.use("/api", authRoutes);
 
 // 🔐 PROTECTED / ADMIN ROUTES (AFTER)
+app.use("/api", paymentRoutes);
+app.use("/api", studentRoutes);
 app.use("/api", adminInquiryRoutes);
 app.use("/api", adminStudentRoutes);
 app.use("/api", staffRoutes);
-app.use("/api", studentRoutes);
-app.use("/api", paymentRoutes);
 app.use("/api", couponRoutes);
 app.use("/api", enrollmentRoutes);
 app.use("/api", dashboardRoutes);

@@ -86,7 +86,12 @@ const AddCourse = ({
                   </div>
                 )}
 
-                <input type="file" accept="image/*" hidden onChange={handleImage} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={handleImage}
+                />
               </label>
             </div>
 
@@ -135,8 +140,12 @@ const AddCourse = ({
                   onChange={(e) => setForm({ ...form, level: e.target.value })}
                   className="p-3 rounded-xl bg-[#EFE3D5] outline-none"
                 >
-                  <option value="Prathama (Beginner)">Prathama (Beginner)</option>
-                  <option value="Madhyama (Intermediate)">Madhyama (Intermediate)</option>
+                  <option value="Prathama (Beginner)">
+                    Prathama (Beginner)
+                  </option>
+                  <option value="Madhyama (Intermediate)">
+                    Madhyama (Intermediate)
+                  </option>
                   <option value="Kovida (Advanced)">Kovida (Advanced)</option>
                 </select>
               </div>

@@ -81,8 +81,7 @@ export default function CookiePolicy() {
             transition={{ duration: 2, ease: "easeOut" }}
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage:
-                `url(${cookieimg})`,
+              backgroundImage: `url(${cookieimg})`,
             }}
           />
 
@@ -90,16 +89,19 @@ export default function CookiePolicy() {
           <div className="absolute inset-0 bg-[#fdf7ec]/80" />
 
           {/* CONTENT */}
-          <motion.div className="relative z-10 p-14 space-y-20" variants={stagger}>
-
+          <motion.div
+            className="relative z-10 p-14 space-y-20"
+            variants={stagger}
+          >
             {/* INTRO */}
             <motion.section variants={rise} className="max-w-3xl">
               <h2 className="text-4xl font-serif font-bold text-[#7b2d1f] mb-6">
                 Wisdom & Digital Privacy
               </h2>
               <p className="text-xl leading-relaxed text-[#5f4334]">
-                We preserve sacred learning traditions while embracing responsible
-                digital practices—protecting your privacy at every step.
+                We preserve sacred learning traditions while embracing
+                responsible digital practices—protecting your privacy at every
+                step.
               </p>
             </motion.section>
 
@@ -167,10 +169,9 @@ export default function CookiePolicy() {
                     <p className="flex gap-2 text-lg font-semibold text-[#7b2d1f]">
                       {item.icon} {item.title}
                       {item.disabled && (
-                     <span className="ml-3 relative top-[7px] text-xs uppercase tracking-wide text-red-700 font-bold">
-  Required
-</span>
-
+                        <span className="ml-3 relative top-[7px] text-xs uppercase tracking-wide text-red-700 font-bold">
+                          Required
+                        </span>
                       )}
                     </p>
 
@@ -222,7 +223,6 @@ export default function CookiePolicy() {
               <Save className="w-6 h-6" />
               Save Preferences
             </motion.button>
-
           </motion.div>
         </motion.div>
       </div>

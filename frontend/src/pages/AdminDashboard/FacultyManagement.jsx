@@ -37,6 +37,7 @@ const FacultyManagement = () => {
     name: "",
     role: "",
     salary: "",
+    description: "",
     bonus: "",
     deduction: "",
     status: "ACTIVE",
@@ -54,16 +55,17 @@ const FacultyManagement = () => {
         if (mounted) {
           const mapped = Array.isArray(list)
             ? list.map((item) => ({
-              id: item?._id || item?.id,
-              name: item?.name || "Unnamed",
-              course: item?.role || "Faculty",
-              salary: item?.salary ?? 0,
-              bonus: item?.bonus ?? 0,
-              deduction: item?.deduction ?? 0,
-              netSalary: item?.netSalary ?? (item?.salary ?? 0),
-              status: item?.status || "ACTIVE",
-              paid: !!item?.paid,
-            }))
+                id: item?._id || item?.id,
+                name: item?.name || "Unnamed",
+                course: item?.role || "Faculty",
+                description: item?.description || "",
+                salary: item?.salary ?? 0,
+                bonus: item?.bonus ?? 0,
+                deduction: item?.deduction ?? 0,
+                netSalary: item?.netSalary ?? item?.salary ?? 0,
+                status: item?.status || "ACTIVE",
+                paid: !!item?.paid,
+              }))
             : [];
           setFaculty(mapped);
         }
@@ -102,6 +104,7 @@ const FacultyManagement = () => {
       role: "",
       salary: "",
       bonus: "",
+      description: "",
       deduction: "",
       status: "ACTIVE",
     });
@@ -118,6 +121,7 @@ const FacultyManagement = () => {
       name: item.name || "",
       role: item.course || "",
       salary: item.salary ?? "",
+      description: item.description || "",
       bonus: item.bonus ?? "",
       deduction: item.deduction ?? "",
       status: item.status || "ACTIVE",
@@ -136,6 +140,7 @@ const FacultyManagement = () => {
         role: form.role,
         salary: form.salary,
         bonus: form.bonus || 0,
+        description: form?.description,
         deduction: form.deduction || 0,
         status: form.status || "ACTIVE",
       };
@@ -147,27 +152,30 @@ const FacultyManagement = () => {
       const created = responsePayload?.data ?? responsePayload;
       const next = created
         ? {
-          id: created?._id || created?.id,
-          name: created?.name || form.name,
-          course: created?.role || form.role,
-          salary: created?.salary ?? form.salary,
-          bonus: created?.bonus ?? form.bonus ?? 0,
-          deduction: created?.deduction ?? form.deduction ?? 0,
-          netSalary: created?.netSalary ?? created?.salary ?? form.salary,
-          status: created?.status || form.status || "ACTIVE",
-          paid: !!created?.paid,
-        }
+            id: created?._id || created?.id,
+            name: created?.name || form.name,
+            course: created?.role || form.role,
+            salary: created?.salary ?? form.salary,
+            bonus: created?.bonus ?? form.bonus ?? 0,
+            deduction: created?.deduction ?? form.deduction ?? 0,
+            netSalary: created?.netSalary ?? created?.salary ?? form.salary,
+            status: created?.status || form.status || "ACTIVE",
+            paid: !!created?.paid,
+          }
         : {
-          id: Date.now(),
-          name: form.name,
-          course: form.role,
-          salary: form.salary,
-          bonus: form.bonus || 0,
-          deduction: form.deduction || 0,
-          netSalary: Number(form.salary || 0) + Number(form.bonus || 0) - Number(form.deduction || 0),
-          status: form.status || "ACTIVE",
-          paid: false,
-        };
+            id: Date.now(),
+            name: form.name,
+            course: form.role,
+            salary: form.salary,
+            bonus: form.bonus || 0,
+            deduction: form.deduction || 0,
+            netSalary:
+              Number(form.salary || 0) +
+              Number(form.bonus || 0) -
+              Number(form.deduction || 0),
+            status: form.status || "ACTIVE",
+            paid: false,
+          };
 
       setFaculty((prev) =>
         editingId
@@ -201,7 +209,8 @@ const FacultyManagement = () => {
       setStatusUpdatingId(item.id);
       const response = await toggleStaffStatus(item.id);
       const payload = response?.data ?? response;
-      const nextStatus = payload?.status || (item.status === "ACTIVE" ? "INACTIVE" : "ACTIVE");
+      const nextStatus =
+        payload?.status || (item.status === "ACTIVE" ? "INACTIVE" : "ACTIVE");
       setFaculty((prev) =>
         prev.map((f) => (f.id === item.id ? { ...f, status: nextStatus } : f)),
       );
@@ -217,7 +226,8 @@ const FacultyManagement = () => {
       setPaymentUpdatingId(item.id);
       const response = await toggleStaffPayment(item.id);
       const payload = response?.data ?? response;
-      const paid = typeof payload?.paid === "boolean" ? payload.paid : !item.paid;
+      const paid =
+        typeof payload?.paid === "boolean" ? payload.paid : !item.paid;
       setFaculty((prev) =>
         prev.map((f) => (f.id === item.id ? { ...f, paid } : f)),
       );
@@ -272,16 +282,17 @@ const FacultyManagement = () => {
           { label: "Inactive", value: stats.inactive },
           { label: "Pending Pay", value: stats.pending },
         ].map((card) => (
-          <div key={card.label} className="bg-[#FBF4E2] rounded-2xl p-6 shadow-md">
+          <div
+            key={card.label}
+            className="bg-[#FBF4E2] rounded-2xl p-6 shadow-md"
+          >
             <p className="text-sm text-[#7c5a3c]">{card.label}</p>
             <h3 className="text-3xl font-black text-[#6b1d14]">{card.value}</h3>
           </div>
         ))}
       </div>
 
-      {error && (
-        <div className="text-red-600 font-semibold">{error}</div>
-      )}
+      {error && <div className="text-red-600 font-semibold">{error}</div>}
 
       {/* FACULTY CARDS */}
       {!loading && (
@@ -310,18 +321,20 @@ const FacultyManagement = () => {
 
               <div className="flex flex-wrap gap-2 mb-4">
                 <span
-                  className={`text-[10px] px-2 py-1 rounded-full font-bold ${f.status === "ACTIVE"
-                    ? "bg-green-100 text-green-700"
-                    : "bg-zinc-200 text-zinc-600"
-                    }`}
+                  className={`text-[10px] px-2 py-1 rounded-full font-bold ${
+                    f.status === "ACTIVE"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-zinc-200 text-zinc-600"
+                  }`}
                 >
                   {f.status}
                 </span>
                 <span
-                  className={`text-[10px] px-2 py-1 rounded-full font-bold ${f.paid
-                    ? "bg-blue-100 text-blue-700"
-                    : "bg-orange-100 text-orange-700"
-                    }`}
+                  className={`text-[10px] px-2 py-1 rounded-full font-bold ${
+                    f.paid
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-orange-100 text-orange-700"
+                  }`}
                 >
                   {f.paid ? "Paid" : "Pending"}
                 </span>
@@ -332,23 +345,33 @@ const FacultyManagement = () => {
                 {/* LEFT: DETAILS */}
                 <div className="space-y-2.5 text-xs md:text-sm text-[#4A2B07] flex-1">
                   <div className="flex items-center gap-2">
-                    <MdSchool className="text-[#6b1d14] flex-shrink-0" size={18} />
+                    <MdSchool
+                      className="text-[#6b1d14] flex-shrink-0"
+                      size={18}
+                    />
                     <span>{f.course}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <IndianRupee className="text-[#6b1d14] flex-shrink-0" size={18} />
+                    <IndianRupee
+                      className="text-[#6b1d14] flex-shrink-0"
+                      size={18}
+                    />
                     <span>Salary: {formatMoney(f.salary)}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <IndianRupee className="text-[#6b1d14] flex-shrink-0" size={18} />
+                    <IndianRupee
+                      className="text-[#6b1d14] flex-shrink-0"
+                      size={18}
+                    />
                     <span>Net: {formatMoney(f.netSalary)}</span>
                   </div>
 
                   {(Number(f.bonus) > 0 || Number(f.deduction) > 0) && (
                     <div className="text-xs text-[#856966] pt-1">
-                      Bonus: {formatMoney(f.bonus)} · Deduction: {formatMoney(f.deduction)}
+                      Bonus: {formatMoney(f.bonus)} · Deduction:{" "}
+                      {formatMoney(f.deduction)}
                     </div>
                   )}
                 </div>
@@ -384,7 +407,11 @@ const FacultyManagement = () => {
                     whileTap={{ scale: 0.9 }}
                     className="text-[#6b1d14] hover:text-[#8a2a1f] transition disabled:opacity-60 flex-shrink-0"
                   >
-                    {f.status === "ACTIVE" ? <MdToggleOn size={22} /> : <MdToggleOff size={22} />}
+                    {f.status === "ACTIVE" ? (
+                      <MdToggleOn size={22} />
+                    ) : (
+                      <MdToggleOff size={22} />
+                    )}
                   </motion.button>
                 </div>
               </div>
@@ -491,6 +518,28 @@ const FacultyManagement = () => {
                     />
                   </motion.div>
 
+                  {/* DESCRIPTION FIELD */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.17 }}
+                    className="space-y-2"
+                  >
+                    <label className="text-xs font-bold text-[#6b1d14] uppercase tracking-wider flex items-center gap-2">
+                      Description
+                    </label>
+
+                    <textarea
+                      rows={4}
+                      placeholder="Write faculty description..."
+                      value={form.description}
+                      onChange={(e) =>
+                        setForm({ ...form, description: e.target.value })
+                      }
+                      className="w-full px-4 py-3 rounded-lg bg-white border-2 border-[#D1B062]/30 focus:border-[#D1B062] focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50 resize-none"
+                    />
+                  </motion.div>
+
                   {/* SALARY FIELD */}
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
@@ -534,7 +583,9 @@ const FacultyManagement = () => {
                       type="number"
                       placeholder="0"
                       value={form.bonus}
-                      onChange={(e) => setForm({ ...form, bonus: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, bonus: e.target.value })
+                      }
                       className="w-full px-4 py-3 rounded-lg bg-white border-2 border-[#D1B062]/30 focus:border-[#D1B062] focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50"
                     />
                   </motion.div>

@@ -20,8 +20,7 @@ export default function PrivacyPolicy() {
           transition={{ duration: 0.8 }}
           className="relative h-[280px] w-full max-w-7xl bg-cover bg-center overflow-hidden rounded-3xl"
           style={{
-            backgroundImage:
-              `url(${home5})`,
+            backgroundImage: `url(${home5})`,
           }}
         >
           <div className="absolute inset-0 bg-[#7b2d1f]/60 pointer-events-none" />

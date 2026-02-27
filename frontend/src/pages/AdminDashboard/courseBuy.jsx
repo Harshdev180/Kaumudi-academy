@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuthHook";
+import ReCAPTCHA from "react-google-recaptcha";
 import {
   User,
   Mail,
@@ -50,6 +51,13 @@ const EnrollmentPage = () => {
   const [appliedCouponName, setAppliedCouponName] = useState("");
   const [isEmailVerified, setIsEmailVerified] = useState(!!user?.email);
   const [couponStatus, setCouponStatus] = useState({ type: "", msg: "" });
+  const [otp, setOtp] = useState("");
+  const [isOtpSent, setIsOtpSent] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [otpStatus, setOtpStatus] = useState({ type: "", msg: "" });
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [paymentType, setPaymentType] = useState("FULL");
+  const [captchaToken, setCaptchaToken] = useState(null);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -58,9 +66,21 @@ const EnrollmentPage = () => {
     }
   }, [isAuthenticated, navigate, location.pathname]);
 
+  // Helper to derive a robust full name from user
+  const deriveFullName = (u) => {
+    if (!u) return "";
+    const byName = u.name && String(u.name).trim();
+    const byFirstLast = [u.firstName, u.lastName]
+      .filter(Boolean)
+      .join(" ")
+      .trim();
+    const byEmail = u.email ? String(u.email).split("@")[0] : "";
+    return byName || byFirstLast || byEmail || "";
+  };
+
   // Form state
   const [formData, setFormData] = useState({
-    fullName: "",
+    fullName: deriveFullName(user),
     whatsapp: "",
     email: user?.email || "",
     address: "",
@@ -69,6 +89,25 @@ const EnrollmentPage = () => {
     sanskritKnowledge: "Beginner (No prior knowledge)",
     occupation: "",
   });
+
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        fullName: deriveFullName(user),
+        whatsapp: user.phoneNumber || prev.whatsapp || "",
+        email: user.email || prev.email || "",
+        address: user.address || prev.address || "",
+        city: user.city || prev.city || "",
+        state: user.state || prev.state || "",
+        sanskritKnowledge:
+          user.sanskritKnowledge ||
+          prev.sanskritKnowledge ||
+          "Beginner (No prior knowledge)",
+        occupation: user.occupation || prev.occupation || "",
+      }));
+    }
+  }, [user]);
 
   // --- DATA HANDLING ---
   const courseData = useMemo(() => {
@@ -120,6 +159,61 @@ const EnrollmentPage = () => {
       setCouponStatus({ type: "error", msg: "Invalid or Expired Code" });
     }
   };
+
+  // --- EMAIL OTP HANDLER (Frontend simulation with sessionStorage) ---
+  const handleSendOtp = async () => {
+    if (!formData.email) {
+      setOtpStatus({ type: "error", msg: "Email required to send OTP" });
+      return;
+    }
+    setIsVerifying(true);
+    setOtpStatus({ type: "", msg: "" });
+    try {
+      const code = String(Math.floor(1000 + Math.random() * 9000));
+      const payload = {
+        email: formData.email,
+        code,
+        ts: Date.now(),
+      };
+      sessionStorage.setItem("kaumudi_email_otp", JSON.stringify(payload));
+      setIsOtpSent(true);
+      setOtpStatus({ type: "success", msg: "OTP sent to your email (demo)" });
+    } catch {
+      setOtpStatus({ type: "error", msg: "Failed to send OTP" });
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (!otp) {
+      setOtpStatus({ type: "error", msg: "Enter the OTP received" });
+      return;
+    }
+    setIsVerifying(true);
+    setOtpStatus({ type: "", msg: "" });
+    try {
+      const raw = sessionStorage.getItem("kaumudi_email_otp");
+      const saved = raw ? JSON.parse(raw) : null;
+      const now = Date.now();
+      const TEN_MIN = 10 * 60 * 1000;
+      if (
+        saved &&
+        saved.email === formData.email &&
+        saved.code === otp.trim() &&
+        now - saved.ts <= TEN_MIN
+      ) {
+        setIsEmailVerified(true);
+        setOtpStatus({ type: "success", msg: "Email verified successfully" });
+      } else {
+        setOtpStatus({ type: "error", msg: "Invalid or expired OTP" });
+      }
+    } catch {
+      setOtpStatus({ type: "error", msg: "Verification error" });
+    } finally {
+      setIsVerifying(false);
+    }
+  };
   const handleApplyCoupon = async () => {
     if (!couponCode) {
       setCouponError("Please enter a code");
@@ -165,16 +259,15 @@ const EnrollmentPage = () => {
   };
 
   const handlePayment = async () => {
-    // Validate form
-    if (!formData.fullName || !formData.email || !formData.whatsapp) {
-      setError("Please fill in all required fields");
+    // ================= VALIDATIONS =================
+
+    if (!captchaToken) {
+      setError("Please complete captcha verification");
       return;
     }
 
     if (!courseData.courseId) {
-      setError(
-        "Course information is missing. Please go back and select a course again.",
-      );
+      setError("Course information missing.");
       return;
     }
 
@@ -182,92 +275,84 @@ const EnrollmentPage = () => {
       setLoading(true);
       setError("");
 
-      // Step 1: Update student profile with form data
+      // ================= PROFILE UPDATE =================
+
       const [firstName, ...lastNameParts] = formData.fullName.split(" ");
       const lastName = lastNameParts.join(" ") || "Student";
 
-      try {
-        await updateStudentProfile({
-          firstName,
-          lastName,
-          phoneNumber: formData.whatsapp,
-          address: formData.address,
-          city: formData.city,
-          state: formData.state,
-          sanskritKnowledge: formData.sanskritKnowledge,
-          occupation: formData.occupation,
-        });
-      } catch (profileErr) {
-        console.warn("Profile update failed (non-critical):", profileErr);
-        // Continue with payment even if profile update fails
-      }
+      await updateStudentProfile({
+        firstName,
+        lastName,
+        phoneNumber: formData.whatsapp,
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        sanskritKnowledge: formData.sanskritKnowledge,
+        occupation: formData.occupation,
+      });
 
-      // Step 2: Create Razorpay order
-      const orderResponse = await createPaymentOrder(
-        courseData.courseId,
-        couponCode || undefined,
-      );
+      // ================= CREATE ORDER =================
+
+      const orderResponse = await createPaymentOrder({
+        courseId: courseData.courseId,
+        paymentMode: paymentType, // FULL or EMI
+        couponCode: couponCode || undefined,
+        captchaToken, // send captcha to backend
+      });
 
       if (!orderResponse.success) {
         setError(orderResponse.message || "Failed to create payment order");
         return;
       }
 
-      const amountInPaise = orderResponse.amount;
-      const razorpayOrderId = orderResponse.orderId;
-
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY || "YOUR_RAZORPAY_KEY_ID",
-        amount: amountInPaise,
+        key: import.meta.env.VITE_RAZORPAY_KEY,
+
+        amount: orderResponse.amount,
         currency: "INR",
-        order_id: razorpayOrderId,
+        order_id: orderResponse.orderId,
+
         name: "Kaumudi Trust",
         description: `Enrollment for ${courseData.courseName}`,
-        image: "https://your-logo-url.com/logo.png",
+
         handler: async function (response) {
           try {
-            // Step 3: Verify payment with backend
             const verifyResponse = await verifyPayment({
               razorpayOrderId: response.razorpay_order_id,
               razorpayPaymentId: response.razorpay_payment_id,
               razorpaySignature: response.razorpay_signature,
               courseId: courseData.courseId,
+              paymentType,
             });
 
             if (verifyResponse.success) {
               alert("Payment Successful! Enrollment Confirmed!");
-              // Redirect to student profile (explicit)
+
               navigate("/student/profile", {
-                state: {
-                  message: "You have successfully enrolled in the course!",
-                },
+                state: { message: "Enrollment successful!" },
               });
             } else {
-              setError(
-                "Payment verification failed: " +
-                  (verifyResponse.message || "Unknown error"),
-              );
+              setError("Payment verification failed.");
             }
           } catch (err) {
-            console.error("Payment verification error:", err);
-            setError("Failed to verify payment: " + err.message);
+            setError("Verification error: " + err.message);
           }
         },
+
         prefill: {
           name: formData.fullName,
           email: formData.email,
           contact: formData.whatsapp,
         },
-        theme: {
-          color: "#631D11",
-        },
+
+        theme: { color: "#631D11" },
       };
 
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (err) {
-      console.error("Payment error:", err);
-      setError("Failed to initiate payment: " + err.message);
+      console.error(err);
+      setError("Payment failed: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -318,6 +403,12 @@ const EnrollmentPage = () => {
     "w-full bg-[#fdfaf5]/80 backdrop-blur-sm border-b-2 border-[#631D11]/10 p-4 outline-none focus:border-[#d6b15c] transition-all duration-300 text-[#3D1A16] font-medium placeholder:text-gray-400 placeholder:font-normal rounded-t-lg group-hover:bg-white";
   const labelStyle =
     "text-[11px] uppercase tracking-[0.2em] font-bold text-[#631D11] mb-2 flex items-center gap-2 opacity-80";
+
+  const editableInputStyle =
+    "w-full bg-white border-b-2 border-[#631D11]/10 p-4 outline-none focus:border-[#d6b15c] transition-all duration-300 text-[#3D1A16] font-medium rounded-t-lg";
+
+  const prefilledInputStyle =
+    "w-full bg-[#f5efe3] border-b-2 border-[#d6b15c]/30 p-4 text-[#7a5c58] font-semibold rounded-t-lg cursor-not-allowed";
 
   // --- ANIMATION VARIANTS ---
   const fadeInUp = {
@@ -398,9 +489,9 @@ const EnrollmentPage = () => {
                     type="text"
                     name="fullName"
                     value={formData.fullName}
-                    onChange={handleInputChange}
+                    disabled
                     placeholder="e.g. Rahul Sharma"
-                    className={inputStyle}
+                    className={prefilledInputStyle}
                     required
                   />
                 </div>
@@ -412,25 +503,74 @@ const EnrollmentPage = () => {
                     type="tel"
                     name="whatsapp"
                     value={formData.whatsapp}
-                    onChange={handleInputChange}
                     placeholder="+91 00000 00000"
-                    className={inputStyle}
+                    className={editableInputStyle}
+                    onChange={handleInputChange}
                     required
                   />
                 </div>
                 <div className="md:col-span-2 space-y-1">
                   <label className={labelStyle}>
-                    <Mail size={12} /> Email Address
+                    <Mail size={12} /> Email Address{" "}
+                    {isEmailVerified && (
+                      <span className="text-green-600 lowercase text-[10px] font-bold px-2 bg-green-100 rounded-full ml-2">
+                        Verified
+                      </span>
+                    )}
                   </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="rahul@example.com"
-                    className={inputStyle}
-                    required
-                  />
+                  <div className="flex gap-2">
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      disabled
+                      placeholder="rahul@example.com"
+                      className={`${prefilledInputStyle} flex-1`}
+                      required
+                    />
+                    {!isEmailVerified && (
+                      <button
+                        type="button"
+                        onClick={handleSendOtp}
+                        className="px-5 py-3 rounded-xl bg-[#631D11] text-white text-xs font-bold hover:bg-[#d6b15c] hover:text-[#631D11] transition-colors"
+                      >
+                        {isVerifying
+                          ? "Sending..."
+                          : isOtpSent
+                            ? "Resend OTP"
+                            : "Send OTP"}
+                      </button>
+                    )}
+                  </div>
+                  {!isEmailVerified && isOtpSent && (
+                    <div className="flex gap-2 mt-2">
+                      <input
+                        type="text"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        placeholder="Enter 4-digit OTP"
+                        className={editableInputStyle}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleVerifyOtp}
+                        className="px-5 py-3 rounded-xl bg-[#d6b15c] text-[#631D11] font-bold"
+                      >
+                        {isVerifying ? "Verifying..." : "Verify OTP"}
+                      </button>
+                    </div>
+                  )}
+                  {otpStatus.msg && (
+                    <p
+                      className={`text-[12px] mt-2 font-semibold ${
+                        otpStatus.type === "success"
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }`}
+                    >
+                      {otpStatus.msg}
+                    </p>
+                  )}
                 </div>
                 <div className="md:col-span-2 space-y-1">
                   <label className={labelStyle}>
@@ -440,9 +580,9 @@ const EnrollmentPage = () => {
                     type="text"
                     name="address"
                     value={formData.address}
-                    onChange={handleInputChange}
                     placeholder="Street name, Apartment, Area"
-                    className={inputStyle}
+                    className={editableInputStyle}
+                    onChange={handleInputChange}
                   />
                 </div>
                 <div className="space-y-1">
@@ -453,9 +593,9 @@ const EnrollmentPage = () => {
                     type="text"
                     name="city"
                     value={formData.city}
-                    onChange={handleInputChange}
                     placeholder="Varanasi"
-                    className={inputStyle}
+                    className={editableInputStyle}
+                    onChange={handleInputChange}
                   />
                 </div>
                 <div className="space-y-1">
@@ -466,9 +606,9 @@ const EnrollmentPage = () => {
                     type="text"
                     name="state"
                     value={formData.state}
-                    onChange={handleInputChange}
                     placeholder="Uttar Pradesh, India"
-                    className={inputStyle}
+                    className={editableInputStyle}
+                    onChange={handleInputChange}
                   />
                 </div>
               </div>
@@ -497,8 +637,7 @@ const EnrollmentPage = () => {
                     <select
                       name="sanskritKnowledge"
                       value={formData.sanskritKnowledge}
-                      onChange={handleInputChange}
-                      className={`${inputStyle} appearance-none cursor-pointer bg-white/50`}
+                      className={`${editableInputStyle} appearance-none cursor-pointer bg-white/50`}
                     >
                       <option>Beginner (No prior knowledge)</option>
                       <option>Intermediate (Knows basics)</option>
@@ -515,14 +654,13 @@ const EnrollmentPage = () => {
                     type="text"
                     name="occupation"
                     value={formData.occupation}
-                    onChange={handleInputChange}
                     placeholder="Student / Professional"
-                    className={inputStyle}
+                    className={editableInputStyle}
+                    onChange={handleInputChange}
                   />
                 </div>
               </div>
             </motion.section>{" "}
-             
           </div>
 
           <aside className="lg:col-span-4">
@@ -638,7 +776,7 @@ const EnrollmentPage = () => {
                 </div>
 
                 <div className="space-y-4 border-t border-white/10 pt-8 mt-4">
-                  <div className="flex gap-2">
+                  {/* <div className="flex gap-2">
                     <input
                       type="text"
                       value={couponCode}
@@ -649,7 +787,7 @@ const EnrollmentPage = () => {
                     <button className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white text-sm font-bold transition-colors">
                       Apply
                     </button>
-                  </div>
+                  </div> */}
                   <div className="flex justify-between items-center text-stone-300 text-sm">
                     <span className="flex items-center gap-2 italic">
                       Course Fee
@@ -695,30 +833,86 @@ const EnrollmentPage = () => {
                 )}
 
                 <motion.button
-                  onHoverStart={() => setIsHovered(true)}
-                  onHoverEnd={() => setIsHovered(false)}
-                  onClick={handlePayment}
-                  disabled={loading}
-                  className="w-full bg-[#d6b15c] text-[#74271E] py-6 rounded-3xl font-black text-xl mt-6 hover:bg-[#c09c4a] transition-all duration-500 shadow-[0_15px_30px_rgba(214,177,92,0.3)] flex items-center justify-center gap-3 relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => setPaymentModalOpen(true)}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className="w-full bg-[#d6b15c]
+    hover:bg-[#caa34f] text-[#631D11] font-black py-4 px-6 rounded-2xl shadow-[0_10px_25px_rgba(214,177,92,0.35)] hover:shadow-[0_15px_35px_rgba(214,177,92,0.45)] transition-all duration-300 flex items-center justify-center gap-3 "
                 >
-                  <span className="relative z-10">
-                    {loading ? "Processing..." : "Proceed to Payment"}
-                  </span>
-                  {!loading && (
-                    <motion.div
-                      animate={{ x: isHovered ? 5 : 0 }}
-                      className="relative z-10"
-                    >
-                      <ArrowRight size={24} />
-                    </motion.div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/40 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                  Proceed to Payment
                 </motion.button>
               </div>
             </motion.div>
           </aside>
         </div>
       </motion.div>
+      {paymentModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[999]">
+          <div className="bg-white p-8 rounded-3xl w-[420px] space-y-6">
+            <h3 className="text-xl font-bold text-[#631D11]">
+              Select Payment Option
+            </h3>
+
+            {/* PAYMENT OPTIONS */}
+
+            <div className="grid grid-cols-2 gap-4">
+              <div
+                onClick={() => setPaymentType("FULL")}
+                className={`p-4 border rounded-xl cursor-pointer ${
+                  paymentType === "FULL" ? "bg-[#d6b15c] text-[#631D11]" : ""
+                }`}
+              >
+                <p className="font-bold">Full Payment</p>
+                <p>₹{basePrice}</p>
+              </div>
+
+              <div
+                onClick={() => setPaymentType("EMI")}
+                className={`p-4 border rounded-xl cursor-pointer ${
+                  paymentType === "EMI" ? "bg-[#d6b15c] text-[#631D11]" : ""
+                }`}
+              >
+                <p className="font-bold">EMI</p>
+                <p>₹{Math.ceil(basePrice / 3)} × 3</p>
+              </div>
+            </div>
+
+            {/* CAPTCHA */}
+
+            <div className="flex justify-center items-center py-2">
+              {import.meta.env.VITE_RECAPTCHA_SITE_KEY ? (
+                <ReCAPTCHA
+                  sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                  onChange={(token) => setCaptchaToken(token)}
+                />
+              ) : (
+                <p className="text-red-500 text-sm font-semibold">
+                  reCAPTCHA not configured properly.
+                </p>
+              )}
+            </div>
+
+            {/* ACTION BUTTONS */}
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setPaymentModalOpen(false)}
+                className="flex-1 border py-3 rounded-xl"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handlePayment}
+                className="flex-1 bg-[#631D11] text-white py-3 rounded-xl"
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -192,7 +192,9 @@ const Courses = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              {status === "ALL" ? "All" : status.charAt(0) + status.slice(1).toLowerCase()}
+              {status === "ALL"
+                ? "All"
+                : status.charAt(0) + status.slice(1).toLowerCase()}
             </motion.button>
           ))}
         </div>

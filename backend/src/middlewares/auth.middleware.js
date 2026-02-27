@@ -23,13 +23,13 @@ export const authMiddleware = async (req, res, next) => {
 
     if (verify.role === "SUPER_ADMIN") {
       account = await SuperAdmin.findById(verify.id);
-    } 
+    }
     else if (verify.role === "ADMIN") {
       account = await Admin.findById(verify.id);
-    } 
+    }
     else if (verify.role === "STUDENT") {
       account = await Student.findById(verify.id);
-    } 
+    }
     else {
       return res.status(401).json({
         success: false,
@@ -46,7 +46,6 @@ export const authMiddleware = async (req, res, next) => {
 
     req.user = account;
     req.user.role = verify.role;
-
     next();
   } catch (error) {
     console.error("AUTH ERROR:", error);

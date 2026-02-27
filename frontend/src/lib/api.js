@@ -7,7 +7,7 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("kaumudi_token");
 
   if (token && token !== "null" && token !== "undefined") {
     config.headers.Authorization = `Bearer ${token}`;
@@ -169,8 +169,8 @@ export async function getAllEnrollments() {
 }
 
 // ==================== PAYMENT APIs ====================
-export async function createPaymentOrder(courseId, couponCode = null) {
-  const res = await api.post("/payment/create-order", { courseId, couponCode });
+export async function createPaymentOrder(data) {
+  const res = await api.post("/payment/create-order", data);
   return res.data;
 }
 
@@ -311,11 +311,16 @@ export async function toggleStaffStatus(staffId) {
   return res.data;
 }
 
+export const markStudentFeeAsPaid = (id) =>
+  api.patch(`/admin/student-fees/${id}/mark-paid`);
+
 // ==================== ADMIN STUDENT APIs ====================
 export async function getAllStudentsForAdmin(params = {}) {
   const res = await api.get("/admin/students", { params });
   return res.data;
 }
+
+export const getAllStudentFees = () => api.get("/admin/student-fees");
 
 export async function createStudentByAdmin(studentData) {
   const res = await api.post("/admin/students", studentData, {
