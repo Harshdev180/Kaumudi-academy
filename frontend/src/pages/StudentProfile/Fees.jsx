@@ -11,62 +11,39 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { useEffect } from "react";
+import { getProfileEnrollments } from "../../lib/api";
+import { createPaymentOrder } from "../../lib/api";
 
 const FeePurchase = () => {
-  const initialData = [
-    {
-      id: "FEE001",
-      date: "July 1, 2024",
-      desc: "Advanced Sanskrit Literature",
-      type: "Academic",
-      totalAmount: 15000,
-      paidAmount: 15000,
-    },
-    {
-      id: "FEE002",
-      date: "July 10, 2024",
-      desc: "Vedic Philosophy",
-      type: "Academic",
-      totalAmount: 12000,
-      paidAmount: 8000,
-    },
-    {
-      id: "FEE003",
-      date: "August 5, 2024",
-      desc: "Indian Classical Music",
-      type: "Cultural",
-      totalAmount: 10000,
-      paidAmount: 10000,
-    },
-    {
-      id: "FEE004",
-      date: "August 18, 2024",
-      desc: "Yoga & Meditation Certification",
-      type: "Wellness",
-      totalAmount: 8000,
-      paidAmount: 1000,
-    },
-    {
-      id: "FEE005",
-      date: "September 1, 2024",
-      desc: "Spoken Sanskrit Workshop",
-      type: "Workshop",
-      totalAmount: 5000,
-      paidAmount: 5000,
-    },
-    {
-      id: "FEE006",
-      date: "September 12, 2024",
-      desc: "Ancient Indian History",
-      type: "Academic",
-      totalAmount: 9000,
-      paidAmount: 4500,
-    },
-  ];
+  const [paymentHistory, setPaymentHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [paymentHistory, setPaymentHistory] = useState(initialData);
+  useEffect(() => {
+    const loadFees = async () => {
+      try {
+        const res = await getProfileEnrollments();
 
-  /* CALCULATION */
+        // adjust if your backend structure differs
+        const formatted = res.data.map((item) => ({
+          id: item._id,
+          date: new Date(item.createdAt).toLocaleDateString(),
+          desc: item.course?.title || "Course",
+          type: item.course?.category || "Academic",
+          totalAmount: item.amount || 0,
+          paidAmount: item.paidAmount || 0,
+        }));
+
+        setPaymentHistory(formatted);
+      } catch (err) {
+        console.error("Failed to load fee data", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadFees();
+  }, []);
 
   const totalFee = paymentHistory.reduce(
     (sum, item) => sum + item.totalAmount,
@@ -108,12 +85,17 @@ const FeePurchase = () => {
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = paymentHistory.slice(indexOfFirstRow, indexOfLastRow);
 
-  const handlePayment = (item) => {
-    setPaymentHistory((prev) =>
-      prev.map((p) =>
-        p.id === item.id ? { ...p, paidAmount: p.totalAmount } : p,
-      ),
-    );
+  const handlePayment = async (item) => {
+    try {
+      await createPaymentOrder({
+        courseId: item.id,
+      });
+
+      // refresh data
+      window.location.reload();
+    } catch (err) {
+      alert("Payment failed");
+    }
   };
 
   const handlePrev = () => {
@@ -123,6 +105,14 @@ const FeePurchase = () => {
   const handleNext = () => {
     if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
+
+  if (loading) {
+    return (
+      <div className="p-10 text-center text-gray-400">
+        Loading fee data...
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto space-y-12 pb-16 mt-4 px-4">

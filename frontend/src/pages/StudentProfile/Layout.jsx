@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { Bell, CheckCircle, Info, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "../../context/useAuthHook";
 import SEO from "../../components/SEO";
 
 const Layout = () => {
@@ -11,6 +12,8 @@ const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const notifyRef = useRef(null);
+  const menuRef = useRef(null);
+  const { user } = useAuth();
 
   const underlineVariants = {
     hidden: { width: 0, opacity: 0 },
@@ -66,20 +69,34 @@ const Layout = () => {
     },
   ];
 
-  const last = (
-    location.pathname.split("/").filter(Boolean).pop() || "overview"
-  ).toLowerCase();
-  const titleMap = {
-    overview: "Overview",
-    dashboard: "Overview",
-    courses: "Courses",
-    certifications: "Certifications",
-    profile: "Profile",
-    payments: "Payments",
-    settings: "Settings",
-  };
-  const pageTitle = titleMap[last] || "Overview";
-  const initials = "TS";
+  const pageTitle = location.pathname.split("/").pop() || "Overview";
+
+  const fullName = useMemo(() => {
+    if (!user) return "Student";
+
+    if (user.name) return user.name;
+
+    const first = user.firstName || "";
+    const last = user.lastName || "";
+
+    return [first, last].filter(Boolean).join(" ").trim() || "Student";
+  }, [user]);
+
+  const initials = React.useMemo(() => {
+    if (!user) return "ST";
+
+    if (user.name) {
+      const parts = user.name.trim().split(" ");
+      return parts.length === 1
+        ? parts[0][0]?.toUpperCase()
+        : (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    const first = user.firstName?.[0] || "";
+    const last = user.lastName?.[0] || "";
+
+    return (first + last).toUpperCase() || "ST";
+  }, [user]);
 
   return (
     <div className="flex h-screen bg-[#f7f1e3] font-sans text-gray-800 overflow-hidden">
