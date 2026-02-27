@@ -301,7 +301,7 @@ const CourseManagement = () => {
 
         <button
           onClick={openAdd}
-          className="flex items-center gap-1 bg-[#e6b86a] text-[#4a2b07] px-2 md:px-5 md:py-2 rounded-xl font-semibold text-xs md:text-xl"
+          className="flex items-center gap-2 bg-[#e6b86a] text-[#4a2b07] px-5 py-2 rounded-xl font-semibold shadow hover:scale-105 transition"
         >
           <MdAdd /> Add Course
         </button>
