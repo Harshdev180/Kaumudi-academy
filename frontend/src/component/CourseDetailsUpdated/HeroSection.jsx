@@ -1,14 +1,16 @@
 import React from "react";
 
 const HeroSection = ({ data }) => {
+  const imageUrl =
+    (data && typeof data.image === "string" && data.image) ||
+    data?.image?.url ||
+    data?.images?.[0]?.url ||
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv8HjlPpt0rOT7SHaevW0xmnEg9DCgkEfvrA&s";
   return (
     <div className="relative bg-[#5C1D13] font-sans-serif rounded-2xl overflow-hidden text-white shadow-xl">
       <div className="absolute inset-0 opacity-20">
         <img
-          src={
-            data?.image ||
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv8HjlPpt0rOT7SHaevW0xmnEg9DCgkEfvrA&s"
-          }
+          src={imageUrl}
           alt="Sanskrit Manuscripts"
           className="w-full h-full object-cover"
         />

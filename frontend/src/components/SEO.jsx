@@ -9,87 +9,140 @@ export default function SEO({
   jsonLd,
 }) {
   useEffect(() => {
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+
+    /* =========================
+       TITLE
+    ========================== */
     if (title) {
       document.title = title;
-      const ogTitle =
-        document.querySelector('meta[property="og:title"]') ||
-        document.head.appendChild(document.createElement("meta"));
-      ogTitle.setAttribute("property", "og:title");
+
+      let ogTitle = document.querySelector('meta[property="og:title"]');
+      if (!ogTitle) {
+        ogTitle = document.createElement("meta");
+        ogTitle.setAttribute("property", "og:title");
+        document.head.appendChild(ogTitle);
+      }
       ogTitle.setAttribute("content", title);
     }
+
+    /* =========================
+       DESCRIPTION
+    ========================== */
     if (description) {
-      let meta = document.querySelector('meta[name="description"]');
-      if (!meta) {
-        meta = document.createElement("meta");
-        meta.setAttribute("name", "description");
-        document.head.appendChild(meta);
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (!metaDesc) {
+        metaDesc = document.createElement("meta");
+        metaDesc.setAttribute("name", "description");
+        document.head.appendChild(metaDesc);
       }
-      meta.setAttribute("content", description);
-      const ogDesc =
-        document.querySelector('meta[property="og:description"]') ||
-        document.head.appendChild(document.createElement("meta"));
-      ogDesc.setAttribute("property", "og:description");
+      metaDesc.setAttribute("content", description);
+
+      let ogDesc = document.querySelector('meta[property="og:description"]');
+      if (!ogDesc) {
+        ogDesc = document.createElement("meta");
+        ogDesc.setAttribute("property", "og:description");
+        document.head.appendChild(ogDesc);
+      }
       ogDesc.setAttribute("content", description);
     }
+
+    /* =========================
+       ROBOTS
+    ========================== */
     if (robots) {
-      let meta = document.querySelector('meta[name="robots"]');
-      if (!meta) {
-        meta = document.createElement("meta");
-        meta.setAttribute("name", "robots");
-        document.head.appendChild(meta);
+      let robotsMeta = document.querySelector('meta[name="robots"]');
+      if (!robotsMeta) {
+        robotsMeta = document.createElement("meta");
+        robotsMeta.setAttribute("name", "robots");
+        document.head.appendChild(robotsMeta);
       }
-      meta.setAttribute("content", robots);
+      robotsMeta.setAttribute("content", robots);
     }
-    // canonical
+
+    /* =========================
+       CANONICAL + OG URL
+    ========================== */
     if (canonicalPath) {
-      const origin =
-        typeof window !== "undefined" ? window.location.origin : "";
       const href = canonicalPath.startsWith("http")
         ? canonicalPath
         : `${origin}${canonicalPath.startsWith("/") ? "" : "/"}${canonicalPath}`;
-      let link =
-        document.querySelector('link[rel="canonical"]') ||
-        document.head.appendChild(document.createElement("link"));
-      link.setAttribute("rel", "canonical");
-      link.setAttribute("href", href);
-      const ogUrl =
-        document.querySelector('meta[property="og:url"]') ||
-        document.head.appendChild(document.createElement("meta"));
-      ogUrl.setAttribute("property", "og:url");
+
+      let canonical = document.querySelector('link[rel="canonical"]');
+      if (!canonical) {
+        canonical = document.createElement("link");
+        canonical.setAttribute("rel", "canonical");
+        document.head.appendChild(canonical);
+      }
+      canonical.setAttribute("href", href);
+
+      let ogUrl = document.querySelector('meta[property="og:url"]');
+      if (!ogUrl) {
+        ogUrl = document.createElement("meta");
+        ogUrl.setAttribute("property", "og:url");
+        document.head.appendChild(ogUrl);
+      }
       ogUrl.setAttribute("content", href);
     }
-    // OpenGraph + Twitter
+
+    /* =========================
+       OPEN GRAPH + TWITTER
+    ========================== */
     const siteName = "Kaumudi Sanskrit Academy";
-    const origin = typeof window !== "undefined" ? window.location.origin : "";
-    let ogImage = og.image;
-    if (ogImage && !/^https?:\/\//i.test(ogImage)) {
+
+    // Safe image handling
+    let ogImage = og?.image;
+
+    // If object like { url: "..." }
+    if (ogImage && typeof ogImage === "object") {
+      ogImage = ogImage.url;
+    }
+
+    // Ensure string before using startsWith
+    if (typeof ogImage !== "string") {
+      ogImage = null;
+    } else if (!/^https?:\/\//i.test(ogImage)) {
       ogImage = `${origin}${ogImage.startsWith("/") ? "" : "/"}${ogImage}`;
     }
-    const twitterCard = og.twitterCard || "summary_large_image";
-    const setOg = (prop, content) => {
+
+    const twitterCard = og?.twitterCard || "summary_large_image";
+
+    const setOg = (property, content) => {
       if (!content) return;
-      const el =
-        document.querySelector(`meta[property="${prop}"]`) ||
-        document.head.appendChild(document.createElement("meta"));
-      el.setAttribute("property", prop);
+      let el = document.querySelector(`meta[property="${property}"]`);
+      if (!el) {
+        el = document.createElement("meta");
+        el.setAttribute("property", property);
+        document.head.appendChild(el);
+      }
       el.setAttribute("content", content);
     };
+
     const setTw = (name, content) => {
       if (!content) return;
-      const el =
-        document.querySelector(`meta[name="${name}"]`) ||
-        document.head.appendChild(document.createElement("meta"));
-      el.setAttribute("name", name);
+      let el = document.querySelector(`meta[name="${name}"]`);
+      if (!el) {
+        el = document.createElement("meta");
+        el.setAttribute("name", name);
+        document.head.appendChild(el);
+      }
       el.setAttribute("content", content);
     };
-    setOg("og:type", og.type || "website");
+
+    setOg("og:type", og?.type || "website");
     setOg("og:site_name", siteName);
+    if (title) setOg("og:title", title);
+    if (description) setOg("og:description", description);
     if (ogImage) setOg("og:image", ogImage);
+
     setTw("twitter:card", twitterCard);
     if (title) setTw("twitter:title", title);
     if (description) setTw("twitter:description", description);
     if (ogImage) setTw("twitter:image", ogImage);
-    // JSON-LD
+
+    /* =========================
+       JSON-LD
+    ========================== */
     let ldScript;
     if (jsonLd) {
       ldScript = document.getElementById("__jsonld");
@@ -101,12 +154,14 @@ export default function SEO({
       }
       ldScript.textContent = JSON.stringify(jsonLd);
     }
+
     return () => {
       if (jsonLd) {
         const s = document.getElementById("__jsonld");
-        s && s.remove();
+        if (s) s.remove();
       }
     };
-  }, [title, description, canonicalPath, robots, og.image, og.type, jsonLd]);
+  }, [title, description, canonicalPath, robots, og, jsonLd]);
+
   return null;
 }
