@@ -11,6 +11,7 @@ import {
   Info,
 } from "lucide-react";
 import SEO from "../components/SEO";
+import cookieimg from "../assets/cookieimg.webp";
 
 /* animation presets */
 const pageFade = {
@@ -81,7 +82,7 @@ export default function CookiePolicy() {
             className="absolute inset-0 bg-cover bg-center"
             style={{
               backgroundImage:
-                "url('https://i.pinimg.com/1200x/18/a8/ea/18a8ea7f31a6bb6d0124d09795a98ba4.jpg')",
+                `url(${cookieimg})`,
             }}
           />
 

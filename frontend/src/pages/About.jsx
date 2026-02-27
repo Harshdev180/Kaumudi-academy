@@ -3,6 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
 import SEO from "../components/SEO";
+import about1 from "../assets/about/about1.webp";
+import about2 from "../assets/about/about2.webp";
+import about3 from "../assets/about/about3.webp";
+import about4 from "../assets/about/about4.webp";
+import about5 from "../assets/about/about5.webp";
 
 export default function About() {
   const [openIndex, setOpenIndex] = useState(null);
@@ -37,7 +42,7 @@ export default function About() {
         className="relative min-h-[90vh] flex items-center justify-center text-center overflow-hidden bg-cover bg-center overflow-x-hidden"
         style={{
           backgroundImage:
-            'url("https://i.pinimg.com/736x/60/5e/49/605e494a0d065722f8f13458c2aa328a.jpg")',
+            `url(${about1})`,
         }}
       >
         <div className="absolute inset-0 bg-[#2c2820]/60" />
@@ -140,7 +145,7 @@ export default function About() {
             >
               <div className="relative w-full h-[300px] sm:h-[380px] md:h-[500px] rounded-3xl overflow-hidden border-4 border-[#f1e4c8] shadow-2xl">
                 <img
-                  src="https://i.pinimg.com/736x/43/d5/9b/43d59b6ffea25e44cb1092a10e43a78b.jpg"
+                  src={about2}
                   alt="Sanskrit Scholar"
                   className="absolute inset-0 w-full h-full object-cover max-w-none transition-transform duration-700 group-hover:scale-105"
                 />
@@ -249,7 +254,7 @@ export default function About() {
             <div className="bg-[#fff9e9] rounded-2xl shadow-xl overflow-hidden">
               <div className="p-4">
                 <img
-                  src="https://i.pinimg.com/736x/6e/f3/a3/6ef3a3792fc89e992cfdace89b3b887e.jpg"
+                  src={about3}
                   alt="Dr. Ananth Narayan"
                   className="w-full h-72 object-cover rounded-xl"
                 />
@@ -274,7 +279,7 @@ export default function About() {
             <div className="bg-[#fff9e9] rounded-2xl shadow-xl overflow-hidden">
               <div className="p-4">
                 <img
-                  src="https://i.pinimg.com/736x/c2/38/f6/c238f6196864b554e23286e972946dc2.jpg"
+                  src={about4}
                   alt="Acharya Meera Iyer"
                   className="w-full h-72 object-cover rounded-xl"
                 />
@@ -299,7 +304,7 @@ export default function About() {
             <div className="bg-[#fff9e9] rounded-2xl shadow-xl overflow-hidden">
               <div className="p-4">
                 <img
-                  src="https://i.pinimg.com/736x/6e/44/7f/6e447f2168e966bc30049bebe00537dc.jpg"
+                  src={about5}
                   alt="Pandit Rajiv Misra"
                   className="w-full h-72 object-cover rounded-xl"
                 />

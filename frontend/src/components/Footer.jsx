@@ -11,9 +11,9 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import wheel from "../assets/wheel.jpg";
+import wheel from "../assets/wheel.webp";
 import { AnimatePresence } from "framer-motion";
-import logo from "../assets/logo-bgremove.png";
+import logo from "../assets/logo-bgremove.webp";
 
 const socials = [Instagram];
 

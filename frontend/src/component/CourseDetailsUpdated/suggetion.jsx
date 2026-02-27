@@ -9,6 +9,15 @@ import {
   Globe,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import course1 from "../../assets/suggestion/course1.webp";
+import course2 from "../../assets/suggestion/course2.webp";
+import course3 from "../../assets/suggestion/course3.webp";
+import course4 from "../../assets/suggestion/course4.webp";
+import course5 from "../../assets/suggestion/course5.webp";
+import course6 from "../../assets/suggestion/course6.webp";
+import course8 from "../../assets/suggestion/course8.webp";
+import course9 from "../../assets/suggestion/course9.webp";
+import course10 from "../../assets/suggestion/course10.webp";
 
 const courses = [
   {
@@ -20,12 +29,12 @@ const courses = [
     language: "Hindi & Sanskrit",
     duration: "1 Year",
     type: "ONLINE",
-    image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=500",
+    image: course1,
     instructor: {
       name: "Acharya Dr. Vasudev Shastry",
       qualification: "PHD IN VYAKARANA, BANARAS HINDU UNIVERSITY",
       bio: "With over 25 years of teaching experience, Acharya Vasudev has guided thousands of students through the complexities of Sanskrit Grammar.",
-      image: "https://t3.ftcdn.net/jpg/06/20/35/33/360_F_620353344_5n9KjA60OQdE2vB6H4VlEaB0nNqI8H9o.jpg",
+      image: course2,
       tags: ["25+ Yrs Exp", "100+ Publications", "Senior Faculty"]
     },
     curriculum: [
@@ -66,12 +75,12 @@ const courses = [
     language: "Sanskrit",
     duration: "6 Weeks",
     type: "IN-PERSON",
-    image: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=500",
+    image: course3,
     instructor: {
       name: "Pandit Ravi Prakash",
       qualification: "VEDIC SCHOLAR & PHONETICS EXPERT",
       bio: "A specialist in Krishna Yajurveda, Pandit Ravi Prakash focuses on the preservation of oral traditions through scientific phonetic training.",
-      image: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200",
+      image: course4,
       tags: ["15+ Yrs Exp", "Vedic Expert", "Ritual Specialist"]
     },
     curriculum: [
@@ -111,12 +120,12 @@ const courses = [
     language: "Hindi & English",
     duration: "3 Months",
     type: "ONLINE",
-    image: "https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?w=500",
+    image: course5,
     instructor: {
       name: "Dr. Ananya Sharma",
       qualification: "PHD IN SANSKRIT LITERATURE, JNU",
       bio: "Dr. Ananya focuses on making Sanskrit a living language, teaching students to express complex thoughts with simplicity and elegance.",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200",
+      image: course6,
       tags: ["10+ Yrs Exp", "Linguistics Expert", "Modern Pedagogy"]
     },
     curriculum: [
@@ -156,12 +165,12 @@ const courses = [
     language: "English",
     duration: "6 Months",
     type: "ONLINE",
-    image: "https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?w=500",
+    image: course5,
     instructor: {
       name: "Prof. S. Mukherjee",
       qualification: "UGC NET QUALIFIED & SENIOR RESEARCH FELLOW",
       bio: "Prof. Mukherjee has mentored over 500+ successful candidates, specializing in the analytical breakdown of complex exam patterns.",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200",
+      image: course8,
       tags: ["12+ Yrs Exp", "NET Expert", "Sr. Faculty"]
     },
     curriculum: [
@@ -201,12 +210,12 @@ const courses = [
     language: "Sanskrit & Hindi",
     duration: "3 Years",
     type: "IN-PERSON",
-    image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500",
+    image: course9,
     instructor: {
       name: "Dr. Meera Iyer",
       qualification: "ACADEMIC DEAN & YOGA PHILOSOPHER",
       bio: "Dr. Meera Iyer combines traditional textual knowledge with practical yoga philosophy to provide a holistic educational experience.",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200",
+      image: course10,
       tags: ["20+ Yrs Exp", "Author", "Yoga Philosopher"]
     },
     curriculum: [

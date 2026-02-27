@@ -7,7 +7,7 @@ import About from "./About";
 import Faculty from "./Faculty";
 import Mission from "./Mission";
 import Testimonials from "./Testimonials";
-import heroImg from "../../assets/wheel.jpg";
+import heroImg from "../../assets/wheel.webp";
 import Typewriter from "./Typewriter";
 import Stats from "./stats";
 import SEO from "../../components/SEO";
@@ -65,7 +65,7 @@ export default function Home() {
             "@type": "Organization",
             name: "Kaumudi Sanskrit Academy",
             url: typeof window !== "undefined" ? window.location.origin : "",
-            logo: "/src/assets/logo-bgremove.png",
+            logo: "/src/assets/logo-bgremove.webp",
           },
           {
             "@context": "https://schema.org",

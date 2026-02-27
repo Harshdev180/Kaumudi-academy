@@ -4,6 +4,12 @@ import { BookOpen, GraduationCap, Award, ScrollText } from "lucide-react";
 import { Link } from "react-router-dom";
 import imgg from "../assets/fac.png";
 import SEO from "../components/SEO";
+import faculty1 from "../assets/about/about3.webp";
+import faculty2 from "../assets/about/about4.webp";
+import faculty3 from "../assets/about/about5.webp";
+import faculty4 from "../assets/home/faculty2.webp";
+import faculty5 from "../assets/home/faculty3.webp";
+import faculty6 from "../assets/home/faculty4.webp";
 
 const FacultyPage = () => {
   const facultyMembers = [
@@ -11,42 +17,42 @@ const FacultyPage = () => {
       name: "Dr. Ananth Narayan",
       role: "HOD · Vyakarana Shastra",
       image:
-        "https://i.pinimg.com/736x/6e/f3/a3/6ef3a3792fc89e992cfdace89b3b887e.jpg",
+        faculty1,
       bio: "A PhD from BHU with 20 years of experience in Paninian Grammar. Expert in the Mahabhashya tradition.",
     },
     {
       name: "Acharya Meera Iyer",
       role: "Dean · Vedic Studies",
       image:
-        "https://i.pinimg.com/736x/c2/38/f6/c238f6196864b554e23286e972946dc2.jpg",
+        faculty2,
       bio: "Specializes in Rigveda Bhashya and Advaita Vedanta.",
     },
     {
       name: "Pandit Rajiv Misra",
       role: "Senior Lecturer · Sahitya",
       image:
-        "https://i.pinimg.com/736x/6e/44/7f/6e447f2168e966bc30049bebe00537dc.jpg",
+        faculty3,
       bio: "Scholar in Kavyashastra and Dramaturgy.",
     },
     {
       name: "Vidushi Priya Sharma",
       role: "Instructor · Spoken Sanskrit",
       image:
-        "https://i.pinimg.com/736x/1f/bb/0e/1fbb0e761ada8399ea3031b75972a293.jpg",
+        faculty4,
       bio: "Dedicated to conversational Sanskrit.",
     },
     {
       name: "Swami Vidyananda",
       role: "Chief of Darshana Studies",
       image:
-        "https://i.pinimg.com/1200x/4d/ce/47/4dce475c98aa927bd3bc5186fea452f0.jpg",
+        faculty5,
       bio: "Master of Nyaya & Vedanta philosophy.",
     },
     {
       name: "Prof. Rahul Dev",
       role: "Expert · Epigraphy",
       image:
-        "https://i.pinimg.com/736x/36/d1/33/36d133d60e678d1888838aaa7778fe58.jpg",
+        faculty6,
       bio: "Unlocking history through inscriptions.",
     },
   ];

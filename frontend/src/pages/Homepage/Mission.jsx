@@ -3,6 +3,7 @@ import { IoHome } from "react-icons/io5";
 import { RiGraduationCapFill } from "react-icons/ri";
 import { BsGlobe } from "react-icons/bs";
 import { IoIosPaper } from "react-icons/io";
+import mission1 from "../../assets/home/mission1.webp";
 
 const container = {
   hidden: {},
@@ -126,7 +127,7 @@ export default function Mission() {
             <div className="absolute inset-0 rounded-3xl bg-[#d6b15c]/20 blur-xl" />
 
             <img
-              src="https://i.pinimg.com/1200x/19/6c/f4/196cf4706012f8407a08c0cf7db51339.jpg"
+              src={mission1}
               alt="Sanskrit Manuscript"
               className="relative w-full h-[420px] object-cover rounded-2xl"
             />

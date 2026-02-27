@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, User, LogOut } from "lucide-react"; // Icons add kiye
-import logo from "../assets/logo-bgremove.png";
+import logo from "../assets/logo-bgremove.webp";
 import { useAuth } from "../context/useAuthHook";
 
 /* ------------------ CONFIG ------------------ */
