@@ -107,8 +107,8 @@ const Layout = () => {
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-2">
                 {/* This placeholder prevents the title from hiding behind the sidebar toggle */}
-                <div className="w-12 lg:hidden shrink-0" /> 
-                
+                <div className="w-12 lg:hidden shrink-0" />
+
                 <div className="flex flex-col">
                   <h2 className="text-lg sm:text-xl md:text-2xl font-bold capitalize tracking-tight text-[#74271E] truncate">
                     {pageTitle}
@@ -139,7 +139,7 @@ const Layout = () => {
           </div>
 
           {/* BOTTOM ROW: Navigation (Below Title on mobile, aligned right on desktop) */}
-          <div className="flex items-center justify-between gap-8 mt-4 lg:mt-0">
+          <div className="flex items-center justify-center gap-8 mt-4 lg:mt-0">
             <nav className="max-w-max lg:w-auto overflow-x-auto no-scrollbar">
               <ul className="flex items-center gap-4 sm:gap-6 font-semibold whitespace-nowrap">
                 {NAV_ITEMS.map(({ label, to }) => {
@@ -214,10 +214,17 @@ const Layout = () => {
                   <div className="relative bg-white">
                     <div className="p-5 flex justify-between items-center border-b border-gray-50">
                       <div>
-                        <h3 className="font-bold text-[#74271E] text-sm tracking-widest uppercase">Notifications</h3>
-                        <p className="text-[10px] text-gray-400 font-medium">You have {notifications.length} new updates</p>
+                        <h3 className="font-bold text-[#74271E] text-sm tracking-widest uppercase">
+                          Notifications
+                        </h3>
+                        <p className="text-[10px] text-gray-400 font-medium">
+                          You have {notifications.length} new updates
+                        </p>
                       </div>
-                      <button className="p-2 hover:bg-gray-100 rounded-full transition-colors" onClick={() => setIsNotifyOpen(false)}>
+                      <button
+                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                        onClick={() => setIsNotifyOpen(false)}
+                      >
                         <X size={18} className="text-gray-400" />
                       </button>
                     </div>
@@ -226,8 +233,11 @@ const Layout = () => {
                       {notifications.length > 0 ? (
                         notifications.map((n) => (
                           <div
-                           key={n.id}
-                            onClick={() => { setSelectedNotification(n); setIsNotifyOpen(false); }}
+                            key={n.id}
+                            onClick={() => {
+                              setSelectedNotification(n);
+                              setIsNotifyOpen(false);
+                            }}
                             className="p-5 flex gap-4 hover:bg-[#f7f1e3]/40 cursor-pointer border-b border-gray-50 transition-all group"
                           >
                             <div className="w-11 h-11 bg-[#f7f1e3] rounded-2xl flex items-center justify-center text-[#c9a050] shrink-0 group-hover:bg-[#74271E] group-hover:text-white transition-colors">
@@ -235,21 +245,32 @@ const Layout = () => {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex justify-between items-start gap-2">
-                                <p className="font-bold text-sm text-gray-800 truncate group-hover:text-[#74271E]">{n.title}</p>
-                                <span className="text-[10px] text-gray-400 font-bold whitespace-nowrap bg-gray-50 px-2 py-0.5 rounded-md">{n.time}</span>
+                                <p className="font-bold text-sm text-gray-800 truncate group-hover:text-[#74271E]">
+                                  {n.title}
+                                </p>
+                                <span className="text-[10px] text-gray-400 font-bold whitespace-nowrap bg-gray-50 px-2 py-0.5 rounded-md">
+                                  {n.time}
+                                </span>
                               </div>
-                              <p className="text-xs text-gray-500 mt-1 line-clamp-1">{n.subtitle}</p>
+                              <p className="text-xs text-gray-500 mt-1 line-clamp-1">
+                                {n.subtitle}
+                              </p>
                             </div>
                           </div>
                         ))
                       ) : (
-                        <div className="py-10 text-center text-gray-400">No new notifications</div>
+                        <div className="py-10 text-center text-gray-400">
+                          No new notifications
+                        </div>
                       )}
                     </div>
 
                     <div className="p-3 bg-gray-50/50">
                       <button
-                        onClick={() => { navigate("/student/notifications"); setIsNotifyOpen(false); }}
+                        onClick={() => {
+                          navigate("/student/notifications");
+                          setIsNotifyOpen(false);
+                        }}
                         className="w-full py-3 text-xs font-black tracking-widest text-[#74271E] bg-white border border-[#e6d5b8] rounded-xl shadow-sm hover:shadow-md hover:bg-[#74271E] hover:text-white transition-all uppercase"
                       >
                         View Full History
