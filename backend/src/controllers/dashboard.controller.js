@@ -8,16 +8,13 @@ export const getDashboardStats = async (req, res) => {
   try {
     const now = new Date();
 
-
     const totalCourses = await Course.countDocuments();
 
-   
     const activeCourses = await Course.countDocuments({
       status: "ACTIVE",
       endDate: { $gte: now }
     });
 
-    
     const totalEnrollments = await Enrollment.countDocuments();
 
     
