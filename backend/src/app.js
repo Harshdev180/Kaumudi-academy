@@ -65,6 +65,7 @@ app.use("/api", contactRoutes);
 app.use("/api", authRoutes);
 app.use('/api', subscriptionRoutes);
 // 🔐 PROTECTED / ADMIN ROUTES (AFTER)
+app.use("/api", notificationRoutes);
 app.use("/api", paymentRoutes);
 app.use("/api", studentRoutes);
 app.use("/api/profile", profileRoutes);
@@ -75,7 +76,6 @@ app.use("/api", couponRoutes);
 app.use("/api", enrollmentRoutes);
 app.use("/api", dashboardRoutes);
 app.use("/api", testimonialRoutes);
-app.use("/api", notificationRoutes);
 
 app.use("/health", (_, res) => {
   res.status(200).json({
