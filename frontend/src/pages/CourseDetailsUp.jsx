@@ -231,8 +231,14 @@ const CourseDetails = () => {
     return null;
   }
 
+  const posterUrl =
+    (courseData && typeof courseData.image === "string" && courseData.image) ||
+    courseData?.image?.url ||
+    courseData?.images?.[0]?.url ||
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv8HjlPpt0rOT7SHaevW0xmnEg9DCgkEfvrA&s";
+
   return (
-    <div className="bg-[#f1e4c8] min-h-screen font-sans-serif text-[#e6d0bd]">
+    <div className="bg-[#FBF4E2] min-h-screen font-sans-serif text-[#2D2417]">
       <SEO
         title={`${courseData.title} | Kaumudi Sanskrit Academy`}
         description={
@@ -241,7 +247,7 @@ const CourseDetails = () => {
         }
         canonicalPath={`/coursedetail/${id || courseData.id || courseData._id || ""}`}
         og={{
-          image: courseData.image?.url, // Always better to pass string
+          image: posterUrl,
         }}
         jsonLd={[
           {
@@ -294,23 +300,30 @@ const CourseDetails = () => {
           },
         ]}
       />
-      <div className="max-w-7xl mx-auto p-10 md:p-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-6 md:py-10">
         <HeroSection data={courseData} />
       </div>
-      <div className="max-w-7xl mx-auto p-4 md:p-10 grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-10 grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-8">
         <div className="lg:col-span-2 space-y-12">
           <section>
-            <div className="flex items-center gap-3 mb-4 -mt-14">
+            <div className="flex items-center gap-3 mb-4 -mt-6 md:-mt-10 lg:-mt-14">
               <div className="w-1.5 h-8 bg-[#d6b15c]"></div>
-              <h2 className="text-[28px] font-bold text-[#74271E]">
+              <h2 className="text-2xl md:text-[28px] font-bold text-[#74271E]">
                 Course Demo
               </h2>
             </div>
             <div className="relative group aspect-video bg-black rounded-4xl overflow-hidden shadow-2xl border-[6px] border-white cursor-pointer">
+              <img
+                src={posterUrl}
+                alt={`${courseData.title} preview`}
+                className="absolute inset-0 w-full h-full object-cover"
+                aria-hidden="true"
+                loading="lazy"
+              />
               <video
                 ref={videoRef}
                 className="w-full h-full object-cover"
-                poster={courseData.image}
+                poster={posterUrl}
                 onPause={() => setIsPlaying(false)}
                 onPlay={() => setIsPlaying(true)}
                 controls={isPlaying}
@@ -325,11 +338,11 @@ const CourseDetails = () => {
               {!isPlaying && (
                 <div
                   onClick={handlePlayVideo}
-                  className="absolute inset-0 z-10 flex flex-col justify-between p-6 bg-black/30 hover:bg-black/40 transition-all duration-300"
+                  className="absolute inset-0 z-10 flex flex-col justify-between p-4 sm:p-6 bg-black/30 hover:bg-black/40 transition-all duration-300"
                 >
                   <div className="flex justify-center items-center h-full">
-                    <div className="w-20 h-20 bg-[#74271E] rounded-full flex items-center justify-center border-2 border-white/20 shadow-2xl transform transition-transform group-hover:scale-110">
-                      <div className="ml-1 w-0 h-0 border-t-[14px] border-t-transparent border-l-[24px] border-l-white border-b-[14px] border-b-transparent"></div>
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[#74271E] rounded-full flex items-center justify-center border-2 border-white/20 shadow-2xl transform transition-transform group-hover:scale-110">
+                      <div className="ml-1 w-0 h-0 border-t-[12px] sm:border-t-[14px] border-t-transparent border-l-[20px] sm:border-l-[24px] border-l-white border-b-[12px] sm:border-b-[14px] border-b-transparent"></div>
                     </div>
                   </div>
                 </div>
@@ -346,10 +359,10 @@ const CourseDetails = () => {
 
               {/* Text Container: Font sizes ko responsive banaya gaya hai  changr kiya hu px ko % me pahle 15 px tha text*/}
               <div className="space-y-1">
-                <h3 className="font-bold text-lg sm:text-xl md:text-[100%] text-[#3D1A16] leading-tight">
+                <h3 className="font-bold text-lg sm:text-xl md:text-2xl text-[#3D1A16] leading-tight">
                   {courseData.title} Syllabus
                 </h3>
-                <p className="text-[#7A5C58] text-sm sm:text-base md:text-[95%] italic font-medium">
+                <p className="text-[#7A5C58] text-sm sm:text-base md:text-lg italic font-medium">
                   Curriculum for {courseData.level} level course.
                 </p>
               </div>
@@ -383,14 +396,14 @@ const CourseDetails = () => {
         </div>
 
         <div className="lg:col-span-1">
-          <div className="lg:sticky lg:top-25">
+          <div className="lg:sticky lg:top-24">
             <SidebarCard price={courseData.price} courseData={courseData} />
           </div>
         </div>
       </div>{" "}
       {/* 👈 CLOSE GRID HERE */}
       {/* Recommended Courses OUTSIDE grid */}
-      <div className="max-w-7xl mx-auto px-4 md:px-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
         <Suggetion courses={recommendedCourses} />
       </div>
     </div>
