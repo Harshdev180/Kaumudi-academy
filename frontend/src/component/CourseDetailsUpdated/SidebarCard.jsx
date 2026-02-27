@@ -11,14 +11,15 @@ const SidebarCard = ({ price, courseData }) => {
   const totalSeats = 25;
   const targetLeft = 4;
   const [visibleFeatures, setVisibleFeatures] = useState(0);
-  
+
   // Format price properly from backend
   const formatPrice = (p) => {
     if (!p) return "0";
-    const numPrice = typeof p === 'string' ? parseInt(p.replace(/[^0-9]/g, '')) || 0 : p;
-    return numPrice.toLocaleString('en-IN');
+    const numPrice =
+      typeof p === "string" ? parseInt(p.replace(/[^0-9]/g, "")) || 0 : p;
+    return numPrice.toLocaleString("en-IN");
   };
-  
+
   const features = [
     "120+ Hours of Live Instruction",
     "Certificate of Completion",
@@ -118,44 +119,45 @@ const SidebarCard = ({ price, courseData }) => {
         </div>
 
         {/* Buttons Section with Spacing and Data Passing */}
-        <div className="flex flex-col space-y-6 mt-auto"> 
-          <Link to="/courseBuy" 
-          className="w-full"
-          state={{ 
-            courseId: courseData?._id || courseData?.id || null,
-            courseName: courseData?.title, 
-            price: courseData?.price,
-            duration: courseData?.duration,
-            level: courseData?.level,
-            language: courseData?.language,
-            mode: "Live Online" 
-          }}
+        <div className="flex flex-col space-y-6 mt-auto">
+          <Link
+            to="/courseBuy"
+            className="w-full"
+            state={{
+              courseId: courseData?._id || courseData?.id || null,
+              courseName: courseData?.title,
+              price: courseData?.price,
+              duration: courseData?.duration,
+              level: courseData?.level,
+              language: courseData?.language,
+              mode: "Live Online",
+            }}
           >
             <div className="flex justify-center w-full">
               <button className="w-[80%] bg-[#631D11] text-white px-8 py-3 rounded-2xl font-bold text-xl hover:text-[#631D11] hover:bg-[#d6b15c] transition-all flex items-center justify-center gap-2 shadow-lg">
                 Enroll Now <span className="text-2xl">→</span>
               </button>
-            </div>  
+            </div>
           </Link>
-          
+
           {/* Inquiry Link with State Data */}
-        
-          <Link 
-            to="/inquiry" 
+
+          <Link
+            to="/inquiry"
             className="w-full"
-            state={{ 
+            state={{
               // courseData se title, duration aur language uthayega
-              courseName: courseData?.title || "Sanskrit for Beginners", 
-              duration: courseData?.duration || "6 Months", 
-              language: courseData?.language || "Sanskrit/Hindi" ,
-              level: courseData?.level || "Beginner"
+              courseName: courseData?.title || "Sanskrit for Beginners",
+              duration: courseData?.duration || "6 Months",
+              language: courseData?.language || "Sanskrit/Hindi",
+              level: courseData?.level || "Beginner",
             }}
           >
             <div className="flex justify-center w-full">
-            <button className="w-[80%] bg-[#631D11] text-white px-8 py-3 rounded-2xl font-bold text-xl hover:text-[#631D11] hover:bg-[#d6b15c] transition-all flex items-center justify-center gap-2 shadow-lg">
-              Inquiry <span className="text-2xl">→</span>
-            </button>
-          </div>
+              <button className="w-[80%] bg-[#631D11] text-white px-8 py-3 rounded-2xl font-bold text-xl hover:text-[#631D11] hover:bg-[#d6b15c] transition-all flex items-center justify-center gap-2 shadow-lg">
+                Inquiry <span className="text-2xl">→</span>
+              </button>
+            </div>
           </Link>
         </div>
       </div>
