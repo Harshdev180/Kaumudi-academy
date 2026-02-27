@@ -275,12 +275,11 @@ const FacultyManagement = () => {
       </div>
 
       {/* STATS */}
-      <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-6 -mt-14 relative z-10">
+      <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6 -mt-14 relative z-10">
         {[
           { label: "Total Faculty", value: stats.total },
           { label: "Active", value: stats.active },
           { label: "Inactive", value: stats.inactive },
-          { label: "Pending Pay", value: stats.pending },
         ].map((card) => (
           <div
             key={card.label}
@@ -329,15 +328,15 @@ const FacultyManagement = () => {
                 >
                   {f.status}
                 </span>
-                <span
+                {/* <span
                   className={`text-[10px] px-2 py-1 rounded-full font-bold ${
                     f.paid
                       ? "bg-blue-100 text-blue-700"
                       : "bg-orange-100 text-orange-700"
                   }`}
                 >
-                  {f.paid ? "Paid" : "Pending"}
-                </span>
+                  {f.paid == "Paid" }
+                </span> */}
               </div>
 
               {/* DETAILS WITH ACTIONS */}

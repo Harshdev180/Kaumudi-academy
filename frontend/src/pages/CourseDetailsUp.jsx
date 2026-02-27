@@ -9,6 +9,7 @@ import CurriculumAccordion from "../component/CourseDetailsUpdated/CurriculumAcc
 import ScheduleTable from "../component/CourseDetailsUpdated/ScheduleTable";
 import Suggetion from "../component/CourseDetailsUpdated/suggetion";
 import { getCourseDetail } from "../lib/api";
+import { getAllCourses } from "../lib/api";
 import SEO from "../components/SEO";
 
 const CourseDetails = () => {
@@ -40,6 +41,37 @@ const CourseDetails = () => {
 
   // 2. State for fetched course data
   const [courseData, setCourseData] = useState(null);
+  const [recommendedCourses, setRecommendedCourses] = useState([]);
+
+  useEffect(() => {
+    const fetchRecommended = async () => {
+      if (!courseData?._id && !courseData?.id) return;
+
+      try {
+        const response = await getAllCourses();
+
+        const list = response?.courses || response?.data || response || [];
+
+        // Remove current course
+        const filtered = list.filter(
+          (c) => (c._id || c.id) !== (courseData._id || courseData.id),
+        );
+
+        // Optional: same category match
+        const sameCategory = filtered.filter(
+          (c) => c.category === courseData.category,
+        );
+
+        const finalCourses = sameCategory.length > 0 ? sameCategory : filtered;
+
+        setRecommendedCourses(finalCourses.slice(0, 6));
+      } catch (err) {
+        console.error("Failed to fetch recommended courses", err);
+      }
+    };
+
+    fetchRecommended();
+  }, [courseData]);
 
   // 3. Fetch course data from API if ID is available
   useEffect(() => {
@@ -354,8 +386,8 @@ const CourseDetails = () => {
             <SidebarCard price={courseData.price} courseData={courseData} />
           </div>
         </div>
-        <div className="max-w-7xl mx-auto">
-          <Suggetion />
+        <div className="w-full">
+          <Suggetion courses={recommendedCourses} />
         </div>
       </div>
     </div>

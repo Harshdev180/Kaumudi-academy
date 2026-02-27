@@ -294,7 +294,7 @@ export const sendInquiryMailToAdmin = async (inquiry) => {
                     </tr>
                     <tr>
                       <td style="padding: 12px; background: #f9f0e3; font-weight: 700; color: #74271E;">Phone Number:</td>
-                      <td style="padding: 12px; background: #ffffff; border: 2px solid #f9f0e3;">${inquiry.phoneNumber}</td>
+                      <td style="padding: 12px; background: #ffffff; border: 2px solid #f9f0e3;">${inquiry.whatsappNumber}</td>
                     </tr>
                     <tr>
                       <td style="padding: 12px; background: #f9f0e3; font-weight: 700; color: #74271E;">Preferred Level:</td>

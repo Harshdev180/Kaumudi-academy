@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { api } from "../../lib/api";
+import { api, sendEmailOtp, verifyEmailOtp } from "../../lib/api";
 import { useAuth } from "../../context/useAuthHook";
 import {
   Eye,
@@ -53,10 +53,84 @@ const AuthPage = () => {
 
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
+  const [isOtpSent, setIsOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [otpStatus, setOtpStatus] = useState({ type: "", msg: "" });
+  const [otpCooldown, setOtpCooldown] = useState(0);
+
+  useEffect(() => {
+    if (otpCooldown <= 0) return;
+    const t = setInterval(() => setOtpCooldown((s) => s - 1), 1000);
+    return () => clearInterval(t);
+  }, [otpCooldown]);
 
   // --- BACKEND HANDLERS ---
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    if (!isLogin && name === "email") {
+      if (isEmailVerified) setIsEmailVerified(false);
+      if (isOtpSent) setIsOtpSent(false);
+      if (otp) setOtp("");
+      if (otpStatus.msg) setOtpStatus({ type: "", msg: "" });
+      if (otpCooldown) setOtpCooldown(0);
+    }
+  };
+
+  const handleSendOtp = async () => {
+    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      setOtpStatus({ type: "error", msg: "Enter a valid email address" });
+      return;
+    }
+    if (otpCooldown > 0 || isVerifying) return;
+    setIsVerifying(true);
+    setOtpStatus({ type: "", msg: "" });
+    try {
+      const resp = await sendEmailOtp(formData.email);
+      if (resp?.success) {
+        setIsOtpSent(true);
+        setOtpCooldown(60);
+        setOtpStatus({ type: "success", msg: "OTP sent to your email" });
+      } else {
+        setOtpStatus({
+          type: "error",
+          msg: resp?.message || "Failed to send OTP",
+        });
+      }
+    } catch (err) {
+      setOtpStatus({ type: "error", msg: "Failed to send OTP" });
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (!otp || !formData.email) {
+      setOtpStatus({ type: "error", msg: "Enter the OTP received" });
+      return;
+    }
+    setIsVerifying(true);
+    setOtpStatus({ type: "", msg: "" });
+    try {
+      const resp = await verifyEmailOtp(formData.email, otp.trim());
+      if (resp?.success) {
+        setIsEmailVerified(true);
+        setIsOtpSent(false);
+        setOtp("");
+        setOtpStatus({ type: "success", msg: "Email verified" });
+      } else {
+        setOtpStatus({
+          type: "error",
+          msg: resp?.message || "Invalid or expired OTP",
+        });
+      }
+    } catch (err) {
+      setOtpStatus({ type: "error", msg: "Verification failed" });
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
   // 1. Forgot Password Logic
@@ -196,6 +270,11 @@ const AuthPage = () => {
           setLoading(false);
           return;
         }
+        if (!isEmailVerified) {
+          alert("Please verify your email with OTP before creating account.");
+          setLoading(false);
+          return;
+        }
         const payload = {
           firstName: formData.firstName,
           lastName: formData.lastName,
@@ -210,6 +289,9 @@ const AuthPage = () => {
         }
         await api.post("/auth/student/register", payload);
         setFormData(initialFormData);
+        setIsEmailVerified(false);
+        setIsOtpSent(false);
+        setOtp("");
         setIsLogin(true);
         alert("Registration Successful! Please Login.");
       }
@@ -417,14 +499,71 @@ const AuthPage = () => {
                   </p>
                 </header>
                 <form className="space-y-6" onSubmit={handleForgotPassword}>
-                  <InputGroup
-                    label="Email Address"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="shastri@kaumudi.com"
-                  />
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] font-bold text-[#74271E] uppercase tracking-wider ml-1">
+                        Email Address{" "}
+                        {!isLogin && isEmailVerified && (
+                          <span className="ml-2 text-[10px] text-green-600 bg-green-100 px-2 py-0.5 rounded-full font-bold lowercase">
+                            verified
+                          </span>
+                        )}
+                      </label>
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="shastri@kaumudi.com"
+                        required
+                        className="w-full px-5 py-3 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner text-sm"
+                      />
+                      {!isLogin && !isEmailVerified && (
+                        <button
+                          type="button"
+                          onClick={handleSendOtp}
+                          className="px-4 py-3 rounded-2xl bg-[#74271E] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-[#b8973d] hover:text-[#74271E] transition-colors"
+                        >
+                          {isVerifying
+                            ? "Sending…"
+                            : isOtpSent
+                              ? "Resend"
+                              : "Send OTP"}
+                        </button>
+                      )}
+                    </div>
+                    {!isLogin && !isEmailVerified && isOtpSent && (
+                      <div className="flex gap-2 mt-2">
+                        <input
+                          type="text"
+                          value={otp}
+                          onChange={(e) => setOtp(e.target.value)}
+                          placeholder="Enter 4-digit OTP"
+                          className="w-full px-5 py-3 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner text-sm"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleVerifyOtp}
+                          className="px-5 py-3 rounded-2xl bg-[#b8973d] text-[#74271E] font-bold"
+                        >
+                          {isVerifying ? "Verifying…" : "Verify"}
+                        </button>
+                      </div>
+                    )}
+                    {!isLogin && otpStatus.msg && (
+                      <p
+                        className={`text-[12px] mt-1 font-semibold ${
+                          otpStatus.type === "success"
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }`}
+                      >
+                        {otpStatus.msg}
+                      </p>
+                    )}
+                  </div>
                   <SubmitButton loading={loading} text="Send Recovery Link" />
                 </form>
               </motion.div>
@@ -491,14 +630,89 @@ const AuthPage = () => {
                     </>
                   )}
 
-                  <InputGroup
-                    label="Email Address"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="shastri@kaumudi.com"
-                  />
+                  {isLogin ? (
+                    <InputGroup
+                      label="Email Address"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="shastri@kaumudi.com"
+                    />
+                  ) : (
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] font-bold text-[#74271E] uppercase tracking-wider ml-1">
+                          Email Address{" "}
+                          {isEmailVerified && (
+                            <span className="ml-2 text-[10px] text-green-600 bg-green-100 px-2 py-0.5 rounded-full font-bold lowercase">
+                              verified
+                            </span>
+                          )}
+                        </label>
+                      </div>
+                      <div className="flex gap-2">
+                        <input
+                          name="email"
+                          type="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          placeholder="shastri@kaumudi.com"
+                          required
+                          className="w-full px-5 py-3 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner text-sm"
+                        />
+                        {!isEmailVerified && (
+                          <button
+                            type="button"
+                            onClick={handleSendOtp}
+                            disabled={isVerifying || otpCooldown > 0}
+                            className={`px-4 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-wider transition-colors ${
+                              isVerifying || otpCooldown > 0
+                                ? "bg-[#A88C64] text-white cursor-not-allowed"
+                                : "bg-[#74271E] text-white hover:bg-[#b8973d] hover:text-[#74271E]"
+                            }`}
+                          >
+                            {isVerifying
+                              ? "Sending…"
+                              : otpCooldown > 0
+                                ? `Resend in ${otpCooldown}s`
+                                : isOtpSent
+                                  ? "Resend"
+                                  : "Send OTP"}
+                          </button>
+                        )}
+                      </div>
+                      {!isEmailVerified && isOtpSent && (
+                        <div className="flex gap-2 mt-2">
+                          <input
+                            type="text"
+                            value={otp}
+                            onChange={(e) => setOtp(e.target.value)}
+                            placeholder="Enter 4-digit OTP"
+                            className="w-full px-5 py-3 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner text-sm"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleVerifyOtp}
+                            className="px-5 py-3 rounded-2xl bg-[#b8973d] text-[#74271E] font-bold"
+                          >
+                            {isVerifying ? "Verifying…" : "Verify"}
+                          </button>
+                        </div>
+                      )}
+                      {otpStatus.msg && (
+                        <p
+                          className={`text-[12px] mt-1 font-semibold ${
+                            otpStatus.type === "success"
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }`}
+                        >
+                          {otpStatus.msg}
+                        </p>
+                      )}
+                    </div>
+                  )}
 
                   <div className="space-y-1.5">
                     <div className="flex justify-between px-1">
@@ -548,7 +762,14 @@ const AuthPage = () => {
 
                   <SubmitButton
                     loading={loading}
-                    text={isLogin ? "Enter Gurukul" : "Create Account"}
+                    disabled={!isLogin && !isEmailVerified}
+                    text={
+                      isLogin
+                        ? "Enter Gurukul"
+                        : isEmailVerified
+                          ? "Create Account"
+                          : "Verify Email to Create"
+                    }
                   />
                 </form>
 
@@ -612,18 +833,21 @@ const InputGroup = ({
   </div>
 );
 
-const SubmitButton = ({ loading, text }) => (
+const SubmitButton = ({ loading, text, disabled }) => (
   <motion.button
     whileHover={{ scale: 1.02, boxShadow: "0 10px 15px rgba(116,39,30,0.2)" }}
     whileTap={{ scale: 0.98 }}
-    disabled={loading}
+    disabled={disabled || loading}
     type="submit"
-    className="w-full bg-[#74271E] py-4 rounded-2xl font-bold text-white uppercase tracking-[0.3em] flex items-center justify-center gap-3 relative group mt-4"
+    className={`w-full py-4 rounded-2xl font-bold uppercase tracking-[0.3em] flex items-center justify-center gap-3 relative group mt-4 ${
+      disabled || loading
+        ? "bg-[#A88C64] text-white cursor-not-allowed"
+        : "bg-[#74271E] text-white"
+    }`}
   >
     <span className="relative z-10 text-xs">
       {loading ? "Processing..." : text}
     </span>
-    {/* <Sparkles size={18} className="text-[#b8973d] group-hover:rotate-12 transition-transform" /> */}
   </motion.button>
 );
 
