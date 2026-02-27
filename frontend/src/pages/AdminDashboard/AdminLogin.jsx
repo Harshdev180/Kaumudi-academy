@@ -13,6 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { loginSuperAdmin, forgotPassword } from "../../lib/api";
 import { useAuth } from "../../context/useAuthHook";
+import adminlogin from "../../assets/adminlogin.webp";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -102,7 +103,7 @@ const AdminLogin = () => {
         {/* LEFT IMAGE */}
         <div className="relative hidden md:flex items-center justify-center bg-[#eadcc8]">
           <img
-            src="https://i.pinimg.com/1200x/06/72/38/0672383215952a5cfc406218c734a067.jpg"
+            src={adminlogin}
             alt="Sanskrit Guru"
             className="w-full h-120 object-cover"
           />

@@ -9,16 +9,26 @@ const brevoClient = axios.create({
   }
 });
 
+// Helper function to get logo URL from Cloudinary
+const getLogoUrl = () => {
+  // Your Cloudinary logo URL
+  return "https://res.cloudinary.com/dehmhdpqn/image/upload/v1772201253/logooo_v1wlze.png";
+};
+
 const sendEmail = async ({ to, subject, html }) => {
-  await brevoClient.post("/smtp/email", {
-    sender: {
-      name: "Kaumudi Sanskrit Academy",
-      email: config.BREVO_SENDER_EMAIL
-    },
-    to: [{ email: to }],
-    subject,
-    htmlContent: html
-  });
+  try {
+    await brevoClient.post("/smtp/email", {
+      sender: {
+        name: config.BREVO_SENDER_NAME,
+        email: config.BREVO_SENDER_EMAIL
+      },
+      to: [{ email: to }],
+      subject,
+      htmlContent: html
+    });
+  } catch (err) {
+    console.error("Brevo email error:", err.response?.data || err.message);
+  }
 };
 
 /**
@@ -29,6 +39,8 @@ export const sendAdminCredentialsMail = async ({
   adminName,
   password
 }) => {
+  const LOGO_URL = getLogoUrl();
+  
   const html = `
     <!DOCTYPE html>
     <html>
@@ -37,20 +49,20 @@ export const sendAdminCredentialsMail = async ({
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Admin Credentials - Kaumudi Sanskrit Academy</title>
     </head>
-    <body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: linear-gradient(135deg, #3b120e 0%, #5a1e17 50%, #2a0b08 100%);">
+    <body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f5;">
       
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #3b120e 0%, #5a1e17 50%, #2a0b08 100%); padding: 30px 20px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 30px 20px;">
         <tr>
           <td align="center">
-            <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+            <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
               
-              <!-- Header -->
+              <!-- Header with Logo -->
               <tr>
                 <td style="background: linear-gradient(135deg, #3b120e 0%, #5a1e17 50%, #2a0b08 100%); padding: 30px; text-align: center; border-bottom: 2px solid #d6b15c;">
                   <table cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
                     <tr>
                       <td style="background: #74271E; width: 70px; height: 70px; border-radius: 16px; text-align: center; vertical-align: middle; box-shadow: 0 0 25px rgba(214,177,92,0.55);">
-                        <span style="color: #d6b15c; font-size: 36px; font-weight: bold; line-height: 70px;">ॐ</span>
+                        <img src="${LOGO_URL}" alt="Kaumudi Sanskrit Academy" style="width: 60px; height: 60px; object-fit: contain; display: block; margin: 0 auto; border-radius: 12px;">
                       </td>
                     </tr>
                   </table>
@@ -131,6 +143,8 @@ export const sendResetPasswordMail = async ({
   userName,
   resetLink
 }) => {
+  const LOGO_URL = getLogoUrl();
+  
   const html = `
     <!DOCTYPE html>
     <html>
@@ -139,18 +153,25 @@ export const sendResetPasswordMail = async ({
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Password Reset - Kaumudi Sanskrit Academy</title>
     </head>
-    <body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: linear-gradient(135deg, #3b120e 0%, #5a1e17 50%, #2a0b08 100%);">
+    <body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f5;">
       
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #3b120e 0%, #5a1e17 50%, #2a0b08 100%); padding: 30px 20px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 30px 20px;">
         <tr>
           <td align="center">
-            <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+            <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
               
-              <!-- Header -->
+              <!-- Header with Logo -->
               <tr>
                 <td style="background: linear-gradient(135deg, #3b120e 0%, #5a1e17 50%, #2a0b08 100%); padding: 30px; text-align: center; border-bottom: 2px solid #d6b15c;">
-                  <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 900; letter-spacing: 2px;">KAUMUDI</h1>
-                  <p style="color: #d6b15c; margin: 5px 0 0; font-size: 16px; letter-spacing: 0.18em;">SANSKRIT ACADEMY</p>
+                  <table cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
+                    <tr>
+                      <td style="background: #74271E; width: 70px; height: 70px; border-radius: 16px; text-align: center; vertical-align: middle; box-shadow: 0 0 25px rgba(214,177,92,0.55);">
+                        <img src="${LOGO_URL}" alt="Kaumudi Sanskrit Academy" style="width: 60px; height: 60px; object-fit: contain; display: block; margin: 0 auto; border-radius: 12px;">
+                      </td>
+                    </tr>
+                  </table>
+                  <h1 style="color: #ffffff; margin: 15px 0 5px; font-size: 28px; font-weight: 900; letter-spacing: 2px;">KAUMUDI</h1>
+                  <p style="color: #d6b15c; margin: 0; font-size: 16px; letter-spacing: 0.18em;">SANSKRIT ACADEMY</p>
                 </td>
               </tr>
               
@@ -215,6 +236,8 @@ export const sendResetPasswordMail = async ({
  * Send inquiry notification to admin
  */
 export const sendInquiryMailToAdmin = async (inquiry) => {
+  const LOGO_URL = getLogoUrl();
+  
   const html = `
     <!DOCTYPE html>
     <html>
@@ -223,18 +246,25 @@ export const sendInquiryMailToAdmin = async (inquiry) => {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>New Course Inquiry - Kaumudi Sanskrit Academy</title>
     </head>
-    <body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: linear-gradient(135deg, #3b120e 0%, #5a1e17 50%, #2a0b08 100%);">
+    <body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f5;">
       
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #3b120e 0%, #5a1e17 50%, #2a0b08 100%); padding: 30px 20px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 30px 20px;">
         <tr>
           <td align="center">
-            <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+            <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
               
-              <!-- Header -->
+              <!-- Header with Logo -->
               <tr>
                 <td style="background: linear-gradient(135deg, #3b120e 0%, #5a1e17 50%, #2a0b08 100%); padding: 25px; text-align: center; border-bottom: 2px solid #d6b15c;">
-                  <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 900;">NEW COURSE INQUIRY</h1>
-                  <p style="color: #d6b15c; margin: 5px 0 0; font-size: 14px; letter-spacing: 0.18em;">ADMIN NOTIFICATION</p>
+                  <table cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
+                    <tr>
+                      <td style="background: #74271E; width: 60px; height: 60px; border-radius: 16px; text-align: center; vertical-align: middle; box-shadow: 0 0 25px rgba(214,177,92,0.55);">
+                        <img src="${LOGO_URL}" alt="Kaumudi Sanskrit Academy" style="width: 50px; height: 50px; object-fit: contain; display: block; margin: 0 auto; border-radius: 12px;">
+                      </td>
+                    </tr>
+                  </table>
+                  <h1 style="color: #ffffff; margin: 10px 0 5px; font-size: 26px; font-weight: 900;">NEW COURSE INQUIRY</h1>
+                  <p style="color: #d6b15c; margin: 0; font-size: 14px; letter-spacing: 0.18em;">ADMIN NOTIFICATION</p>
                 </td>
               </tr>
               
@@ -304,8 +334,8 @@ export const sendInquiryMailToAdmin = async (inquiry) => {
     </html>
   `;
 
-  await axios.post(
-    "https://api.brevo.com/v3/smtp/email",
+  await brevoClient.post(
+    "/smtp/email",
     {
       sender: {
         name: "Kaumudi Sanskrit Academy",
@@ -333,6 +363,8 @@ export const sendInquiryMailToAdmin = async (inquiry) => {
  * Send contact form submission to admin
  */
 export const sendContactMailToAdmin = async (contact) => {
+  const LOGO_URL = getLogoUrl();
+  
   const html = `
     <!DOCTYPE html>
     <html>
@@ -341,18 +373,25 @@ export const sendContactMailToAdmin = async (contact) => {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>New Contact Form - Kaumudi Sanskrit Academy</title>
     </head>
-    <body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: linear-gradient(135deg, #3b120e 0%, #5a1e17 50%, #2a0b08 100%);">
+    <body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f5;">
       
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #3b120e 0%, #5a1e17 50%, #2a0b08 100%); padding: 30px 20px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 30px 20px;">
         <tr>
           <td align="center">
-            <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+            <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
               
-              <!-- Header -->
+              <!-- Header with Logo -->
               <tr>
                 <td style="background: linear-gradient(135deg, #3b120e 0%, #5a1e17 50%, #2a0b08 100%); padding: 25px; text-align: center; border-bottom: 2px solid #d6b15c;">
-                  <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 900;">CONTACT FORM SUBMISSION</h1>
-                  <p style="color: #d6b15c; margin: 5px 0 0; font-size: 14px; letter-spacing: 0.18em;">ADMIN NOTIFICATION</p>
+                  <table cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
+                    <tr>
+                      <td style="background: #74271E; width: 60px; height: 60px; border-radius: 16px; text-align: center; vertical-align: middle; box-shadow: 0 0 25px rgba(214,177,92,0.55);">
+                        <img src="${LOGO_URL}" alt="Kaumudi Sanskrit Academy" style="width: 50px; height: 50px; object-fit: contain; display: block; margin: 0 auto; border-radius: 12px;">
+                      </td>
+                    </tr>
+                  </table>
+                  <h1 style="color: #ffffff; margin: 10px 0 5px; font-size: 26px; font-weight: 900;">CONTACT FORM SUBMISSION</h1>
+                  <p style="color: #d6b15c; margin: 0; font-size: 14px; letter-spacing: 0.18em;">ADMIN NOTIFICATION</p>
                 </td>
               </tr>
               
@@ -423,6 +462,8 @@ export const sendContactMailToAdmin = async (contact) => {
  * Send subscription confirmation email to subscriber
  */
 export const sendSubscriptionConfirmation = async ({ email }) => {
+  const LOGO_URL = getLogoUrl();
+  
   const html = `
     <!DOCTYPE html>
     <html>
@@ -431,12 +472,12 @@ export const sendSubscriptionConfirmation = async ({ email }) => {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Welcome to Kaumudi Sanskrit Academy</title>
     </head>
-    <body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: linear-gradient(135deg, #3b120e 0%, #5a1e17 50%, #2a0b08 100%);">
+    <body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f5;">
       
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #3b120e 0%, #5a1e17 50%, #2a0b08 100%); padding: 30px 20px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 30px 20px;">
         <tr>
           <td align="center">
-            <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+            <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
               
               <!-- Header with Logo -->
               <tr>
@@ -444,7 +485,7 @@ export const sendSubscriptionConfirmation = async ({ email }) => {
                   <table cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
                     <tr>
                       <td style="background: #74271E; width: 80px; height: 80px; border-radius: 16px; text-align: center; vertical-align: middle; box-shadow: 0 0 25px rgba(214,177,92,0.55);">
-                        <span style="color: #d6b15c; font-size: 40px; font-weight: bold; line-height: 80px;">ॐ</span>
+                        <img src="${LOGO_URL}" alt="Kaumudi Sanskrit Academy" style="width: 70px; height: 70px; object-fit: contain; display: block; margin: 0 auto; border-radius: 12px;">
                       </td>
                     </tr>
                   </table>
@@ -593,6 +634,8 @@ export const sendSubscriptionConfirmation = async ({ email }) => {
  * Send admin notification about new subscriber
  */
 export const sendSubscriptionAdminNotification = async ({ email }) => {
+  const LOGO_URL = getLogoUrl();
+  
   // Get total subscriber count for stats (you'll need to implement this)
   // const { Subscriber } = await import('../models/Subscriber.model.js');
   // const totalSubscribers = await Subscriber.countDocuments({ status: 'active' });
@@ -606,14 +649,21 @@ export const sendSubscriptionAdminNotification = async ({ email }) => {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>New Subscriber Alert - Kaumudi Sanskrit Academy</title>
     </head>
-    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: linear-gradient(135deg, #3b120e 0%, #5a1e17 50%, #2a0b08 100%); padding: 30px 20px; margin: 0;">
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f5; padding: 30px 20px; margin: 0;">
       
-      <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+      <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
         
-        <!-- Header -->
+        <!-- Header with Logo -->
         <div style="background: linear-gradient(135deg, #3b120e 0%, #5a1e17 50%, #2a0b08 100%); padding: 25px; text-align: center; border-bottom: 2px solid #d6b15c;">
-          <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 900; letter-spacing: 1px;">KAUMUDI SANSKRIT ACADEMY</h1>
-          <p style="color: #d6b15c; margin: 8px 0 0; font-size: 16px; letter-spacing: 0.18em;">ADMIN NOTIFICATION</p>
+          <table cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
+            <tr>
+              <td style="background: #74271E; width: 70px; height: 70px; border-radius: 16px; text-align: center; vertical-align: middle; box-shadow: 0 0 25px rgba(214,177,92,0.55);">
+                <img src="${LOGO_URL}" alt="Kaumudi Sanskrit Academy" style="width: 60px; height: 60px; object-fit: contain; display: block; margin: 0 auto; border-radius: 12px;">
+              </td>
+            </tr>
+          </table>
+          <h1 style="color: #ffffff; margin: 10px 0 5px; font-size: 28px; font-weight: 900; letter-spacing: 1px;">KAUMUDI SANSKRIT ACADEMY</h1>
+          <p style="color: #d6b15c; margin: 0; font-size: 16px; letter-spacing: 0.18em;">ADMIN NOTIFICATION</p>
         </div>
         
         <!-- Content -->

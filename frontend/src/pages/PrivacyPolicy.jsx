@@ -1,8 +1,16 @@
 import { motion } from "framer-motion";
+import SEO from "../components/SEO";
+import home5 from "../assets/home/home5.webp";
 
 export default function PrivacyPolicy() {
   return (
     <section className="bg-[#f1e4c8] min-h-screen py-10">
+      <SEO
+        title="Privacy Policy | Kaumudi Sanskrit Academy"
+        description="Read how Kaumudi Sanskrit Academy collects, uses, and protects your information."
+        canonicalPath="/privacy"
+        og={{ type: "website" }}
+      />
       {/* HERO SECTION */}
 
       <div className="flex justify-center">
@@ -12,8 +20,7 @@ export default function PrivacyPolicy() {
           transition={{ duration: 0.8 }}
           className="relative h-[280px] w-full max-w-7xl bg-cover bg-center overflow-hidden rounded-3xl"
           style={{
-            backgroundImage:
-              "url('https://i.pinimg.com/1200x/19/6c/f4/196cf4706012f8407a08c0cf7db51339.jpg')",
+            backgroundImage: `url(${home5})`,
           }}
         >
           <div className="absolute inset-0 bg-[#7b2d1f]/60 pointer-events-none" />

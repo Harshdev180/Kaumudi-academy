@@ -58,7 +58,7 @@ export default function Home() {
             <div className="relative">
               <div className="rounded-xl overflow-hidden border-4 border-white shadow-2xl">
                 <img
-                  src="/heritage.jpg"
+                  src="/heritage.webp"
                   alt="Sanskrit Scholar"
                   className="w-full h-full object-cover"
                 />

@@ -22,7 +22,7 @@ const router = express.Router();
 router.get(
   "/admin/student-fees/stats",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("admin", "ADMIN", "SUPER_ADMIN"),
   getStudentFeeStats
 );
 
@@ -30,7 +30,7 @@ router.get(
 router.get(
   "/admin/student-fees",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("admin", "ADMIN", "SUPER_ADMIN"),
   getAllStudentFees
 );
 
@@ -38,7 +38,7 @@ router.get(
 router.get(
   "/admin/student-fees/:id",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("admin", "ADMIN", "SUPER_ADMIN"),
   getStudentFeeById
 );
 
@@ -46,7 +46,7 @@ router.get(
 router.patch(
   "/admin/student-fees/:id/mark-paid",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("admin", "ADMIN", "SUPER_ADMIN"),
   markFeeAsPaid
 );
 
@@ -54,7 +54,7 @@ router.patch(
 router.delete(
   "/admin/student-fees/:id",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("admin", "ADMIN", "SUPER_ADMIN"),
   deleteStudentFee
 );
 

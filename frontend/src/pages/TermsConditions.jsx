@@ -1,8 +1,16 @@
 import { motion } from "framer-motion";
+import SEO from "../components/SEO";
+import home2 from "../assets/home/home2.webp";
 
 export default function TermsCondition() {
   return (
     <section className="bg-[#f1e4c8] min-h-screen py-10">
+      <SEO
+        title="Terms & Conditions | Kaumudi Sanskrit Academy"
+        description="Review the terms and conditions for using Kaumudi Sanskrit Academy’s services."
+        canonicalPath="/terms"
+        og={{ type: "website" }}
+      />
       {/* HERO SECTION */}
       <div className="flex justify-center">
         <motion.div
@@ -11,8 +19,7 @@ export default function TermsCondition() {
           transition={{ duration: 0.8 }}
           className="relative h-[280px] w-full max-w-7xl bg-cover bg-center overflow-hidden rounded-3xl"
           style={{
-            backgroundImage:
-              "url('https://thumbs.dreamstime.com/b/antique-literature-collection-old-fashioned-wisdom-preserved-generative-ai-antique-literature-collection-old-fashioned-wisdom-274867858.jpg')",
+            backgroundImage: `url(${home2})`,
           }}
         >
           {/* <div className="absolute inset-0 bg-black/55" /> */}

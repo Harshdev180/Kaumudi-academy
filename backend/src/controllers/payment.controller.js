@@ -7,6 +7,7 @@ import Coupon from "../models/Coupon.model.js";
 import { createEnrollment } from "./enrollment.controller.js";
 import Enrollment from "../models/Enrollment.model.js";
 import Notification from "../models/Notification.model.js"; // ✅ ADDED
+import axios from "axios"
 
 // Helper function price clean karne ke liye (6,499 -> 6499)
 const sanitizePrice = (price) => {
@@ -15,12 +16,34 @@ const sanitizePrice = (price) => {
 };
 
 export const createRazorpayOrder = async (req, res) => {
-  console.log("USER FROM AUTH:", req.user);
-  console.log("BODY DATA:", req.body);
-
   try {
-    const { courseId, couponCode } = req.body;
+    const { courseId, couponCode, paymentMode, captchaToken } = req.body;
 
+    // ================= CAPTCHA VERIFY =================
+    if (!captchaToken) {
+      return res.status(400).json({
+        success: false,
+        message: "Captcha verification required"
+      });
+    }
+    const captchaVerify = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify`,
+      null,
+      {
+        params: {
+          secret: process.env.RECAPTCHA_SECRET_KEY,
+          response: captchaToken
+        }
+      }
+    );
+
+    if (!captchaVerify.data.success) {
+      
+      return res.status(400).json({
+        success: false,
+        message: "Captcha verification failed"
+      });
+    }
     // 1. Course find
     const course = await Course.findById(courseId);
     if (!course || course.status !== "ACTIVE") {
@@ -34,6 +57,12 @@ export const createRazorpayOrder = async (req, res) => {
     const originalAmount = Number(course.price.toString().replace(/,/g, ""));
     if (isNaN(originalAmount)) {
       throw new Error("Invalid price format in database");
+    }
+
+    let payableAmount = originalAmount;
+
+    if (paymentMode === "EMI") {
+      payableAmount = originalAmount * 0.3; // 30% first installment
     }
 
     let discountAmount = 0;
@@ -67,7 +96,13 @@ export const createRazorpayOrder = async (req, res) => {
       }
     }
 
-    const finalAmount = Math.max(originalAmount - discountAmount, 0);
+    const discountedAmount = Math.max(originalAmount - discountAmount, 0);
+
+    let finalAmount = discountedAmount;
+
+    if (paymentMode === "EMI") {
+      finalAmount = discountedAmount * 0.3; // 30% EMI payment
+    }
 
     // 4. Razorpay Order
     const options = {
@@ -85,6 +120,7 @@ export const createRazorpayOrder = async (req, res) => {
       originalAmount,
       discountAmount,
       finalAmount,
+      paymentMode: paymentMode || "FULL",
       couponCode: appliedCoupon,
       razorpayOrderId: order.id,
       status: "PENDING"

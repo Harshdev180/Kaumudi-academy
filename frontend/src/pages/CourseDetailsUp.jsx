@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Download, FileText, Languages, Play } from "lucide-react";
-import { useLocation, useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/useAuthHook";
-import HeroSection from "../component/CourseDetailsUpdated/HeroSection";
+import { Download, FileText, Languages, Play, Clock } from "lucide-react";
+import { useLocation, useParams, useNavigate, Link } from "react-router-dom";
 import SidebarCard from "../component/CourseDetailsUpdated/SidebarCard";
 import InstructorSection from "../component/CourseDetailsUpdated/InstructorSection";
 import CurriculumAccordion from "../component/CourseDetailsUpdated/CurriculumAccordion";
 import ScheduleTable from "../component/CourseDetailsUpdated/ScheduleTable";
 import Suggetion from "../component/CourseDetailsUpdated/suggetion";
 import { getCourseDetail } from "../lib/api";
+import SEO from "../components/SEO";
+import HeroSection from "../component/CourseDetailsUpdated/HeroSection";
 
 const CourseDetails = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -200,13 +200,71 @@ const CourseDetails = () => {
 
   return (
     <div className="bg-[#f1e4c8] min-h-screen font-sans-serif text-[#e6d0bd]">
-      <div className="max-w-7xl mx-auto p-10 md:p-10">
-        <HeroSection data={courseData} />
-      </div>
+      <SEO
+        title={`${courseData.title} | Kaumudi Sanskrit Academy`}
+        description={
+          courseData.description?.slice(0, 160) ||
+          "Explore this Sanskrit course with our expert Acharyas."
+        }
+        canonicalPath={`/coursedetail/${id || courseData.id || courseData._id || ""}`}
+        og={{ type: "article", image: courseData.image }}
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Course",
+            name: courseData.title,
+            description:
+              courseData.description ||
+              "Sanskrit course by Kaumudi Sanskrit Academy",
+            provider: {
+              "@type": "Organization",
+              name: "Kaumudi Sanskrit Academy",
+            },
+            educationalLevel: courseData.level || "All Levels",
+            inLanguage: courseData.language || "sa",
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item:
+                  (typeof window !== "undefined"
+                    ? window.location.origin
+                    : "") + "/",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Courses",
+                item:
+                  (typeof window !== "undefined"
+                    ? window.location.origin
+                    : "") + "/allcourses",
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: courseData.title,
+                item:
+                  (typeof window !== "undefined"
+                    ? window.location.origin
+                    : "") +
+                  `/coursedetail/${id || courseData.id || courseData._id || ""}`,
+              },
+            ],
+          },
+        ]}
+      />
+
+      <HeroSection data={courseData} />
 
       <div className="max-w-7xl mx-auto p-4 md:p-10 grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="lg:col-span-2 space-y-12">
-          <section>
+          <section id="syllabus">
             <div className="flex items-center gap-3 mb-4 -mt-14">
               <div className="w-1.5 h-8 bg-[#d6b15c]"></div>
               <h2 className="text-[28px] font-bold text-[#74271E]">

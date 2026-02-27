@@ -10,6 +10,8 @@ import {
   Lock,
   Info,
 } from "lucide-react";
+import SEO from "../components/SEO";
+import cookieimg from "../assets/cookieimg.webp";
 
 /* animation presets */
 const pageFade = {
@@ -41,6 +43,12 @@ export default function CookiePolicy() {
       className="min-h-screen px-6 py-24 bg-[#fcefd4]"
     >
       <div className="max-w-5xl mx-auto">
+        <SEO
+          title="Cookie Policy | Kaumudi Sanskrit Academy"
+          description="Learn how Kaumudi Sanskrit Academy uses cookies and how you can control them."
+          canonicalPath="/cookies"
+          og={{ type: "website" }}
+        />
 
         {/* HEADER */}
         <motion.div
@@ -73,8 +81,7 @@ export default function CookiePolicy() {
             transition={{ duration: 2, ease: "easeOut" }}
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage:
-                "url('https://i.pinimg.com/1200x/18/a8/ea/18a8ea7f31a6bb6d0124d09795a98ba4.jpg')",
+              backgroundImage: `url(${cookieimg})`,
             }}
           />
 
@@ -82,16 +89,19 @@ export default function CookiePolicy() {
           <div className="absolute inset-0 bg-[#fdf7ec]/80" />
 
           {/* CONTENT */}
-          <motion.div className="relative z-10 p-14 space-y-20" variants={stagger}>
-
+          <motion.div
+            className="relative z-10 p-14 space-y-20"
+            variants={stagger}
+          >
             {/* INTRO */}
             <motion.section variants={rise} className="max-w-3xl">
               <h2 className="text-4xl font-serif font-bold text-[#7b2d1f] mb-6">
                 Wisdom & Digital Privacy
               </h2>
               <p className="text-xl leading-relaxed text-[#5f4334]">
-                We preserve sacred learning traditions while embracing responsible
-                digital practices—protecting your privacy at every step.
+                We preserve sacred learning traditions while embracing
+                responsible digital practices—protecting your privacy at every
+                step.
               </p>
             </motion.section>
 
@@ -159,10 +169,9 @@ export default function CookiePolicy() {
                     <p className="flex gap-2 text-lg font-semibold text-[#7b2d1f]">
                       {item.icon} {item.title}
                       {item.disabled && (
-                     <span className="ml-3 relative top-[7px] text-xs uppercase tracking-wide text-red-700 font-bold">
-  Required
-</span>
-
+                        <span className="ml-3 relative top-[7px] text-xs uppercase tracking-wide text-red-700 font-bold">
+                          Required
+                        </span>
                       )}
                     </p>
 
@@ -214,7 +223,6 @@ export default function CookiePolicy() {
               <Save className="w-6 h-6" />
               Save Preferences
             </motion.button>
-
           </motion.div>
         </motion.div>
       </div>

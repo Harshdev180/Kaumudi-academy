@@ -15,6 +15,13 @@ import {
   Monitor,
   X,
 } from "lucide-react";
+import { useEffect } from "react";
+import {
+  getProfileMe,
+  updateProfileMe,
+  getProfileSettings,
+  updateProfileSettings,
+} from "../../lib/api";
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState("student details");
@@ -24,21 +31,8 @@ const Settings = () => {
     sms: false,
     system: true,
   });
-
-  // Profile data converted to state so it can be updated
-  const [profile, setProfile] = useState({
-    firstName: "Aarav",
-    lastName: "Sharma",
-    hindiName: "आरव शर्मा",
-    id: "SA-20230514",
-    level: "Level 4 • Senior Scholar",
-    dob: "12 January 1998",
-    father: "Rajesh Sharma",
-    mother: "Geeta Sharma",
-    email: "aarav.sharma@email.com",
-    phone: "+91 98765 43210",
-    address: "14, Vasant Vihar, New Delhi",
-  });
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // Handle Input Changes
   const handleInputChange = (field, value) => {
@@ -47,21 +41,50 @@ const Settings = () => {
       [field]: value,
     }));
   };
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const profileRes = await getProfileMe();
+        const settingsRes = await getProfileSettings();
+
+        setProfile(profileRes.data); // because backend returns { success, data }
+
+        if (settingsRes.data?.notifications) {
+          setNotifications({
+            email: settingsRes.data.notifications.email ?? true,
+            sms: settingsRes.data.notifications.sms ?? false,
+            system: settingsRes.data.notifications.courseUpdates ?? true,
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load profile:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProfile();
+  }, []);
 
   const tabs = ["student details", "change password", "notification settings"];
+  if (loading || !profile) {
+    return (
+      <div className="p-10 text-center text-gray-400">Loading profile...</div>
+    );
+  }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-700 pb-10 mt-6">
+    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-700 pb-10 ">
       {/* TOP SECTION: Header & Status Card */}
-      <div className="grid grid-cols-12 gap-6 items-stretch">
+      <div className="grid grid-cols-12 gap-4 sm:gap-6 items-stretch">
         {/* Profile Identity Left */}
         <div className="col-span-12 lg:col-span-8 flex flex-col md:flex-row items-center gap-8 p-6">
           <div className="relative">
             <div className="w-28 h-28 rounded-full border-2 border-[#c9a050] p-1 shadow-xl">
               <div className="w-full h-full bg-[#fdfbf7] rounded-full flex items-center justify-center border border-[#c9a050]/20">
                 <span className="text-3xl font-serif font-bold text-[#74271E]">
-                  {profile.firstName.charAt(0)}
-                  {profile.lastName.charAt(0)}
+                  {profile.firstName?.[0]?.toUpperCase()}
+                  {profile.lastName?.[0]?.toUpperCase()}
                 </span>
               </div>
             </div>
@@ -70,14 +93,14 @@ const Settings = () => {
           <div className="text-center md:text-left space-y-2">
             <h2 className="text-3xl font-serif font-bold text-gray-800 tracking-tight">
               {profile.firstName} {profile.lastName}{" "}
-              <span className="text-gray-300 mx-2 font-light">/</span>{" "}
-              {profile.hindiName}
+              <span className="text-gray-300 mx-1 sm:mx-2 font-light">/</span>{" "}
+              <span className="block sm:inline">{profile.hindiName}</span>
             </h2>
-            <div className="flex flex-wrap justify-center md:justify-start gap-3">
-              <span className="px-4 py-1.5 bg-[#f7f1e3] text-[#c9a050] text-[10px] font-black uppercase tracking-widest rounded-full border border-[#c9a050]/20">
+            <div className="flex flex-wrap justify-center sm:justify-start gap-2 sm:gap-3">
+              <span className="px-3 sm:px-4 py-1 sm:py-1.5 bg-[#f7f1e3] text-[#c9a050] text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-full border border-[#c9a050]/20">
                 Verified Student
               </span>
-              <span className="px-4 py-1.5 bg-gray-100 text-gray-500 text-[10px] font-black uppercase tracking-widest rounded-full">
+              <span className="px-3 sm:px-4 py-1 sm:py-1.5 bg-gray-100 text-gray-500 text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-full">
                 MA Sanskrit Lit.
               </span>
             </div>
@@ -97,11 +120,11 @@ const Settings = () => {
             <h4 className="text-lg font-serif font-bold mb-6 leading-tight">
               {profile.level}
             </h4>
-            <div className="bg-[#74271E]/10 p-4 rounded-2xl border border-[#74271E]/10 backdrop-blur-sm transition-transform group-hover:scale-[1.02] duration-500">
+            <div className="bg-[#74271E]/10 p-3 sm:p-4 rounded-2xl border border-[#74271E]/10 backdrop-blur-sm transition-transform group-hover:scale-[1.02] duration-500">
               <p className="text-[9px] text-[#74271E]/60 uppercase font-black tracking-widest mb-1">
                 Enrollment ID
               </p>
-              <p className="font-mono font-bold text-[#74271E] text-sm tracking-widest">
+              <p className="font-mono font-bold text-[#74271E] text-xs sm:text-sm tracking-widest">
                 {profile.id}
               </p>
             </div>
@@ -111,11 +134,11 @@ const Settings = () => {
 
       {/* MAIN SETTINGS CARD WITH TABS */}
       <div className="bg-white rounded-[2rem] shadow-sm border border-black/5 overflow-hidden min-h-[550px]">
-        <div className="flex border-b border-gray-100 px-6 pt-5 bg-gray-50/30">
+        <div className="flex border-b border-gray-100 px-4 sm:px-6 pt-5 bg-gray-50/30 overflow-x-auto no-scrollbar whitespace-nowrap">
           {tabs.map((tab) => (
             <button
               key={tab}
-              disabled={isEditing && tab !== "student details"} // Disable tabs during edit
+              disabled={isEditing && tab !== "student details"}
               onClick={() => setActiveTab(tab)}
               className={`px-8 py-5 text-[12px] font-black uppercase tracking-[0.15em] transition-all relative ${
                 activeTab === tab
@@ -125,7 +148,7 @@ const Settings = () => {
             >
               {tab}
               {activeTab === tab && (
-                <div className="absolute bottom-0 left-8 right-8 h-1 bg-[#74271E] rounded-t-full shadow-[0_-2px_10px_rgba(116,39,30,0.3)]" />
+                <div className="absolute bottom-0 left-4 right-4 sm:left-8 sm:right-8 h-1 bg-[#74271E] rounded-t-full shadow-[0_-2px_10px_rgba(116,39,30,0.3)]" />
               )}
             </button>
           ))}
@@ -134,8 +157,8 @@ const Settings = () => {
         <div className="p-10 relative">
           {/* 1. STUDENT DETAILS TAB */}
           {activeTab === "student details" && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-12">
-              <div className="flex justify-between items-start border-b border-gray-50 pb-8">
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-8 sm:space-y-12">
+              <div className="flex flex-col sm:flex-row justify-between items-start gap-4 border-b border-gray-50 pb-6 sm:pb-8">
                 <div>
                   <h3 className="text-xl font-serif font-bold text-gray-800">
                     Personal Identity
@@ -144,7 +167,7 @@ const Settings = () => {
                     Manage your verified academic and contact information
                   </p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
                   {isEditing ? (
                     <>
                       <button
@@ -154,20 +177,24 @@ const Settings = () => {
                         <X size={14} /> Cancel
                       </button>
                       <button
-                        onClick={() => {
-                          // Here you would normally trigger an API call
-                          setIsEditing(false);
-                          alert("Profile Updated Successfully!");
+                        onClick={async () => {
+                          try {
+                            await updateProfileMe(profile);
+                            setIsEditing(false);
+                            alert("Profile Updated Successfully!");
+                          } catch (err) {
+                            alert("Failed to update profile");
+                          }
                         }}
-                        className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-2xl font-bold text-xs shadow-lg hover:bg-emerald-700 transition-all active:scale-95"
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600 text-white rounded-2xl font-bold text-xs shadow-lg"
                       >
-                        <Save size={14} /> Save Changes
+                        <Save size={14} /> Save
                       </button>
                     </>
                   ) : (
                     <button
                       onClick={() => setIsEditing(true)}
-                      className="flex items-center gap-2 px-6 py-3 bg-[#74271E] text-white rounded-2xl font-bold text-xs shadow-lg hover:shadow-[#74271E]/20 transition-all active:scale-95"
+                      className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-[#74271E] text-white rounded-2xl font-bold text-xs shadow-lg"
                     >
                       <Edit3 size={14} /> Edit Profile
                     </button>
@@ -175,8 +202,8 @@ const Settings = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-10">
-                <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 lg:gap-x-20 gap-y-8 sm:gap-y-10">
+                <div className="space-y-6 sm:space-y-8">
                   <DetailItem
                     icon={<User size={15} />}
                     label="First Name"
@@ -199,7 +226,7 @@ const Settings = () => {
                     onChange={(v) => handleInputChange("dob", v)}
                   />
                 </div>
-                <div className="space-y-8">
+                <div className="space-y-6 sm:space-y-8">
                   <DetailItem
                     icon={<Mail size={15} />}
                     label="Email Address"
@@ -226,7 +253,6 @@ const Settings = () => {
             </div>
           )}
 
-          {/* ... Change Password and Notifications remain the same ... */}
           {activeTab === "change password" && <ChangePasswordView />}
           {activeTab === "notification settings" && (
             <NotificationView
@@ -240,13 +266,12 @@ const Settings = () => {
   );
 };
 
-// Updated Sub-component for Details Item
 const DetailItem = ({ icon, label, val, isEditing, onChange }) => (
   <div className="flex items-start gap-4 group">
     <div className="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-[#f7f1e3] group-hover:text-[#c9a050] transition-colors shrink-0">
       {icon}
     </div>
-    <div className="space-y-1 w-full">
+    <div className="space-y-1 w-full min-w-0">
       <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest group-hover:text-[#c9a050] transition-colors">
         {label}
       </p>
@@ -256,23 +281,24 @@ const DetailItem = ({ icon, label, val, isEditing, onChange }) => (
           type="text"
           value={val}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full text-base font-bold text-gray-700 border-b-2 border-[#c9a050]/30 focus:border-[#c9a050] outline-none bg-transparent py-1 transition-all"
+          className="w-full text-sm sm:text-base font-bold text-gray-700 border-b-2 border-[#c9a050]/30 focus:border-[#c9a050] outline-none bg-transparent py-1 transition-all"
         />
       ) : (
-        <p className="text-base font-bold text-gray-700">{val}</p>
+        <p className="text-sm sm:text-base font-bold text-gray-700 break-words">
+          {val}
+        </p>
       )}
     </div>
   </div>
 );
 
-// Helper Views to keep code clean
 const ChangePasswordView = () => (
   <div className="animate-in fade-in slide-in-from-right-4 duration-700 max-w-7xl mx-auto py-3">
     <div className="bg-[#fdfbf7] p-8 rounded-[2.5rem] border border-[#e6d5b8]/30 relative overflow-hidden">
       <div className="absolute top-0 right-0 p-8 opacity-[0.03] text-[#74271E]">
         <Lock size={120} />
       </div>
-      <div className="relative z-10 space-y-8">
+      <div className="relative z-10 space-y-6 sm:space-y-8">
         <div className="text-center space-y-2">
           <h3 className="text-xl font-bold text-gray-800">
             Update Credentials
@@ -281,7 +307,7 @@ const ChangePasswordView = () => (
             Ensure your account remains secure
           </p>
         </div>
-        <form className="space-y-6">
+        <form className="space-y-4 sm:space-y-6">
           {["Current Password", "New Password", "Confirm Password"].map(
             (label) => (
               <div key={label}>
@@ -290,7 +316,7 @@ const ChangePasswordView = () => (
                 </label>
                 <input
                   type="password"
-                  className="w-full px-6 py-4 bg-white border border-gray-100 rounded-2xl outline-none focus:ring-2 focus:ring-[#74271E]/10 text-sm font-medium"
+                  className="w-full px-5 sm:px-6 py-3 sm:py-4 bg-white border border-gray-100 rounded-2xl outline-none focus:ring-2 focus:ring-[#74271E]/10 text-sm font-medium"
                   placeholder="••••••••"
                 />
               </div>
@@ -298,7 +324,7 @@ const ChangePasswordView = () => (
           )}
           <button
             type="button"
-            className="w-full mt-4 bg-[#74271E] text-white py-4 rounded-2xl font-bold text-sm shadow-xl hover:bg-[#5a1e17] transition-all flex items-center justify-center gap-2"
+            className="w-full mt-4 bg-[#74271E] text-white py-3.5 sm:py-4 rounded-2xl font-bold text-sm shadow-xl hover:bg-[#5a1e17] transition-all flex items-center justify-center gap-2"
           >
             <Save size={18} /> Save New Credentials
           </button>
@@ -309,29 +335,29 @@ const ChangePasswordView = () => (
 );
 
 const NotificationView = ({ notifications, setNotifications }) => (
-  <div className="animate-in fade-in zoom-in-95 duration-700 space-y-10">
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-      <div className="space-y-6">
-        <h3 className="text-xl font-bold text-gray-800 border-l-4 border-[#c9a050] pl-4">
+  <div className="animate-in fade-in zoom-in-95 duration-700 space-y-6 sm:space-y-10">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-12">
+      <div className="space-y-4 sm:space-y-6">
+        <h3 className="text-lg sm:text-xl font-bold text-gray-800 border-l-4 border-[#c9a050] pl-4">
           Alert Preferences
         </h3>
         {[
           {
             id: "email",
             label: "Email Notifications",
-            desc: "Course updates and academy news",
+            desc: "Course updates and news",
             icon: <Mail size={18} />,
           },
           {
             id: "sms",
             label: "SMS Alerts",
-            desc: "Urgent schedule changes and reminders",
+            desc: "Urgent schedule reminders",
             icon: <Smartphone size={18} />,
           },
           {
             id: "system",
             label: "System Alerts",
-            desc: "Internal dashboard notifications",
+            desc: "Internal dashboard notes",
             icon: <Monitor size={18} />,
           },
         ].map((pref) => (
@@ -343,9 +369,9 @@ const NotificationView = ({ notifications, setNotifications }) => (
               <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-gray-400 group-hover:text-[#c9a050] shadow-sm">
                 {pref.icon}
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm font-bold text-gray-700">{pref.label}</p>
-                <p className="text-[10px] text-gray-400 font-medium">
+                <p className="text-[10px] text-gray-400 font-medium truncate">
                   {pref.desc}
                 </p>
               </div>
@@ -357,24 +383,45 @@ const NotificationView = ({ notifications, setNotifications }) => (
                   [pref.id]: !prev[pref.id],
                 }))
               }
-              className={`w-12 h-6 rounded-full transition-colors relative ${notifications[pref.id] ? "bg-[#74271E]" : "bg-gray-200"}`}
+              className={`w-11 h-6 sm:w-12 sm:h-6 rounded-full transition-colors relative shrink-0 ${notifications[pref.id] ? "bg-[#74271E]" : "bg-gray-200"}`}
             >
               <div
-                className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${notifications[pref.id] ? "translate-x-6" : "translate-x-0"}`}
+                className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${notifications[pref.id] ? "translate-x-5 sm:translate-x-6" : "translate-x-0"}`}
               />
             </button>
           </div>
         ))}
+        <div className="pt-6">
+          <button
+            onClick={async () => {
+              try {
+                await updateProfileSettings({
+                  notifications: {
+                    email: notifications.email,
+                    sms: notifications.sms,
+                    courseUpdates: notifications.system,
+                  },
+                });
+                alert("Notification settings updated!");
+              } catch (err) {
+                alert("Failed to update settings");
+              }
+            }}
+            className="bg-[#74271E] text-white py-3 px-6 rounded-xl font-bold text-xs shadow-lg"
+          >
+            Save Preferences
+          </button>
+        </div>
       </div>
       <div className="bg-[#fdfbf7] p-8 rounded-[3rem] border border-[#e6d5b8]/30 flex flex-col justify-center text-center space-y-6">
         <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto text-[#c9a050] shadow-sm">
           <ShieldCheck size={28} />
         </div>
         <div>
-          <h4 className="text-sm font-black uppercase tracking-widest text-gray-700 mb-2">
+          <h4 className="text-xs sm:text-sm font-black uppercase tracking-widest text-gray-700 mb-2">
             Privacy Assurance
           </h4>
-          <p className="text-xs text-gray-500 leading-relaxed font-medium italic">
+          <p className="text-[11px] sm:text-xs text-gray-500 leading-relaxed font-medium italic">
             "We respect your peace. Notifications are sent only for essential
             academic progress."
           </p>

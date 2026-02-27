@@ -15,7 +15,7 @@ import {
   BookUser,
   UserStar,
 } from "lucide-react";
-import logo from "../../assets/logo-bgremove.png";
+import logo from "../../assets/logo-bgremove.webp";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuthHook";
 

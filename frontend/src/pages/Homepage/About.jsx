@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import aboutImg from "../../assets/image1.jpeg";
+import aboutImg from "../../assets/image1.webp";
+import home1 from "../../assets/home/home1.webp";
 
 const fadeLeft = {
   hidden: { opacity: 0, x: -40 },
@@ -46,7 +47,7 @@ const About = () => {
           className="hidden md:block rounded-[2.5rem] bg-[#e6d6b8] p-3 shadow-2xl relative z-10"
         >
           <img
-            src="https://i.pinimg.com/736x/a9/a2/6b/a9a26bb6a20c90ba9a475714db4525ba.jpg"
+            src={home1}
             alt="Kaumudi Academy campus"
             className="w-full h-[340px] md:h-[350px] lg:h-[460px] object-cover rounded-[2rem]"
           />
@@ -75,7 +76,7 @@ const About = () => {
             className="block md:hidden rounded-[2rem] bg-[#e6d6b8] p-2 shadow-md mt-4 overflow-hidden"
           >
             <img
-              src="https://i.pinimg.com/736x/a9/a2/6b/a9a26bb6a20c90ba9a475714db4525ba.jpg"
+              src={home1}
               alt="Kaumudi Academy campus"
               className="w-full h-[220px] sm:h-[300px] object-cover rounded-[1.5rem]"
             />

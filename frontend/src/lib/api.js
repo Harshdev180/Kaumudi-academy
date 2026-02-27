@@ -4,7 +4,16 @@ const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
 export const api = axios.create({
   baseURL: API_BASE,
-  headers: { "Content-Type": "application/json" },
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("kaumudi_token");
+
+  if (token && token !== "null" && token !== "undefined") {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
 });
 
 export function setAuthToken(token) {
@@ -17,7 +26,11 @@ export function setAuthToken(token) {
 
 // ==================== AUTH APIs ====================
 export async function loginStudent(email, password) {
-  const res = await api.post("/auth/login", { email, password, role: "STUDENT" });
+  const res = await api.post("/auth/login", {
+    email,
+    password,
+    role: "STUDENT",
+  });
   return res.data;
 }
 
@@ -27,22 +40,52 @@ export async function loginAdmin(email, password) {
 }
 
 export async function loginSuperAdmin(email, password) {
-  const res = await api.post("/auth/login", { email, password, role: "SUPER_ADMIN" });
+  const res = await api.post("/auth/login", {
+    email,
+    password,
+    role: "SUPER_ADMIN",
+  });
   return res.data;
 }
 
-export async function registerStudent({ firstName, lastName, email, password }) {
-  const res = await api.post("/auth/student/register", { firstName, lastName, email, password });
+export async function registerStudent({
+  firstName,
+  lastName,
+  email,
+  password,
+}) {
+  const res = await api.post("/auth/student/register", {
+    firstName,
+    lastName,
+    email,
+    password,
+  });
   return res.data;
 }
 
-export async function registerSuperAdmin({ name, email, password, phoneNumber, secretKey }) {
-  const res = await api.post("/auth/super-admin/register", { name, email, password, phoneNumber, secretKey });
+export async function registerSuperAdmin({
+  name,
+  email,
+  password,
+  phoneNumber,
+  secretKey,
+}) {
+  const res = await api.post("/auth/super-admin/register", {
+    name,
+    email,
+    password,
+    phoneNumber,
+    secretKey,
+  });
   return res.data;
 }
 
 export async function createAdmin({ name, email, phoneNumber }) {
-  const res = await api.post("/auth/admin/create", { name, email, phoneNumber });
+  const res = await api.post("/auth/admin/create", {
+    name,
+    email,
+    phoneNumber,
+  });
   return res.data;
 }
 
@@ -52,7 +95,10 @@ export async function forgotPassword(email, role = "STUDENT") {
 }
 
 export async function resetPassword(token, newPassword, confirmPassword) {
-  const res = await api.post(`/auth/reset-password/${token}`, { newPassword, confirmPassword });
+  const res = await api.post(`/auth/reset-password/${token}`, {
+    newPassword,
+    confirmPassword,
+  });
   return res.data;
 }
 
@@ -69,14 +115,14 @@ export async function getCourseDetail(courseId) {
 
 export async function createCourse(courseData) {
   const res = await api.post("/course", courseData, {
-    headers: { "Content-Type": "multipart/form-data" }
+    headers: { "Content-Type": "multipart/form-data" },
   });
   return res.data;
 }
 
 export async function updateCourse(courseId, courseData) {
   const res = await api.put(`/course/${courseId}`, courseData, {
-    headers: { "Content-Type": "multipart/form-data" }
+    headers: { "Content-Type": "multipart/form-data" },
   });
   return res.data;
 }
@@ -123,8 +169,8 @@ export async function getAllEnrollments() {
 }
 
 // ==================== PAYMENT APIs ====================
-export async function createPaymentOrder(courseId, couponCode = null) {
-  const res = await api.post("/payment/create-order", { courseId, couponCode });
+export async function createPaymentOrder(data) {
+  const res = await api.post("/payment/create-order", data);
   return res.data;
 }
 
@@ -134,7 +180,9 @@ export async function verifyPayment(paymentData) {
 }
 
 export async function fakeVerifyPayment(courseId) {
-  const res = await api.post("/payment/fake-verify", { razorpayOrderId: courseId });
+  const res = await api.post("/payment/fake-verify", {
+    razorpayOrderId: courseId,
+  });
   return res.data;
 }
 
@@ -147,12 +195,14 @@ export async function submitInquiry(inquiryData) {
 // ==================== CONTACT APIs ====================
 export async function submitContact(contactData) {
   const res = await api.post("/contact", contactData);
+  a;
   return res.data;
 }
 
 // ==================== COUPON APIs ====================
 export async function createCoupon(couponData) {
-  const discountType = couponData.discountType || couponData.type || "percentage";
+  const discountType =
+    couponData.discountType || couponData.type || "percentage";
   const discountValue =
     couponData.discountValue ?? couponData.discountPercentage;
   const payload = {
@@ -175,7 +225,8 @@ export async function getAllCouponsForAdmin() {
 }
 
 export async function updateCoupon(couponId, couponData) {
-  const discountType = couponData.discountType || couponData.type || "percentage";
+  const discountType =
+    couponData.discountType || couponData.type || "percentage";
   const discountValue =
     couponData.discountValue ?? couponData.discountPercentage;
   const payload = {
@@ -260,22 +311,27 @@ export async function toggleStaffStatus(staffId) {
   return res.data;
 }
 
+export const markStudentFeeAsPaid = (id) =>
+  api.patch(`/admin/student-fees/${id}/mark-paid`);
+
 // ==================== ADMIN STUDENT APIs ====================
 export async function getAllStudentsForAdmin(params = {}) {
   const res = await api.get("/admin/students", { params });
   return res.data;
 }
 
+export const getAllStudentFees = () => api.get("/admin/student-fees");
+
 export async function createStudentByAdmin(studentData) {
   const res = await api.post("/admin/students", studentData, {
-    headers: { "Content-Type": "multipart/form-data" }
+    headers: { "Content-Type": "multipart/form-data" },
   });
   return res.data;
 }
 
 export async function updateStudentByAdmin(studentId, studentData) {
   const res = await api.put(`/admin/students/${studentId}`, studentData, {
-    headers: { "Content-Type": "multipart/form-data" }
+    headers: { "Content-Type": "multipart/form-data" },
   });
   return res.data;
 }
@@ -307,7 +363,9 @@ export async function getAdminInquiryById(inquiryId) {
 }
 
 export async function updateAdminInquiryStatus(inquiryId, status) {
-  const res = await api.patch(`/admin/inquiries/${inquiryId}/status`, { status });
+  const res = await api.patch(`/admin/inquiries/${inquiryId}/status`, {
+    status,
+  });
   return res.data;
 }
 
@@ -318,12 +376,12 @@ export async function deleteAdminInquiry(inquiryId) {
 
 // ==================== STUDENT PROFILE APIs ====================
 export async function getStudentProfile() {
-  const res = await api.get('/student/me');
+  const res = await api.get("/student/me");
   return res.data;
 }
 
 export async function updateStudentProfile(profileData) {
-  const res = await api.put('/student/me', profileData);
+  const res = await api.put("/student/me", profileData);
   return res.data;
 }
 
@@ -335,12 +393,12 @@ export async function getStudentEnrollments() {
 // ==================== PROFILE APIs ====================
 export async function getProfileStats() {
   const res = await api.get("/profile/stats");
-  return res.data;
+  return res.data.data;
 }
 
 export async function getProfileRecentEnrollments() {
   const res = await api.get("/profile/recent");
-  return res.data;
+  return res.data.data;
 }
 
 export async function getProfileEnrollments() {

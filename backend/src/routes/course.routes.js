@@ -1,6 +1,4 @@
 import express from "express";
-const router = express.Router();
-
 import {
   createCourse,
   updateCourse,
@@ -27,6 +25,7 @@ import {
   updateCourseSchema
 } from "../validators/course.validator.js";
 
+const router = express.Router();
 
 // Specific admin routes should come before parameterized routes
 router.get("/course/admin/all", authMiddleware, roleMiddleware("ADMIN", "SUPER_ADMIN"), getAllCoursesForAdmin);

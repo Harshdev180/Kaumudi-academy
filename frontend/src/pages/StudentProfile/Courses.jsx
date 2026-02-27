@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Clock, Monitor, PlayCircle } from "lucide-react";
-import { getProfileEnrollments } from "../../lib/api";
+import { getMyEnrollments, getProfileEnrollments } from "../../lib/api";
 
 const Courses = () => {
   const [activeFilter, setActiveFilter] = useState("ALL");
@@ -144,7 +144,7 @@ const Courses = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-6 space-y-8 mt-6">
+    <div className="max-w-6xl mx-auto px-2 sm:px-4 space-y-6 md:space-y-8 mt-4">
       <AnimatePresence>
         {notification && (
           <motion.div
@@ -164,8 +164,8 @@ const Courses = () => {
         )}
       </AnimatePresence>
       {/* Search & Filter Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="relative w-full md:w-96">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4">
+        <div className="relative w-full md:w-96 min-w-0">
           <Search
             className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
             size={18}
@@ -179,12 +179,12 @@ const Courses = () => {
           />
         </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto pb-2">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 mt-2 md:mt-0 no-scrollbar">
           {filters.map((status) => (
             <motion.button
               key={status}
               onClick={() => setActiveFilter(status)}
-              className={`px-5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+              className={`px-5 py-2 rounded-xl text-xs font-bold whitespace-nowrap shrink-0 transition-all ${
                 activeFilter === status
                   ? "bg-[#74271E] text-white shadow-md"
                   : "bg-white text-gray-500 hover:bg-gray-100"
@@ -206,7 +206,7 @@ const Courses = () => {
       ) : filteredCourses.length === 0 ? (
         <div className="text-sm text-gray-500">No enrollments found.</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
           {filteredCourses.map((course) => (
             <motion.div
               key={course.id}
@@ -217,7 +217,7 @@ const Courses = () => {
               className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all border border-black/5 flex flex-col group"
             >
               {/* Course Image/Hero Section */}
-              <div className="h-44 relative flex items-center justify-center p-6 text-center bg-[#2a1b0a] overflow-hidden">
+              <div className="h-32 sm:h-44 relative flex items-center justify-center p-4 sm:p-6 text-center bg-[#2a1b0a] overflow-hidden">
                 {course.imageUrl && (
                   <img
                     src={course.imageUrl}
@@ -250,7 +250,7 @@ const Courses = () => {
               </div>
 
               {/* Course Details */}
-              <div className="p-6 flex-1 flex flex-col">
+              <div className="p-4 sm:p-6 flex-1 flex flex-col">
                 <div className="flex justify-between items-start mb-2">
                   <span className="text-[10px] font-bold text-[#c9a050] uppercase tracking-widest bg-[#c9a050]/10 px-2 py-1 rounded">
                     {course.category}

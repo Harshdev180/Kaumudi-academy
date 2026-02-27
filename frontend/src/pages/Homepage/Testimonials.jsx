@@ -1,34 +1,38 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import cap from "../../assets/cap.webp";
+import person1 from "../../assets/home/person1.webp";
+import person2 from "../../assets/home/person2.webp";
+import person3 from "../../assets/home/person3.webp";
+import person4 from "../../assets/home/person4.webp";
 
 const testimonials = [
   {
     name: "Sarah Smith",
     role: "IT Engineer",
     text: "Choosing this academy was one of the most transformative decisions of my academic life. The Acharyas explain even the most complex grammatical concepts with clarity and patience, and the structured curriculum helped me build confidence step by step. The live chanting sessions, manuscript studies, and interactive discussions created a deeply immersive learning experience that goes far beyond ordinary online classes. I now feel truly connected to the language, its philosophy, and its timeless intellectual tradition.",
-    image: "https://randomuser.me/api/portraits/women/44.jpg",
+    image: person1,
     rating: 4,
   },
   {
     name: "Michael Brown",
     role: "Business Owner",
     text: "What impressed me most about this institution is the balance between traditional teaching methods and modern accessibility. The recorded lectures, personal mentoring sessions, and thoughtfully designed course materials made it easy to continue learning alongside my professional commitments. The discipline, authenticity, and scholarly depth of the programs are remarkable. I would strongly recommend this academy to anyone seeking serious, classical Sanskrit education in a contemporary format.",
-    image: "https://randomuser.me/api/portraits/men/32.jpg",
+    image: person2,
     rating: 3,
   },
   {
     name: "Sophia Lee",
     role: "Interior Designer",
     text: "From the very first week, I felt welcomed into a vibrant scholarly community. The faculty are incredibly dedicated, and the campus atmosphere both physical and virtual is inspiring and serene. The emphasis on pronunciation, scriptural interpretation, and cultural context gave me a deeper appreciation of Sanskrit literature than I ever imagined possible. This academy doesn’t just teach a language it cultivates a lifelong love for learning.",
-    image: "https://randomuser.me/api/portraits/women/47.jpg",
+    image: person3,
     rating: 5,
   },
   {
     name: "James Carter",
     role: "Entrepreneur",
     text: "The rigor and authenticity of the teaching here exceeded all my expectations. Each module is carefully structured, with ample opportunities for revision, guided practice, and one-to-one doubt-clearing sessions. The digitized manuscripts and archival resources are exceptional, and the global discussion forums allowed me to exchange ideas with fellow students from many countries. It feels like being part of a truly international scholarly tradition..",
-    image: "https://randomuser.me/api/portraits/men/52.jpg",
+    image: person4,
     rating: 4,
   },
 ];

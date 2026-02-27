@@ -7,75 +7,52 @@ import {
   AlertCircle,
   Coins,
   ShieldCheck,
-  Landmark, ChevronLeft, ChevronRight
+  Landmark,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
+import { useEffect } from "react";
+import { getProfileEnrollments } from "../../lib/api";
+import { createPaymentOrder } from "../../lib/api";
 
 const FeePurchase = () => {
+  const [paymentHistory, setPaymentHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const initialData = [
-    {
-      id: "FEE001",
-      date: "July 1, 2024",
-      desc: "Advanced Sanskrit Literature",
-      type: "Academic",
-      totalAmount: 15000,
-      paidAmount: 15000,
-    },
-    {
-      id: "FEE002",
-      date: "July 10, 2024",
-      desc: "Vedic Philosophy",
-      type: "Academic",
-      totalAmount: 12000,
-      paidAmount: 8000,
-    },
-    {
-      id: "FEE003",
-      date: "August 5, 2024",
-      desc: "Indian Classical Music",
-      type: "Cultural",
-      totalAmount: 10000,
-      paidAmount: 10000,
-    },
-    {
-      id: "FEE004",
-      date: "August 18, 2024",
-      desc: "Yoga & Meditation Certification",
-      type: "Wellness",
-      totalAmount: 8000,
-      paidAmount: 1000,
-    },
-    {
-      id: "FEE005",
-      date: "September 1, 2024",
-      desc: "Spoken Sanskrit Workshop",
-      type: "Workshop",
-      totalAmount: 5000,
-      paidAmount: 5000,
-    },
-    {
-      id: "FEE006",
-      date: "September 12, 2024",
-      desc: "Ancient Indian History",
-      type: "Academic",
-      totalAmount: 9000,
-      paidAmount: 4500,
-    },
-  ];
+  useEffect(() => {
+    const loadFees = async () => {
+      try {
+        const res = await getProfileEnrollments();
 
+        // adjust if your backend structure differs
+        const formatted = res.data.map((item) => ({
+          id: item._id,
+          date: new Date(item.createdAt).toLocaleDateString(),
+          desc: item.course?.title || "Course",
+          type: item.course?.category || "Academic",
+          totalAmount: item.amount || 0,
+          paidAmount: item.paidAmount || 0,
+        }));
 
-  const [paymentHistory, setPaymentHistory] = useState(initialData);
+        setPaymentHistory(formatted);
+      } catch (err) {
+        console.error("Failed to load fee data", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  /* CALCULATION */
+    loadFees();
+  }, []);
 
   const totalFee = paymentHistory.reduce(
     (sum, item) => sum + item.totalAmount,
-    0
+    0,
   );
 
   const totalPaid = paymentHistory.reduce(
     (sum, item) => sum + item.paidAmount,
-    0
+    0,
   );
 
   const totalPending = totalFee - totalPaid;
@@ -106,19 +83,19 @@ const FeePurchase = () => {
 
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-  const currentRows = paymentHistory.slice(
-    indexOfFirstRow,
-    indexOfLastRow
-  );
+  const currentRows = paymentHistory.slice(indexOfFirstRow, indexOfLastRow);
 
-  const handlePayment = (item) => {
-    setPaymentHistory((prev) =>
-      prev.map((p) =>
-        p.id === item.id
-          ? { ...p, paidAmount: p.totalAmount }
-          : p
-      )
-    );
+  const handlePayment = async (item) => {
+    try {
+      await createPaymentOrder({
+        courseId: item.id,
+      });
+
+      // refresh data
+      window.location.reload();
+    } catch (err) {
+      alert("Payment failed");
+    }
   };
 
   const handlePrev = () => {
@@ -129,10 +106,16 @@ const FeePurchase = () => {
     if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
 
- 
+  if (loading) {
+    return (
+      <div className="p-10 text-center text-gray-400">
+        Loading fee data...
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-12 pb-16 mt-8 px-4">
+    <div className="max-w-6xl mx-auto space-y-12 pb-16 mt-4 px-4">
       {/* PAGE HEADER */}
       {/* <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
@@ -161,16 +144,11 @@ const FeePurchase = () => {
 
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">
-                  {item.label}
-                </p>
-
-                <h4 className="text-2xl font-semibold text-[#74271E]">
-                  ₹ {item.amount}
-                </h4>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">{item.label}</p>
+                <h4 className="text-2xl font-semibold text-[#74271E]">₹ {item.amount}</h4>
               </div>
 
-              <div className="w-10 h-10 rounded-xl bg-[#74271E]/5 flex items-center justify-center text-[#c9a050] group-hover:bg-[#74271E]/10 transition">
+              <div className="w-10 h-10 shrink-0 rounded-xl bg-[#74271E]/5 flex items-center justify-center text-[#c9a050] group-hover:bg-[#74271E]/10 transition">
                 {item.icon}
               </div>
             </div>
@@ -186,12 +164,12 @@ const FeePurchase = () => {
         {/* Header */}
         <div className="px-8 py-6 border-b border-[#f0e9dc] flex justify-between items-center bg-[#faf7f2]">
           <div className="flex items-center gap-3">
-            <History className="text-[#c9a050]" size={20} />
+            <History className="text-[#c9a050] shrink-0" size={20} />
             <h4 className="text-sm font-black uppercase tracking-widest text-gray-700">
               Payment History
             </h4>
           </div>
-          <span className="text-xs font-semibold text-gray-400 bg-white px-4 py-2 rounded-full border border-[#eee3d2]">
+          <span className="text-xs font-semibold text-gray-400 bg-white px-4 py-2 rounded-full border border-[#eee3d2] whitespace-nowrap shrink-0 ml-2">
             {paymentHistory.length} Transactions
           </span>
         </div>
@@ -199,84 +177,83 @@ const FeePurchase = () => {
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
-  <thead>
-    <tr className="text-xs uppercase tracking-widest text-gray-400 bg-[#faf7f2]">
-      <th className="px-8 py-4">Date</th>
-      <th className="px-6 py-4">Description</th>
-      <th className="px-6 py-4">Total Amount</th>
-      <th className="px-6 py-4">Remaining</th>
-      <th className="px-6 py-4 text-center">Status</th>
-      <th className="px-8 py-4 text-right">Receipt</th>
-    </tr>
-  </thead>
+            <thead>
+              <tr className="text-xs uppercase tracking-widest text-gray-400 bg-[#faf7f2]">
+                <th className="px-8 py-4">Date</th>
+                <th className="px-6 py-4">Description</th>
+                <th className="px-6 py-4">Total Amount</th>
+                <th className="px-6 py-4">Remaining</th>
+                <th className="px-6 py-4 text-center">Status</th>
+                <th className="px-8 py-4 text-right">Receipt</th>
+              </tr>
+            </thead>
 
-  <tbody className="divide-y divide-[#f3ede3]">
-    {currentRows.map((item) => {
-      const isPaid = item.paidAmount >= item.totalAmount;
-      const remaining = item.totalAmount - item.paidAmount;
+            <tbody className="divide-y divide-[#f3ede3]">
+              {currentRows.map((item) => {
+                const isPaid = item.paidAmount >= item.totalAmount;
+                const remaining = item.totalAmount - item.paidAmount;
 
-      return (
-        <tr
-          key={item.id}
-          className="hover:bg-[#fbf7f1] transition-all duration-300"
-        >
-          <td className="px-8 py-5 text-sm font-medium text-gray-600">
-            {item.date}
-          </td>
+                return (
+                  <tr
+                    key={item.id}
+                    className="hover:bg-[#fbf7f1] transition-all duration-300"
+                  >
+                    <td className="px-8 py-5 text-sm font-medium text-gray-600">
+                      {item.date}
+                    </td>
 
-          <td className="px-6 py-5">
-            <div>
-              <p className="text-sm font-semibold text-gray-800">
-                {item.desc}
-              </p>
-              <span className="text-[10px] uppercase tracking-widest text-[#c9a050]/70 font-bold">
-                {item.type}
-              </span>
-            </div>
-          </td>
+                    <td className="px-6 py-5">
+                      <div>
+                        <p className="text-sm font-semibold text-gray-800">
+                          {item.desc}
+                        </p>
+                        <span className="text-[10px] uppercase tracking-widest text-[#c9a050]/70 font-bold">
+                          {item.type}
+                        </span>
+                      </div>
+                    </td>
 
-          <td className="px-6 py-5 text-base font-serif font-bold text-[#74271E]">
-            ₹ {item.totalAmount.toLocaleString()}
-          </td>
+                    <td className="px-6 py-5 text-base font-serif font-bold text-[#74271E]">
+                      ₹ {item.totalAmount.toLocaleString()}
+                    </td>
 
-          <td className="px-6 py-5 text-base font-serif font-bold text-[#74271E]">
-            ₹ {remaining.toLocaleString()}
-          </td>
+                    <td className="px-6 py-5 text-base font-serif font-bold text-[#74271E]">
+                      ₹ {remaining.toLocaleString()}
+                    </td>
 
-          <td className="px-6 py-5 text-center">
-            {isPaid ? (
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#ecf7f1] text-emerald-600 rounded-full text-xs font-semibold border border-emerald-100">
-                <CheckCircle2 size={14} />
-                Paid
-              </span>
-            ) : (
-              <button
-                onClick={() => handlePayment(item)}
-                className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#74271E] text-white rounded-full text-xs font-semibold hover:bg-[#5c1f17] transition"
-              >
-                <Wallet size={14} />
-                Pay Now
-              </button>
-            )}
-          </td>
+                    <td className="px-6 py-5 text-center">
+                      {isPaid ? (
+                        <span className="inline-flex items-center shrink-0 whitespace-nowrap gap-2 px-4 py-1.5 bg-[#ecf7f1] text-emerald-600 rounded-full text-xs font-semibold border border-emerald-100">
+                          <CheckCircle2 size={14} className="shrink-0" />
+                          Paid
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => handlePayment(item)}
+                          className="inline-flex items-center shrink-0 whitespace-nowrap gap-2 px-4 py-1.5 bg-[#74271E] text-white rounded-full text-xs font-semibold hover:bg-[#5c1f17] transition"
+                        >
+                          <Wallet size={14} className="shrink-0" />
+                          Pay Now
+                        </button>
+                      )}
+                    </td>
 
-          <td className="px-8 py-5 text-right">
-            <button className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-[#e8dfd0] text-gray-600 rounded-xl text-xs font-semibold hover:border-[#74271E] hover:text-[#74271E] transition-all hover:shadow-md">
-              <Download size={14} />
-              Download
-            </button>
-          </td>
-        </tr>
-      );
-    })}
-  </tbody>
-</table>
+                    <td className="px-8 py-5 text-right">
+                      <button className="inline-flex items-center shrink-0 whitespace-nowrap gap-2 px-4 py-2 bg-white border border-[#e8dfd0] text-gray-600 rounded-xl text-xs font-semibold hover:border-[#74271E] hover:text-[#74271E] transition-all hover:shadow-md">
+                        <Download size={14} className="shrink-0" />
+                        Download
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
 
-      {/* PAGINATION UI ADDED */}
+        {/* PAGINATION UI ADDED */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between px-8 py-4 border-t border-[#f0e9dc] bg-white">
-            
             {/* LEFT SIDE - PAGE INFO */}
             <div className="text-sm font-medium text-gray-600">
               Page {currentPage} of {totalPages}

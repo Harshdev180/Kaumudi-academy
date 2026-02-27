@@ -1,12 +1,12 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import EnrollmentHeader from "./Enrollment/EnrollmentHeader";
 import EnrollmentFilters from "./Enrollment/EnrollmentFilters";
 import EnrollmentStats from "./Enrollment/EnrollmentStats";
 import EnrollmentTable from "./Enrollment/EnrollmentTable";
 import EnrollmentViewDrawer from "./Enrollment/EnrollmentViewDrawer";
 import EnrollmentEditDrawer from "./Enrollment/EnrollmentEditDrawer";
-
-
+import { getAllStudentFees } from "../../lib/api";
+import { markStudentFeeAsPaid } from "../../lib/api";
 
 export default function EnrollmentManagement() {
 
@@ -21,30 +21,9 @@ export default function EnrollmentManagement() {
     const [course, setCourse] = useState("All Courses");
     const [dateRange, setDateRange] = useState("Select Date Range");
 
-
-
-    const [enrollments, setEnrollments] = useState([
-        {
-            id: 1,
-            name: "Rahul Sharma",
-            email: "Anount on guda",
-            course: "Shlok Recitation",
-            price: 1200,
-            payment: "Paid",
-            date: "12 Jan, 2026",
-            time: "10:45 AM"
-        },
-        {
-            id: 2,
-            name: "Priya Verma",
-            email: "Aumratiyam",
-            course: "Kavya Basics",
-            price: 900,
-            payment: "Pending",
-            date: "15 Jan, 2026",
-            time: "02:30 PM"
-        }
-    ]);
+    const [enrollments, setEnrollments] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
     /* ================= ACTION HANDLERS ================= */
 
@@ -58,12 +37,18 @@ export default function EnrollmentManagement() {
         setEditOpen(true);
     };
 
-    const markPaid = (id) => {
-        setEnrollments(prev =>
-            prev.map(e =>
-                e.id === id ? { ...e, payment: "Paid" } : e
-            )
-        );
+    const markPaid = async (id) => {
+        try {
+            await markStudentFeeAsPaid(id);
+
+            setEnrollments(prev =>
+                prev.map(e =>
+                    e.id === id ? { ...e, payment: "Paid" } : e
+                )
+            );
+        } catch (err) {
+            console.error("Failed to mark paid");
+        }
     };
 
     const filtered = useMemo(() => {
@@ -115,6 +100,35 @@ export default function EnrollmentManagement() {
 
     }, [search, status, course, dateRange, enrollments]);
 
+
+    useEffect(() => {
+        const fetchFees = async () => {
+            try {
+                setLoading(true);
+                const response = await getAllStudentFees();
+                const payload = response?.data?.data || [];
+
+                const mapped = payload.map((item) => ({
+                    id: item._id,
+                    name: `${item.student?.firstName || ""} ${item.student?.lastName || ""}`,
+                    email: item.student?.email || "",
+                    course: item.course?.title || "",
+                    price: item.amount,
+                    payment: item.paymentStatus === "PAID" ? "Paid" : "Pending",
+                    date: new Date(item.createdAt).toLocaleDateString("en-IN"),
+                    rawDate: item.createdAt,
+                }));
+
+                setEnrollments(mapped);
+            } catch (err) {
+                setError("Failed to load enrollments");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchFees();
+    }, []);
 
     return (
         <main className="space-y-8">

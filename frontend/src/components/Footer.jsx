@@ -11,9 +11,9 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import wheel from "../assets/wheel.jpg";
+import wheel from "../assets/wheel.webp";
 import { AnimatePresence } from "framer-motion";
-import logo from "../assets/logo-bgremove.png";
+import logo from "../assets/logo-bgremove.webp";
 
 const socials = [Instagram];
 
@@ -57,7 +57,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative overflow-hidden text-white pt-16 sm:pt-20 md:pt-24 lg:pt-28 pb-8 sm:pb-10 md:pb-12">
+    <footer className="relative overflow-hidden text-white pt-16 sm:pt-20 md:pt-24 lg:pt-20 pb-8 sm:pb-10 md:pb-10">
       {/* BACKGROUND IMAGE */}
       <motion.div
         initial={{ scale: 1.1, opacity: 0 }}

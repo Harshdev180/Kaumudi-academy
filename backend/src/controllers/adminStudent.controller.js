@@ -1,33 +1,37 @@
 import Student from "../models/Student.model.js";
 import bcrypt from "bcryptjs";
 import cloudinary from "../configs/cloudinary.js";
+import Enrollment from "../models/Enrollment.model.js";
 import fs from "fs";
 
-/**
- * GET /admin/students
- */
+
 export const getAllStudents = async (req, res) => {
-  const { search, status, paymentStatus } = req.query;
+  try {
+    const enrollments = await Enrollment.find()
+      .populate({
+        path: "student",
+        select: "-password"
+      })
+      .populate("course", "title")
+      .sort({ createdAt: -1 });
 
-  const query = {};
+    const students = enrollments.map(enrollment => ({
+      ...enrollment.student.toObject(),
+      course: enrollment.course
+    }));
 
-  if (status) query.status = status;
-  if (paymentStatus) query.paymentStatus = paymentStatus;
+    res.json({
+      success: true,
+      data: students
+    });
 
-  if (search) {
-    query.$or = [
-      { firstName: { $regex: search, $options: "i" } },
-      { lastName: { $regex: search, $options: "i" } },
-      { email: { $regex: search, $options: "i" } }
-    ];
+  } catch (error) {
+    console.error("GET ENROLLED STUDENTS ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch enrolled students"
+    });
   }
-
-  const students = await Student.find(query)
-    .populate("course", "title")
-    .sort({ createdAt: -1 })
-    .select("-password");
-
-  res.json({ success: true, data: students });
 };
 
 /**

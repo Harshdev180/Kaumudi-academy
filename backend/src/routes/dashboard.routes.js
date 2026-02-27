@@ -8,7 +8,7 @@ import { roleMiddleware } from "../middlewares/role.middleware.js";
 router.get(
   "/dashboard/stats",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  roleMiddleware("admin", "ADMIN", "SUPER_ADMIN"),
   getDashboardStats
 );
 

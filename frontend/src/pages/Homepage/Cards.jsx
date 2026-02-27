@@ -2,32 +2,37 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import home2 from "../../assets/home/home2.webp";
+import home3 from "../../assets/home/home3.webp";
+import home4 from "../../assets/home/home4.webp";
+import home5 from "../../assets/home/home5.webp";
+import home6 from "../../assets/home/home6.webp";
 
 const courses = [
   {
     title: "Shlok",
     desc: "Train the mind in classical systems of reasoning and debate.",
-    img: "https://thumbs.dreamstime.com/b/antique-literature-collection-old-fashioned-wisdom-preserved-generative-ai-antique-literature-collection-old-fashioned-wisdom-274867858.jpg",
+    img: home2,
   },
   {
     title: "Spoken Sanskrit (Level-1)",
     desc: "Journey through poetic masterpieces of Kalidasa and other sages.",
-    img: "https://tse2.mm.bing.net/th/id/OIP.aO6k2XyBjXEcWju-JEOo_QHaE7?pid=Api&P=0&h=180",
+    img: home3,
   },
   {
     title: "Vyakarana Shastra",
     desc: "Build fluency through immersive conversational practice.",
-    img: "https://i.pinimg.com/736x/6a/3a/3c/6a3a3c4378419743ff09e29c6d4796bc.jpg",
+    img: home4,
   },
   {
     title: "UGC NET",
     desc: "Explore metaphysics through Upanishadic and Brahma Sutra texts.",
-    img: "https://i.pinimg.com/736x/19/6c/f4/196cf4706012f8407a08c0cf7db51339.jpg",
+    img: home5,
   },
   {
     title: "BA",
     desc: "Journey through poetic masterpieces of Kalidasa and other sages.",
-    img: "https://i.pinimg.com/736x/63/74/4f/63744f0c869b1b9b3095eccdb91daa1d.jpg",
+    img: home6,
   },
 ];
 
@@ -187,7 +192,7 @@ export default function Cards() {
               {/* Image */}
               <Link
                 to={`/coursedetail/${encodeURIComponent(
-                  course.title.toLowerCase().replace(/\s+/g, "-")
+                  course.title.toLowerCase().replace(/\s+/g, "-"),
                 )}`}
                 state={{
                   course: {
@@ -225,7 +230,7 @@ export default function Cards() {
 
                 <Link
                   to={`/coursedetail/${encodeURIComponent(
-                    course.title.toLowerCase().replace(/\s+/g, "-")
+                    course.title.toLowerCase().replace(/\s+/g, "-"),
                   )}`}
                   state={{
                     course: {

@@ -21,6 +21,7 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import { getAllCourses } from "../lib/api";
+import SEO from "../components/SEO";
 
 const AllCoursesPage = () => {
   const navigate = useNavigate();
@@ -237,6 +238,12 @@ const AllCoursesPage = () => {
 
   return (
     <div className="min-h-screen bg-[#f1e4c8] font-serif text-[#2D2417] selection:bg-[#B38B3F] selection:text-white antialiased">
+      <SEO
+        title="All Courses | Kaumudi Sanskrit Academy"
+        description="Explore Sanskrit courses across Grammar, Kavya, Vedanta and more. Learn live online with expert Acharyas."
+        canonicalPath="/allcourses"
+        og={{ type: "website" }}
+      />
       {/* --- REFINED HERO SECTION --- */}
       <header className="px-4 lg:px-10 pt-6 pb-14 max-w-screen-2xl mx-auto">
         <div className="relative h-[420px] rounded-3xl overflow-hidden shadow-2xl border border-[#E2D4A6]/50">
