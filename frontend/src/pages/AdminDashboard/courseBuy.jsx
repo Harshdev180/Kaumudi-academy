@@ -30,6 +30,8 @@ import {
   createPaymentOrder,
   verifyPayment,
   updateStudentProfile,
+  sendEmailOtp,
+  verifyEmailOtp,
 } from "../../lib/api";
 import SEO from "../../components/SEO";
 
@@ -160,7 +162,7 @@ const EnrollmentPage = () => {
     }
   };
 
-  // --- EMAIL OTP HANDLER (Frontend simulation with sessionStorage) ---
+  // --- EMAIL OTP HANDLER (Backend email via API) ---
   const handleSendOtp = async () => {
     if (!formData.email) {
       setOtpStatus({ type: "error", msg: "Email required to send OTP" });
@@ -169,46 +171,49 @@ const EnrollmentPage = () => {
     setIsVerifying(true);
     setOtpStatus({ type: "", msg: "" });
     try {
-      const code = String(Math.floor(1000 + Math.random() * 9000));
-      const payload = {
-        email: formData.email,
-        code,
-        ts: Date.now(),
-      };
-      sessionStorage.setItem("kaumudi_email_otp", JSON.stringify(payload));
-      setIsOtpSent(true);
-      setOtpStatus({ type: "success", msg: "OTP sent to your email (demo)" });
-    } catch {
-      setOtpStatus({ type: "error", msg: "Failed to send OTP" });
+      const resp = await sendEmailOtp(formData.email);
+      if (resp?.success) {
+        setIsOtpSent(true);
+        setOtpStatus({ type: "success", msg: "OTP sent to your email" });
+      } else {
+        setOtpStatus({
+          type: "error",
+          msg: resp?.message || "Failed to send OTP",
+        });
+      }
+    } catch (err) {
+      setOtpStatus({
+        type: "error",
+        msg: "Failed to send OTP",
+      });
     } finally {
       setIsVerifying(false);
     }
   };
 
   const handleVerifyOtp = async () => {
-    if (!otp) {
+    if (!otp || !formData.email) {
       setOtpStatus({ type: "error", msg: "Enter the OTP received" });
       return;
     }
     setIsVerifying(true);
     setOtpStatus({ type: "", msg: "" });
     try {
-      const raw = sessionStorage.getItem("kaumudi_email_otp");
-      const saved = raw ? JSON.parse(raw) : null;
-      const now = Date.now();
-      const TEN_MIN = 10 * 60 * 1000;
-      if (
-        saved &&
-        saved.email === formData.email &&
-        saved.code === otp.trim() &&
-        now - saved.ts <= TEN_MIN
-      ) {
+      const resp = await verifyEmailOtp(formData.email, otp.trim());
+      if (resp?.success) {
         setIsEmailVerified(true);
-        setOtpStatus({ type: "success", msg: "Email verified successfully" });
+        setIsOtpSent(false);
+        setOtpStatus({
+          type: "success",
+          msg: "Email verified successfully",
+        });
       } else {
-        setOtpStatus({ type: "error", msg: "Invalid or expired OTP" });
+        setOtpStatus({
+          type: "error",
+          msg: resp?.message || "Invalid or expired OTP",
+        });
       }
-    } catch {
+    } catch (err) {
       setOtpStatus({ type: "error", msg: "Verification error" });
     } finally {
       setIsVerifying(false);
