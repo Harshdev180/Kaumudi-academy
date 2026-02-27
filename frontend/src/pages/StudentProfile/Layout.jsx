@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./SideBar";
 import { Bell, CheckCircle, Info, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "../../context/useAuthHook";
 
 const Layout = () => {
   const [isNotifyOpen, setIsNotifyOpen] = useState(false);
@@ -12,6 +13,7 @@ const Layout = () => {
   const location = useLocation();
   const notifyRef = useRef(null);
   const menuRef = useRef(null);
+  const { user } = useAuth();
 
   const underlineVariants = {
     hidden: { width: 0, opacity: 0 },
@@ -71,7 +73,33 @@ const Layout = () => {
   ];
 
   const pageTitle = location.pathname.split("/").pop() || "Overview";
-  const initials = "TS";
+
+  const fullName = useMemo(() => {
+    if (!user) return "Student";
+
+    if (user.name) return user.name;
+
+    const first = user.firstName || "";
+    const last = user.lastName || "";
+
+    return [first, last].filter(Boolean).join(" ").trim() || "Student";
+  }, [user]);
+
+  const initials = React.useMemo(() => {
+    if (!user) return "ST";
+
+    if (user.name) {
+      const parts = user.name.trim().split(" ");
+      return parts.length === 1
+        ? parts[0][0]?.toUpperCase()
+        : (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    const first = user.firstName?.[0] || "";
+    const last = user.lastName?.[0] || "";
+
+    return (first + last).toUpperCase() || "ST";
+  }, [user]);
 
   // close mobile menu on navigation change
   useEffect(() => {

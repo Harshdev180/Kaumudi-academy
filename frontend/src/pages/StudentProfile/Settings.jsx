@@ -15,6 +15,13 @@ import {
   Monitor,
   X,
 } from "lucide-react";
+import { useEffect } from "react";
+import {
+  getProfileMe,
+  updateProfileMe,
+  getProfileSettings,
+  updateProfileSettings,
+} from "../../lib/api";
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState("student details");
@@ -24,21 +31,8 @@ const Settings = () => {
     sms: false,
     system: true,
   });
-
-  // Profile data converted to state so it can be updated
-  const [profile, setProfile] = useState({
-    firstName: "Aarav",
-    lastName: "Sharma",
-    hindiName: "आरव शर्मा",
-    id: "SA-20230514",
-    level: "Level 4 • Senior Scholar",
-    dob: "12 January 1998",
-    father: "Rajesh Sharma",
-    mother: "Geeta Sharma",
-    email: "aarav.sharma@email.com",
-    phone: "+91 98765 43210",
-    address: "14, Vasant Vihar, New Delhi",
-  });
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // Handle Input Changes
   const handleInputChange = (field, value) => {
@@ -47,8 +41,39 @@ const Settings = () => {
       [field]: value,
     }));
   };
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const profileRes = await getProfileMe();
+        const settingsRes = await getProfileSettings();
+
+        setProfile(profileRes.data); // because backend returns { success, data }
+
+        if (settingsRes.data?.notifications) {
+          setNotifications({
+            email: settingsRes.data.notifications.email ?? true,
+            sms: settingsRes.data.notifications.sms ?? false,
+            system: settingsRes.data.notifications.courseUpdates ?? true,
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load profile:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProfile();
+  }, []);
 
   const tabs = ["student details", "change password", "notification settings"];
+  if (loading || !profile) {
+    return (
+      <div className="p-10 text-center text-gray-400">
+        Loading profile...
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-700 pb-10 mt-6">
@@ -60,8 +85,8 @@ const Settings = () => {
             <div className="w-28 h-28 rounded-full border-2 border-[#c9a050] p-1 shadow-xl">
               <div className="w-full h-full bg-[#fdfbf7] rounded-full flex items-center justify-center border border-[#c9a050]/20">
                 <span className="text-3xl font-serif font-bold text-[#74271E]">
-                  {profile.firstName.charAt(0)}
-                  {profile.lastName.charAt(0)}
+                  {profile.firstName?.[0]?.toUpperCase()}
+                  {profile.lastName?.[0]?.toUpperCase()}
                 </span>
               </div>
             </div>
@@ -117,11 +142,10 @@ const Settings = () => {
               key={tab}
               disabled={isEditing && tab !== "student details"} // Disable tabs during edit
               onClick={() => setActiveTab(tab)}
-              className={`px-8 py-5 text-[12px] font-black uppercase tracking-[0.15em] transition-all relative ${
-                activeTab === tab
-                  ? "text-[#74271E]"
-                  : "text-gray-400 hover:text-gray-600"
-              } ${isEditing && tab !== "student details" ? "opacity-50 cursor-not-allowed" : ""}`}
+              className={`px-8 py-5 text-[12px] font-black uppercase tracking-[0.15em] transition-all relative ${activeTab === tab
+                ? "text-[#74271E]"
+                : "text-gray-400 hover:text-gray-600"
+                } ${isEditing && tab !== "student details" ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               {tab}
               {activeTab === tab && (
@@ -154,9 +178,14 @@ const Settings = () => {
                         <X size={14} /> Cancel
                       </button>
                       <button
-                        onClick={() => {
-                          setIsEditing(false);
-                          alert("Profile Updated Successfully!");
+                        onClick={async () => {
+                          try {
+                            await updateProfileMe(profile);
+                            setIsEditing(false);
+                            alert("Profile Updated Successfully!");
+                          } catch (err) {
+                            alert("Failed to update profile");
+                          }
                         }}
                         className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600 text-white rounded-2xl font-bold text-xs shadow-lg"
                       >
@@ -363,6 +392,27 @@ const NotificationView = ({ notifications, setNotifications }) => (
             </button>
           </div>
         ))}
+        <div className="pt-6">
+          <button
+            onClick={async () => {
+              try {
+                await updateProfileSettings({
+                  notifications: {
+                    email: notifications.email,
+                    sms: notifications.sms,
+                    courseUpdates: notifications.system,
+                  },
+                });
+                alert("Notification settings updated!");
+              } catch (err) {
+                alert("Failed to update settings");
+              }
+            }}
+            className="bg-[#74271E] text-white py-3 px-6 rounded-xl font-bold text-xs shadow-lg"
+          >
+            Save Preferences
+          </button>
+        </div>
       </div>
       <div className="bg-[#fdfbf7] p-8 rounded-[3rem] border border-[#e6d5b8]/30 flex flex-col justify-center text-center space-y-6">
         <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto text-[#c9a050] shadow-sm">

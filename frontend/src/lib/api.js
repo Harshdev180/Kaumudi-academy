@@ -350,12 +350,12 @@ export async function getStudentEnrollments() {
 // ==================== PROFILE APIs ====================
 export async function getProfileStats() {
   const res = await api.get("/profile/stats");
-  return res.data;
+  return res.data.data;
 }
 
 export async function getProfileRecentEnrollments() {
   const res = await api.get("/profile/recent");
-  return res.data;
+  return res.data.data;
 }
 
 export async function getProfileEnrollments() {
