@@ -386,10 +386,12 @@ const CourseDetails = () => {
             <SidebarCard price={courseData.price} courseData={courseData} />
           </div>
         </div>
-        <div className="w-full">
+        </div> {/* 👈 CLOSE GRID HERE */}
+
+        {/* Recommended Courses OUTSIDE grid */}
+        <div className="max-w-7xl mx-auto px-4 md:px-10">
           <Suggetion courses={recommendedCourses} />
         </div>
-      </div>
     </div>
   );
 };
