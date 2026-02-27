@@ -4,7 +4,7 @@ import home2 from "../assets/home/home2.webp";
 
 export default function TermsCondition() {
   return (
-    <section className="bg-[#f1e4c8] min-h-screen py-10">
+    <section className="bg-[#f1e4c8] min-h-screen py-10 mb-[-70px]">
       <SEO
         title="Terms & Conditions | Kaumudi Sanskrit Academy"
         description="Review the terms and conditions for using Kaumudi Sanskrit Academy’s services."
@@ -17,7 +17,7 @@ export default function TermsCondition() {
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="relative h-[280px] w-full max-w-7xl bg-cover bg-center overflow-hidden rounded-3xl"
+          className="relative h-44 mx-[15px] md:w-[350px] lg:h-[280px] md:w-full max-w-7xl bg-cover bg-center overflow-hidden rounded-3xl"
           style={{
             backgroundImage: `url(${home2})`,
           }}
@@ -26,7 +26,7 @@ export default function TermsCondition() {
           <div className="absolute inset-0 bg-[#7b2d1f]/60 pointer-events-none" />
 
           <div className="relative z-10 h-full flex flex-col items-center justify-center text-white text-center">
-            <h1 className="text-4xl md:text-5xl font-serif font-bold mb-2">
+            <h1 className="text-2xl md:text-5xl font-serif font-bold mb-2">
               Terms & Conditions
             </h1>
             <p className="text-sm tracking-wide opacity-90 font-bold">
@@ -44,7 +44,7 @@ export default function TermsCondition() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="bg-[#7b2d1f] rounded-2xl p-6 h-fit sticky top-24 shadow-lg"
+          className="bg-[#7b2d1f] rounded-2xl p-6 h-fit lg:sticky top-24 shadow-lg"
         >
           <h3 className="font-serif font-bold text-[white] mb-2 text-2xl">
             Table of Contents

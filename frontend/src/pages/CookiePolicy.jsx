@@ -61,7 +61,7 @@ export default function CookiePolicy() {
             <ArrowLeft className="w-6 h-6 text-[#7b2d1f] cursor-pointer" />
           </motion.div>
 
-          <h1 className="text-5xl font-serif font-bold text-[#7b2d1f] tracking-tight">
+          <h1 className="text-3xl md:text-5xl font-serif font-bold text-[#7b2d1f] tracking-tight">
             Cookie Policy
           </h1>
         </motion.div>
@@ -129,12 +129,12 @@ export default function CookiePolicy() {
             </motion.section>
 
             {/* PREFERENCES */}
-            <motion.section variants={rise}>
-              <h3 className="flex gap-3 text-2xl font-semibold text-[#7b2d1f] mb-8">
-                <Settings className="w-6 h-6" /> Manage Preferences
+            <motion.section variants={rise} className="px-4 sm:px-6 lg:px-0">
+              <h3 className="flex items-center gap-3 text-xl sm:text-2xl font-semibold text-[#7b2d1f] mb-6 sm:mb-8">
+                <Settings className="w-5 h-5 sm:w-6 sm:h-6" />
+                Manage Preferences
               </h3>
 
-              {/* CARD TEMPLATE */}
               {[
                 {
                   title: "Strictly Necessary",
@@ -161,48 +161,63 @@ export default function CookiePolicy() {
                   key={idx}
                   whileHover={{
                     y: -4,
-                    boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
+                    boxShadow: "0 20px 40px rgba(0,0,0,0.12)",
                   }}
-                  className="rounded-3xl border p-7 mb-6 bg-[#f7f2ea] flex justify-between"
+                  className="rounded-2xl sm:rounded-3xl border border-[#e6ddd2] 
+      p-5 sm:p-7 mb-5 sm:mb-6 
+      bg-[#f7f2ea] 
+      flex flex-col sm:flex-row 
+      sm:items-center 
+      gap-4 sm:gap-0 
+      sm:justify-between 
+      transition-all duration-300"
                 >
-                  <div>
-                    <p className="flex gap-2 text-lg font-semibold text-[#7b2d1f]">
-                      {item.icon} {item.title}
+                  {/* LEFT CONTENT */}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <span className="text-[#7b2d1f]">{item.icon}</span>
+
+                      <p className="text-base sm:text-lg font-semibold text-[#7b2d1f]">
+                        {item.title}
+                      </p>
+
                       {item.disabled && (
-                        <span className="ml-3 relative top-[7px] text-xs uppercase tracking-wide text-red-700 font-bold">
+                        <span className="text-[10px] sm:text-xs uppercase tracking-wide 
+            text-red-700 font-bold bg-red-100 px-2 py-1 rounded-full">
                           Required
                         </span>
                       )}
-                    </p>
+                    </div>
 
-                    <p className="text-[#5f4334] mt-3">
+                    <p className="text-sm sm:text-base text-[#5f4334] mt-3 leading-relaxed">
                       {item.disabled
                         ? "These cookies are essential for authentication, session security, and uninterrupted access to your courses. They cannot be disabled."
                         : item.desc}
                     </p>
                   </div>
 
-                  {/* TOGGLE LOGIC UNCHANGED */}
-                  {!item.disabled ? (
-                    <motion.button
-                      layout
-                      transition={{ type: "spring", stiffness: 400 }}
-                      onClick={() => item.set(!item.state)}
-                      className={`w-14 h-8 rounded-full relative ${
-                        item.state ? "bg-[#7b2d1f]" : "bg-gray-300"
-                      }`}
-                    >
-                      <motion.span
+                  {/* TOGGLE - LOGIC UNCHANGED */}
+                  <div className="self-end sm:self-auto">
+                    {!item.disabled ? (
+                      <motion.button
                         layout
-                        className="absolute top-2 w-4 h-4 bg-white rounded-full"
-                        style={{ left: item.state ? "32px" : "8px" }}
-                      />
-                    </motion.button>
-                  ) : (
-                    <div className="w-14 h-8 bg-[#7b2d1f]/40 rounded-full relative cursor-not-allowed">
-                      <div className="absolute top-2 right-2 w-4 h-4 bg-white rounded-full" />
-                    </div>
-                  )}
+                        transition={{ type: "spring", stiffness: 400 }}
+                        onClick={() => item.set(!item.state)}
+                        className={`w-14 h-8 rounded-full relative transition-colors duration-300 ${item.state ? "bg-[#7b2d1f]" : "bg-gray-300"
+                          }`}
+                      >
+                        <motion.span
+                          layout
+                          className="absolute top-2 w-4 h-4 bg-white rounded-full shadow"
+                          style={{ left: item.state ? "32px" : "8px" }}
+                        />
+                      </motion.button>
+                    ) : (
+                      <div className="w-14 h-8 bg-[#7b2d1f]/40 rounded-full relative cursor-not-allowed">
+                        <div className="absolute top-2 right-2 w-4 h-4 bg-white rounded-full shadow" />
+                      </div>
+                    )}
+                  </div>
                 </motion.div>
               ))}
             </motion.section>
@@ -210,18 +225,18 @@ export default function CookiePolicy() {
             {/* CTA */}
             <motion.button
               whileHover={{
-                scale: 1.05,
-                boxShadow: "0 0 0 6px rgba(123,45,31,0.15)",
+                scale: 1.03,
+                boxShadow: "0 10px 30px rgba(123,45,31,0.25)",
               }}
-              whileTap={{ scale: 0.97 }}
-              className="w-full flex items-center justify-center gap-3 bg-[#7b2d1f] text-white py-6 rounded-xl text-xl font-semibold"
+              whileTap={{ scale: 0.96 }}
+              className=" w-full flex items-center justify-center gap-3 bg-gradient-to-r from-[#7b2d1f] to-[#8f3a29] text-white py-4 sm:py-5 rounded-2xl text-base sm:text-lg md:text-xl font-semibold shadow-lg transition-all duration-300 active:shadow-inner"
               onClick={() => {
                 console.log({ analytics, announcements });
                 alert("Preferences saved");
               }}
             >
-              <Save className="w-6 h-6" />
-              Save Preferences
+              <Save className="w-5 h-5 sm:w-6 sm:h-6" />
+              <span className="tracking-wide">Save Preferences</span>
             </motion.button>
           </motion.div>
         </motion.div>
