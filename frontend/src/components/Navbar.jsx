@@ -65,14 +65,16 @@ export default function Navbar() {
   const isHome = pathname === "/";
 
   // --- LOGIN LOGIC (use AuthContext first, fallback to storage) ---
-  const storedEmail = localStorage.getItem("kaumudi_user_email");
-  const storedRole = (localStorage.getItem("kaumudi_role") || "").toUpperCase();
-  const role = (user?.role || storedRole || "").toUpperCase();
-  const isLoggedIn =
-    !loading && isAuthenticated && !!(user?.email || storedEmail);
+  const role = user?.role?.toUpperCase();
 
-  const profilePath =
-    role === "ADMIN" || role === "SUPER_ADMIN" ? "/admin" : "/student/overview";
+  const isStudentLoggedIn = !loading && isAuthenticated && role === "STUDENT";
+
+  // console.log("ROLE:", role);
+  // console.log("USER:", user);
+  // console.log("isStudentLoggedIn:", isStudentLoggedIn);
+
+  // const profilePath =
+  //   role === "ADMIN" || role === "SUPER_ADMIN" ? "/admin" : "/student/overview";
 
   const handleLogout = () => {
     setOpen(false);
@@ -204,11 +206,11 @@ export default function Navbar() {
 
         {/* ---------------- RIGHT ACTIONS ---------------- */}
         <div className="flex items-center gap-4">
-          {isLoggedIn ? (
+          {isStudentLoggedIn ? (
             <div className="hidden lg:flex items-center gap-4">
               {/* Profile Link */}
               <Link
-                to={profilePath}
+                to={"/student/overview"}
                 className="flex items-center gap-2 text-[#d6b15c] font-semibold text-sm hover:opacity-90 transition"
               >
                 <div className="w-8 h-8 rounded-full bg-[#74271E]/20 flex items-center justify-center border border-[#d6b15c]/90">
@@ -285,10 +287,10 @@ export default function Navbar() {
                 className="px-6 py-6 space-y-5"
               >
                 {/* Profile link in Mobile Menu */}
-                {isLoggedIn && (
+                {isStudentLoggedIn && (
                   <motion.div variants={mobileItem}>
                     <Link
-                      to={profilePath}
+                      to="/student/overview"
                       onClick={() => setOpen(false)}
                       className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 text-[#d6b15c]"
                     >
@@ -315,7 +317,7 @@ export default function Navbar() {
                 ))}
 
                 <div className="pt-5 border-t border-[#dccbb4]/25">
-                  {isLoggedIn ? (
+                  {isStudentLoggedIn ? (
                     <motion.div variants={mobileItem}>
                       <button
                         onClick={handleLogout}

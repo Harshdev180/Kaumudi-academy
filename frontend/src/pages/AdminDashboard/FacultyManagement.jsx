@@ -246,13 +246,7 @@ const FacultyManagement = () => {
   return (
     <main className="min-h-screen bg-[#F3E6C9] p-6 space-y-8">
       {/* HEADER */}
-      <div
-        className="relative overflow-hidden rounded-3xl px-8 py-10 text-white shadow-lg"
-        style={{
-          background:
-            "linear-gradient(135deg,#7a1f16 0%, #8c2a1e 45%, #6b1d14 100%)",
-        }}
-      >
+      <div className="relative overflow-hidden rounded-3xl px-8 py-10 text-white shadow-lg bg-[#6b1d14]">
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_left,#D4AF37,transparent_60%)]" />
 
         <div className="relative flex justify-between items-center flex-wrap gap-4">
@@ -275,12 +269,11 @@ const FacultyManagement = () => {
       </div>
 
       {/* STATS */}
-      <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-6 -mt-14 relative z-10">
+      <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6 -mt-14 relative z-10">
         {[
           { label: "Total Faculty", value: stats.total },
           { label: "Active", value: stats.active },
           { label: "Inactive", value: stats.inactive },
-          { label: "Pending Pay", value: stats.pending },
         ].map((card) => (
           <div
             key={card.label}
@@ -329,15 +322,15 @@ const FacultyManagement = () => {
                 >
                   {f.status}
                 </span>
-                <span
+                {/* <span
                   className={`text-[10px] px-2 py-1 rounded-full font-bold ${
                     f.paid
                       ? "bg-blue-100 text-blue-700"
                       : "bg-orange-100 text-orange-700"
                   }`}
                 >
-                  {f.paid ? "Paid" : "Pending"}
-                </span>
+                  {f.paid == "Paid" }
+                </span> */}
               </div>
 
               {/* DETAILS WITH ACTIONS */}
@@ -673,23 +666,6 @@ const FacultyManagement = () => {
                     Cancel
                   </motion.button>
                 </form>
-
-                {/* INFO BOX */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.35 }}
-                  className="mt-8 p-4 rounded-lg bg-[#D1B062]/10 border border-[#D1B062]/30 space-y-2"
-                >
-                  <p className="text-xs font-bold text-[#6b1d14] flex items-start gap-2">
-                    <span className="mt-1">ℹ️</span>
-                    Important Information
-                  </p>
-                  <p className="text-xs text-[#856966] leading-relaxed">
-                    Ensure all faculty information is accurate before saving.
-                    Faculty members will receive their details via email.
-                  </p>
-                </motion.div>
               </div>
             </motion.div>
           </>

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import aboutImg from "../../assets/image1.webp";
 import home1 from "../../assets/home/home1.webp";
+import { Link } from "react-router-dom";
 
 const fadeLeft = {
   hidden: { opacity: 0, x: -40 },
@@ -129,13 +130,15 @@ const About = () => {
           </motion.ul>
 
           {/* CTA */}
-          <motion.button
-            whileHover={{ y: -4, scale: 1.05 }}
-            whileTap={{ scale: 0.96 }}
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#74271E] px-7 py-3 font-semibold text-white shadow-lg transition hover:bg-[#5e1f18] focus:outline-none focus:ring-2 focus:ring-[#d6b15c]"
-          >
-            Learn Our Story →
-          </motion.button>
+          <Link to={"/about"}>
+            <motion.button
+              whileHover={{ y: -4, scale: 1.05 }}
+              whileTap={{ scale: 0.96 }}
+              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#74271E] px-7 py-3 font-semibold text-white shadow-lg transition hover:bg-[#5e1f18] focus:outline-none focus:ring-2 focus:ring-[#d6b15c]"
+            >
+              Learn Our Story →
+            </motion.button>
+          </Link>
         </motion.div>
       </div>
     </section>

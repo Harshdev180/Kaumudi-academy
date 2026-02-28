@@ -317,7 +317,7 @@ const EnrollmentPage = () => {
       }
 
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY,
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
 
         amount: orderResponse.amount,
         currency: "INR",
@@ -332,8 +332,6 @@ const EnrollmentPage = () => {
               razorpayOrderId: response.razorpay_order_id,
               razorpayPaymentId: response.razorpay_payment_id,
               razorpaySignature: response.razorpay_signature,
-              courseId: courseData.courseId,
-              paymentType,
             });
 
             if (verifyResponse.success) {

@@ -29,6 +29,6 @@ export const config = {
   //razorpay
 
   RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
-  RAZORPAY_SECRET: process.env.RAZORPAY_SECRET,
+  RAZORPAY_SECRET: process.env.RAZORPAY_KEY_SECRET,
   ADMIN_EMAIL: process.env.ADMIN_EMAIL,
 };

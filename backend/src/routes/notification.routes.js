@@ -3,12 +3,12 @@ import express from "express";
 import {
   getAdminNotifications,
   markNotificationAsRead,
+  deleteNotification,
   markAllAsRead
 } from "../controllers/notification.controller.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { roleMiddleware } from "../middlewares/role.middleware.js";
-
 const router = express.Router();
 
 /**
@@ -27,6 +27,13 @@ router.patch(
   authMiddleware,
   roleMiddleware("ADMIN", "SUPER_ADMIN"),
   markNotificationAsRead
+);
+
+router.delete(
+  "/admin/notifications/:id",
+  authMiddleware,
+  roleMiddleware("ADMIN", "SUPER_ADMIN"),
+  deleteNotification
 );
 
 router.patch(

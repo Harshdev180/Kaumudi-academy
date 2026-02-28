@@ -8,7 +8,7 @@ import {
   Mail,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Alert } from "./Alert";
+import { api } from "../../lib/api";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/useAuthHook";
 import { MdMenu } from "react-icons/md";
@@ -21,10 +21,15 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
   const { user, loading } = useAuth();
 
   const [isMobile, setIsMobile] = useState(false);
+  const [notifications, setNotifications] = useState([]);
 
-  /* ================= DYNAMIC TITLE ================= */
+  useEffect(() => {
+    api.get("/admin/notifications")
+      .then(res => setNotifications(res.data?.data || []))
+      .catch(err => console.error("Failed to fetch notifications:", err));
+  }, []);
 
-  const latestAlerts = [...Alert].sort((a, b) => b.id - a.id).slice(0, 4);
+  const latestAlerts = notifications.slice(0, 4);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -161,7 +166,7 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
                 <Bell className="w-5 h-5" />
 
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                  {Alert.length}
+                  {notifications.filter(n => !n.isRead).length}
                 </span>
               </button>
 
@@ -188,23 +193,21 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
                     <div className=" px-3 py-2 space-y-2 max-h-72 bg-[#6b1d14]  overflow-y-auto">
                       {latestAlerts.map((alert) => (
                         <motion.div
-                          key={alert.id}
+                          key={alert._id}
                           whileHover={{ scale: 1.02 }}
-                          onClick={() => {
-                            setShowAlerts(false);
-                            navigate(`/admin/notifications/${alert.id}`);
-                          }}
+                          onClick={() => { setShowAlerts(false); navigate("/admin/notifications"); }}
                           className="flex items-start gap-3 p-3 rounded-2xl bg-white/80 hover:bg-[#D4AF37] hover:text-[#6b1d14] cursor-pointer"
                         >
-                          <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-[#D4AF37]/20  hover:text-[#6b1d14]">
-                            {getAlertIcon(alert.type)}
+                          <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-[#D4AF37]/20">
+                            {getAlertIcon((alert.type || "").toLowerCase())}
                           </div>
-
-                          <p className="text-sm">{alert.message}</p>
+                          <div className="flex flex-col">
+                            <p className="text-sm font-semibold">{alert.title}</p>
+                            <p className="text-xs opacity-70 line-clamp-1">{alert.message}</p>
+                          </div>
                         </motion.div>
                       ))}
                     </div>
-
                     <div
                       onClick={() => {
                         setShowAlerts(false);

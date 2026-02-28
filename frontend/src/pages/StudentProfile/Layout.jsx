@@ -5,6 +5,7 @@ import { Bell, CheckCircle, Info, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/useAuthHook";
 import SEO from "../../components/SEO";
+import { api } from "../../lib/api";
 
 const Layout = () => {
   const [isNotifyOpen, setIsNotifyOpen] = useState(false);
@@ -39,35 +40,31 @@ const Layout = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Mock Data for Sanskrit Academy
-  const notifications = [
-    {
-      id: 1,
-      title: "Course Fee Paid",
-      subtitle: "Level 1: Pravesha - Confirmed",
-      time: "2 hours ago",
-      details: {
-        course: "Pravesha",
-        amount: "₹5000",
-        status: "Success",
-        date: "25 Feb 2026",
-      },
-    },
-    {
-      id: 2,
-      title: "New Study Material",
-      subtitle: "Shloka Chanting PDF uploaded",
-      time: "1 day ago",
-      details: { material: "Bhagavad Gita Ch 2", format: "PDF", size: "1.2MB" },
-    },
-    {
-      id: 3,
-      title: "Class Rescheduled",
-      subtitle: "Sanskrit Grammar moved to 5 PM",
-      time: "2 days ago",
-      details: { original: "4 PM", new: "5 PM", instructor: "Acharya Ram" },
-    },
-  ];
+  // REPLACE WITH this
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    api.get("/student/notifications")
+      .then(res => {
+        const raw = res.data?.data || [];
+        const normalized = raw.map((n) => ({
+          id: n._id,
+          title: n.title,
+          subtitle: n.message,
+          time: (() => {
+            const diff = Math.floor((Date.now() - new Date(n.createdAt)) / 1000);
+            if (diff < 60) return "Just now";
+            if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+            return `${Math.floor(diff / 86400)}d ago`;
+          })(),
+          isRead: n.isRead,
+          details: { type: n.type, message: n.message, date: new Date(n.createdAt).toLocaleDateString() },
+        }));
+        setNotifications(normalized);
+      })
+      .catch(err => console.error("Failed to fetch notifications:", err));
+  }, []);
 
   const pageTitle = location.pathname.split("/").pop() || "Overview";
 
@@ -145,7 +142,9 @@ const Layout = () => {
                   className="relative p-2 text-[#74271E] hover:bg-[#c9a050]/10 rounded-xl transition-colors"
                 >
                   <Bell size={22} />
-                  <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#FBF4E2]"></span>
+                  {notifications.some(n => !n.isRead) && (
+                    <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#FBF4E2]"></span>
+                  )}
                 </button>
               </div>
               {/* Profile Icon */}
@@ -235,7 +234,7 @@ const Layout = () => {
                           Notifications
                         </h3>
                         <p className="text-[10px] text-gray-400 font-medium">
-                          You have {notifications.length} new updates
+                          You have {notifications.filter(n => !n.isRead).length} unread updates
                         </p>
                       </div>
                       <button

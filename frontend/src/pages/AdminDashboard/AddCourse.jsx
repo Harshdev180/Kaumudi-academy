@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdClose, MdVideocam, MdImage } from "react-icons/md";
 
@@ -11,6 +11,19 @@ const AddCourse = ({
   editId,
   savingCourse = false,
 }) => {
+  // Reset form when opening for new course
+  useEffect(() => {
+    if (open && !editId) {
+      setForm((prev) => ({
+        ...prev,
+        faculty: prev.faculty || "",
+        level: prev.level || "Prathama (Beginner)",
+        mode: prev.mode || "ONLINE",
+        language: prev.language || "",
+      }));
+    }
+  }, [open, editId, setForm]);
+
   if (!open) return null;
 
   // ================= IMAGE HANDLER =================
@@ -28,6 +41,16 @@ const AddCourse = ({
     if (file) {
       setForm({ ...form, videoFile: file, videoName: file.name });
     }
+  };
+
+  // Handle faculty input change
+  const handleFacultyChange = (e) => {
+    setForm({ ...form, faculty: e.target.value });
+  };
+
+  // Handle level change
+  const handleLevelChange = (e) => {
+    setForm({ ...form, level: e.target.value });
   };
 
   return (
@@ -58,7 +81,7 @@ const AddCourse = ({
 
             <button
               onClick={onClose}
-              className="p-2 rounded-lg hover:bg-[#EFE3D5]"
+              className="p-2 rounded-lg hover:bg-[#EFE3D5] transition-colors"
             >
               <MdClose size={22} />
             </button>
@@ -69,10 +92,10 @@ const AddCourse = ({
             {/* THUMBNAIL */}
             <div>
               <p className="text-xs font-bold text-[#856966] mb-2 uppercase">
-                Course Thumbnail
+                Course Thumbnail <span className="text-red-500">*</span>
               </p>
 
-              <label className="flex items-center justify-center h-32 rounded-2xl border-2 border-dashed border-[#D1B062] cursor-pointer bg-[#EFE3D5] overflow-hidden">
+              <label className="flex items-center justify-center h-32 rounded-2xl border-2 border-dashed border-[#D1B062] cursor-pointer bg-[#EFE3D5] overflow-hidden hover:border-[#6b1d14] transition-colors">
                 {form.imagePreview || form.image ? (
                   <img
                     src={form.imagePreview || form.image}
@@ -96,204 +119,277 @@ const AddCourse = ({
             </div>
 
             {/* TITLE */}
-            <input
-              placeholder="Course Title"
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-              className="w-full p-3 rounded-xl bg-[#EFE3D5] outline-none"
-            />
+            <div>
+              <p className="text-xs font-bold text-[#856966] mb-2 uppercase">
+                Course Title <span className="text-red-500">*</span>
+              </p>
+              <input
+                placeholder="e.g. Advanced Sanskrit Grammar"
+                value={form.title || ""}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                className="w-full p-3 rounded-xl bg-[#EFE3D5] outline-none focus:ring-2 focus:ring-[#D1B062]"
+              />
+            </div>
 
             {/* DESCRIPTION */}
-            <textarea
-              placeholder="Description"
-              value={form.description}
-              onChange={(e) =>
-                setForm({ ...form, description: e.target.value })
-              }
-              className="w-full p-3 rounded-xl bg-[#EFE3D5] h-28 outline-none"
-            />
+            <div>
+              <p className="text-xs font-bold text-[#856966] mb-2 uppercase">
+                Description <span className="text-red-500">*</span>
+              </p>
+              <textarea
+                placeholder="Detailed course description..."
+                value={form.description || ""}
+                onChange={(e) =>
+                  setForm({ ...form, description: e.target.value })
+                }
+                className="w-full p-3 rounded-xl bg-[#EFE3D5] h-28 outline-none focus:ring-2 focus:ring-[#D1B062] resize-none"
+              />
+            </div>
 
             {/* SYLLABUS */}
-            <textarea
-              placeholder="Syllabus"
-              value={form.syllabus || ""}
-              onChange={(e) => setForm({ ...form, syllabus: e.target.value })}
-              className="w-full p-3 rounded-xl bg-[#EFE3D5] h-28 outline-none"
-            />
+            <div>
+              <p className="text-xs font-bold text-[#856966] mb-2 uppercase">
+                Syllabus
+              </p>
+              <textarea
+                placeholder="Course syllabus (one per line)"
+                value={form.syllabus || ""}
+                onChange={(e) => setForm({ ...form, syllabus: e.target.value })}
+                className="w-full p-3 rounded-xl bg-[#EFE3D5] h-28 outline-none focus:ring-2 focus:ring-[#D1B062] resize-none"
+              />
+            </div>
 
             {/* FACULTY & LEVEL */}
             <div>
               <p className="text-xs font-bold text-[#856966] mb-2 uppercase">
-                Faculty & Difficulty
+                Faculty & Difficulty <span className="text-red-500">*</span>
               </p>
               <div className="grid grid-cols-2 gap-3">
-                <input
-                  placeholder="Faculty Name"
-                  value={form.faculty}
-                  onChange={(e) =>
-                    setForm({ ...form, faculty: e.target.value })
-                  }
-                  className="p-3 rounded-xl bg-[#EFE3D5] outline-none"
-                />
+                <div>
+                  <input
+                    placeholder="Faculty Name"
+                    value={form.faculty || ""}
+                    onChange={handleFacultyChange}
+                    className="w-full p-3 rounded-xl bg-[#EFE3D5] outline-none focus:ring-2 focus:ring-[#D1B062]"
+                  />
+                  {!form.faculty && (
+                    <p className="text-xs text-red-500 mt-1">Required</p>
+                  )}
+                </div>
+                <div>
+                  <select
+                    value={form.level || "Prathama (Beginner)"}
+                    onChange={handleLevelChange}
+                    className="w-full p-3 rounded-xl bg-[#EFE3D5] outline-none focus:ring-2 focus:ring-[#D1B062]"
+                  >
+                    <option value="Prathama (Beginner)">
+                      Prathama (Beginner)
+                    </option>
+                    <option value="Madhyama (Intermediate)">
+                      Madhyama (Intermediate)
+                    </option>
+                    <option value="Kovida (Advanced)">Kovida (Advanced)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* PRICE + MODE */}
+            <div>
+              <p className="text-xs font-bold text-[#856966] mb-2 uppercase">
+                Pricing & Mode <span className="text-red-500">*</span>
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <input
+                    placeholder="Price (₹)"
+                    type="number"
+                    min="0"
+                    value={form.price || ""}
+                    onChange={(e) =>
+                      setForm({ ...form, price: e.target.value })
+                    }
+                    className="w-full p-3 rounded-xl bg-[#EFE3D5] outline-none focus:ring-2 focus:ring-[#D1B062]"
+                  />
+                </div>
+
                 <select
-                  value={form.level || "Beginner"}
-                  onChange={(e) => setForm({ ...form, level: e.target.value })}
-                  className="p-3 rounded-xl bg-[#EFE3D5] outline-none"
+                  value={form.mode || "ONLINE"}
+                  onChange={(e) => setForm({ ...form, mode: e.target.value })}
+                  className="w-full p-3 rounded-xl bg-[#EFE3D5] outline-none focus:ring-2 focus:ring-[#D1B062]"
                 >
-                  <option value="Prathama (Beginner)">
-                    Prathama (Beginner)
-                  </option>
-                  <option value="Madhyama (Intermediate)">
-                    Madhyama (Intermediate)
-                  </option>
-                  <option value="Kovida (Advanced)">Kovida (Advanced)</option>
+                  <option value="ONLINE">ONLINE</option>
+                  <option value="OFFLINE">OFFLINE</option>
+                  <option value="HYBRID">HYBRID</option>
                 </select>
               </div>
             </div>
 
-            {/* VIDEO */}
-            <div className="space-y-4">
-              <p className="text-sm font-bold text-[#6b1d14]">Course Videos</p>
-
-              {/* VIDEO 1 */}
-              <div className="space-y-1">
-                <label className="text-xs text-[#856966]">Intro Video</label>
-
-                <input
-                  type="file"
-                  accept="video/*"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file)
-                      setForm({
-                        ...form,
-                        video1File: file,
-                        video1: URL.createObjectURL(file),
-                      });
-                  }}
-                  className="w-full p-3 rounded-xl bg-[#EFE3D5]"
-                />
-
-                {form.video1 && (
-                  <video
-                    src={form.video1}
-                    controls
-                    className="w-full h-32 rounded-xl mt-2 object-cover"
-                  />
-                )}
-              </div>
-
-              {/* VIDEO 2 */}
-              <div className="space-y-1">
-                <label className="text-xs text-[#856966]">
-                  Demo Lecture Video
-                </label>
-
-                <input
-                  type="file"
-                  accept="video/*"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file)
-                      setForm({
-                        ...form,
-                        video2File: file,
-                        video2: URL.createObjectURL(file),
-                      });
-                  }}
-                  className="w-full p-3 rounded-xl bg-[#EFE3D5]"
-                />
-
-                {form.video2 && (
-                  <video
-                    src={form.video2}
-                    controls
-                    className="w-full h-32 rounded-xl mt-2 object-cover"
-                  />
-                )}
-              </div>
-
-              <label className="flex items-center justify-between px-4 py-3 bg-[#EFE3D5] rounded-xl cursor-pointer">
-                <span className="text-sm truncate">
-                  {form.videoName || "Upload intro video"}
-                </span>
-                <MdVideocam size={22} />
-                <input type="file" hidden onChange={handleVideo} />
-              </label>
-            </div>
-
-            {/* PRICE + MODE */}
-            <div className="grid grid-cols-2 gap-3">
-              <input
-                placeholder="Price"
-                type="number"
-                value={form.price}
-                onChange={(e) => setForm({ ...form, price: e.target.value })}
-                className="p-3 rounded-xl bg-[#EFE3D5] outline-none"
-              />
-
-              <select
-                value={form.mode}
-                onChange={(e) => setForm({ ...form, mode: e.target.value })}
-                className="p-3 rounded-xl bg-[#EFE3D5] outline-none"
-              >
-                <option>ONLINE</option>
-                <option>OFFLINE</option>
-              </select>
-            </div>
-
             {/* DURATION + LANGUAGE */}
-            <div className="grid grid-cols-2 gap-3">
-              <input
-                placeholder="Duration (e.g. 3 Months)"
-                value={form.duration}
-                onChange={(e) => setForm({ ...form, duration: e.target.value })}
-                className="p-3 rounded-xl bg-[#EFE3D5] outline-none"
-              />
+            <div>
+              <p className="text-xs font-bold text-[#856966] mb-2 uppercase">
+                Duration & Language <span className="text-red-500">*</span>
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <input
+                    placeholder="e.g. 3 Months"
+                    value={form.duration || ""}
+                    onChange={(e) =>
+                      setForm({ ...form, duration: e.target.value })
+                    }
+                    className="w-full p-3 rounded-xl bg-[#EFE3D5] outline-none focus:ring-2 focus:ring-[#D1B062]"
+                  />
+                </div>
 
-              <input
-                placeholder="Languages (comma separated)"
-                value={
-                  Array.isArray(form.language)
-                    ? form.language.join(", ")
-                    : form.language || ""
-                }
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    // Keep as string in form state; CourseManagement splits before sending
-                    language: e.target.value,
-                  })
-                }
-                className="p-3 rounded-xl bg-[#EFE3D5] outline-none"
-              />
+                <div>
+                  <input
+                    placeholder="e.g. Sanskrit, English"
+                    value={
+                      Array.isArray(form.language)
+                        ? form.language.join(", ")
+                        : form.language || ""
+                    }
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        language: e.target.value,
+                      })
+                    }
+                    className="w-full p-3 rounded-xl bg-[#EFE3D5] outline-none focus:ring-2 focus:ring-[#D1B062]"
+                  />
+                </div>
+              </div>
             </div>
 
             {/* SCHEDULING */}
             <div>
               <p className="text-xs font-bold text-[#856966] mb-2 uppercase">
-                Scheduling
+                Course Schedule
               </p>
 
               <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="date"
-                  value={form.startDate || ""}
-                  onChange={(e) =>
-                    setForm({ ...form, startDate: e.target.value })
-                  }
-                  className="p-3 rounded-xl bg-[#EFE3D5] outline-none"
-                />
+                <div>
+                  <p className="text-xs text-[#856966] mb-1">Start Date</p>
+                  <input
+                    type="date"
+                    value={form.startDate || ""}
+                    onChange={(e) =>
+                      setForm({ ...form, startDate: e.target.value })
+                    }
+                    className="w-full p-3 rounded-xl bg-[#EFE3D5] outline-none focus:ring-2 focus:ring-[#D1B062]"
+                  />
+                </div>
 
-                <input
-                  type="date"
-                  value={form.endDate || ""}
-                  onChange={(e) =>
-                    setForm({ ...form, endDate: e.target.value })
-                  }
-                  className="p-3 rounded-xl bg-[#EFE3D5] outline-none"
-                />
+                <div>
+                  <p className="text-xs text-[#856966] mb-1">End Date</p>
+                  <input
+                    type="date"
+                    value={form.endDate || ""}
+                    onChange={(e) =>
+                      setForm({ ...form, endDate: e.target.value })
+                    }
+                    className="w-full p-3 rounded-xl bg-[#EFE3D5] outline-none focus:ring-2 focus:ring-[#D1B062]"
+                  />
+                </div>
               </div>
+            </div>
+
+            {/* VIDEO SECTION */}
+            <div className="space-y-4">
+              <p className="text-sm font-bold text-[#6b1d14]">Course Videos</p>
+
+              {/* VIDEO 1 - Intro */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-[#856966] uppercase">
+                  Intro Video
+                </label>
+
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept="video/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        setForm({
+                          ...form,
+                          video1File: file,
+                          video1: URL.createObjectURL(file),
+                          video1Name: file.name,
+                        });
+                      }
+                    }}
+                    className="w-full p-3 rounded-xl bg-[#EFE3D5] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#6b1d14] file:text-white hover:file:bg-[#D1B062] cursor-pointer"
+                  />
+                </div>
+
+                {form.video1 && (
+                  <div className="mt-2">
+                    <video
+                      src={form.video1}
+                      controls
+                      className="w-full h-32 rounded-xl object-cover"
+                    />
+                    <p className="text-xs text-[#856966] mt-1 truncate">
+                      {form.video1Name || "Intro video"}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* VIDEO 2 - Demo */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-[#856966] uppercase">
+                  Demo Lecture Video
+                </label>
+
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept="video/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        setForm({
+                          ...form,
+                          video2File: file,
+                          video2: URL.createObjectURL(file),
+                          video2Name: file.name,
+                        });
+                      }
+                    }}
+                    className="w-full p-3 rounded-xl bg-[#EFE3D5] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#6b1d14] file:text-white hover:file:bg-[#D1B062] cursor-pointer"
+                  />
+                </div>
+
+                {form.video2 && (
+                  <div className="mt-2">
+                    <video
+                      src={form.video2}
+                      controls
+                      className="w-full h-32 rounded-xl object-cover"
+                    />
+                    <p className="text-xs text-[#856966] mt-1 truncate">
+                      {form.video2Name || "Demo video"}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Legacy video upload (keeping for backward compatibility) */}
+              <label className="flex items-center justify-between px-4 py-3 bg-[#EFE3D5] rounded-xl cursor-pointer hover:bg-[#e6d4c2] transition-colors">
+                <span className="text-sm truncate">
+                  {form.videoName || "Upload additional video"}
+                </span>
+                <MdVideocam size={22} className="text-[#6b1d14]" />
+                <input
+                  type="file"
+                  accept="video/*"
+                  hidden
+                  onChange={handleVideo}
+                />
+              </label>
             </div>
           </div>
 
@@ -302,7 +398,7 @@ const AddCourse = ({
             <button
               onClick={onClose}
               disabled={savingCourse}
-              className="flex-1 py-3 rounded-xl bg-[#EFE3D5] disabled:opacity-50"
+              className="flex-1 py-3 rounded-xl bg-[#EFE3D5] disabled:opacity-50 hover:bg-[#e6d4c2] transition-colors font-medium"
             >
               Cancel
             </button>
@@ -310,10 +406,25 @@ const AddCourse = ({
             <button
               onClick={saveCourse}
               disabled={savingCourse}
-              className="flex-1 py-3 rounded-xl text-white font-bold disabled:opacity-70 transition"
+              className="flex-1 py-3 rounded-xl text-white font-bold disabled:opacity-70 transition-all hover:bg-[#8b2d21] active:scale-95"
               style={{ backgroundColor: "#6b1d14" }}
             >
-              {savingCourse ? "SAVING..." : "SAVE COURSE"}
+              {savingCourse ? (
+                <span className="flex items-center justify-center gap-2">
+                  <motion.span
+                    animate={{ rotate: 360 }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 1,
+                      ease: "linear",
+                    }}
+                    className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                  />
+                  SAVING...
+                </span>
+              ) : (
+                "SAVE COURSE"
+              )}
             </button>
           </div>
 
@@ -326,7 +437,12 @@ const AddCourse = ({
                 exit={{ opacity: 0 }}
                 className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 rounded-3xl"
               >
-                <motion.div className="bg-white rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4">
+                <motion.div
+                  initial={{ scale: 0.9 }}
+                  animate={{ scale: 1 }}
+                  exit={{ scale: 0.9 }}
+                  className="bg-white rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4"
+                >
                   <motion.div
                     animate={{ rotate: 360 }}
                     transition={{

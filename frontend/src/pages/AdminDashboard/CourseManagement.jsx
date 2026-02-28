@@ -358,98 +358,187 @@ const CourseManagement = () => {
       )}
 
       {/* GRID */}
-      <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
         {filteredCourses.map((course) => (
           <div
-            key={course.id}
-            className="rounded-3xl overflow-hidden shadow-lg bg-white"
+            key={course.id || course._id}
+            className="group rounded-3xl overflow-hidden shadow-lg bg-white hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
           >
-            {/* Image / hero */}
-            <div className="relative h-44 bg-gradient-to-r from-[#7a1f16] to-[#6b1d14]">
+            {/* Image / hero section */}
+            <div className="relative h-48 bg-gradient-to-br from-[#7a1f16] to-[#6b1d14]">
               {course.imagePreview || course.image ? (
                 <img
                   src={course.imagePreview || course.image}
-                  alt={course.title}
-                  className="w-full h-full object-cover"
+                  alt={course.title || "Course thumbnail"}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src =
+                      "https://via.placeholder.com/400x200?text=Course+Image";
+                  }}
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-white text-4xl opacity-90">
-                  {course.icon}
+                <div className="w-full h-full flex items-center justify-center text-white text-5xl opacity-80">
+                  {course.icon || "📚"}
                 </div>
               )}
 
+              {/* Status badge */}
               <div className="absolute top-3 left-3">
                 <span
-                  className={`text-xs font-semibold px-3 py-1 rounded-full ${course.status === "Published" ? "bg-green-600 text-white" : "bg-[#EFE3D5] text-[#6b1d14]"}`}
+                  className={`text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg ${
+                    course.status === "Published"
+                      ? "bg-green-600 text-white"
+                      : "bg-[#EFE3D5] text-[#6b1d14]"
+                  }`}
                 >
-                  {course.status}
+                  {course.status || "Draft"}
                 </span>
               </div>
+
+              {/* Mode badge (optional) */}
+              {course.mode && (
+                <div className="absolute top-3 right-3">
+                  <span className="text-xs font-semibold px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm text-[#6b1d14] shadow-lg">
+                    {course.mode}
+                  </span>
+                </div>
+              )}
             </div>
 
-            {/* Content */}
-            <div className="p-4 bg-[#FBF4E2] space-y-3">
+            {/* Content section */}
+            <div className="p-5 bg-[#FBF4E2] space-y-4">
+              {/* Title and description */}
               <div>
-                <h3 className="text-lg font-bold text-[#6b1d14] leading-tight">
-                  {course.title}
+                <h3 className="text-lg font-bold text-[#6b1d14] leading-tight line-clamp-2">
+                  {course.title || "Untitled Course"}
                 </h3>
-                <p className="text-sm text-[#856966] mt-1 line-clamp-2">
+                <p className="text-sm text-[#856966] mt-2 line-clamp-2">
                   {course.description || "No description available"}
                 </p>
               </div>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="text-xs text-[#6b1d14] bg-white/60 px-2 py-1 rounded-full">
+              {/* Tags row */}
+              <div className="flex flex-wrap items-center gap-2">
+                {course.level && (
+                  <span className="text-xs font-medium text-[#6b1d14] bg-white/80 px-3 py-1.5 rounded-full shadow-sm">
                     {course.level}
-                  </div>
-                  <div className="text-xs text-[#6b1d14] bg-white/60 px-2 py-1 rounded-full">
-                    {course.mode}
-                  </div>
-                  <div className="text-xs text-[#6b1d14] bg-white/60 px-2 py-1 rounded-full">
-                    {course.dur}
+                  </span>
+                )}
+                {course.duration && (
+                  <span className="text-xs font-medium text-[#6b1d14] bg-white/80 px-3 py-1.5 rounded-full shadow-sm">
+                    {course.duration}
+                  </span>
+                )}
+                {!course.level && !course.duration && (
+                  <span className="text-xs text-[#856966]">
+                    No details available
+                  </span>
+                )}
+              </div>
+
+              {/* Price and faculty */}
+              <div className="flex items-center justify-between border-t border-[#E6D9C4] pt-3">
+                <div>
+                  <div className="text-sm text-[#856966]">Faculty</div>
+                  <div className="text-sm font-semibold text-[#6b1d14]">
+                    {course.faculty || "TBA"}
                   </div>
                 </div>
-
                 <div className="text-right">
-                  <div className="text-sm font-extrabold text-[#6b1d14]">
-                    ₹{course.price ?? "—"}
-                  </div>
-                  <div className="text-xs text-[#856966]">
-                    Faculty: {course.faculty || "TBA"}
+                  <div className="text-sm text-[#856966]">Price</div>
+                  <div className="text-lg font-extrabold text-[#6b1d14]">
+                    ₹
+                    {course.price
+                      ? Number(course.price).toLocaleString("en-IN")
+                      : "—"}
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between">
+              {/* Action buttons */}
+              <div className="flex items-center justify-between pt-2">
                 <div className="flex gap-2">
                   <button
                     onClick={() => openEdit(course)}
-                    className="px-3 py-2 bg-white rounded-lg border border-[#E6D9C4] text-[#6b1d14] hover:bg-[#EFE3D5] transition"
+                    className="p-2.5 bg-white rounded-xl border border-[#E6D9C4] text-[#6b1d14] hover:bg-[#EFE3D5] hover:border-[#6b1d14] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#6b1d14] focus:ring-offset-2"
+                    aria-label="Edit course"
+                    title="Edit course"
                   >
-                    <MdEdit />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      />
+                    </svg>
                   </button>
                   <button
-                    onClick={() => deleteCourseItem(course.id)}
-                    className="px-3 py-2 bg-white rounded-lg border border-[#E6D9C4] text-[#6b1d14] hover:bg-red-50 transition"
+                    onClick={() => deleteCourseItem(course.id || course._id)}
+                    className="p-2.5 bg-white rounded-xl border border-[#E6D9C4] text-[#6b1d14] hover:bg-red-50 hover:border-red-500 hover:text-red-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                    aria-label="Delete course"
+                    title="Delete course"
                   >
-                    <MdDelete />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
                   </button>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => toggleStatus(course.id)}
-                    className={`px-4 py-2 rounded-xl font-semibold transition-colors ${course.status === "Published" ? "bg-green-600/80 text-white" : "bg-[#6b1d14]/80 text-white"}`}
-                    aria-pressed={course.status === "Published"}
-                  >
-                    {course.status === "Published" ? "Active" : "Activate"}
-                  </button>
-                </div>
+                <button
+                  onClick={() => toggleStatus(course.id || course._id)}
+                  className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 transform active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                    course.status === "Published"
+                      ? "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500"
+                      : "bg-[#6b1d14] text-white hover:bg-[#8b2d21] focus:ring-[#6b1d14]"
+                  }`}
+                  aria-pressed={course.status === "Published"}
+                >
+                  {course.status === "Published" ? "Published" : "Publish"}
+                </button>
               </div>
             </div>
           </div>
         ))}
+
+        {/* Empty state */}
+        {filteredCourses.length === 0 && (
+          <div className="col-span-full text-center py-16 px-4">
+            <div className="bg-[#FBF4E2] rounded-3xl p-12 max-w-md mx-auto">
+              <div className="text-6xl mb-4">📚</div>
+              <h3 className="text-xl font-bold text-[#6b1d14] mb-2">
+                No Courses Found
+              </h3>
+              <p className="text-[#856966] mb-6">
+                Get started by creating your first course
+              </p>
+              <button
+                onClick={openCreateModal}
+                className="px-6 py-3 bg-[#6b1d14] text-white rounded-xl font-semibold hover:bg-[#8b2d21] transition-colors"
+              >
+                Create New Course
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <AddCourse
