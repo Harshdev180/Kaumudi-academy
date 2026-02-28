@@ -67,14 +67,11 @@ export default function Navbar() {
   // --- LOGIN LOGIC (use AuthContext first, fallback to storage) ---
   const role = user?.role?.toUpperCase();
 
-  const isStudentLoggedIn =
-    !loading &&
-    isAuthenticated &&
-    role === "STUDENT";
+  const isStudentLoggedIn = !loading && isAuthenticated && role === "STUDENT";
 
-    console.log("ROLE:", role);
-    console.log("USER:", user);
-    console.log("isStudentLoggedIn:", isStudentLoggedIn);
+  // console.log("ROLE:", role);
+  // console.log("USER:", user);
+  // console.log("isStudentLoggedIn:", isStudentLoggedIn);
 
   // const profilePath =
   //   role === "ADMIN" || role === "SUPER_ADMIN" ? "/admin" : "/student/overview";
@@ -320,7 +317,7 @@ export default function Navbar() {
                 ))}
 
                 <div className="pt-5 border-t border-[#dccbb4]/25">
-                  {isStudentLoggedIn? (
+                  {isStudentLoggedIn ? (
                     <motion.div variants={mobileItem}>
                       <button
                         onClick={handleLogout}

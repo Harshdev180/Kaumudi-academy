@@ -313,13 +313,13 @@ const CourseDetails = () => {
               </h2>
             </div>
             <div className="relative group aspect-video bg-black rounded-4xl overflow-hidden shadow-2xl border-[6px] border-white cursor-pointer">
-              <img
+              {/* <img
                 src={posterUrl}
                 alt={`${courseData.title} preview`}
                 className="absolute inset-0 w-full h-full object-cover"
                 aria-hidden="true"
                 loading="lazy"
-              />
+              /> */}
               <video
                 ref={videoRef}
                 className="w-full h-full object-cover"

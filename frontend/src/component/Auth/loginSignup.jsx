@@ -773,7 +773,7 @@ const AuthPage = () => {
                   />
                 </form>
 
-                <div className={isLogin ? "mt-10" : "mt-6"}>
+                {/* <div className={isLogin ? "mt-10" : "mt-6"}>
                   <div className="relative flex items-center justify-center mb-5">
                     <div className="w-full h-[1px] bg-gray-200" />
                     <span className="absolute bg-[#fffcf5] px-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">
@@ -783,10 +783,9 @@ const AuthPage = () => {
                   <div className="flex gap-4">
                     <SocialButton provider="Google" />
                     <SocialButton provider="Facebook" />
-                    <SocialButton provider="Twitter" />
                     <SocialButton provider="Linkedin" />
                   </div>
-                </div>
+                </div> */}
 
                 <footer className="mt-10 text-center">
                   <p className="text-xs text-[#8c7a56] font-medium">

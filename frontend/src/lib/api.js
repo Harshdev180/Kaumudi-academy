@@ -195,7 +195,6 @@ export async function submitInquiry(inquiryData) {
 // ==================== CONTACT APIs ====================
 export async function submitContact(contactData) {
   const res = await api.post("/contact", contactData);
-  a;
   return res.data;
 }
 

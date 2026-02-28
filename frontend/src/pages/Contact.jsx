@@ -284,7 +284,8 @@ export default function Contact() {
               </div>
               <div>
                 <motion.button
-                  type="submit"
+                  type="button"
+                  onClick={handleSubmit}
                   disabled={loading}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}

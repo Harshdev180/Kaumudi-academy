@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Globe, Globe2 } from "lucide-react";
 import { RiAncientGateFill } from "react-icons/ri";
 import { IoHome } from "react-icons/io5";
+import { Link } from "react-router-dom";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -121,9 +122,11 @@ const Learning = () => {
               your home.
             </p>
 
-            <button className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#74271E] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#5e1f18] focus:outline-none focus:ring-2 focus:ring-[#d6b15c]">
-              Join Global Batch →
-            </button>
+            <Link to={"/contact"}>
+              <button className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#74271E] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#5e1f18] focus:outline-none focus:ring-2 focus:ring-[#d6b15c]">
+                Join Global Batch →
+              </button>
+            </Link>
           </motion.div>
 
           {/* Offline */}
@@ -151,9 +154,11 @@ const Learning = () => {
               scholarship and character.
             </p>
 
-            <button className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#74271E] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#5e1f18] focus:outline-none focus:ring-2 focus:ring-[#d6b15c]">
-              Visit Campus →
-            </button>
+            <Link to={"/contact"}>
+              <button className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#74271E] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#5e1f18] focus:outline-none focus:ring-2 focus:ring-[#d6b15c]">
+                Visit Campus →
+              </button>
+            </Link>
           </motion.div>
         </div>
       </div>
