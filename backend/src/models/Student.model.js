@@ -115,6 +115,16 @@ const studentSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
+    // In your Student.model.js, add this field:
+studentId: {
+  type: String,
+  unique: true,
+  sparse: true,  // This allows multiple null values
+  default: function() {
+    // Generate a unique student ID
+    return 'STU' + Date.now() + Math.floor(Math.random() * 10000);
+  }
+},
     
 
     resetPasswordToken: String,
