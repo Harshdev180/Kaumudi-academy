@@ -7,9 +7,9 @@ export const submitInquirySchema = Joi.object({
 
   email: Joi.string().email().required(),
 
- whatsappNumber: Joi.string()
-  .pattern(/^[6-9]\d{9}$/)
-  .required(),
+  whatsappNumber: Joi.string()
+    .pattern(/^[6-9]\d{9}$/)
+    .required(),
 
   preferredLevel: Joi.string()
     .valid("BEGINNER", "INTERMEDIATE", "ADVANCED")
@@ -18,9 +18,9 @@ export const submitInquirySchema = Joi.object({
   message: Joi.string().max(1000).allow("", null),
 
   course: Joi.object({
-    title: Joi.string().required(),
-    duration: Joi.string().required(),
-    language: Joi.string().required(),
-    level: Joi.string().required()
-  }).required()
+    title: Joi.string().optional(),
+    duration: Joi.string().optional(),
+    language: Joi.string().optional(),
+    level: Joi.string().optional()
+  }).optional()
 });

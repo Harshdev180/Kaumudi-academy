@@ -119,10 +119,10 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("kaumudi_user_last_name");
     localStorage.removeItem("kaumudi_user_name");
     setAuthToken(null);
-    // try {
-    //   navigate(redirectTo);
+    try {
+      navigate(redirectTo || "/");
       // eslint-disable-next-line no-empty
-    // } catch {}
+    } catch {}
   };
 
   const isAuthenticated = !!token && !!user;

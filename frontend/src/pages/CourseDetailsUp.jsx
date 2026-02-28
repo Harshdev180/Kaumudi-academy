@@ -81,12 +81,55 @@ const CourseDetails = () => {
 
       if (incomingData) {
         // Use data from navigation
+        let priceValue = incomingData.price;
+        if (typeof priceValue === "string") {
+          priceValue = parseInt(priceValue.replace(/[^0-9]/g, "")) || 0;
+        }
+
+        // If price is missing or zero (e.g., from homepage cards), try to fetch actual course data
+        if (!priceValue || priceValue === 0) {
+          try {
+            const listResp = await getAllCourses();
+            const list =
+              listResp?.courses || listResp?.data || listResp || [];
+            const incomingTitle = String(incomingData.title || "")
+              .trim()
+              .toLowerCase();
+            const match =
+              list.find((c) =>
+                String(c.title || c.name || "")
+                  .trim()
+                  .toLowerCase() === incomingTitle,
+              ) ||
+              list.find(
+                (c) => (c._id || c.id) === (incomingData._id || incomingData.id),
+              );
+            if (match) {
+              let pv = match.price || 0;
+              if (typeof pv === "string") {
+                pv = parseInt(pv.replace(/[^0-9]/g, "")) || 0;
+              }
+              priceValue = typeof pv === "number" ? pv : 0;
+            }
+          } catch (e) {
+            console.warn("Fallback pricing fetch failed", e);
+          }
+        }
+
+        // Final fallback to defaultCourse price if still missing
+        if (!priceValue || priceValue === 0) {
+          priceValue =
+            typeof defaultCourse.price === "string"
+              ? parseInt(defaultCourse.price.replace(/[^0-9]/g, "")) || 0
+              : defaultCourse.price || 0;
+        }
+
         const merged = {
           ...defaultCourse,
           _id: incomingData.id || incomingData._id,
           id: incomingData.id || incomingData._id,
           title: incomingData.title,
-          price: incomingData.price,
+          price: priceValue,
           level: incomingData.level,
           duration: incomingData.duration,
           language: incomingData.language,

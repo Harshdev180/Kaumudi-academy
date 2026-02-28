@@ -92,8 +92,11 @@ export default function Contact() {
       const inquiryPayload = {
         fullName: formData.fullName,
         email: formData.email,
-        phoneNumber: formData.phoneNumber,
+        whatsappNumber: formData.phoneNumber, // ✅ rename here
         preferredLevel: formData.preferredLevel,
+        course: {
+          title: formData.subject,
+        },
         message: `Subject: ${formData.subject}\n${formData.message}`,
       };
 
@@ -112,7 +115,7 @@ export default function Contact() {
       }
 
       if (contactRes.status === "rejected") {
-        setSuccess("Inquiry submitted. We will get back to you soon.");
+        setSuccess("Inquiry Submitted. We will get back to you soon.");
       } else {
         setSuccess("Message sent successfully! We'll get back to you soon.");
       }
@@ -205,7 +208,7 @@ export default function Contact() {
               <div>
                 <motion.form
                   variants={stagger}
-                  className="md:space-y-14 grid md:grid-cols-2 gap-3 "
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
                   onSubmit={handleSubmit}
                 >
                   {[
@@ -230,7 +233,7 @@ export default function Contact() {
                       placeholder: "Course inquiry, support",
                     },
                   ].map((item, i) => (
-                    <motion.div key={i} variants={fadeUp}>
+                    <motion.div key={i} variants={fadeUp} className="w-full">
                       <label className="block text-xs tracking-[0.3em] font-bold text-[#7b2d1f] mb-2">
                         {item.label}
                       </label>
@@ -247,54 +250,65 @@ export default function Contact() {
                         value={formData[item.name]}
                         onChange={handleChange}
                         className="w-full rounded-xl border border-[#dcc7a1]
-                               px-4 py-4 bg-white shadow-lg
-                               focus:ring-2 focus:ring-[#7b2d1f]"
+          px-4 py-4 bg-white shadow-lg
+          focus:ring-2 focus:ring-[#7b2d1f]"
                         placeholder={item.placeholder}
                       />
                     </motion.div>
                   ))}
 
+                  {/* MESSAGE FULL WIDTH */}
+                  <motion.div
+                    variants={fadeUp}
+                    className="md:col-span-2 w-full"
+                  >
+                    <label className="block text-xs tracking-[0.3em] font-bold text-[#7b2d1f] mb-2">
+                      MESSAGE
+                    </label>
+                    <motion.textarea
+                      rows={5}
+                      whileFocus={{ scale: 1.02 }}
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      className="w-full rounded-xl border border-[#dcc7a1]
+        px-4 py-4 bg-white shadow-lg resize-none
+        focus:ring-2 focus:ring-[#7b2d1f]"
+                      placeholder="Write your message..."
+                    />
+                  </motion.div>
+
+                  {/* ERROR / SUCCESS FULL WIDTH */}
                   {error && (
-                    <div className="text-red-600 font-semibold">{error}</div>
+                    <div className="md:col-span-2 text-red-600 font-semibold">
+                      {error}
+                    </div>
                   )}
+
                   {success && (
-                    <div className="text-green-700 font-semibold">
+                    <div className="md:col-span-2 text-green-700 font-semibold">
                       {success}
                     </div>
                   )}
+
+                  {/* BUTTON ON NEW LINE FULL WIDTH */}
+                  <motion.div
+                    variants={fadeUp}
+                    className="md:col-span-2 w-full"
+                  >
+                    <motion.button
+                      type="submit"
+                      disabled={loading}
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      className="w-full bg-gradient-to-r from-[#7b2d1f] to-[#5f1f14]
+        text-white py-4 rounded-2xl font-bold tracking-[0.25em]
+        disabled:opacity-60 mt-2"
+                    >
+                      {loading ? "SENDING..." : "SEND MESSAGE"}
+                    </motion.button>
+                  </motion.div>
                 </motion.form>
-              </div>
-              <div>
-                <motion.div variants={fadeUp}>
-                  <label className="block text-xs tracking-[0.3em] mt-3 font-bold text-[#7b2d1f] mb-2 ">
-                    MESSAGE
-                  </label>
-                  <motion.textarea
-                    rows={5}
-                    whileFocus={{ scale: 1.02 }}
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    className="w-full rounded-xl border border-[#dcc7a1]
-                             px-4 py-4 bg-white shadow-lg resize-none
-                             focus:ring-2 focus:ring-[#7b2d1f]"
-                    placeholder="Write your message..."
-                  />
-                </motion.div>
-              </div>
-              <div>
-                <motion.button
-                  type="button"
-                  onClick={handleSubmit}
-                  disabled={loading}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-full bg-gradient-to-r from-[#7b2d1f] to-[#5f1f14]
-                           text-white mt-4 py-4 rounded-2xl font-bold tracking-[0.25em]
-                           disabled:opacity-60"
-                >
-                  {loading ? "SENDING..." : "SEND MESSAGE"}
-                </motion.button>
               </div>
             </motion.div>
 

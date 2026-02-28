@@ -185,6 +185,13 @@ const AuthPage = () => {
           password: formData.password,
           role: formData.role,
         });
+        const apiRole = res?.data?.role || formData.role;
+        if (apiRole === "ADMIN" || apiRole === "SUPER_ADMIN") {
+          alert("Please use the Admin Login page for admin accounts.");
+          navigate("/admin-login");
+          setLoading(false);
+          return;
+        }
         if (res?.data?.token) {
           const userPayload =
             res?.data?.user || res?.data?.student || res?.data?.data || {};
@@ -208,7 +215,7 @@ const AuthPage = () => {
           login(
             {
               email: formData.email,
-              role: res.data.role || formData.role,
+              role: "STUDENT",
               firstName,
               lastName,
               name,
@@ -219,13 +226,7 @@ const AuthPage = () => {
         setFormData(initialFormData);
         const from = location?.state?.from;
         const intended = typeof from === "string" ? from : from?.pathname;
-        const userRole = res?.data?.role || formData.role;
-        const fallback =
-          userRole === "STUDENT"
-            ? "/student/overview"
-            : userRole === "ADMIN" || userRole === "SUPER_ADMIN"
-              ? "/admin"
-              : "/profile";
+        const fallback = "/student/overview";
         navigate(intended || fallback);
       } else {
         if (
