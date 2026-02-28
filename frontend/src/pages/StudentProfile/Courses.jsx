@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Clock, Monitor, PlayCircle } from "lucide-react";
+import { Search, Clock, Monitor, PlayCircle, Users } from "lucide-react";
 import { getMyEnrollments, getProfileEnrollments } from "../../lib/api";
 
 const Courses = () => {
