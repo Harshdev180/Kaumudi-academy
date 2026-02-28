@@ -3,7 +3,7 @@ import CountUp from "react-countup";
 import { motion } from "framer-motion";
 import { Sparkle } from "lucide-react";
 
-const Stats = () => {
+const StatsCard = () => {
   const SHLOKS = [
     "असतो मा सद्गमय — From falsehood to truth",
     "विद्या ददाति विनयं — Knowledge gives humility",
@@ -123,4 +123,4 @@ const Stats = () => {
   );
 };
 
-export default Stats;
+export default StatsCard;
