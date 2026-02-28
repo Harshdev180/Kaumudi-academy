@@ -8,7 +8,7 @@ import enrollmentRoutes from "./routes/enrollment.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import testimonialRoutes from "./routes/testimonial.routes.js";
 import studentRoutes from "./routes/student.routes.js";
-import studentFeeRoutes from "./routes/studentFee.routes.js"
+import studentFeeRoutes from "./routes/studentFee.routes.js";
 import staffRoutes from "./routes/staff.routes.js";
 import adminStudentRoutes from "./routes/adminStudent.routes.js";
 import adminInquiryRoutes from "./routes/adminInquiry.routes.js";
@@ -16,7 +16,7 @@ import profileRoutes from "./routes/profile.routes.js";
 import { config } from "./configs/env.js";
 import notificationRoutes from "./routes/notification.routes.js";
 import inquiryRoutes from "./routes/inquiry.routes.js";
-import subscriptionRoutes from './routes/subscription.routes.js';
+import subscriptionRoutes from "./routes/subscription.routes.js";
 // import mongoSanitize from "express-mongo-sanitize";
 // import xss from "xss-clean";
 import contactRoutes from "./routes/contact.routes.js";
@@ -27,7 +27,8 @@ import cors from "cors";
 // import dotenv from "dotenv";
 // dotenv.config();
 
-const allowedOrigin = config.FRONTEND_URL || "http://localhost:5173";
+// const allowedOrigin = config.FRONTEND_URL || "http://localhost:5173";
+const allowedOrigin = config.FRONTEND_URL || "kaumudi-academy.vercel.app";
 app.use(
   cors({
     origin: allowedOrigin,
@@ -61,7 +62,7 @@ app.use(express.json());
 
 // 🔓 PUBLIC ROUTES (ALWAYS FIRST)
 app.use("/api", contactRoutes);
-app.use('/api', subscriptionRoutes);
+app.use("/api", subscriptionRoutes);
 app.use("/api", courseRoutes);
 app.use("/api", inquiryRoutes);
 app.use("/api", authRoutes);
