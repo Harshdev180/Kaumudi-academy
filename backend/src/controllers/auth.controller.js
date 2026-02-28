@@ -4,13 +4,16 @@ import jwt from "jsonwebtoken";
 
 import {
   sendResetPasswordMail,
-  sendAdminCredentialsMail
+  sendAdminCredentialsMail,
+  sendOtpVerificationMail 
 } from "../services/mail.service.js";
 
 import { config } from "../configs/env.js";
 import SuperAdmin from "../models/SuperAdmin.model.js";
 import Admin from "../models/Admin.model.js";
 import Student from "../models/Student.model.js"; 
+import TempStudent from "../models/TempStudent.model.js";
+import { generateOtp, hashOtp, verifyOtp } from "../configs/otp.js";
 
 
 const generateToken = (id, role) => {
@@ -81,6 +84,63 @@ export const registerSuperAdmin = async (req, res) => {
 
 
 
+// export const registerStudent = async (req, res) => {
+//   try {
+//     const {
+//       firstName,
+//       lastName,
+//       email,
+//       password,
+//       address,
+//       phoneNumber
+//     } = req.body;
+
+//     const exists = await Student.findOne({ email });
+//     if (exists) {
+//       return res.status(409).json({
+//         success: false,
+//         message: "Student already registered"
+//       });
+//     }
+
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     await Student.create({
+//       firstName,
+//       lastName,
+//       email,
+//       password: hashedPassword,
+//       address,
+//       phoneNumber
+//     });
+
+//     res.status(201).json({
+//       success: true,
+//       message: "Student registered successfully"
+//     });
+//   } catch (error) {
+//     console.log("STUDENT REGISTER ERROR:", error);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
+
+
+
+
+// MODIFIED: Register Student - Send OTP first
+
+
+// controllers/auth.controller.js
+
+
+
+
+// NEW: Verify Student OTP
+
+
+
+
+// controllers/auth.controller.js
 export const registerStudent = async (req, res) => {
   try {
     const {
@@ -92,34 +152,201 @@ export const registerStudent = async (req, res) => {
       phoneNumber
     } = req.body;
 
-    const exists = await Student.findOne({ email });
-    if (exists) {
+    // Check if student already exists and is verified
+    const existingStudent = await Student.findOne({ email });
+    if (existingStudent) {
+      if (existingStudent.isEmailVerified) {
+        return res.status(409).json({
+          success: false,
+          message: "Student already registered with this email"
+        });
+      } else {
+        // If student exists but not verified, delete the old record
+        await Student.deleteOne({ email });
+      }
+    }
+
+    // Check if there's already a pending registration in TempStudent
+    const existingTemp = await TempStudent.findOne({ email });
+    if (existingTemp) {
+      // Delete old temp record
+      await TempStudent.deleteOne({ email });
+    }
+
+    // Generate OTP
+    const otp = generateOtp();
+    const hashedOtp = hashOtp(otp);
+    
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Store temporary registration data
+    await TempStudent.create({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      address,
+      phoneNumber,
+      emailOtp: hashedOtp,
+      emailOtpExpire: Date.now() + 10 * 60 * 1000 // 10 minutes
+    });
+
+    // Send OTP via email
+    await sendOtpVerificationMail({
+      email,
+      firstName,
+      otp
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "OTP sent to your email. Please verify to complete registration.",
+      email: email
+    });
+
+  } catch (error) {
+    console.log("STUDENT REGISTER ERROR:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: error.message || "Server error" 
+    });
+  }
+};
+
+
+
+
+// controllers/auth.controller.js
+export const verifyStudentOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    // Find temporary registration data
+    const tempStudent = await TempStudent.findOne({ email });
+    
+    if (!tempStudent) {
+      return res.status(404).json({
+        success: false,
+        message: "Registration data not found or expired. Please register again."
+      });
+    }
+
+    // Check if OTP is expired
+    if (tempStudent.emailOtpExpire < Date.now()) {
+      await TempStudent.deleteOne({ email });
+      return res.status(400).json({
+        success: false,
+        message: "OTP has expired. Please register again."
+      });
+    }
+
+    // Verify OTP
+    const isValidOtp = verifyOtp(otp, tempStudent.emailOtp);
+    
+    if (!isValidOtp) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid OTP"
+      });
+    }
+
+    // Check again if student was created while verifying (race condition)
+    const existingStudent = await Student.findOne({ email });
+    if (existingStudent) {
+      await TempStudent.deleteOne({ email });
       return res.status(409).json({
         success: false,
         message: "Student already registered"
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    await Student.create({
-      firstName,
-      lastName,
-      email,
-      password: hashedPassword,
-      address,
-      phoneNumber
+    // Create permanent student record
+    const student = await Student.create({
+      firstName: tempStudent.firstName,
+      lastName: tempStudent.lastName,
+      email: tempStudent.email,
+      password: tempStudent.password,
+      address: tempStudent.address,
+      phoneNumber: tempStudent.phoneNumber,
+      isEmailVerified: true
     });
+
+    // Delete temporary data
+    await TempStudent.deleteOne({ email });
+
+    // Generate token for auto-login
+    const token = generateToken(student._id, "STUDENT");
 
     res.status(201).json({
       success: true,
-      message: "Student registered successfully"
+      message: "Email verified successfully. Registration completed.",
+      token,
+      user: {
+        id: student._id,
+        email: student.email,
+        firstName: student.firstName,
+        lastName: student.lastName,
+        name: `${student.firstName} ${student.lastName}`.trim(),
+        role: "STUDENT"
+      }
     });
+
   } catch (error) {
-    console.log("STUDENT REGISTER ERROR:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.log("OTP VERIFICATION ERROR:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: error.message || "Server error" 
+    });
   }
 };
+
+
+// controllers/auth.controller.js
+export const resendStudentOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const tempStudent = await TempStudent.findOne({ email });
+    
+    if (!tempStudent) {
+      return res.status(404).json({
+        success: false,
+        message: "Registration data not found. Please register again."
+      });
+    }
+
+    // Generate new OTP
+    const otp = generateOtp();
+    const hashedOtp = hashOtp(otp);
+
+    // Update temp student with new OTP
+    tempStudent.emailOtp = hashedOtp;
+    tempStudent.emailOtpExpire = Date.now() + 10 * 60 * 1000;
+    await tempStudent.save();
+
+    // Send new OTP
+    await sendOtpVerificationMail({
+      email,
+      firstName: tempStudent.firstName,
+      otp
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "New OTP sent to your email"
+    });
+
+  } catch (error) {
+    console.log("RESEND OTP ERROR:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: error.message || "Server error" 
+    });
+  }
+};
+
+
 
 
 

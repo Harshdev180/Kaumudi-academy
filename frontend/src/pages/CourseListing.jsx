@@ -45,7 +45,7 @@ const AllCoursesPage = () => {
     try {
       setLoading(true);
       const response = await getAllCourses();
-      console.log(response)
+      console.log(response);
       // Normalize possible shapes: array, { courses: [...] }, { items: [...] }, { data: [...] }
       const payload = response;
       const list = Array.isArray(payload)
@@ -687,10 +687,10 @@ const AllCoursesPage = () => {
                     </p>
 
                     {/* Instructor (Optional - can be shown if needed) */}
-                    <div className="flex items-center gap-2 mb-4 text-xs text-stone-500">
+                    {/* <div className="flex items-center gap-2 mb-4 text-xs text-stone-500">
                       <span className="font-medium">Instructor:</span>
                       <span>{course.instructor}</span>
-                    </div>
+                    </div> */}
 
                     {/* Course Details */}
                     <div className="mt-auto">
