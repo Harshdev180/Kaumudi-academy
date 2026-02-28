@@ -9,7 +9,7 @@ import Mission from "./Mission";
 import Testimonials from "./Testimonials";
 import heroImg from "../../assets/wheel.webp";
 import Typewriter from "./Typewriter";
-import Stats from "./StatsTemp";
+import StatsTemp from "./StatsTemp";
 import SEO from "../../components/SEO";
 
 /* ------------------ Animations ------------------ */
@@ -222,7 +222,7 @@ export default function Home() {
       {/* ================= MAIN SECTIONS ================= */}
 
       <section className="space-y-12 sm:space-y-16 lg:space-y-20">
-        <Stats />
+        <StatsTemp />
         <Cards />
         <Learning />
         <About />
