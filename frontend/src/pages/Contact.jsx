@@ -92,8 +92,11 @@ export default function Contact() {
       const inquiryPayload = {
         fullName: formData.fullName,
         email: formData.email,
-        phoneNumber: formData.phoneNumber,
+        whatsappNumber: formData.phoneNumber,   // ✅ rename here
         preferredLevel: formData.preferredLevel,
+        course: {
+          title: formData.subject
+        },
         message: `Subject: ${formData.subject}\n${formData.message}`,
       };
 
@@ -262,38 +265,38 @@ export default function Contact() {
                       {success}
                     </div>
                   )}
-                </motion.form>
-              </div>
-              <div>
-                <motion.div variants={fadeUp}>
-                  <label className="block text-xs tracking-[0.3em] mt-3 font-bold text-[#7b2d1f] mb-2 ">
-                    MESSAGE
-                  </label>
-                  <motion.textarea
-                    rows={5}
-                    whileFocus={{ scale: 1.02 }}
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    className="w-full rounded-xl border border-[#dcc7a1]
+                  <div>
+                    <motion.div variants={fadeUp}>
+                      <label className="block text-xs tracking-[0.3em] mt-3 font-bold text-[#7b2d1f] mb-2 ">
+                        MESSAGE
+                      </label>
+                      <motion.textarea
+                        rows={5}
+                        whileFocus={{ scale: 1.02 }}
+                        name="message"
+                        value={formData.message}
+                        onChange={handleChange}
+                        className="w-full rounded-xl border border-[#dcc7a1]
                              px-4 py-4 bg-white shadow-lg resize-none
                              focus:ring-2 focus:ring-[#7b2d1f]"
-                    placeholder="Write your message..."
-                  />
-                </motion.div>
-              </div>
-              <div>
-                <motion.button
-                  type="submit"
-                  disabled={loading}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-full bg-gradient-to-r from-[#7b2d1f] to-[#5f1f14]
+                        placeholder="Write your message..."
+                      />
+                    </motion.div>
+                  </div>
+                  <div>
+                    <motion.button
+                      type="submit"
+                      disabled={loading}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="w-full bg-gradient-to-r from-[#7b2d1f] to-[#5f1f14]
                            text-white mt-4 py-4 rounded-2xl font-bold tracking-[0.25em]
                            disabled:opacity-60"
-                >
-                  {loading ? "SENDING..." : "SEND MESSAGE"}
-                </motion.button>
+                    >
+                      {loading ? "SENDING..." : "SEND MESSAGE"}
+                    </motion.button>
+                  </div>
+                </motion.form>
               </div>
             </motion.div>
 

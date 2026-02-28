@@ -22,11 +22,11 @@ const inquirySchema = new mongoose.Schema(
       index: true
     },
 
-   whatsappNumber: {
-  type: String,
-  required: true,
-  alias: "phoneNumber"
-},
+    whatsappNumber: {
+      type: String,
+      required: true,
+      alias: "phoneNumber"
+    },
 
     preferredLevel: {
       type: String,
@@ -41,22 +41,10 @@ const inquirySchema = new mongoose.Schema(
     },
 
     course: {
-      title: {
-        type: String,
-        required: true
-      },
-      duration: {
-        type: String,
-        required: true
-      },
-      language: {
-        type: String,
-        required: true
-      },
-      level: {
-        type: String,
-        required: true
-      }
+      title: String,
+      duration: String,
+      language: String,
+      level: String
     },
 
     status: {
