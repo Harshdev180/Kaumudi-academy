@@ -11,7 +11,7 @@ export const useDashboard = () => {
     const fetchDashboard = async () => {
       try {
         setLoading(true);
-        const res = await api.get("/api/dashboard/stats", {
+        const res = await api.get("/dashboard/stats", {
           headers: { "Content-Type": "application/json" },
         });
         setData(res.data.data);
