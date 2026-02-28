@@ -12,13 +12,18 @@ export const createContact = async (req, res) => {
       message
     });
 
-
-    await sendContactMailToAdmin(contact);
+    // Send email (non-blocking safe)
+    try {
+      await sendContactMailToAdmin(contact);
+    } catch (mailErr) {
+      console.error("Contact email failed:", mailErr.message);
+    }
 
     res.status(201).json({
       success: true,
       message: "Contact submitted successfully"
     });
+
   } catch (error) {
     console.error("CREATE CONTACT ERROR:", error);
     res.status(500).json({

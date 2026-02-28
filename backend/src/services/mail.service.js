@@ -33,14 +33,77 @@ const sendEmail = async ({ to, subject, html }) => {
 
 /**
  * Send admin credentials email
+ * 
+ * 
  */
+
+export const sendCourseEnrollmentSuccessMail = async ({
+  studentEmail,
+  studentName,
+  courseTitle,
+  amountPaid,
+  paymentMode
+}) => {
+  const LOGO_URL = getLogoUrl();
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <body style="font-family: Arial, sans-serif; background:#f5f5f5; padding:30px;">
+      <div style="max-width:600px; margin:auto; background:white; border-radius:16px; overflow:hidden;">
+        
+        <div style="background:#74271E; padding:30px; text-align:center;">
+          <img src="${LOGO_URL}" width="70" />
+          <h1 style="color:white; margin-top:10px;">Enrollment Confirmed 🎉</h1>
+        </div>
+
+        <div style="padding:30px;">
+          <h2 style="color:#74271E;">Namaste ${studentName},</h2>
+
+          <p>Your payment was successful and you are now enrolled in:</p>
+
+          <div style="background:#f9f0e3; padding:20px; border-radius:12px;">
+            <strong>Course:</strong> ${courseTitle}<br/>
+            <strong>Amount Paid:</strong> ₹${amountPaid}<br/>
+            <strong>Payment Mode:</strong> ${paymentMode}
+          </div>
+
+          <p style="margin-top:20px;">
+            You can now access your course from your dashboard.
+          </p>
+
+          <a href="${config.FRONTEND_URL}/dashboard"
+            style="display:inline-block; margin-top:20px;
+                   background:#d6b15c; padding:12px 25px;
+                   border-radius:50px; text-decoration:none;
+                   color:#74271E; font-weight:bold;">
+            Go To Dashboard →
+          </a>
+        </div>
+
+        <div style="background:#2a0b08; padding:15px; text-align:center; color:#e6d0bd;">
+          Kaumudi Sanskrit Academy
+        </div>
+
+      </div>
+    </body>
+    </html>
+  `;
+
+  await sendEmail({
+    to: studentEmail,
+    subject: "Enrollment Confirmed - Kaumudi Sanskrit Academy",
+    html
+  });
+};
+
 export const sendAdminCredentialsMail = async ({
   adminEmail,
   adminName,
   password
 }) => {
   const LOGO_URL = getLogoUrl();
-  
+
   const html = `
     <!DOCTYPE html>
     <html>
@@ -144,7 +207,7 @@ export const sendResetPasswordMail = async ({
   resetLink
 }) => {
   const LOGO_URL = getLogoUrl();
-  
+
   const html = `
     <!DOCTYPE html>
     <html>
@@ -237,7 +300,7 @@ export const sendResetPasswordMail = async ({
  */
 export const sendInquiryMailToAdmin = async (inquiry) => {
   const LOGO_URL = getLogoUrl();
-  
+
   const html = `
     <!DOCTYPE html>
     <html>
@@ -364,7 +427,7 @@ export const sendInquiryMailToAdmin = async (inquiry) => {
  */
 export const sendContactMailToAdmin = async (contact) => {
   const LOGO_URL = getLogoUrl();
-  
+
   const html = `
     <!DOCTYPE html>
     <html>
@@ -463,7 +526,7 @@ export const sendContactMailToAdmin = async (contact) => {
  */
 export const sendSubscriptionConfirmation = async ({ email }) => {
   const LOGO_URL = getLogoUrl();
-  
+
   const html = `
     <!DOCTYPE html>
     <html>
@@ -635,7 +698,7 @@ export const sendSubscriptionConfirmation = async ({ email }) => {
  */
 export const sendSubscriptionAdminNotification = async ({ email }) => {
   const LOGO_URL = getLogoUrl();
-  
+
   // Get total subscriber count for stats (you'll need to implement this)
   // const { Subscriber } = await import('../models/Subscriber.model.js');
   // const totalSubscribers = await Subscriber.countDocuments({ status: 'active' });
@@ -685,14 +748,14 @@ export const sendSubscriptionAdminNotification = async ({ email }) => {
             <tr>
               <td style="padding: 15px; background: linear-gradient(135deg, #fdf8f0 0%, #f9f0e3 100%); font-weight: 700; color: #74271E; border-radius: 8px 0 0 8px;">Subscription Date:</td>
               <td style="padding: 15px; background-color: #ffffff; border: 2px solid #f9f0e3; border-radius: 0 8px 8px 0;">
-                <span style="color: #2a0b08;">${new Date().toLocaleString('en-US', { 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: true
-                })}</span>
+                <span style="color: #2a0b08;">${new Date().toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  })}</span>
               </td>
             </tr>
             <tr>
