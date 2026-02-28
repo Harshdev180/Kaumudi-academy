@@ -15,6 +15,7 @@ import { motion } from "framer-motion";
 import wheel from "../assets/wheel.webp";
 import { AnimatePresence } from "framer-motion";
 import logo from "../assets/logo-bgremove.webp";
+import { getAllCourses } from "../lib/api"; // Import the API function
 
 const socials = [Instagram];
 
@@ -23,7 +24,22 @@ export default function Footer() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [courses, setCourses] = useState([]); // State to store courses
+
+  // Fetch courses on component mount
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await getAllCourses();
+        const list = response?.courses || response?.data || response || [];
+        setCourses(list);
+      } catch (err) {
+        console.error("Failed to fetch courses for footer:", err);
+      }
+    };
+
+    fetchCourses();
+  }, []);
 
   const submitEmail = async () => {
     const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -34,20 +50,84 @@ export default function Footer() {
     }
 
     setError("");
-    setLoading(true);
 
     try {
       await subscribeToNewsletter(email);
       setSent(true);
       setEmail("");
     } catch (err) {
-      const msg = err?.response?.data?.message || "Subscription failed. Try again.";
+      const msg =
+        err?.response?.data?.message || "Subscription failed. Try again.";
       setError(msg);
       setSent(false);
-    } finally {
-      setLoading(false);
     }
   };
+
+  // Map course labels to their actual titles or IDs
+  const courseLinks = [
+    {
+      label: "Shloks",
+      findCourse: (courses) =>
+        courses.find(
+          (c) =>
+            c.title?.toLowerCase().includes("shlok") ||
+            c.name?.toLowerCase().includes("shlok"),
+        ),
+    },
+    {
+      label: "Spoken Sanskrit",
+      findCourse: (courses) =>
+        courses.find(
+          (c) =>
+            c.title?.toLowerCase().includes("spoken") ||
+            c.name?.toLowerCase().includes("spoken"),
+        ),
+    },
+    {
+      label: "Vyakaran Shastra",
+      findCourse: (courses) =>
+        courses.find(
+          (c) =>
+            c.title?.toLowerCase().includes("vyakaran") ||
+            c.name?.toLowerCase().includes("vyakaran"),
+        ),
+    },
+    {
+      label: "UGC NET",
+      findCourse: (courses) =>
+        courses.find(
+          (c) =>
+            c.title?.toLowerCase().includes("ugc") ||
+            c.name?.toLowerCase().includes("ugc") ||
+            c.title?.toLowerCase().includes("net") ||
+            c.name?.toLowerCase().includes("net"),
+        ),
+    },
+    {
+      label: "B.A.",
+      findCourse: (courses) =>
+        courses.find(
+          (c) =>
+            c.title?.toLowerCase().includes("b.a.") ||
+            c.name?.toLowerCase().includes("b.a.") ||
+            c.title?.toLowerCase().includes("ba") ||
+            c.name?.toLowerCase().includes("ba"),
+        ),
+    },
+  ];
+
+  // Generate links with actual course IDs
+  const footerLinks = courseLinks.map((link) => {
+    const matchedCourse = link.findCourse(courses);
+
+    return {
+      label: link.label,
+      to: matchedCourse
+        ? `/coursedetail/${matchedCourse._id || matchedCourse.id}`
+        : "/allcourses", // Fallback to all courses if not found
+      state: matchedCourse ? { course: matchedCourse } : undefined,
+    };
+  });
 
   // Animation variants
   const fadeInUp = {
@@ -258,83 +338,7 @@ export default function Footer() {
             </h4>
 
             <ul className="space-y-2 sm:space-y-3 md:space-y-4">
-              {[
-                {
-                  label: "Shloks",
-                  to: "/coursedetail",
-                  state: {
-                    course: {
-                      title: "Shloks Recitation & Meaning",
-                      category: "Sahitya (Literature)",
-                      duration: "6 Weeks",
-                      level: "Beginner",
-                      price: "2,499",
-                      image:
-                        "https://images.unsplash.com/photo-1516410529446-2c777cb7366d?auto=format&fit=crop&q=80&w=800",
-                    },
-                  },
-                },
-                {
-                  label: "Spoken Sanskrit",
-                  to: "/coursedetail",
-                  state: {
-                    course: {
-                      title: "Spoken Sanskrit Fundamentals",
-                      category: "Language",
-                      duration: "8 Weeks",
-                      level: "Beginner",
-                      price: "3,999",
-                      image:
-                        "https://images.unsplash.com/photo-1502136969935-8d8eef54d77b?auto=format&fit=crop&q=80&w=800",
-                    },
-                  },
-                },
-                {
-                  label: "Vyakaran Shastra",
-                  to: "/coursedetail",
-                  state: {
-                    course: {
-                      title: "Vyakaran Shastra Essentials",
-                      category: "Vyakarana (Grammar)",
-                      duration: "12 Weeks",
-                      level: "Intermediate",
-                      price: "5,999",
-                      image:
-                        "https://images.unsplash.com/photo-1544640808-32ca72ac7f37?auto=format&fit=crop&q=80&w=800",
-                    },
-                  },
-                },
-                {
-                  label: "UGC NET",
-                  to: "/coursedetail",
-                  state: {
-                    course: {
-                      title: "UGC NET Sanskrit Prep",
-                      category: "Language",
-                      duration: "16 Weeks",
-                      level: "Advanced",
-                      price: "7,499",
-                      image:
-                        "https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&q=80&w=800",
-                    },
-                  },
-                },
-                {
-                  label: "B.A.",
-                  to: "/coursedetail",
-                  state: {
-                    course: {
-                      title: "B.A. Sanskrit Bridge Program",
-                      category: "Language",
-                      duration: "24 Weeks",
-                      level: "Intermediate",
-                      price: "9,999",
-                      image:
-                        "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=800",
-                    },
-                  },
-                },
-              ].map((link) => (
+              {footerLinks.map((link) => (
                 <motion.li
                   key={link.label}
                   whileHover={{ x: 8 }}

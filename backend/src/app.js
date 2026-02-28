@@ -31,7 +31,7 @@ import cors from "cors";
 // const allowedOrigin = config.FRONTEND_URL || "kaumudi-academy.vercel.app";
 app.use(
   cors({
-    origin: ["https://kaumudi-academy.vercel.app"],
+    origin: ["https://kaumudi-academy.vercel.app", "http://localhost:5173"],
     credentials: true,
   }),
 );
