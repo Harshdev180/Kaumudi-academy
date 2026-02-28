@@ -125,10 +125,11 @@ export default function Cards() {
               whileTap={{ scale: 0.9 }}
               className={`h-11 w-11 rounded-full flex items-center justify-center
               border transition-colors duration-200
-              ${index === 0
+              ${
+                index === 0
                   ? "border-[#74271E]/20 text-[#74271E]/40 cursor-not-allowed"
                   : "border-[#74271E]/40 text-[#74271E] hover:bg-[#74271E] hover:text-white"
-                }`}
+              }`}
             >
               <ArrowLeft size={18} strokeWidth={2.5} />
             </motion.button>
@@ -143,10 +144,11 @@ export default function Cards() {
               whileTap={{ scale: 0.9 }}
               className={`h-11 w-11 rounded-full flex items-center justify-center
               border transition-colors duration-200
-              ${index >= courses.length - itemsPerSlide
+              ${
+                index >= courses.length - itemsPerSlide
                   ? "border-[#74271E]/20 text-[#74271E]/40 cursor-not-allowed"
                   : "border-[#74271E]/40 text-[#74271E] hover:bg-[#74271E] hover:text-white"
-                }`}
+              }`}
             >
               <ArrowRight size={18} strokeWidth={2.5} />
             </motion.button>
@@ -212,15 +214,19 @@ export default function Cards() {
           ))}
         </motion.div>
         <motion.div
+          className="flex justify-center mt-10"
           whileHover={{ y: -4, scale: 1.05 }}
           whileTap={{ scale: 0.96 }}
         >
           <Link
             to="/allcourses"
-            className="group mt-10 inline-flex items-center justify-center gap-2 rounded-full bg-[#74271E] px-8 py-4 font-bold text-white shadow-lg transition hover:bg-[#5e1f18] focus:outline-none focus:ring-2 focus:ring-[#d6b15c]"
+            className="group inline-flex items-center justify-center gap-2 rounded-full bg-[#74271E] px-8 py-4 font-bold text-white shadow-lg transition hover:bg-[#5e1f18] focus:outline-none focus:ring-2 focus:ring-[#d6b15c]"
           >
             <span>View All Courses</span>
-            <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+            <ArrowRight
+              size={16}
+              className="transition-transform group-hover:translate-x-1"
+            />
           </Link>
         </motion.div>
       </div>

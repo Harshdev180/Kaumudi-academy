@@ -194,7 +194,7 @@ const SidebarCard = ({ price, courseData }) => {
         const res = await getMyEnrollments();
         const enrollments = res?.data || res?.enrollments || res || [];
         const enrolled = enrollments.some(
-          (e) => (e.course?._id || e.course || e.courseId) === courseId
+          (e) => (e.course?._id || e.course || e.courseId) === courseId,
         );
         setIsEnrolled(enrolled);
       } catch (err) {
@@ -209,7 +209,8 @@ const SidebarCard = ({ price, courseData }) => {
 
   const formatPrice = (p) => {
     if (!p) return "0";
-    const numPrice = typeof p === "string" ? parseInt(p.replace(/[^0-9]/g, "")) || 0 : p;
+    const numPrice =
+      typeof p === "string" ? parseInt(p.replace(/[^0-9]/g, "")) || 0 : p;
     return numPrice.toLocaleString("en-IN");
   };
 
@@ -230,7 +231,10 @@ const SidebarCard = ({ price, courseData }) => {
 
   useEffect(() => {
     if (visibleFeatures < features.length) {
-      const timer = setTimeout(() => setVisibleFeatures((prev) => prev + 1), 500);
+      const timer = setTimeout(
+        () => setVisibleFeatures((prev) => prev + 1),
+        500,
+      );
       return () => clearTimeout(timer);
     }
   }, [visibleFeatures]);
@@ -240,10 +244,10 @@ const SidebarCard = ({ price, courseData }) => {
   const enrollState = !isAuthenticated
     ? "guest"
     : checkingEnrollment
-    ? "checking"
-    : isEnrolled
-    ? "enrolled"
-    : "available";
+      ? "checking"
+      : isEnrolled
+        ? "enrolled"
+        : "available";
 
   return (
     <div className="sticky top-10 bg-white rounded-[24px] overflow-hidden shadow-xl border border-gray-100 max-w-[380px] min-h-[850px] flex flex-col">
@@ -275,12 +279,17 @@ const SidebarCard = ({ price, courseData }) => {
               <div className="flex gap-2">
                 <Flame size={22} className="text-[#d6b15c] fill-[#d6b15c]" />
                 <span className="text-[#631D11] font-bold text-[15px] leading-tight">
-                  Limited Seats<br />Remaining
+                  Limited Seats
+                  <br />
+                  Remaining
                 </span>
               </div>
               <span className="font-extrabold text-[#631D11] text-right text-[15px]">
-                {leftSeats} / {totalSeats}<br />
-                <span className="font-medium text-[12px] text-gray-500 uppercase tracking-wide">left</span>
+                {leftSeats} / {totalSeats}
+                <br />
+                <span className="font-medium text-[12px] text-gray-500 uppercase tracking-wide">
+                  left
+                </span>
               </span>
             </div>
             <div className="w-full bg-[#F3F0E9] h-3.5 rounded-full overflow-hidden">
@@ -296,7 +305,9 @@ const SidebarCard = ({ price, courseData }) => {
               <li
                 key={i}
                 className={`flex gap-7 items-start leading-snug transition-all duration-500 ${
-                  i < visibleFeatures ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+                  i < visibleFeatures
+                    ? "opacity-100 translate-x-0"
+                    : "opacity-0 -translate-x-4"
                 }`}
               >
                 <CheckCircle
@@ -307,7 +318,9 @@ const SidebarCard = ({ price, courseData }) => {
                   fill="#B18E401A"
                   strokeWidth={2.5}
                 />
-                <span className="text-[#7A5C58] font-bold text-[18px]">{item}</span>
+                <span className="text-[#7A5C58] font-bold text-[18px]">
+                  {item}
+                </span>
               </li>
             ))}
           </ul>
@@ -315,7 +328,6 @@ const SidebarCard = ({ price, courseData }) => {
 
         {/* Buttons */}
         <div className="flex flex-col space-y-6 mt-auto">
-
           {/* ENROLL BUTTON */}
           {enrollState === "enrolled" ? (
             <div className="flex justify-center w-full">
@@ -349,7 +361,8 @@ const SidebarCard = ({ price, courseData }) => {
             >
               <div className="flex justify-center w-full">
                 <button className="w-[80%] bg-[#631D11] text-white px-8 py-3 rounded-2xl font-bold text-xl hover:text-[#631D11] hover:bg-[#d6b15c] transition-all flex items-center justify-center gap-2 shadow-lg">
-                  {isAuthenticated ? "Enroll Now" : "Login to Enroll"} <span className="text-2xl">→</span>
+                  {isAuthenticated ? "Enroll Now" : "Enroll Now"}{" "}
+                  <span className="text-2xl">→</span>
                 </button>
               </div>
             </Link>
