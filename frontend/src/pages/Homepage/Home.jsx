@@ -9,7 +9,7 @@ import Mission from "./Mission";
 import Testimonials from "./Testimonials";
 import heroImg from "../../assets/wheel.webp";
 import Typewriter from "./Typewriter";
-import Stats from "./Stats";
+import Stats from "./StatsTemp";
 import SEO from "../../components/SEO";
 
 /* ------------------ Animations ------------------ */
