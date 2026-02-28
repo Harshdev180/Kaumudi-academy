@@ -431,12 +431,18 @@ export async function updateProfileSettings(settingsData) {
 }
 
 // ==================== OTP (Email) APIs ====================
-export async function sendEmailOtp(email) {
-  const res = await api.post("/send-otp", { email });
+export async function sendEmailOtp(email, userData) {
+  // This should call the register endpoint with all user data
+  const res = await api.post("/auth/student/register", userData);
   return res.data;
 }
 
 export async function verifyEmailOtp(email, otp) {
-  const res = await api.post("/verify-otp", { email, otp });
+  const res = await api.post("/auth/student/verify-otp", { email, otp });
+  return res.data;
+}
+
+export async function resendEmailOtp(email) {
+  const res = await api.post("/auth/student/resend-otp", { email });
   return res.data;
 }

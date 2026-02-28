@@ -15,6 +15,8 @@ const getLogoUrl = () => {
   return "https://res.cloudinary.com/dehmhdpqn/image/upload/v1772201253/logooo_v1wlze.png";
 };
 
+
+// Define sendEmail function FIRST
 const sendEmail = async ({ to, subject, html }) => {
   try {
     await brevoClient.post("/smtp/email", {
@@ -26,10 +28,104 @@ const sendEmail = async ({ to, subject, html }) => {
       subject,
       htmlContent: html
     });
+    console.log(`Email sent successfully to ${to}`);
   } catch (err) {
     console.error("Brevo email error:", err.response?.data || err.message);
+    throw err; // Throw error so calling function knows it failed
   }
 };
+
+
+/**
+ * Send OTP verification email
+ */
+// THEN define sendOtpVerificationMail (which uses sendEmail)
+export const sendOtpVerificationMail = async ({
+  email,
+  firstName,
+  otp
+}) => {
+  const LOGO_URL = getLogoUrl();
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Verify Your Email - Kaumudi Sanskrit Academy</title>
+    </head>
+    <body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f5;">
+      
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 30px 20px;">
+        <tr>
+          <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+              
+              <!-- Header with Logo -->
+              <tr>
+                <td style="background: linear-gradient(135deg, #3b120e 0%, #5a1e17 50%, #2a0b08 100%); padding: 30px; text-align: center; border-bottom: 2px solid #d6b15c;">
+                  <table cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
+                    <tr>
+                      <td style="background: #74271E; width: 70px; height: 70px; border-radius: 16px; text-align: center; vertical-align: middle; box-shadow: 0 0 25px rgba(214,177,92,0.55);">
+                        <img src="${LOGO_URL}" alt="Kaumudi Sanskrit Academy" style="width: 60px; height: 60px; object-fit: contain; display: block; margin: 0 auto; border-radius: 12px;">
+                      </td>
+                    </tr>
+                  </table>
+                  <h1 style="color: #ffffff; margin: 15px 0 5px; font-size: 28px; font-weight: 900; letter-spacing: 2px;">KAUMUDI</h1>
+                  <p style="color: #d6b15c; margin: 0; font-size: 16px; letter-spacing: 0.18em;">SANSKRIT ACADEMY</p>
+                </td>
+              </tr>
+              
+              <!-- Content -->
+              <tr>
+                <td style="padding: 40px 30px;">
+                  <h2 style="color: #74271E; margin: 0 0 20px; font-size: 24px; font-weight: 700; border-left: 4px solid #d6b15c; padding-left: 15px;">Verify Your Email Address</h2>
+                  
+                  <p style="color: #2a0b08; line-height: 1.8; font-size: 16px; margin-bottom: 25px;">
+                    Hello <strong style="color: #74271E;">${firstName}</strong>,
+                  </p>
+                  
+                  <p style="color: #2a0b08; line-height: 1.8; font-size: 16px; margin-bottom: 25px;">
+                    Thank you for registering with Kaumudi Sanskrit Academy. Please use the following OTP to verify your email address and complete your registration.
+                  </p>
+                  
+                  <!-- OTP Box -->
+                  <div style="background: linear-gradient(135deg, #fdf8f0 0%, #f9f0e3 100%); border-radius: 12px; padding: 30px; margin: 30px 0; text-align: center; border: 2px solid #dccbb4;">
+                    <p style="color: #74271E; margin: 0 0 15px; font-size: 16px; font-weight: 600;">Your Verification OTP</p>
+                    <div style="font-size: 48px; font-weight: 900; color: #74271E; letter-spacing: 8px; font-family: monospace;">${otp}</div>
+                    <p style="color: #5a1e17; margin: 15px 0 0; font-size: 14px;">This OTP will expire in 10 minutes</p>
+                  </div>
+                  
+                  <p style="color: #5a1e17; line-height: 1.6; font-size: 14px; margin-top: 25px; text-align: center;">
+                    If you didn't request this verification, please ignore this email.
+                  </p>
+                </td>
+              </tr>
+              
+              <!-- Footer -->
+              <tr>
+                <td style="background: linear-gradient(135deg, #2a0b08 0%, #3b120e 100%); padding: 25px; text-align: center; border-top: 2px solid #d6b15c;">
+                  <p style="color: #e6d0bd; margin: 0; font-size: 13px;">This is an automated message from Kaumudi Sanskrit Academy</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+
+  await sendEmail({
+    to: email,
+    subject: "Verify Your Email - Kaumudi Sanskrit Academy",
+    html
+  });
+};
+
+
+
 
 /**
  * Send admin credentials email

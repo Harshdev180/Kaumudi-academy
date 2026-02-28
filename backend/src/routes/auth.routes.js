@@ -6,6 +6,8 @@ const router = express.Router();
 import {
   registerSuperAdmin,
   registerStudent,
+  verifyStudentOtp,
+  resendStudentOtp,
   login,
   createAdmin,
   forgotPassword,
@@ -17,6 +19,8 @@ import {
 import {
   registerSuperAdminSchema,
   registerStudentSchema,
+  verifyOtpSchema,
+  resendOtpSchema,
   loginSchema,
   createAdminSchema,
   forgotPasswordSchema,
@@ -47,6 +51,19 @@ router.post(
   registerStudent
 );
 
+// NEW: Verify OTP route
+router.post(
+  "/auth/student/verify-otp",
+  validateBody(verifyOtpSchema),
+  verifyStudentOtp
+);
+
+// NEW: Resend OTP route
+router.post(
+  "/auth/student/resend-otp",
+  validateBody(resendOtpSchema),
+  resendStudentOtp
+);
 
 
 router.post(

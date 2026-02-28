@@ -242,7 +242,7 @@ export default function Contact() {
                     className="md:col-span-2 w-full"
                   >
                     <label className="block text-xs tracking-[0.3em] font-bold text-[#7b2d1f] mb-2">
-                      MESSAGE
+                      MESSAGE <span className="font-serif">(Enter minimum 10 words)</span>
                     </label>
                     <motion.textarea
                       rows={5}

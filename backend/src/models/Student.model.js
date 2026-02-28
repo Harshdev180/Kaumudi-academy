@@ -110,6 +110,12 @@ const studentSchema = new mongoose.Schema(
         courseUpdates: { type: Boolean, default: true }
       }
     },
+// ADD THESE NEW FIELDS FOR OTP VERIFICATION
+    isEmailVerified: {
+      type: Boolean,
+      default: false
+    },
+    
 
     resetPasswordToken: String,
     resetPasswordExpire: Date
