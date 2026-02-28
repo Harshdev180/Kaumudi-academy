@@ -28,10 +28,10 @@ import cors from "cors";
 // dotenv.config();
 
 // const allowedOrigin = config.FRONTEND_URL || "http://localhost:5173";
-const allowedOrigin = config.FRONTEND_URL || "kaumudi-academy.vercel.app";
+// const allowedOrigin = config.FRONTEND_URL || "kaumudi-academy.vercel.app";
 app.use(
   cors({
-    origin: allowedOrigin,
+    origin: ["https://kaumudi-academy.vercel.app"],
     credentials: true,
   }),
 );
