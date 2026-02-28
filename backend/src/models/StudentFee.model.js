@@ -15,32 +15,41 @@ const studentFeeSchema = new mongoose.Schema(
       required: true
     },
 
-    amount: {
+    transaction: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Transaction"
+    },
+
+    totalAmount: {
       type: Number,
       required: true
     },
 
-    paymentStatus: {
-      type: String,
-      enum: ["PAID", "PENDING"],
-      default: "PENDING",
-      index: true
+    paidAmount: {
+      type: Number,
+      required: true,
+      default: 0
     },
 
-    paidAt: {
-      type: Date
+    remainingAmount: {
+      type: Number,
+      required: true,
+      default: 0
+    },
+
+    paymentStatus: {
+      type: String,
+      enum: ["PAID", "PARTIAL", "PENDING"],
+      default: "PENDING"
     },
 
     paymentMode: {
       type: String,
-      enum: ["CASH", "UPI", "CARD", "NET_BANKING"],
-      default: "UPI"
+      enum: ["FULL", "EMI"],
+      default: "FULL"
     },
 
-    remarks: {
-      type: String,
-      trim: true
-    }
+    paidAt: Date
   },
   { timestamps: true }
 );

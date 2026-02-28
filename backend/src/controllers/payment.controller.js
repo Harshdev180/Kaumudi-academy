@@ -5,10 +5,11 @@ import { config } from "../configs/env.js";
 import Course from "../models/Course.model.js";
 import Coupon from "../models/Coupon.model.js";
 import { createEnrollment } from "./enrollment.controller.js";
-import Enrollment from "../models/Enrollment.model.js";
-import Notification from "../models/Notification.model.js"; // ✅ ADDED
+import Notification from "../models/Notification.model.js";
 import axios from "axios"
-
+import StudentFee from "../models/StudentFee.model.js";
+import { sendCourseEnrollmentSuccessMail } from "../services/mail.service.js";
+import Student from "../models/Student.model.js"
 // Helper function price clean karne ke liye (6,499 -> 6499)
 const sanitizePrice = (price) => {
   if (typeof price === "number") return price;
@@ -38,7 +39,7 @@ export const createRazorpayOrder = async (req, res) => {
     );
 
     if (!captchaVerify.data.success) {
-      
+
       return res.status(400).json({
         success: false,
         message: "Captcha verification failed"
@@ -192,6 +193,28 @@ export const verifyRazorpayPayment = async (req, res) => {
       studentId: transaction.user,
       courseId: transaction.course,
       paymentId: transaction._id
+    });
+
+    const course = await Course.findById(transaction.course);
+
+    await StudentFee.create({
+      student: transaction.user,
+      course: transaction.course,
+      totalAmount: transaction.originalAmount,
+      paidAmount: transaction.finalAmount,
+      paymentMode: transaction.paymentMode,
+      transaction: transaction._id,
+      status: transaction.paymentMode === "EMI" ? "PARTIAL" : "PAID"
+    });
+
+    const user = await Student.findById(transaction.user);
+    
+    await sendCourseEnrollmentSuccessMail({
+      studentEmail: user.email,
+      studentName: user.fullName,
+      courseTitle: course.title,
+      amountPaid: transaction.finalAmount,
+      paymentMode: transaction.paymentMode
     });
 
     // 🔔 NOTIFICATION: Payment Success

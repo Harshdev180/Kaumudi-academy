@@ -89,36 +89,15 @@ export default function Contact() {
 
     try {
       setLoading(true);
-      const inquiryPayload = {
+
+      await submitContact({
         fullName: formData.fullName,
         email: formData.email,
-        whatsappNumber: formData.phoneNumber,   // ✅ rename here
-        preferredLevel: formData.preferredLevel,
-        course: {
-          title: formData.subject
-        },
-        message: `Subject: ${formData.subject}\n${formData.message}`,
-      };
+        subject: formData.subject,
+        message: formData.message,
+      });
 
-      const [inquiryRes, contactRes] = await Promise.allSettled([
-        submitInquiry(inquiryPayload),
-        submitContact({
-          fullName: formData.fullName,
-          email: formData.email,
-          subject: formData.subject,
-          message: formData.message,
-        }),
-      ]);
-
-      if (inquiryRes.status === "rejected") {
-        throw inquiryRes.reason;
-      }
-
-      if (contactRes.status === "rejected") {
-        setSuccess("Inquiry submitted. We will get back to you soon.");
-      } else {
-        setSuccess("Message sent successfully! We'll get back to you soon.");
-      }
+      setSuccess("Message sent successfully! We'll get back to you soon.");
 
       setFormData({
         fullName: "",
@@ -128,6 +107,7 @@ export default function Contact() {
         subject: "",
         message: "",
       });
+
     } catch (err) {
       setError(err?.response?.data?.message || "Failed to send message");
     } finally {

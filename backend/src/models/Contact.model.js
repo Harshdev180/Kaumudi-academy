@@ -27,4 +27,4 @@ const contactSchema = mongoose.Schema({
 {timestamps:true}
 )
 
-export default mongoose.model("contact",contactSchema)
+export default mongoose.model("Contact",contactSchema)

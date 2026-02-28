@@ -8,6 +8,7 @@ import enrollmentRoutes from "./routes/enrollment.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import testimonialRoutes from "./routes/testimonial.routes.js";
 import studentRoutes from "./routes/student.routes.js";
+import studentFeeRoutes from "./routes/studentFee.routes.js"
 import staffRoutes from "./routes/staff.routes.js";
 import adminStudentRoutes from "./routes/adminStudent.routes.js";
 import adminInquiryRoutes from "./routes/adminInquiry.routes.js";
@@ -68,6 +69,7 @@ app.use('/api', subscriptionRoutes);
 app.use("/api", notificationRoutes);
 app.use("/api", paymentRoutes);
 app.use("/api", studentRoutes);
+app.use("/api", studentFeeRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api", adminInquiryRoutes);
 app.use("/api", adminStudentRoutes);
