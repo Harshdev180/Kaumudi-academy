@@ -24,6 +24,11 @@ export function setAuthToken(token) {
   }
 }
 
+export async function subscribeToNewsletter(email) {
+  const res = await api.post("/subscribe", { email });
+  return res.data;
+}
+
 // ==================== AUTH APIs ====================
 export async function loginStudent(email, password) {
   const res = await api.post("/auth/login", {

@@ -61,10 +61,10 @@ app.use(express.json());
 
 // 🔓 PUBLIC ROUTES (ALWAYS FIRST)
 app.use("/api", contactRoutes);
+app.use('/api', subscriptionRoutes);
 app.use("/api", courseRoutes);
 app.use("/api", inquiryRoutes);
 app.use("/api", authRoutes);
-app.use('/api', subscriptionRoutes);
 // 🔐 PROTECTED / ADMIN ROUTES (AFTER)
 app.use("/api", notificationRoutes);
 app.use("/api", paymentRoutes);
