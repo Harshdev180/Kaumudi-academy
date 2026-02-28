@@ -16,6 +16,7 @@ import {
 import logo from "../../assets/logo-bgremove.webp";
 import { motion, AnimatePresence } from "framer-motion";
 import wheel from "../../assets/wheel.webp";
+import { useAuth } from "../../context/useAuthHook"; //for logout
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -39,15 +40,34 @@ const Sidebar = () => {
     { path: "settings", label: "Settings", icon: <Settings size={20} /> },
   ];
 
+  const { logout } = useAuth();
+
   const handleLogout = () => {
-    localStorage.clear();
-    navigate("/");
+    navigate("/", { replace: true });
+
+    // Delay logout slightly to ensure route change completes
+    setTimeout(() => {
+      logout();
+    }, 50);
   };
 
-  const handleDeleteAccount = () => {
-    console.log("Account Deleted");
-    localStorage.clear();
-    navigate("/");
+  const handleDeleteAccount = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      await fetch("http://localhost:5000/api/user/delete", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      localStorage.removeItem("token");
+      navigate("/", { replace: true });
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -201,7 +221,7 @@ const Sidebar = () => {
             />
             <span className="text-sm font-medium">Logout</span>
           </button>
-          <button
+          {/* <button
             onClick={() => {
               setShowDeleteModal(true);
               setIsMobileOpen(false);
@@ -210,7 +230,7 @@ const Sidebar = () => {
           >
             <Trash2 size={20} />
             <span className="text-sm font-medium">Delete Account</span>
-          </button>
+          </button> */}
         </div>
       </aside>
 

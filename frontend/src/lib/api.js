@@ -430,3 +430,14 @@ export async function updateProfileSettings(settingsData) {
   const res = await api.put("/profile/settings", settingsData);
   return res.data;
 }
+
+// ==================== OTP (Email) APIs ====================
+export async function sendEmailOtp(email) {
+  const res = await api.post("/send-otp", { email });
+  return res.data;
+}
+
+export async function verifyEmailOtp(email, otp) {
+  const res = await api.post("/verify-otp", { email, otp });
+  return res.data;
+}

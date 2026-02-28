@@ -88,7 +88,6 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/allcourses" element={<AllCoursesPage />} />
         <Route path="/coursedetail/:id" element={<CourseDetail />} />
-
         <Route path="/about" element={<About />} />
         <Route path="/faculty" element={<FacultyPage />} />
         <Route path="/contact" element={<Contact />} />
