@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { subscribeToNewsletter } from "../lib/api";
 import {
   Facebook,
   Twitter,
@@ -22,17 +23,30 @@ export default function Footer() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const submitEmail = () => {
+  const submitEmail = async () => {
     const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     if (!ok) {
       setSent(false);
       setError("Please enter a valid email");
       return;
     }
+
     setError("");
-    setSent(true);
-    setEmail(""); // Clear input after successful subscription
+    setLoading(true);
+
+    try {
+      await subscribeToNewsletter(email);
+      setSent(true);
+      setEmail("");
+    } catch (err) {
+      const msg = err?.response?.data?.message || "Subscription failed. Try again.";
+      setError(msg);
+      setSent(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Animation variants
