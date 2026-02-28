@@ -427,7 +427,10 @@ export const sendInquiryMailToAdmin = async (inquiry) => {
  */
 export const sendContactMailToAdmin = async (contact) => {
   const LOGO_URL = getLogoUrl();
-
+  console.log("Sending contact mail to:", config.ADMIN_EMAIL);
+  console.log("Brevo key exists:", !!config.BREVO_API_KEY);
+  console.log("Sender email:", config.BREVO_SENDER_EMAIL);
+  
   const html = `
     <!DOCTYPE html>
     <html>

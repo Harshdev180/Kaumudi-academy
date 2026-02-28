@@ -60,9 +60,9 @@ app.use(express.json());
 // app.use("/api", inquiryRoutes);
 
 // 🔓 PUBLIC ROUTES (ALWAYS FIRST)
+app.use("/api", contactRoutes);
 app.use("/api", courseRoutes);
 app.use("/api", inquiryRoutes);
-app.use("/api", contactRoutes);
 app.use("/api", authRoutes);
 app.use('/api', subscriptionRoutes);
 // 🔐 PROTECTED / ADMIN ROUTES (AFTER)

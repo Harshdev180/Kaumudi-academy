@@ -1,5 +1,5 @@
 import razorpay from "../configs/razorpay.js";
-import Transaction from "../models/Transaction.model.js";
+import Payment from "../models/Payment.model.js";
 import crypto from "crypto";
 import { config } from "../configs/env.js";
 import Course from "../models/Course.model.js";
@@ -114,8 +114,8 @@ export const createRazorpayOrder = async (req, res) => {
 
     const order = await razorpay.orders.create(options);
 
-    // 5. Transaction Create
-    const payment = await Transaction.create({
+    // 5. Payment Create
+    const payment = await Payment.create({
       user: req.user._id,
       course: courseId,
       originalAmount,
@@ -174,47 +174,48 @@ export const verifyRazorpayPayment = async (req, res) => {
       });
     }
 
-    const transaction = await Transaction.findOne({ razorpayOrderId });
+    const payment = await Payment.findOne({ razorpayOrderId });
 
-    if (!transaction) {
+    if (!payment) {
       return res.status(404).json({
         success: false,
-        message: "Transaction not found"
+        message: "Payment not found"
       });
     }
 
-    transaction.status = "SUCCESS";
-    transaction.razorpayPaymentId = razorpayPaymentId;
-    transaction.razorpaySignature = razorpaySignature;
-    await transaction.save();
+    payment.status = "SUCCESS";
+    payment.razorpayPaymentId = razorpayPaymentId;
+    payment.razorpaySignature = razorpaySignature;
+    await payment.save();
 
     // Enrollment trigger
     await createEnrollment({
-      studentId: transaction.user,
-      courseId: transaction.course,
-      paymentId: transaction._id
-    });
+  studentId: payment.user,
+  courseId: payment.course,
+  paymentId: payment._id
+});
 
-    const course = await Course.findById(transaction.course);
+    const course = await Course.findById(payment.course);
 
     await StudentFee.create({
-      student: transaction.user,
-      course: transaction.course,
-      totalAmount: transaction.originalAmount,
-      paidAmount: transaction.finalAmount,
-      paymentMode: transaction.paymentMode,
-      transaction: transaction._id,
-      status: transaction.paymentMode === "EMI" ? "PARTIAL" : "PAID"
+      student: payment.user,
+      course: payment.course,
+      totalAmount: payment.originalAmount,
+      paidAmount: payment.finalAmount,
+      paymentMode: payment.paymentMode,
+      payment: payment._id,
+      paymentStatus:
+        payment.paymentMode === "EMI" ? "PARTIAL" : "PAID"
     });
 
-    const user = await Student.findById(transaction.user);
-    
+    const user = await Student.findById(payment.user);
+
     await sendCourseEnrollmentSuccessMail({
       studentEmail: user.email,
       studentName: user.fullName,
       courseTitle: course.title,
-      amountPaid: transaction.finalAmount,
-      paymentMode: transaction.paymentMode
+      amountPaid: payment.finalAmount,
+      paymentMode: payment.paymentMode
     });
 
     // 🔔 NOTIFICATION: Payment Success
@@ -242,24 +243,24 @@ export const verifyRazorpayPayment = async (req, res) => {
 export const fakeVerifyPayment = async (req, res) => {
   try {
     const { razorpayOrderId } = req.body;
-    const transaction = await Transaction.findOne({ razorpayOrderId });
+    const payment = await Payment.findOne({ razorpayOrderId });
 
-    if (!transaction) {
+    if (!payment) {
       return res.status(404).json({
         success: false,
-        message: "Transaction not found"
+        message: "Payment not found"
       });
     }
 
-    transaction.status = "SUCCESS";
-    transaction.razorpayPaymentId = "FAKE_PAYMENT_ID_" + Date.now();
-    transaction.razorpaySignature = "FAKE_SIGNATURE";
-    await transaction.save();
+    payment.status = "SUCCESS";
+    payment.razorpayPaymentId = "FAKE_PAYMENT_ID_" + Date.now();
+    payment.razorpaySignature = "FAKE_SIGNATURE";
+    await payment.save();
 
     await createEnrollment({
-      studentId: transaction.user,
-      courseId: transaction.course,
-      paymentId: transaction._id
+      studentId: payment.user,
+      courseId: payment.course,
+      paymentId: payment._id
     });
 
     // 🔔 NOTIFICATION: Fake Payment (Testing)

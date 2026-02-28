@@ -40,8 +40,8 @@ const courseSchema = new mongoose.Schema(
     },
 
     instructor: {
-      type: String,
-      default: "Faculty"
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Staff",
     },
 
     price: {

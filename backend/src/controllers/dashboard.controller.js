@@ -1,6 +1,6 @@
 import Course from "../models/Course.model.js";
 import Enrollment from "../models/Enrollment.model.js";
-import Payment from "../models/Transaction.model.js"
+import Payment from "../models/Payment.model.js"
 import Inquiry from "../models/Inquiry.model.js";
 
 // ─── Helper ───────────────────────────────────────────────────────────────────

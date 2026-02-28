@@ -15,9 +15,9 @@ const studentFeeSchema = new mongoose.Schema(
       required: true
     },
 
-    transaction: {
+    payment: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Transaction"
+      ref: "Payment"
     },
 
     totalAmount: {
