@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Clock, Monitor, PlayCircle, Users } from "lucide-react";
 import { getMyEnrollments, getProfileEnrollments } from "../../lib/api";
+import { useNavigate } from "react-router-dom";
 
 const Courses = () => {
   const [activeFilter, setActiveFilter] = useState("ALL");
@@ -10,6 +11,7 @@ const Courses = () => {
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState(null);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const filters = ["ALL", "ACTIVE", "COMPLETED", "DROPPED"];
 
@@ -226,18 +228,18 @@ const Courses = () => {
                   />
                 )}
                 <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors" />
-                <p className="relative z-10 text-[#c9a050] font-serif text-sm border-b border-[#c9a050]/30 pb-1">
+                {/* <p className="relative z-10 text-[#c9a050] font-serif text-sm border-b border-[#c9a050]/30 pb-1">
                   {course.title}
-                </p>
+                </p> */}
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="absolute bottom-4 right-4 bg-white/20 backdrop-blur-md p-2 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors" />
-                  <p className="relative z-10 text-[#c9a050] font-serif text-sm border-b border-[#c9a050]/30 pb-1">
+                  {/* <p className="relative z-10 text-[#c9a050] font-serif text-sm border-b border-[#c9a050]/30 pb-1">
                     {course.title}
-                  </p>
+                  </p> */}
                   <motion.button
                     onClick={() => goToCourse(course)}
                     whileHover={{ scale: 1.05 }}
@@ -289,52 +291,25 @@ const Courses = () => {
                     <div className="flex justify-between text-[10px] font-bold text-gray-500">
                       <span>Progress: {course.progress}%</span>
                     </div>
-                  </div>
-
-                  <h3 className="font-bold text-lg text-gray-800 mb-1 leading-snug">
-                    {course.title}
-                  </h3>
-                  <p className="text-xs text-gray-400 mb-4">
-                    By {course.instructor}
-                  </p>
-
-                  <div className="flex items-center gap-4 text-gray-500 text-[11px] font-medium mb-6">
-                    <div className="flex items-center gap-1">
-                      <Clock size={14} />
-                      <span>{course.duration}</span>
+                    <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${course.progress}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                        className="bg-[#74271E] h-full rounded-full"
+                      />
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Users size={14} />
-                      <span>{course.students} Students</span>
-                    </div>
-                  </div>
-
-                  {/* Progress Section (Always visible as they are enrolled) */}
-                  <div className="mt-auto">
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-[10px] font-bold text-gray-500">
-                        <span>Progress: {course.progress}%</span>
-                      </div>
-                      <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          whileInView={{ width: `${course.progress}%` }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.8, ease: "easeOut" }}
-                          className="bg-[#74271E] h-full rounded-full"
-                        />
-                      </div>
-                      <motion.button
-                        onClick={() => goToCourse(course)}
-                        whileHover={{ scale: 1.01 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full mt-4 bg-[#74271E] text-white py-3 rounded-xl font-bold text-sm hover:bg-[#5a1e17] transition-all"
-                      >
-                        {course.progress > 0
-                          ? "Continue Learning"
-                          : "Start Learning"}
-                      </motion.button>
-                    </div>
+                    <motion.button
+                      onClick={() => goToCourse(course)}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full mt-4 bg-[#74271E] text-white py-3 rounded-xl font-bold text-sm hover:bg-[#5a1e17] transition-all"
+                    >
+                      {course.progress > 0
+                        ? "Continue Learning"
+                        : "Start Learning"}
+                    </motion.button>
                   </div>
                 </div>
               </div>

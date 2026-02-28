@@ -335,9 +335,7 @@ const EnrollmentPage = () => {
             });
 
             if (verifyResponse.success) {
-              alert("Payment Successful! Enrollment Confirmed!");
-
-              navigate("/student/profile", {
+              navigate("/student/overview", {
                 state: { message: "Enrollment successful!" },
               });
             } else {

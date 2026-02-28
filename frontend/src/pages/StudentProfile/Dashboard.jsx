@@ -440,7 +440,7 @@ const Dashboard = () => {
                 }}
               />
             )}
-            <p className="relative z-10 text-[#c9a050] font-serif text-lg text-center px-6 leading-relaxed">
+            <p className="relative z-10 text-[#74271E] bg-white/60 p-3 rounded-3xl font-serif text-lg text-center px-6 leading-relaxed">
               {featuredTitle}
             </p>
           </div>
