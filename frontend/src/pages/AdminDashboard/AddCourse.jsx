@@ -10,6 +10,7 @@ const AddCourse = ({
   saveCourse,
   editId,
   savingCourse = false,
+  staffList = []
 }) => {
   // Reset form when opening for new course
   useEffect(() => {
@@ -166,15 +167,25 @@ const AddCourse = ({
               </p>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <input
-                    placeholder="Faculty Name"
-                    value={form.faculty || ""}
-                    onChange={handleFacultyChange}
-                    className="w-full p-3 rounded-xl bg-[#EFE3D5] outline-none focus:ring-2 focus:ring-[#D1B062]"
-                  />
-                  {!form.faculty && (
-                    <p className="text-xs text-red-500 mt-1">Required</p>
-                  )}
+                  <div>
+                    <select
+                      value={form.instructor || ""}
+                      onChange={(e) =>
+                        setForm({ ...form, instructor: e.target.value })
+                      }
+                      className="w-full p-3 rounded-xl bg-[#EFE3D5] outline-none focus:ring-2 focus:ring-[#D1B062]"
+                      required
+                    >
+                      <option value="">Select Faculty</option>
+                      {staffList
+                        .filter((staff) => staff.status === "ACTIVE")
+                        .map((staff) => (
+                          <option key={staff._id} value={staff._id}>
+                            {staff.name} ({staff.role})
+                          </option>
+                        ))}
+                    </select>
+                  </div>
                 </div>
                 <div>
                   <select

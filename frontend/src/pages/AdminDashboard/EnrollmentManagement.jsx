@@ -92,6 +92,7 @@ export default function EnrollmentManagement() {
       try {
         setLoading(true);
         const response = await getAllStudentFees();
+        console.log(response)
         const payload = response?.data?.data || [];
 
         const mapped = payload.map((item) => ({
@@ -99,7 +100,7 @@ export default function EnrollmentManagement() {
           name: `${item.student?.firstName || ""} ${item.student?.lastName || ""}`,
           email: item.student?.email || "",
           course: item.course?.title || "",
-          price: item.amount,
+          price: item.paidAmount,
           payment: item.paymentStatus === "PAID" ? "Paid" : "Pending",
           date: new Date(item.createdAt).toLocaleDateString("en-IN"),
           rawDate: item.createdAt,

@@ -12,9 +12,11 @@ export const createContact = async (req, res) => {
       message
     });
 
-    // Send email (non-blocking safe)
+    // Fetch fresh document to ensure createdAt is populated
+    const freshContact = await Contact.findById(contact._id);
+
     try {
-      await sendContactMailToAdmin(contact);
+      await sendContactMailToAdmin(freshContact);
     } catch (mailErr) {
       console.error("Contact email failed:", mailErr.message);
     }

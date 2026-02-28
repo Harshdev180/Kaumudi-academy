@@ -2,43 +2,28 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import home2 from "../../assets/home/home2.webp";
-import home3 from "../../assets/home/home3.webp";
-import home4 from "../../assets/home/home4.webp";
-import home5 from "../../assets/home/home5.webp";
-import home6 from "../../assets/home/home6.webp";
-
-const courses = [
-  {
-    title: "Shlok",
-    desc: "Train the mind in classical systems of reasoning and debate.",
-    img: home2,
-  },
-  {
-    title: "Spoken Sanskrit (Level-1)",
-    desc: "Journey through poetic masterpieces of Kalidasa and other sages.",
-    img: home3,
-  },
-  {
-    title: "Vyakarana Shastra",
-    desc: "Build fluency through immersive conversational practice.",
-    img: home4,
-  },
-  {
-    title: "UGC NET",
-    desc: "Explore metaphysics through Upanishadic and Brahma Sutra texts.",
-    img: home5,
-  },
-  {
-    title: "BA",
-    desc: "Journey through poetic masterpieces of Kalidasa and other sages.",
-    img: home6,
-  },
-];
+import { getAllCourses } from "../../lib/api";
 
 export default function Cards() {
   const [index, setIndex] = useState(0);
   const [itemsPerSlide, setItemsPerSlide] = useState(3);
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await getAllCourses();
+        setCourses(res?.data);
+      } catch (err) {
+        console.error("Failed to fetch courses", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
 
   useEffect(() => {
     const calc = () => {
@@ -140,11 +125,10 @@ export default function Cards() {
               whileTap={{ scale: 0.9 }}
               className={`h-11 w-11 rounded-full flex items-center justify-center
               border transition-colors duration-200
-              ${
-                index === 0
+              ${index === 0
                   ? "border-[#74271E]/20 text-[#74271E]/40 cursor-not-allowed"
                   : "border-[#74271E]/40 text-[#74271E] hover:bg-[#74271E] hover:text-white"
-              }`}
+                }`}
             >
               <ArrowLeft size={18} strokeWidth={2.5} />
             </motion.button>
@@ -159,11 +143,10 @@ export default function Cards() {
               whileTap={{ scale: 0.9 }}
               className={`h-11 w-11 rounded-full flex items-center justify-center
               border transition-colors duration-200
-              ${
-                index >= courses.length - itemsPerSlide
+              ${index >= courses.length - itemsPerSlide
                   ? "border-[#74271E]/20 text-[#74271E]/40 cursor-not-allowed"
                   : "border-[#74271E]/40 text-[#74271E] hover:bg-[#74271E] hover:text-white"
-              }`}
+                }`}
             >
               <ArrowRight size={18} strokeWidth={2.5} />
             </motion.button>
@@ -178,98 +161,66 @@ export default function Cards() {
           animate="show"
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          {visible.map((course, i) => (
+          {visible.map((course) => (
             <motion.div
-              key={course.title}
+              key={course._id}
               variants={cardAnim}
               whileHover={{
                 y: -12,
                 scale: 1.02,
                 transition: { duration: 0.4, ease: "easeOut" },
               }}
-              className="group relative bg-[white] rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-[#74271E]/10"
+              className="group relative bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-[#74271E]/10"
             >
               {/* Image */}
               <Link
-                to={`/coursedetail/${encodeURIComponent(
-                  course.title.toLowerCase().replace(/\s+/g, "-"),
-                )}`}
-                state={{
-                  course: {
-                    id: course.title.toLowerCase().replace(/\s+/g, "-"),
-                    title: course.title,
-                    description: course.desc,
-                    image: course.img,
-                    instructorName: "Faculty",
-                    level: "All Levels",
-                    mode: "ONLINE",
-                  },
-                }}
+                to={`/coursedetail/${course._id}`}
                 className="block h-56 overflow-hidden"
               >
                 <motion.img
                   whileHover={{ scale: 1.06 }}
                   transition={{ duration: 0.5, ease: "easeOut" }}
-                  src={course.img}
+                  src={course.image?.url}
                   alt={course.title}
                   className="w-full h-full object-cover"
                 />
               </Link>
 
               {/* Content */}
-              <div className="p-7 relative z-10 bg-white">
+              <div className="p-7 bg-white">
                 <div className="text-xs font-bold text-[#d6b15c] uppercase tracking-wider mb-2">
                   Featured Course
                 </div>
+
                 <h3 className="text-xl font-bold text-[#74271E] font-serif mb-3">
                   {course.title}
                 </h3>
-                <p className="text-[#7b5a4c] leading-relaxed text-sm mb-6">
-                  {course.desc}
+
+                <p className="text-[#7b5a4c] leading-relaxed text-sm mb-6 line-clamp-3">
+                  {course.description}
                 </p>
 
                 <Link
-                  to={`/coursedetail/${encodeURIComponent(
-                    course.title.toLowerCase().replace(/\s+/g, "-"),
-                  )}`}
-                  state={{
-                    course: {
-                      id: course.title.toLowerCase().replace(/\s+/g, "-"),
-                      title: course.title,
-                      description: course.desc,
-                      image: course.img,
-                      instructorName: "Faculty",
-                      level: "All Levels",
-                      mode: "ONLINE",
-                    },
-                  }}
+                  to={`/coursedetail/${course._id}`}
                   className="inline-flex items-center bg-[#74271E] p-3 rounded-3xl text-white font-bold text-sm hover:gap-2 transition-all"
                 >
-                  View Details <ArrowRight size={14} className="ml-1" />
+                  View Details
+                  <ArrowRight size={14} className="ml-1" />
                 </Link>
               </div>
             </motion.div>
           ))}
         </motion.div>
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="flex justify-center"
+          whileHover={{ y: -4, scale: 1.05 }}
+          whileTap={{ scale: 0.96 }}
         >
-          <Link to="/allcourses">
-            <motion.a
-              whileHover={{ y: -4, scale: 1.05 }}
-              whileTap={{ scale: 0.96 }}
-              className="group mt-10 inline-flex items-center justify-center gap-2 rounded-full bg-[#74271E] px-8 py-4 font-bold text-white shadow-lg transition hover:bg-[#5e1f18] focus:outline-none focus:ring-2 focus:ring-[#d6b15c]"
-            >
-              <span>View All Courses</span>
-              <ArrowRight
-                size={16}
-                className="transition-transform group-hover:translate-x-1"
-              />
-            </motion.a>
+          <Link
+            to="/allcourses"
+            className="group mt-10 inline-flex items-center justify-center gap-2 rounded-full bg-[#74271E] px-8 py-4 font-bold text-white shadow-lg transition hover:bg-[#5e1f18] focus:outline-none focus:ring-2 focus:ring-[#d6b15c]"
+          >
+            <span>View All Courses</span>
+            <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
           </Link>
         </motion.div>
       </div>

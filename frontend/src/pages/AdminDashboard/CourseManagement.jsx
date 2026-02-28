@@ -8,7 +8,7 @@ import {
   MdAutoStories,
   MdTranslate,
 } from "react-icons/md";
-
+import { getAllStaff } from "../../lib/api";
 import AddCourse from "./AddCourse";
 import {
   getAllCoursesForAdmin,
@@ -37,6 +37,7 @@ const CourseManagement = () => {
     imagePreview: "",
     video1: "",
     video2: "",
+    instructor: "",
   };
 
   /* ================= STATE ================= */
@@ -46,6 +47,7 @@ const CourseManagement = () => {
   const [loading, setLoading] = useState(true);
   const [savingCourse, setSavingCourse] = useState(false);
   const [error, setError] = useState("");
+  const [staffList, setStaffList] = useState([]);
 
   const [courses, setCourses] = useState([]);
 
@@ -66,7 +68,8 @@ const CourseManagement = () => {
         id: course._id || index,
         title: course.title,
         description: course.description,
-        faculty: course.instructor || course.faculty || "",
+        faculty: course.instructor?.name || "",
+        instructor: course.instructor?._id || "",   // ✅ ADD THIS
         level: course.level || "Beginner",
         dur: course.duration,
         mode: course.mode,
@@ -91,7 +94,18 @@ const CourseManagement = () => {
 
   useEffect(() => {
     fetchCourses();
+    fetchStaff();
   }, []);
+
+  const fetchStaff = async () => {
+    try {
+      const res = await getAllStaff();
+      const data = res?.data || res;
+      setStaffList(data || []);
+    } catch (err) {
+      console.error("Failed to fetch staff", err);
+    }
+  };
 
   /* ================= FILTER ================= */
 
@@ -135,6 +149,7 @@ const CourseManagement = () => {
       payload.append("description", form.description);
       payload.append("syllabus", form.syllabus || "");
       payload.append("duration", form.duration);
+      payload.append("instructor", form.instructor);
       payload.append("mode", form.mode);
       payload.append("price", Number(form.price));
 
@@ -142,9 +157,9 @@ const CourseManagement = () => {
       const langs =
         typeof form.language === "string"
           ? form.language
-              .split(",")
-              .map((l) => l.trim())
-              .filter(Boolean)
+            .split(",")
+            .map((l) => l.trim())
+            .filter(Boolean)
           : Array.isArray(form.language)
             ? form.language
             : ["Sanskrit"];
@@ -174,21 +189,21 @@ const CourseManagement = () => {
           prev.map((c) =>
             c.id === editId
               ? {
-                  ...c,
-                  title: updated.title,
-                  description: updated.description,
-                  faculty: updated.instructor || updated.faculty || "",
-                  level: updated.level || c.level,
-                  dur: updated.duration,
-                  mode: updated.mode,
-                  price: updated.price,
-                  status: updated.status === "ACTIVE" ? "Published" : "Draft",
-                  image: updated.image?.url || updated.image || c.image,
-                  language: updated.language,
-                  syllabus: updated.syllabus,
-                  startDate: updated.startDate?.split("T")[0] || c.startDate,
-                  endDate: updated.endDate?.split("T")[0] || c.endDate,
-                }
+                ...c,
+                title: updated.title,
+                description: updated.description,
+                faculty: updated.instructor || updated.faculty || "",
+                level: updated.level || c.level,
+                dur: updated.duration,
+                mode: updated.mode,
+                price: updated.price,
+                status: updated.status === "ACTIVE" ? "Published" : "Draft",
+                image: updated.image?.url || updated.image || c.image,
+                language: updated.language,
+                syllabus: updated.syllabus,
+                startDate: updated.startDate?.split("T")[0] || c.startDate,
+                endDate: updated.endDate?.split("T")[0] || c.endDate,
+              }
               : c,
           ),
         );
@@ -248,15 +263,15 @@ const CourseManagement = () => {
         prev.map((c) =>
           c.id === id
             ? {
-                ...c,
-                status: newStatus
-                  ? newStatus === "ACTIVE"
-                    ? "Published"
-                    : "Draft"
-                  : c.status === "Published"
-                    ? "Draft"
-                    : "Published",
-              }
+              ...c,
+              status: newStatus
+                ? newStatus === "ACTIVE"
+                  ? "Published"
+                  : "Draft"
+                : c.status === "Published"
+                  ? "Draft"
+                  : "Published",
+            }
             : c,
         ),
       );
@@ -337,11 +352,10 @@ const CourseManagement = () => {
             <button
               key={tab}
               onClick={() => setFilter(tab)}
-              className={`px-5 py-2 rounded-lg text-sm font-semibold ${
-                filter === tab
-                  ? "bg-[#6b1d14] text-white"
-                  : "text-[#6b1d14] border border-[#D1B062]/40"
-              }`}
+              className={`px-5 py-2 rounded-lg text-sm font-semibold ${filter === tab
+                ? "bg-[#6b1d14] text-white"
+                : "text-[#6b1d14] border border-[#D1B062]/40"
+                }`}
             >
               {tab}
             </button>
@@ -386,11 +400,10 @@ const CourseManagement = () => {
               {/* Status badge */}
               <div className="absolute top-3 left-3">
                 <span
-                  className={`text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg ${
-                    course.status === "Published"
-                      ? "bg-green-600 text-white"
-                      : "bg-[#EFE3D5] text-[#6b1d14]"
-                  }`}
+                  className={`text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg ${course.status === "Published"
+                    ? "bg-green-600 text-white"
+                    : "bg-[#EFE3D5] text-[#6b1d14]"
+                    }`}
                 >
                   {course.status || "Draft"}
                 </span>
@@ -442,7 +455,7 @@ const CourseManagement = () => {
                 <div>
                   <div className="text-sm text-[#856966]">Faculty</div>
                   <div className="text-sm font-semibold text-[#6b1d14]">
-                    {course.faculty || "TBA"}
+                    {course.faculty || "Faculty Not Assigned"}
                   </div>
                 </div>
                 <div className="text-right">
@@ -505,11 +518,10 @@ const CourseManagement = () => {
 
                 <button
                   onClick={() => toggleStatus(course.id || course._id)}
-                  className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 transform active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                    course.status === "Published"
-                      ? "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500"
-                      : "bg-[#6b1d14] text-white hover:bg-[#8b2d21] focus:ring-[#6b1d14]"
-                  }`}
+                  className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 transform active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 ${course.status === "Published"
+                    ? "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500"
+                    : "bg-[#6b1d14] text-white hover:bg-[#8b2d21] focus:ring-[#6b1d14]"
+                    }`}
                   aria-pressed={course.status === "Published"}
                 >
                   {course.status === "Published" ? "Published" : "Publish"}
@@ -549,6 +561,7 @@ const CourseManagement = () => {
         saveCourse={saveCourse}
         editId={editId}
         savingCourse={savingCourse}
+        staffList={staffList}
       />
     </main>
   );

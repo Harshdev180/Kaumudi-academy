@@ -279,6 +279,11 @@ export async function getDashboardStats() {
   return res.data;
 }
 
+export async function checkCourseEnrollment(courseId) {
+  const res = await api.get(`/enrollment/check/${courseId}`);
+  return res.data;
+}
+
 // ==================== STAFF APIs ====================
 export async function getAllStaff() {
   const res = await api.get("/staff");

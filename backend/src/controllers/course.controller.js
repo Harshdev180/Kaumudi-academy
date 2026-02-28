@@ -1,6 +1,8 @@
 import Course from "../models/Course.model.js";
 import cloudinary from "../configs/cloudinary.js";
 import fs from "fs";
+// Move this to the TOP of the file with other imports
+import Enrollment from "../models/Enrollment.model.js";
 
 /**
  * CREATE COURSE (ADMIN)
@@ -79,7 +81,9 @@ export const createCourse = async (req, res) => {
  */
 export const updateCourse = async (req, res) => {
   try {
-    const course = await Course.findById(req.params.id);
+    const course = await Course.findById(req.params.id)
+      .populate("instructor", "name role image")
+      .populate("createdBy", "name email");
 
     if (!course) {
       return res.status(404).json({
@@ -137,7 +141,9 @@ export const updateCourse = async (req, res) => {
 
 export const deleteCourse = async (req, res) => {
   try {
-    const course = await Course.findById(req.params.id);
+    const course = await Course.findById(req.params.id)
+      .populate("instructor", "name role image")
+      .populate("createdBy", "name email");
     if (!course) {
       return res.status(404).json({
         success: false,
@@ -165,27 +171,30 @@ export const deleteCourse = async (req, res) => {
 };
 
 export const toggleCourseStatus = async (req, res) => {
-  try {
-    const course = await Course.findById(req.params.id);
-    if (!course) {
-      return res.status(404).json({
-        success: false,
-        message: "Course not found",
-      });
-    }
+  const course = await Course.findById(req.params.id)
+    .populate("instructor", "name role image")
+    .populate("createdBy", "name email");
 
-    course.status = course.status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
-
-    await course.save();
-
-    res.json({
-      success: true,
-      message: "Course status updated",
-      status: course.status,
-    });
-  } catch (error) {
-    res.status(500).json({ success: false });
+  if (!course) {
+    return res.status(404).json({ success: false });
   }
+
+  // 🚨 Prevent activation without instructor
+  if (!course.instructor && course.status === "INACTIVE") {
+    return res.status(400).json({
+      success: false,
+      message: "Assign instructor before publishing course",
+    });
+  }
+
+  course.status = course.status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+
+  await course.save();
+
+  res.json({
+    success: true,
+    status: course.status,
+  });
 };
 
 export const getAllCourses = async (req, res) => {
@@ -198,7 +207,9 @@ export const getAllCourses = async (req, res) => {
       { endDate: { $exists: false } },
       { endDate: null }
     ]
-  }).sort({ createdAt: -1 });
+  }).sort({ createdAt: -1 })
+    .populate("instructor", "name role image")
+    .populate("createdBy", "name email");
 
   res.json({
     success: true,
@@ -207,7 +218,9 @@ export const getAllCourses = async (req, res) => {
 };
 
 export const getCourseDetail = async (req, res) => {
-  const course = await Course.findById(req.params.id);
+  const course = await Course.findById(req.params.id)
+    .populate("instructor", "name role image")
+    .populate("createdBy", "name email");
 
   if (!course) {
     return res.status(404).json({
@@ -224,7 +237,10 @@ export const getCourseDetail = async (req, res) => {
 
 export const getAllCoursesForAdmin = async (req, res) => {
   try {
-    const courses = await Course.find().sort({ createdAt: -1 });
+    const courses = await Course.find()
+      .sort({ createdAt: -1 })
+      .populate("instructor", "name role image")
+      .populate("createdBy", "name email");
 
     res.json({
       success: true,
@@ -245,7 +261,9 @@ export const getActiveCoursesForAdmin = async (req, res) => {
     const courses = await Course.find({
       status: "ACTIVE",
       endDate: { $gte: now },
-    }).sort({ createdAt: -1 });
+    }).sort({ createdAt: -1 })
+      .populate("instructor", "name role image")  // ← ADD
+      .populate("createdBy", "name email");
 
     res.json({
       success: true,
@@ -256,29 +274,27 @@ export const getActiveCoursesForAdmin = async (req, res) => {
   }
 };
 
-import Enrollment from "../models/Enrollment.model.js";
-
 export const getCoursesWithEnrollmentCount = async (req, res) => {
   try {
     const courses = await Course.aggregate([
       {
         $lookup: {
-          from: "enrollments",
-          localField: "_id",
-          foreignField: "course",
-          as: "enrollments",
+          from: "enrollments", localField: "_id",
+          foreignField: "course", as: "enrollments",
         },
       },
+      // ← ADD THESE TWO
       {
-        $addFields: {
-          enrollmentCount: { $size: "$enrollments" },
+        $lookup: {
+          from: "staffs", localField: "instructor",
+          foreignField: "_id", as: "instructor",
         },
       },
+      { $unwind: { path: "$instructor", preserveNullAndEmptyArrays: true } },
       {
-        $project: {
-          enrollments: 0,
-        },
+        $addFields: { enrollmentCount: { $size: "$enrollments" } },
       },
+      { $project: { enrollments: 0 } },
       { $sort: { createdAt: -1 } },
     ]);
 

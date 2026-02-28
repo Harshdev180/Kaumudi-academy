@@ -21,21 +21,19 @@ const CourseDetails = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // 1. Default Data (Fallback data)
   const defaultCourse = {
-    id: "panini-01",
-    title: "Advanced Paninian Grammar: Mahabhashya Study",
-    level: "Advanced Certification",
-    description:
-      "A comprehensive deep-dive into the foundational texts of Sanskrit linguistic philosophy under expert guidance.",
-    price: "14,999",
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv8HjlPpt0rOT7SHaevW0xmnEg9DCgkEfvrA&s",
+    id: "default",
+    title: "Sanskrit Course",
+    level: "Beginner",
+    description: "Course details coming soon.",
+    price: 0,
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv8HjlPpt0rOT7SHaevW0xmnEg9DCgkEfvrA&s",
     instructor: {
-      name: "Acharya Dr. Vasudev Shastry",
-      qualification: "PHD IN VYAKARANA, BANARAS HINDU UNIVERSITY",
-      bio: "With over 25 years of teaching experience, Acharya Vasudev has guided thousands of students through the complexities of Sanskrit Grammar.",
-      tags: ["25+ Yrs Exp", "100+ Publications", "Veda Ratna Awardee"],
+      name: "Instructor TBA",
+      qualification: "To be announced",
+      bio: "An expert instructor will be assigned to this course soon.",
+      tags: [],
+      image: null,
     },
   };
 
@@ -133,28 +131,21 @@ const CourseDetails = () => {
           level: incomingData.level,
           duration: incomingData.duration,
           language: incomingData.language,
-          instructor: {
-            name:
-              incomingData.instructorName ||
-              incomingData.instructor?.name ||
-              defaultCourse.instructor.name,
-            qualification:
-              incomingData.instructorQualification ||
-              incomingData.instructor?.qualification ||
-              defaultCourse.instructor.qualification,
-            bio:
-              incomingData.instructorBio ||
-              incomingData.instructor?.bio ||
-              defaultCourse.instructor.bio,
-            tags:
-              incomingData.instructorTags ||
-              incomingData.instructor?.tags ||
-              defaultCourse.instructor.tags,
-            image:
-              incomingData.instructorImage ||
-              incomingData.instructor?.image ||
-              defaultCourse.instructor.image,
-          },
+          instructor: incomingData.instructor
+            ? {
+              name: incomingData.instructor.name || "Instructor TBA",
+              qualification: incomingData.instructor.qualification || "Qualification not listed",
+              bio: incomingData.instructor.bio || "Instructor bio coming soon.",
+              tags: incomingData.instructor.tags || [],
+              image: incomingData.instructor.image || null,
+            }
+            : {
+              name: "Instructor TBA",
+              qualification: "To be announced",
+              bio: "An expert instructor will be assigned to this course soon.",
+              tags: [],
+              image: null,
+            },
           curriculum: incomingData.curriculum || defaultCourse.curriculum,
           schedule: incomingData.schedule || defaultCourse.schedule,
           image: incomingData.image,
@@ -190,13 +181,15 @@ const CourseDetails = () => {
             mode: apiCourse.mode || "ONLINE",
             startDate: apiCourse.startDate,
             endDate: apiCourse.endDate,
-            instructor: {
-              name: apiCourse.instructor || defaultCourse.instructor.name,
-              qualification: defaultCourse.instructor.qualification,
-              bio: defaultCourse.instructor.bio,
-              tags: defaultCourse.instructor.tags,
-              image: defaultCourse.instructor.image,
-            },
+            instructor: apiCourse.instructor
+              ? {
+                name: apiCourse.instructor.name,
+                qualification: apiCourse.instructor.role || "Faculty",
+                bio: "",
+                tags: [],
+                image: apiCourse.instructor.image || null,
+              }
+              : defaultCourse.instructor,
             curriculum: defaultCourse.curriculum,
             schedule: defaultCourse.schedule,
           };
