@@ -17,6 +17,8 @@ import { config } from "./configs/env.js";
 import notificationRoutes from "./routes/notification.routes.js";
 import inquiryRoutes from "./routes/inquiry.routes.js";
 import subscriptionRoutes from "./routes/subscription.routes.js";
+import galleryRoutes from "./routes/galary.routes.js";
+
 // import mongoSanitize from "express-mongo-sanitize";
 // import xss from "xss-clean";
 import contactRoutes from "./routes/contact.routes.js";
@@ -79,7 +81,7 @@ app.use("/api", couponRoutes);
 app.use("/api", enrollmentRoutes);
 app.use("/api", dashboardRoutes);
 app.use("/api", testimonialRoutes);
-
+app.use("/api/gallery", galleryRoutes);
 app.use("/health", (_, res) => {
   res.status(200).json({
     success: true,

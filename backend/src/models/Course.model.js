@@ -24,7 +24,7 @@ const courseSchema = new mongoose.Schema(
 
     mode: {
       type: String,
-      enum: ["ONLINE", "OFFLINE"],
+      enum: ["ONLINE", "OFFLINE", "HYBRID"],
       required: true,
     },
 
@@ -57,7 +57,7 @@ const courseSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["ACTIVE", "INACTIVE"],
-      default: "ACTIVE",
+      default: "INACTIVE",
     },
     startDate: {
       type: Date,
@@ -69,8 +69,7 @@ const courseSchema = new mongoose.Schema(
     },
     language: {
       type: [String],
-      required: true,
-      trim: true
+      required: true
     },
 
     createdBy: {
