@@ -2,16 +2,11 @@ import Enrollment from "../models/Enrollment.model.js";
 import Payment from "../models/Payment.model.js";
 import Course from "../models/Course.model.js";
 
-
-export const createEnrollment = async ({
-  studentId,
-  courseId,
-  paymentId
-}) => {
+export const createEnrollment = async ({ studentId, courseId, paymentId }) => {
   try {
     const exists = await Enrollment.findOne({
       student: studentId,
-      course: courseId
+      course: courseId,
     });
 
     if (exists) {
@@ -23,7 +18,7 @@ export const createEnrollment = async ({
       course: courseId,
       payment: paymentId,
       status: "ACTIVE",
-      progress: 0
+      progress: 0,
     });
 
     return enrollment;
@@ -33,28 +28,26 @@ export const createEnrollment = async ({
   }
 };
 
-
 export const getMyEnrollments = async (req, res) => {
   try {
     const enrollments = await Enrollment.find({
-      student: req.user._id
+      student: req.user._id,
     })
       .populate("course")
       .sort({ createdAt: -1 });
 
     res.json({
       success: true,
-      data: enrollments
+      data: enrollments,
     });
   } catch (error) {
     console.error("GET MY ENROLLMENTS ERROR:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to fetch enrollments"
+      message: "Failed to fetch enrollments",
     });
   }
 };
-
 
 export const getAllEnrollments = async (req, res) => {
   try {
@@ -65,13 +58,13 @@ export const getAllEnrollments = async (req, res) => {
 
     res.json({
       success: true,
-      data: enrollments
+      data: enrollments,
     });
   } catch (error) {
     console.error("GET ALL ENROLLMENTS ERROR:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to fetch enrollments"
+      message: "Failed to fetch enrollments",
     });
   }
 };

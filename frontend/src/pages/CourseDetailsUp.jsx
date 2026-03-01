@@ -27,7 +27,8 @@ const CourseDetails = () => {
     level: "Beginner",
     description: "Course details coming soon.",
     price: 0,
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv8HjlPpt0rOT7SHaevW0xmnEg9DCgkEfvrA&s",
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv8HjlPpt0rOT7SHaevW0xmnEg9DCgkEfvrA&s",
     instructor: {
       name: "Instructor TBA",
       qualification: "To be announced",
@@ -88,19 +89,20 @@ const CourseDetails = () => {
         if (!priceValue || priceValue === 0) {
           try {
             const listResp = await getAllCourses();
-            const list =
-              listResp?.courses || listResp?.data || listResp || [];
+            const list = listResp?.courses || listResp?.data || listResp || [];
             const incomingTitle = String(incomingData.title || "")
               .trim()
               .toLowerCase();
             const match =
-              list.find((c) =>
-                String(c.title || c.name || "")
-                  .trim()
-                  .toLowerCase() === incomingTitle,
+              list.find(
+                (c) =>
+                  String(c.title || c.name || "")
+                    .trim()
+                    .toLowerCase() === incomingTitle,
               ) ||
               list.find(
-                (c) => (c._id || c.id) === (incomingData._id || incomingData.id),
+                (c) =>
+                  (c._id || c.id) === (incomingData._id || incomingData.id),
               );
             if (match) {
               let pv = match.price || 0;
@@ -133,19 +135,22 @@ const CourseDetails = () => {
           language: incomingData.language,
           instructor: incomingData.instructor
             ? {
-              name: incomingData.instructor.name || "Instructor TBA",
-              qualification: incomingData.instructor.qualification || "Qualification not listed",
-              bio: incomingData.instructor.bio || "Instructor bio coming soon.",
-              tags: incomingData.instructor.tags || [],
-              image: incomingData.instructor.image || null,
-            }
+                name: incomingData.instructor.name || "Instructor TBA",
+                qualification:
+                  incomingData.instructor.qualification ||
+                  "Qualification not listed",
+                bio:
+                  incomingData.instructor.bio || "Instructor bio coming soon.",
+                tags: incomingData.instructor.tags || [],
+                image: incomingData.instructor.image || null,
+              }
             : {
-              name: "Instructor TBA",
-              qualification: "To be announced",
-              bio: "An expert instructor will be assigned to this course soon.",
-              tags: [],
-              image: null,
-            },
+                name: "Instructor TBA",
+                qualification: "To be announced",
+                bio: "An expert instructor will be assigned to this course soon.",
+                tags: [],
+                image: null,
+              },
           curriculum: incomingData.curriculum || defaultCourse.curriculum,
           schedule: incomingData.schedule || defaultCourse.schedule,
           image: incomingData.image,
@@ -183,12 +188,12 @@ const CourseDetails = () => {
             endDate: apiCourse.endDate,
             instructor: apiCourse.instructor
               ? {
-                name: apiCourse.instructor.name,
-                qualification: apiCourse.instructor.role || "Faculty",
-                bio: "",
-                tags: [],
-                image: apiCourse.instructor.image || null,
-              }
+                  name: apiCourse.instructor.name,
+                  qualification: apiCourse.instructor.role || "Faculty",
+                  bio: "",
+                  tags: [],
+                  image: apiCourse.instructor.image || null,
+                }
               : defaultCourse.instructor,
             curriculum: defaultCourse.curriculum,
             schedule: defaultCourse.schedule,
