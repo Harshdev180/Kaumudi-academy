@@ -43,6 +43,8 @@ const FacultyManagement = () => {
     status: "ACTIVE",
   });
 
+  const [validationErrors, setValidationErrors] = useState({});
+
   useEffect(() => {
     let mounted = true;
     const fetchFaculty = async () => {
@@ -108,6 +110,7 @@ const FacultyManagement = () => {
       deduction: "",
       status: "ACTIVE",
     });
+    setValidationErrors({});
     setEditingId(null);
   };
 
@@ -134,6 +137,51 @@ const FacultyManagement = () => {
     e.preventDefault();
     setSubmitting(true);
     setError("");
+    setValidationErrors({});
+
+    // Validate numeric fields
+    const errors = {};
+    
+    // Salary validation
+    const salaryNum = Number(form.salary);
+    if (!form.salary || form.salary.trim() === "") {
+      errors.salary = "Salary is required";
+    } else if (isNaN(salaryNum) || salaryNum < 0) {
+      errors.salary = "Salary must be a valid positive number";
+    }
+    
+    // Bonus validation (optional but must be valid if provided)
+    if (form.bonus && form.bonus.trim() !== "") {
+      const bonusNum = Number(form.bonus);
+      if (isNaN(bonusNum) || bonusNum < 0) {
+        errors.bonus = "Bonus must be a valid positive number";
+      }
+    }
+    
+    // Deduction validation (optional but must be valid if provided)
+    if (form.deduction && form.deduction.trim() !== "") {
+      const deductionNum = Number(form.deduction);
+      if (isNaN(deductionNum) || deductionNum < 0) {
+        errors.deduction = "Deduction must be a valid positive number";
+      }
+    }
+
+    // Name validation
+    if (!form.name || form.name.trim() === "") {
+      errors.name = "Faculty name is required";
+    }
+
+    // Role validation
+    if (!form.role || form.role.trim() === "") {
+      errors.role = "Faculty role is required";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      setSubmitting(false);
+      return;
+    }
+
     try {
       const requestPayload = {
         name: form.name,
@@ -485,8 +533,11 @@ const FacultyManagement = () => {
                       onChange={(e) =>
                         setForm({ ...form, name: e.target.value })
                       }
-                      className="w-full px-4 py-3 rounded-lg bg-white border-2 border-[#D1B062]/30 focus:border-[#D1B062] focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50"
+                      className={`w-full px-4 py-3 rounded-lg bg-white border-2 ${validationErrors.name ? 'border-red-500 focus:border-red-500' : 'border-[#D1B062]/30 focus:border-[#D1B062]'} focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50`}
                     />
+                    {validationErrors.name && (
+                      <p className="text-xs text-red-500 font-medium">{validationErrors.name}</p>
+                    )}
                   </motion.div>
 
                   {/* COURSE FIELD */}
@@ -507,8 +558,11 @@ const FacultyManagement = () => {
                       onChange={(e) =>
                         setForm({ ...form, role: e.target.value })
                       }
-                      className="w-full px-4 py-3 rounded-lg bg-white border-2 border-[#D1B062]/30 focus:border-[#D1B062] focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50"
+                      className={`w-full px-4 py-3 rounded-lg bg-white border-2 ${validationErrors.role ? 'border-red-500 focus:border-red-500' : 'border-[#D1B062]/30 focus:border-[#D1B062]'} focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50`}
                     />
+                    {validationErrors.role && (
+                      <p className="text-xs text-red-500 font-medium">{validationErrors.role}</p>
+                    )}
                   </motion.div>
 
                   {/* DESCRIPTION FIELD */}
@@ -551,14 +605,19 @@ const FacultyManagement = () => {
                       <input
                         required
                         type="number"
+                        min="0"
+                        step="0.01"
                         placeholder="25000"
                         value={form.salary}
                         onChange={(e) =>
                           setForm({ ...form, salary: e.target.value })
                         }
-                        className="w-full px-4 py-3 pl-7 rounded-lg bg-white border-2 border-[#D1B062]/30 focus:border-[#D1B062] focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50"
+                        className={`w-full px-4 py-3 pl-7 rounded-lg bg-white border-2 ${validationErrors.salary ? 'border-red-500 focus:border-red-500' : 'border-[#D1B062]/30 focus:border-[#D1B062]'} focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50`}
                       />
                     </div>
+                    {validationErrors.salary && (
+                      <p className="text-xs text-red-500 font-medium">{validationErrors.salary}</p>
+                    )}
                   </motion.div>
 
                   {/* BONUS FIELD */}
@@ -574,13 +633,18 @@ const FacultyManagement = () => {
                     </label>
                     <input
                       type="number"
+                      min="0"
+                      step="0.01"
                       placeholder="0"
                       value={form.bonus}
                       onChange={(e) =>
                         setForm({ ...form, bonus: e.target.value })
                       }
-                      className="w-full px-4 py-3 rounded-lg bg-white border-2 border-[#D1B062]/30 focus:border-[#D1B062] focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50"
+                      className={`w-full px-4 py-3 rounded-lg bg-white border-2 ${validationErrors.bonus ? 'border-red-500 focus:border-red-500' : 'border-[#D1B062]/30 focus:border-[#D1B062]'} focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50`}
                     />
+                    {validationErrors.bonus && (
+                      <p className="text-xs text-red-500 font-medium">{validationErrors.bonus}</p>
+                    )}
                   </motion.div>
 
                   {/* DEDUCTION FIELD */}
@@ -596,13 +660,18 @@ const FacultyManagement = () => {
                     </label>
                     <input
                       type="number"
+                      min="0"
+                      step="0.01"
                       placeholder="0"
                       value={form.deduction}
                       onChange={(e) =>
                         setForm({ ...form, deduction: e.target.value })
                       }
-                      className="w-full px-4 py-3 rounded-lg bg-white border-2 border-[#D1B062]/30 focus:border-[#D1B062] focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50"
+                      className={`w-full px-4 py-3 rounded-lg bg-white border-2 ${validationErrors.deduction ? 'border-red-500 focus:border-red-500' : 'border-[#D1B062]/30 focus:border-[#D1B062]'} focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50`}
                     />
+                    {validationErrors.deduction && (
+                      <p className="text-xs text-red-500 font-medium">{validationErrors.deduction}</p>
+                    )}
                   </motion.div>
 
                   {/* STATUS FIELD */}

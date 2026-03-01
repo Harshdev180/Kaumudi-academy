@@ -44,6 +44,26 @@ export const createStaff = async (req, res) => {
       });
     }
 
+    // Validate non-negative values
+    if (salaryNum < 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Salary must be a non-negative number"
+      });
+    }
+    if (bonusNum < 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Bonus must be a non-negative number"
+      });
+    }
+    if (deductionNum < 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Deduction must be a non-negative number"
+      });
+    }
+
     const payload = {
       name: String(name).trim(),
       role: String(role).trim(),
@@ -134,6 +154,12 @@ export const updateStaff = async (req, res) => {
           message: "Salary must be a valid number"
         });
       }
+      if (salaryNum < 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Salary must be a non-negative number"
+        });
+      }
       payload.salary = salaryNum;
     }
     if (payload.bonus !== undefined) {
@@ -144,6 +170,12 @@ export const updateStaff = async (req, res) => {
           message: "Bonus must be a valid number"
         });
       }
+      if (bonusNum < 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Bonus must be a non-negative number"
+        });
+      }
       payload.bonus = bonusNum;
     }
     if (payload.deduction !== undefined) {
@@ -152,6 +184,12 @@ export const updateStaff = async (req, res) => {
         return res.status(400).json({
           success: false,
           message: "Deduction must be a valid number"
+        });
+      }
+      if (deductionNum < 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Deduction must be a non-negative number"
         });
       }
       payload.deduction = deductionNum;
