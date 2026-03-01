@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Award,
   Download,
@@ -83,7 +84,30 @@ const Certificates = () => {
       {loading ? (
         <div className="text-sm text-gray-500">Loading certificates...</div>
       ) : certificates.length === 0 ? (
-        <div className="text-sm text-gray-500">No certificates found.</div>
+        <div className="grid grid-cols-1 gap-4 md:gap-8">
+          <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-black/5 flex flex-col items-center text-center relative overflow-hidden">
+            <div className="absolute -right-16 -top-16 opacity-[0.03] text-[#74271E] select-none pointer-events-none">
+              <span className="text-[300px] font-serif">ॐ</span>
+            </div>
+            <div className="w-16 h-16 bg-[#fdfbf7] border border-[#e6d5b8]/40 rounded-2xl flex items-center justify-center shadow-inner mb-4">
+              <Award size={28} className="text-[#c9a050]" strokeWidth={1.5} />
+            </div>
+            <h3 className="text-xl font-serif font-bold text-gray-800 leading-tight">
+              No Certificates Yet
+            </h3>
+            <p className="text-sm text-gray-500 mt-2">
+              No course is completed yet. Complete a course to earn a
+              certificate.
+            </p>
+            <Link
+              to="/allcourses"
+              className="mt-6 inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-[#74271E] text-white font-bold text-xs uppercase tracking-widest hover:bg-[#5a1e17] transition-all shadow-xl shadow-[#74271E]/10"
+            >
+              Explore Courses
+              <ExternalLink size={16} />
+            </Link>
+          </div>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
           {certificates.map((cert) => (
