@@ -10,8 +10,8 @@ import {
 } from "recharts";
 import { motion } from "framer-motion";
 
-function RevnueChart() {
-  const data = [
+function RevnueChart({ data: incoming }) {
+  const fallback = [
     { month: "Jan", revenue: 45000, expenses: 32000 },
     { month: "Feb", revenue: 52000, expenses: 38000 },
     { month: "Mar", revenue: 48000, expenses: 35000 },
@@ -25,6 +25,20 @@ function RevnueChart() {
     { month: "Nov", revenue: 82000, expenses: 55000 },
     { month: "Dec", revenue: 89000, expenses: 58000 },
   ];
+
+  const parsed =
+    Array.isArray(incoming) && incoming.length
+      ? incoming.map((d) => {
+          const month = d.month || d.label || d.name || "";
+          let revenue = d.revenue ?? d.value ?? d.amount ?? 0;
+          let expenses = d.expenses ?? d.cost ?? 0;
+          if (typeof revenue === "string")
+            revenue = parseInt(revenue.replace(/[^0-9]/g, "")) || 0;
+          if (typeof expenses === "string")
+            expenses = parseInt(expenses.replace(/[^0-9]/g, "")) || 0;
+          return { month, revenue, expenses };
+        })
+      : fallback;
 
   return (
     <motion.div
@@ -78,9 +92,9 @@ function RevnueChart() {
       >
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
-            data={data}
+            data={parsed}
             barGap={4}
-            margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
           >
             <defs>
               <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">

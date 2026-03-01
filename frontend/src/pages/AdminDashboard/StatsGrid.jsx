@@ -83,13 +83,13 @@ function StatsGrid({ stats }) {
                 </p>
 
                 <div className="flex items-center space-x-2">
-                  {trend === "up" ? (
+                  {/* {trend === "up" ? (
                     <ArrowUpRight className="w-4 h-4 text-emerald-500" />
                   ) : trend === "down" ? (
                     <ArrowDownRight className="w-4 h-4 text-red-500" />
-                  ) : null}
+                  ) : null} */}
 
-                  <span
+                  {/* <span
                     className={`text-sm font-semibold ${
                       trend === "up"
                         ? "text-emerald-500"
@@ -99,9 +99,9 @@ function StatsGrid({ stats }) {
                     }`}
                   >
                     {change}
-                  </span>
+                  </span> */}
 
-                  <span className="text-sm text-slate-500">vs last month</span>
+                  {/* <span className="text-sm text-slate-500">vs last month</span> */}
                 </div>
               </div>
 
@@ -115,7 +115,7 @@ function StatsGrid({ stats }) {
             </div>
 
             {/* Progress bar */}
-            <div className="mt-4 h-2 bg-slate-100 rounded-full overflow-hidden">
+            {/* <div className="mt-4 h-2 bg-slate-100 rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{
@@ -125,7 +125,7 @@ function StatsGrid({ stats }) {
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 className={`h-full bg-gradient-to-r ${config.color} rounded-full`}
               />
-            </div>
+            </div> */}
           </motion.div>
         );
       })}
