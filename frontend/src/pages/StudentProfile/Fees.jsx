@@ -30,8 +30,8 @@ const FeePurchase = () => {
           date: new Date(item.createdAt).toLocaleDateString(),
           desc: item.course?.title || "Course",
           type: item.course?.category || "Academic",
-          totalAmount: item.amount || 0,
-          paidAmount: item.paidAmount || 0,
+          totalAmount: item?.payment?.originalAmount || 0,
+          paidAmount: item?.payment?.finalAmount || 0,
         }));
 
         setPaymentHistory(formatted);
