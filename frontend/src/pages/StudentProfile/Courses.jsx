@@ -27,7 +27,11 @@ const Courses = () => {
               id: item?._id || item?.id,
               title: item?.course?.title || "Untitled Course",
               category: item?.course?.category || "General",
-              instructor: item?.course?.instructor || "Faculty",
+              // Properly extract instructor name from nested course object
+              instructor: item?.course?.instructor?.name 
+                ? `Sanskrit with ${item.course.instructor.name}` 
+                : "",
+              instructorObj: item?.course?.instructor,
               duration: item?.course?.duration || "",
               mode: item?.course?.mode || "",
               level: item?.course?.level || "",

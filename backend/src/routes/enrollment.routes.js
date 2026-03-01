@@ -4,7 +4,8 @@ const router = express.Router();
 
 import {
   getMyEnrollments,
-  getAllEnrollments
+  getAllEnrollments,
+  checkEnrollment
 } from "../controllers/enrollment.controller.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
@@ -15,6 +16,13 @@ router.get(
   "/enrollment/my",
   authMiddleware,
   getMyEnrollments
+);
+
+
+router.get(
+  "/enrollment/check/:courseId",
+  authMiddleware,
+  checkEnrollment
 );
 
 

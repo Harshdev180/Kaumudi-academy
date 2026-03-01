@@ -68,10 +68,16 @@ const AllCoursesPage = () => {
           c.image ||
           "https://i.pinimg.com/736x/c6/3c/1d/c63c1d8721a4226db27c8a2b6fd3448e.jpg";
 
+        // Properly extract instructor name from populated object
+        const instructorName = c.instructor?.name 
+          ? `Sanskrit with ${c.instructor.name}` 
+          : "";
+
         return {
           id: c._id || c.id,
           title: c.title || c.name || "Untitled Course",
-          instructor: c.instructor || "Faculty",
+          instructor: instructorName,
+          instructorObj: c.instructor, // Keep full object for detail pages
           category: c.category || "General",
           mode: c.mode || "ONLINE",
           level: c.level || "All Levels",

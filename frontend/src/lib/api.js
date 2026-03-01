@@ -61,12 +61,9 @@ export async function registerStudent({
   email,
   password,
 }) {
-  const res = await api.post("/auth/student/register", {
-    firstName,
-    lastName,
-    email,
-    password,
-  });
+  const payload = { firstName, lastName, email, password };
+  console.log("API - registerStudent payload:", payload);
+  const res = await api.post("/auth/student/register", payload);
   return res.data;
 }
 
@@ -445,6 +442,8 @@ export async function updateProfileSettings(settingsData) {
 // ==================== OTP (Email) APIs ====================
 export async function sendEmailOtp(email, userData) {
   // This should call the register endpoint with all user data
+  console.log("sendEmailOtp - email:", email);
+  console.log("sendEmailOtp - userData:", userData);
   const res = await api.post("/auth/student/register", userData);
   return res.data;
 }

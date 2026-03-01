@@ -125,6 +125,10 @@ export const updateCourse = async (req, res) => {
     Object.assign(course, req.body);
     await course.save();
 
+    // Re-populate instructor after save to return full object
+    await course.populate("instructor", "name role image");
+    await course.populate("createdBy", "name email");
+
     return res.json({
       success: true,
       message: "Course updated successfully",

@@ -143,6 +143,14 @@ export const registerSuperAdmin = async (req, res) => {
 // controllers/auth.controller.js
 export const registerStudent = async (req, res) => {
   try {
+    // Handle undefined req.body
+    if (!req.body) {
+      return res.status(400).json({
+        success: false,
+        message: "Request body is missing. Please send JSON data with Content-Type: application/json"
+      });
+    }
+
     const {
       firstName,
       lastName,
@@ -151,6 +159,14 @@ export const registerStudent = async (req, res) => {
       address,
       phoneNumber
     } = req.body;
+
+    // Validate required fields
+    if (!firstName || !lastName || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields: firstName, lastName, email, password"
+      });
+    }
 
     // Check if student already exists and is verified
     const existingStudent = await Student.findOne({ email });
@@ -193,11 +209,21 @@ export const registerStudent = async (req, res) => {
     });
 
     // Send OTP via email
-    await sendOtpVerificationMail({
-      email,
-      firstName,
-      otp
-    });
+    try {
+      await sendOtpVerificationMail({
+        email,
+        firstName,
+        otp
+      });
+    } catch (emailError) {
+      console.error("Failed to send OTP email:", emailError);
+      // Delete the temp student record since we can't verify
+      await TempStudent.deleteOne({ email });
+      return res.status(500).json({
+        success: false,
+        message: "Failed to send OTP to your email. Please try again."
+      });
+    }
 
     res.status(200).json({
       success: true,

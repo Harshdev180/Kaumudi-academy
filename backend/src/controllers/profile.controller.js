@@ -76,10 +76,18 @@ export const getMyEnrollments = async (req, res) => {
     const enrollments = await Enrollment.find({
       student: req.user._id
     })
-      .populate(
-        "course",
-        "title image startDate endDate category instructor duration level mode"
-      )
+      .populate({
+        path: "course",
+        select: "title image startDate endDate category instructor duration level mode price",
+        populate: {
+          path: "instructor",
+          select: "name role image"
+        }
+      })
+      .populate({
+        path: "payment",
+        select: "originalAmount discountAmount finalAmount status"
+      })
       .sort({ createdAt: -1 });
 
     res.json({
@@ -162,12 +170,44 @@ export const updateMyProfile = async (req, res) => {
 
     if (payload.name && !payload.firstName && !payload.lastName) {
       const parts = String(payload.name).trim().split(/\s+/);
-      payload.firstName = parts.shift() || "";
-      payload.lastName = parts.join(" ");
+      payload.firstName = parts.shift();
+      payload.lastName = parts.join(" ") || undefined; // Don't set empty string for required field
     }
 
     if (payload.phone && !payload.phoneNumber) {
       payload.phoneNumber = payload.phone;
+    }
+
+    // Handle date of birth - validate and parse properly
+    if (payload.dob !== undefined) {
+      if (payload.dob === "" || payload.dob === null) {
+        // Clear the dob if empty
+        payload.dob = undefined;
+      } else {
+        // Try to parse the date
+        const dobDate = new Date(payload.dob);
+        // Check if valid date
+        if (!isNaN(dobDate.getTime())) {
+          payload.dob = dobDate;
+        } else {
+          // Try parsing common date formats (MMDDYY, DDMMYY, YYMMDD)
+          const dateStr = String(payload.dob);
+          if (/^\d{6}$/.test(dateStr)) {
+            // Assume MMDDYY format
+            const month = parseInt(dateStr.substring(0, 2)) - 1;
+            const day = parseInt(dateStr.substring(2, 4));
+            let year = parseInt(dateStr.substring(4, 6));
+            year = year > 50 ? 1900 + year : 2000 + year;
+            const parsedDate = new Date(year, month, day);
+            if (!isNaN(parsedDate.getTime())) {
+              payload.dob = parsedDate;
+            }
+          } else {
+            // Invalid date format, don't update
+            delete payload.dob;
+          }
+        }
+      }
     }
 
     const allowedFields = [
@@ -185,7 +225,8 @@ export const updateMyProfile = async (req, res) => {
     ];
 
     allowedFields.forEach((field) => {
-      if (payload[field] !== undefined) {
+      // Only set field if it's defined and not an empty string
+      if (payload[field] !== undefined && payload[field] !== "") {
         req.user[field] = payload[field];
       }
     });
