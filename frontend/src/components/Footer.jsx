@@ -498,6 +498,18 @@ export default function Footer() {
         >
           <p>© {year} Kaumudi Sanskrit Academy. All Wisdom Reserved.</p>
 
+          <p className="opacity-70">
+            Designed & Developed by{" "}
+            <a
+              href="https://graphura.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#d6b15c] transition"
+            >
+              Graphura India Private Limited
+            </a>
+          </p>
+
           <div className="flex gap-4 sm:gap-6">
             {["Privacy", "Terms", "Cookies"].map((item) => (
               <Link
