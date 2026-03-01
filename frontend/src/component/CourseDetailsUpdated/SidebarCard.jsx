@@ -376,7 +376,7 @@ const SidebarCard = ({ price, courseData }) => {
               courseName: courseData?.title || "Sanskrit for Beginners",
               duration: courseData?.duration || "6 Months",
               language: courseData?.language || "Sanskrit/Hindi",
-              level: courseData?.level || "Beginner",
+              level: courseData?.level || "Prathama (Beginner)",
             }}
           >
             <div className="flex justify-center w-full">

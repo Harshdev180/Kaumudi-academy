@@ -38,6 +38,7 @@ import StudentManagement from "./pages/AdminDashboard/Student/StudentManagement.
 import EnrollmentManagement from "./pages/AdminDashboard/EnrollmentManagement.jsx";
 import InquiryManagement from "./pages/AdminDashboard/InquiryManagement.jsx";
 import FacultyManagement from "./pages/AdminDashboard/FacultyManagement.jsx";
+import Gallery from "./pages/AdminDashboard/Galary.jsx";
 
 // ================= STUDENT DASHBOARD =================
 import StudentLayout from "./pages/StudentProfile/Layout";
@@ -152,6 +153,7 @@ function App() {
         <Route path="/admin/student-inquiry" element={<InquiryManagement />} />
         <Route path="course" element={<CourseManagement />} />
         <Route path="coupon" element={<CouponPage />} />
+        <Route path="gallery" element={<Gallery />} />
         {/* <Route path="/admin/staff-salary" element={<AdminStaffSalary />} /> */}
         <Route
           path="/admin/student-management"

@@ -14,6 +14,7 @@ import {
   X,
   BookUser,
   UserStar,
+  Image
 } from "lucide-react";
 import logo from "../../assets/logo-bgremove.webp";
 import { useLocation, Link, useNavigate } from "react-router-dom";
@@ -114,6 +115,11 @@ function Sidebar({ collapsed, setCollapsed, isMobile, mobileOpen, setMobileOpen 
       path: "/admin/enroll-students",
       label: "Student Fees ",
       icon: <BookUser size={18} />,
+    },
+    {
+      path: "/admin/gallery",
+      label: "Gallery",
+      icon: <Image size={18} />,
     },
   ];
 

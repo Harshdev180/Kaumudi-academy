@@ -16,7 +16,7 @@ export const getAllStudents = async (req, res) => {
       .sort({ createdAt: -1 });
 
     const students = enrollments.map(enrollment => ({
-      ...enrollment.student.toObject(),
+      ...enrollment.student?.toObject(),
       course: enrollment.course
     }));
 

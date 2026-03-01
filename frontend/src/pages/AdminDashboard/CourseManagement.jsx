@@ -25,7 +25,7 @@ const CourseManagement = () => {
     syllabus: "",
     duration: "",
     faculty: "",
-    level: "Beginner",
+    level: "Prathama (Beginner)",
     mode: "ONLINE",
     price: "",
     status: "Draft",
@@ -152,6 +152,7 @@ const CourseManagement = () => {
       payload.append("instructor", form.instructor);
       payload.append("mode", form.mode);
       payload.append("price", Number(form.price));
+      payload.append("level", form.level);
 
       // ✅ language → JSON stringified array (validator parses JSON.parse on string)
       const langs =
@@ -192,7 +193,9 @@ const CourseManagement = () => {
                 ...c,
                 title: updated.title,
                 description: updated.description,
-                faculty: updated.instructor || updated.faculty || "",
+                // ✅ Extract strings, never store objects
+                faculty: updated.instructor?.name || updated.faculty || "",
+                instructor: updated.instructor?._id || updated.instructor || "",
                 level: updated.level || c.level,
                 dur: updated.duration,
                 mode: updated.mode,
@@ -221,7 +224,8 @@ const CourseManagement = () => {
           id: created._id,
           title: created.title,
           description: created.description,
-          faculty: created.instructor || created.faculty || "",
+          faculty: created.instructor?.name || created.faculty || "",
+          instructor: created.instructor?._id || created.instructor || "",
           level: created.level || "Beginner",
           dur: created.duration,
           mode: created.mode,
@@ -543,7 +547,7 @@ const CourseManagement = () => {
                 Get started by creating your first course
               </p>
               <button
-                onClick={openCreateModal}
+                onClick={openAdd}
                 className="px-6 py-3 bg-[#6b1d14] text-white rounded-xl font-semibold hover:bg-[#8b2d21] transition-colors"
               >
                 Create New Course
