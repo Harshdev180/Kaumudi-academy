@@ -7,7 +7,8 @@ import {
   getMyProfile,
   updateMyProfile,
   getMySettings,
-  updateMySettings
+  updateMySettings,
+  changeMyPassword
 } from "../controllers/profile.controller.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
@@ -42,6 +43,7 @@ router.put("/me", updateMyProfile);
  */
 router.get("/settings", getMySettings);
 router.put("/settings", updateMySettings);
+router.put("/change-password", changeMyPassword);
 router.get("/stats", getDashboardStats);
 router.get("/recent", getRecentEnrollments);
 

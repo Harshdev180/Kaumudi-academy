@@ -9,7 +9,8 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("kaumudi_token");
+  // Check for both token keys - "kaumudi_token" for students, "token" for other users
+  let token = localStorage.getItem("kaumudi_token") || localStorage.getItem("token");
 
   if (token && token !== "null" && token !== "undefined") {
     config.headers.Authorization = `Bearer ${token}`;
@@ -436,6 +437,11 @@ export async function getProfileSettings() {
 
 export async function updateProfileSettings(settingsData) {
   const res = await api.put("/profile/settings", settingsData);
+  return res.data;
+}
+
+export async function changePassword(passwordData) {
+  const res = await api.put("/profile/change-password", passwordData);
   return res.data;
 }
 

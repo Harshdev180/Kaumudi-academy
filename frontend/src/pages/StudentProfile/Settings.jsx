@@ -21,6 +21,7 @@ import {
   updateProfileMe,
   getProfileSettings,
   updateProfileSettings,
+  changePassword
 } from "../../lib/api";
 
 const Settings = () => {
@@ -292,47 +293,150 @@ const DetailItem = ({ icon, label, val, isEditing, onChange }) => (
   </div>
 );
 
-const ChangePasswordView = () => (
-  <div className="animate-in fade-in slide-in-from-right-4 duration-700 max-w-7xl mx-auto py-3">
-    <div className="bg-[#fdfbf7] p-8 rounded-[2.5rem] border border-[#e6d5b8]/30 relative overflow-hidden">
-      <div className="absolute top-0 right-0 p-8 opacity-[0.03] text-[#74271E]">
-        <Lock size={120} />
-      </div>
-      <div className="relative z-10 space-y-6 sm:space-y-8">
-        <div className="text-center space-y-2">
-          <h3 className="text-xl font-bold text-gray-800">
-            Update Credentials
-          </h3>
-          <p className="text-xs text-gray-400 font-medium uppercase tracking-widest">
-            Ensure your account remains secure
-          </p>
+const ChangePasswordView = () => {
+  const [passwords, setPasswords] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const handleChange = (e) => {
+    setPasswords({
+      ...passwords,
+      [e.target.name]: e.target.value
+    });
+    setError("");
+    setSuccess("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    // Validation
+    if (!passwords.currentPassword || !passwords.newPassword || !passwords.confirmPassword) {
+      setError("All password fields are required");
+      return;
+    }
+
+    if (passwords.newPassword !== passwords.confirmPassword) {
+      setError("New password and confirm password do not match");
+      return;
+    }
+
+    if (passwords.newPassword.length < 6) {
+      setError("New password must be at least 6 characters");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await changePassword({
+        currentPassword: passwords.currentPassword,
+        newPassword: passwords.newPassword,
+        confirmPassword: passwords.confirmPassword
+      });
+      setSuccess("Password changed successfully!");
+      setPasswords({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: ""
+      });
+    } catch (err) {
+      setError(err?.response?.data?.message || "Failed to change password");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="animate-in fade-in slide-in-from-right-4 duration-700 max-w-7xl mx-auto py-3">
+      <div className="bg-[#fdfbf7] p-8 rounded-[2.5rem] border border-[#e6d5b8]/30 relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-8 opacity-[0.03] text-[#74271E]">
+          <Lock size={120} />
         </div>
-        <form className="space-y-4 sm:space-y-6">
-          {["Current Password", "New Password", "Confirm Password"].map(
-            (label) => (
-              <div key={label}>
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block ml-1">
-                  {label}
-                </label>
-                <input
-                  type="password"
-                  className="w-full px-5 sm:px-6 py-3 sm:py-4 bg-white border border-gray-100 rounded-2xl outline-none focus:ring-2 focus:ring-[#74271E]/10 text-sm font-medium"
-                  placeholder="••••••••"
-                />
+        <div className="relative z-10 space-y-6 sm:space-y-8">
+          <div className="text-center space-y-2">
+            <h3 className="text-xl font-bold text-gray-800">
+              Update Credentials
+            </h3>
+            <p className="text-xs text-gray-400 font-medium uppercase tracking-widest">
+            Ensure your account remains secure
+            </p>
+          </div>
+          <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm font-medium">
+                {error}
               </div>
-            ),
-          )}
-          <button
-            type="button"
-            className="w-full mt-4 bg-[#74271E] text-white py-3.5 sm:py-4 rounded-2xl font-bold text-sm shadow-xl hover:bg-[#5a1e17] transition-all flex items-center justify-center gap-2"
-          >
-            <Save size={18} /> Save New Credentials
-          </button>
-        </form>
+            )}
+            {success && (
+              <div className="p-3 bg-green-50 border border-green-200 rounded-xl text-green-600 text-sm font-medium">
+                {success}
+              </div>
+            )}
+            <div>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block ml-1">
+                Current Password
+              </label>
+              <input
+                type="password"
+                name="currentPassword"
+                value={passwords.currentPassword}
+                onChange={handleChange}
+                className="w-full px-5 sm:px-6 py-3 sm:py-4 bg-white border border-gray-100 rounded-2xl outline-none focus:ring-2 focus:ring-[#74271E]/10 text-sm font-medium"
+                placeholder="••••••••"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block ml-1">
+                New Password
+              </label>
+              <input
+                type="password"
+                name="newPassword"
+                value={passwords.newPassword}
+                onChange={handleChange}
+                className="w-full px-5 sm:px-6 py-3 sm:py-4 bg-white border border-gray-100 rounded-2xl outline-none focus:ring-2 focus:ring-[#74271E]/10 text-sm font-medium"
+                placeholder="••••••••"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block ml-1">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                name="confirmPassword"
+                value={passwords.confirmPassword}
+                onChange={handleChange}
+                className="w-full px-5 sm:px-6 py-3 sm:py-4 bg-white border border-gray-100 rounded-2xl outline-none focus:ring-2 focus:ring-[#74271E]/10 text-sm font-medium"
+                placeholder="••••••••"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full mt-4 bg-[#74271E] text-white py-3.5 sm:py-4 rounded-2xl font-bold text-sm shadow-xl hover:bg-[#5a1e17] transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+            >
+              {loading ? (
+                "Changing Password..."
+              ) : (
+                <>
+                  <Save size={18} /> Save New Credentials
+                </>
+              )}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const NotificationView = ({ notifications, setNotifications }) => (
   <div className="animate-in fade-in zoom-in-95 duration-700 space-y-6 sm:space-y-10">
