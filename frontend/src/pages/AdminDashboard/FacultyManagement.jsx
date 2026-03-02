@@ -57,17 +57,17 @@ const FacultyManagement = () => {
         if (mounted) {
           const mapped = Array.isArray(list)
             ? list.map((item) => ({
-                id: item?._id || item?.id,
-                name: item?.name || "Unnamed",
-                course: item?.role || "Faculty",
-                description: item?.description || "",
-                salary: item?.salary ?? 0,
-                bonus: item?.bonus ?? 0,
-                deduction: item?.deduction ?? 0,
-                netSalary: item?.netSalary ?? item?.salary ?? 0,
-                status: item?.status || "ACTIVE",
-                paid: !!item?.paid,
-              }))
+              id: item?._id || item?.id,
+              name: item?.name || "Unnamed",
+              course: item?.role || "Faculty",
+              description: item?.description || "",
+              salary: item?.salary ?? 0,
+              bonus: item?.bonus ?? 0,
+              deduction: item?.deduction ?? 0,
+              netSalary: item?.netSalary ?? item?.salary ?? 0,
+              status: item?.status || "ACTIVE",
+              paid: !!item?.paid,
+            }))
             : [];
           setFaculty(mapped);
         }
@@ -141,25 +141,25 @@ const FacultyManagement = () => {
 
     // Validate numeric fields
     const errors = {};
-    
+
     // Salary validation
     const salaryNum = Number(form.salary);
-    if (!form.salary || form.salary.trim() === "") {
+    if (!form.salary) {
       errors.salary = "Salary is required";
     } else if (isNaN(salaryNum) || salaryNum < 0) {
       errors.salary = "Salary must be a valid positive number";
     }
-    
+
     // Bonus validation (optional but must be valid if provided)
-    if (form.bonus && form.bonus.trim() !== "") {
+    if (form.bonus) {
       const bonusNum = Number(form.bonus);
       if (isNaN(bonusNum) || bonusNum < 0) {
         errors.bonus = "Bonus must be a valid positive number";
       }
     }
-    
+
     // Deduction validation (optional but must be valid if provided)
-    if (form.deduction && form.deduction.trim() !== "") {
+    if (form.deduction) {
       const deductionNum = Number(form.deduction);
       if (isNaN(deductionNum) || deductionNum < 0) {
         errors.deduction = "Deduction must be a valid positive number";
@@ -200,30 +200,32 @@ const FacultyManagement = () => {
       const created = responsePayload?.data ?? responsePayload;
       const next = created
         ? {
-            id: created?._id || created?.id,
-            name: created?.name || form.name,
-            course: created?.role || form.role,
-            salary: created?.salary ?? form.salary,
-            bonus: created?.bonus ?? form.bonus ?? 0,
-            deduction: created?.deduction ?? form.deduction ?? 0,
-            netSalary: created?.netSalary ?? created?.salary ?? form.salary,
-            status: created?.status || form.status || "ACTIVE",
-            paid: !!created?.paid,
-          }
+          id: created?._id || created?.id,
+          name: created?.name || form.name,
+          course: created?.role || form.role,
+          description: created?.description ?? form.description ?? "",
+          salary: created?.salary ?? form.salary,
+          bonus: created?.bonus ?? form.bonus ?? 0,
+          deduction: created?.deduction ?? form.deduction ?? 0,
+          netSalary: created?.netSalary ?? created?.salary ?? form.salary,
+          status: created?.status || form.status || "ACTIVE",
+          paid: !!created?.paid,
+        }
         : {
-            id: Date.now(),
-            name: form.name,
-            course: form.role,
-            salary: form.salary,
-            bonus: form.bonus || 0,
-            deduction: form.deduction || 0,
-            netSalary:
-              Number(form.salary || 0) +
-              Number(form.bonus || 0) -
-              Number(form.deduction || 0),
-            status: form.status || "ACTIVE",
-            paid: false,
-          };
+          id: Date.now(),
+          name: form.name,
+          course: form.role,
+          description: form.description,
+          salary: form.salary,
+          bonus: form.bonus || 0,
+          deduction: form.deduction || 0,
+          netSalary:
+            Number(form.salary || 0) +
+            Number(form.bonus || 0) -
+            Number(form.deduction || 0),
+          status: form.status || "ACTIVE",
+          paid: false,
+        };
 
       setFaculty((prev) =>
         editingId
@@ -362,11 +364,10 @@ const FacultyManagement = () => {
 
               <div className="flex flex-wrap gap-2 mb-4">
                 <span
-                  className={`text-[10px] px-2 py-1 rounded-full font-bold ${
-                    f.status === "ACTIVE"
+                  className={`text-[10px] px-2 py-1 rounded-full font-bold ${f.status === "ACTIVE"
                       ? "bg-green-100 text-green-700"
                       : "bg-zinc-200 text-zinc-600"
-                  }`}
+                    }`}
                 >
                   {f.status}
                 </span>

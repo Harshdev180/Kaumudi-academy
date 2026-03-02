@@ -2,7 +2,7 @@ import Course from "../models/Course.model.js";
 import cloudinary from "../configs/cloudinary.js";
 import fs from "fs";
 import Enrollment from "../models/Enrollment.model.js";
-
+import Staff from "../models/Staff.model.js";
 /* =========================
    HELPER: Parse language field
 ========================= */
@@ -275,14 +275,11 @@ export const getAllCourses = async (req, res) => {
   }
 };
 
-/* =========================
-   GET COURSE DETAIL (PUBLIC)
-========================= */
 export const getCourseDetail = async (req, res) => {
   try {
     const course = await Course.findById(req.params.id)
-      .populate("instructor", "name role image")
-      .populate("createdBy", "name email");
+      .populate("instructor")
+      .populate("createdBy");
 
     if (!course) {
       return res.status(404).json({
@@ -291,10 +288,8 @@ export const getCourseDetail = async (req, res) => {
       });
     }
 
-    return res.json({
-      success: true,
-      data: course,
-    });
+    return res.json({ success: true, data: course });
+
   } catch (error) {
     console.error("GET COURSE DETAIL ERROR:", error);
     return res.status(500).json({

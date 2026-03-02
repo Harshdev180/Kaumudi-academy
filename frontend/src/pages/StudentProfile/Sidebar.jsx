@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { api } from "../../lib/api";
 import {
   LayoutDashboard,
   BookOpen,
@@ -53,15 +54,7 @@ const Sidebar = () => {
 
   const handleDeleteAccount = async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      // await fetch("http://localhost:5000/api/user/delete", {
-      await fetch("https://kaumudi-academy.onrender.com/api/user/delete", {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.delete("/user/delete");
 
       localStorage.removeItem("token");
       navigate("/", { replace: true });

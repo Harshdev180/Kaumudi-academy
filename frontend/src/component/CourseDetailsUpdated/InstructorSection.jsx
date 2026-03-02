@@ -1,5 +1,4 @@
 const InstructorSection = ({ instructor }) => {
-  console.log(instructor)
   // If no instructor assigned, show a clean placeholder
   if (!instructor || !instructor.name || instructor.name === "Instructor TBA") {
     return (

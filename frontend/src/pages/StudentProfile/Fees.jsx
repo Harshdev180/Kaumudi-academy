@@ -14,7 +14,6 @@ import {
 import { useEffect } from "react";
 import { getProfileEnrollments } from "../../lib/api";
 import { createPaymentOrder } from "../../lib/api";
-import logo from "../../assets/logo-bgremove.webp";
 
 const FeePurchase = () => {
   const [paymentHistory, setPaymentHistory] = useState([]);
@@ -24,10 +23,10 @@ const FeePurchase = () => {
     const loadFees = async () => {
       try {
         const res = await getProfileEnrollments();
+        console.log("enrollment data:", res.data); // check shape first
 
-        // adjust if your backend structure differs abc
         const formatted = res.data.map((item) => ({
-          id: item._id,
+          id: item._id.toString(),  // ← ObjectId to string
           date: new Date(item.createdAt).toLocaleDateString(),
           desc: item.course?.title || "Course",
           type: item.course?.category || "Academic",
@@ -107,307 +106,16 @@ const FeePurchase = () => {
     if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
 
-  const formatINR = (n) => `₹ ${Number(n || 0).toLocaleString("en-IN")}`;
-
-  const handleDownloadReceipt = (item) => {
-    const remaining = (item.totalAmount || 0) - (item.paidAmount || 0);
-    const status =
-      (item.paidAmount || 0) >= (item.totalAmount || 0) ? "Paid" : "Pending";
-
-    const html = `
-  <!doctype html>
-  <html>
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <title>Receipt ${item.id || ""}</title>
-
-      <style>
-        body {
-          font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-          background:#faf7f2;
-          color:#2D2417;
-          margin:0;
-        }
-
-        .container {
-          max-width: 720px;
-          margin: 30px auto;
-          background:#ffffff;
-          border:1px solid #e8dfd0;
-          border-radius:16px;
-          padding:32px;
-        }
-
-        /* HEADER */
-        .header {
-          display:flex;
-          justify-content:space-between;
-          align-items:center;
-          border-bottom:1px solid #eee3d2;
-          padding-bottom:18px;
-          margin-bottom:22px;
-        }
-
-        .brand {
-          display:flex;
-          align-items:center;
-          gap:14px;
-        }
-
-        .logo-box {
-          background:#74271E;
-          height:48px;
-          width:48px;
-          border-radius:12px;
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          box-shadow:0 0 18px rgba(214,177,92,0.45);
-        }
-
-        .logo-box img {
-          height:32px;
-          width:auto;
-        }
-
-        .brand-title {
-          font-size:18px;
-          font-weight:800;
-          color:#74271E;
-        }
-
-        .brand-sub {
-          font-size:12px;
-          color:#6b4b3e;
-        }
-
-        .receipt-meta {
-          text-align:right;
-        }
-
-        .title {
-          font-size:20px;
-          font-weight:800;
-          color:#74271E;
-        }
-
-        .meta {
-          font-size:12px;
-          color:#6b4b3e;
-        }
-
-        .section {
-          padding-top:14px;
-          margin-top:14px;
-        }
-
-        .details-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          row-gap: 16px;   /* reduced */
-          column-gap: 40px;
-          margin-top: 6px; /* slightly tighter */
-        }
-
-        .detail {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-
-        .detail.right {
-          text-align: right;
-          align-items: flex-end;
-        }
-
-        .row {
-          display:flex;
-          justify-content:space-between;
-          align-items:center;
-          margin:10px 0;
-        }
-
-        .label {
-          font-size:12px;
-          font-weight:700;
-          color:#8c7a56;
-          letter-spacing:0.08em;
-          text-transform:uppercase;
-        }
-
-        .value {
-          font-size:14px;
-          font-weight:700;
-          color:#2D2417;
-        }
-
-        .amount {
-          font-size:18px;
-          font-weight:800;
-          color:#74271E;
-        }
-
-        .badge {
-          display:inline-block;
-          padding:6px 12px;
-          border-radius:999px;
-          font-size:11px;
-          font-weight:700;
-        }
-
-        .badge-paid {
-          background:#ecf7f1;
-          color:#0f766e;
-          border:1px solid #a7f3d0;
-        }
-
-        .badge-pending {
-          background:#fff7ed;
-          color:#b45309;
-          border:1px solid #fed7aa;
-        }
-
-        .footer {
-          margin-top:24px;
-          font-size:11px;
-          color:#6b4b3e;
-          border-top:1px solid #eee3d2;
-          padding-top:14px;
-        }
-
-        @media print {
-          .actions { display:none }
-          .container { box-shadow:none; }
-        }
-
-        .actions {
-          margin-top:20px;
-          display:flex;
-          gap:10px;
-        }
-
-        .btn {
-          padding:10px 14px;
-          background:#74271E;
-          color:#fff;
-          border:none;
-          border-radius:10px;
-          font-weight:800;
-          font-size:12px;
-          letter-spacing:0.08em;
-          cursor:pointer;
-        }
-
-        .btn-outline {
-          background:#fff;
-          color:#74271E;
-          border:1px solid #74271E;
-        }
-
-      </style>
-    </head>
-
-    <body>
-      <div class="container">
-
-        <!-- HEADER -->
-        <div class="header">
-          <div class="brand">
-            <div class="logo-box">
-              <img src="${logo}" alt="logo" />
-            </div>
-            <div>
-              <div class="brand-title">Kaumudi Sanskrit Academy</div>
-              <div class="brand-sub">Excellence in Sanskrit Learning</div>
-            </div>
-          </div>
-
-          <div class="receipt-meta">
-            <div class="title">Payment Receipt</div>
-            <div class="meta">Receipt No: ${item.id || "-"}</div>
-          </div>
-        </div>
-
-        <!-- DETAILS -->
-        <div class="section">
-          <div class="details-grid">
-
-            <div class="detail">
-              <div class="label">Date</div>
-              <div class="value">${item.date || "-"}</div>
-            </div>
-
-            <div class="detail right">
-              <div class="label">Status</div>
-              <span class="badge ${
-                status === "Paid" ? "badge-paid" : "badge-pending"
-              }">${status}</span>
-            </div>
-
-            <div class="detail">
-              <div class="label">Course</div>
-              <div class="value">${item.desc || "Course"}</div>
-            </div>
-
-            <div class="detail right">
-              <div class="label">Category</div>
-              <div class="value">${item.type || "Academic"}</div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- AMOUNTS -->
-        <div class="section">
-          <div class="row">
-            <div class="label">Total Amount</div>
-            <div class="amount">${formatINR(item.totalAmount)}</div>
-          </div>
-          <div class="row">
-            <div class="label">Paid Amount</div>
-            <div class="amount">${formatINR(item.paidAmount)}</div>
-          </div>
-          <div class="row">
-            <div class="label">Remaining</div>
-            <div class="amount">${formatINR(remaining)}</div>
-          </div>
-        </div>
-
-        <!-- FOOTER -->
-        <div class="footer">
-          This is a computer-generated receipt.  
-          For queries, contact ksacademy@gmail.com.
-        </div>
-
-        <div class="actions">
-          <button class="btn" onclick="window.print()">Print</button>
-          <button class="btn btn-outline" onclick="window.close()">Close</button>
-        </div>
-
-      </div>
-    </body>
-  </html>
-  `;
-
-    const w = window.open("", "PRINT", "height=700,width=900");
-    if (!w) return;
-    w.document.write(html);
-    w.document.close();
-    w.focus();
-  };
-
   if (loading) {
     return (
-      <div className="p-10 text-center text-gray-400">Loading fee data...</div>
+      <div className="p-10 text-center text-gray-400">
+        Loading fee data...
+      </div>
     );
   }
+
   return (
     <div className="max-w-6xl mx-auto space-y-12 pb-16 mt-4 px-4">
-      {/* PAGE HEADER */}
-      {/* <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-      {/* PAGE HEADER */}
-      {/* <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
       {/* PAGE HEADER */}
       {/* <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
@@ -436,12 +144,8 @@ const FeePurchase = () => {
 
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">
-                  {item.label}
-                </p>
-                <h4 className="text-2xl font-semibold text-[#74271E]">
-                  ₹ {item.amount}
-                </h4>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">{item.label}</p>
+                <h4 className="text-2xl font-semibold text-[#74271E]">₹ {item.amount}</h4>
               </div>
 
               <div className="w-10 h-10 shrink-0 rounded-xl bg-[#74271E]/5 flex items-center justify-center text-[#c9a050] group-hover:bg-[#74271E]/10 transition">
@@ -486,8 +190,7 @@ const FeePurchase = () => {
 
             <tbody className="divide-y divide-[#f3ede3]">
               {currentRows.map((item) => {
-                const isPaid =
-                  item.isPaid || item.paidAmount >= item.totalAmount;
+                const isPaid = item.paidAmount >= item.totalAmount;
                 const remaining = item.totalAmount - item.paidAmount;
 
                 return (
@@ -536,10 +239,7 @@ const FeePurchase = () => {
                     </td>
 
                     <td className="px-8 py-5 text-right">
-                      <button
-                        onClick={() => handleDownloadReceipt(item)}
-                        className="inline-flex items-center shrink-0 whitespace-nowrap gap-2 px-4 py-2 bg-white border border-[#e8dfd0] text-gray-600 rounded-xl text-xs font-semibold hover:border-[#74271E] hover:text-[#74271E] transition-all hover:shadow-md"
-                      >
+                      <button className="inline-flex items-center shrink-0 whitespace-nowrap gap-2 px-4 py-2 bg-white border border-[#e8dfd0] text-gray-600 rounded-xl text-xs font-semibold hover:border-[#74271E] hover:text-[#74271E] transition-all hover:shadow-md">
                         <Download size={14} className="shrink-0" />
                         Download
                       </button>
