@@ -66,10 +66,17 @@ export default function StudentProfile() {
     { id: "settings", label: "Vinyasa", sub: "Settings", icon: Settings },
   ];
 
+  const displayName = useMemo(() => {
+    if (profile.name && profile.name.trim()) return profile.name.trim();
+    const parts = [profile.firstName, profile.lastName].filter(Boolean);
+    if (parts.length) return parts.join(" ").trim();
+    return profile.email?.split("@")[0] || "Student";
+  }, [profile.name, profile.firstName, profile.lastName, profile.email]);
+
   const initials = useMemo(() => {
-    const parts = (profile.name || "").split(" ").filter(Boolean);
+    const parts = displayName.split(" ").filter(Boolean);
     return ((parts[0]?.[0] || "") + (parts[1]?.[0] || "")).toUpperCase();
-  }, [profile.name]);
+  }, [displayName]);
 
   // Show notification
   const showNotification = (message, type = "success") => {
@@ -185,7 +192,7 @@ export default function StudentProfile() {
                 <GraduationCap size={14} /> Student
               </div>
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                {profile.name}
+                {displayName}
               </h1>
               <p className="text-white/70">
                 Member since {formatDate(profile.memberSince)}

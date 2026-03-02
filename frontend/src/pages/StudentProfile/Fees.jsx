@@ -25,15 +25,30 @@ const FeePurchase = () => {
       try {
         const res = await getProfileEnrollments();
 
-        // adjust if your backend structure differs abc
-        const formatted = res.data.map((item) => ({
-          id: item._id,
-          date: new Date(item.createdAt).toLocaleDateString(),
-          desc: item.course?.title || "Course",
-          type: item.course?.category || "Academic",
-          totalAmount: item?.payment?.originalAmount || 0,
-          paidAmount: item?.payment?.finalAmount || 0,
-        }));
+        // normalize payload shape: array or { data: [...] }
+        const payload = res?.data || res || [];
+        const list = Array.isArray(payload) ? payload : payload?.data || [];
+        const formatted = list.map((item) => {
+          let total =
+            item?.payment?.originalAmount ??
+            item?.course?.price ??
+            0;
+          if (typeof total === "string") {
+            total = parseInt(total.replace(/[^0-9]/g, "")) || 0;
+          }
+          let paid = item?.payment?.finalAmount ?? 0;
+          if (typeof paid === "string") {
+            paid = parseInt(paid.replace(/[^0-9]/g, "")) || 0;
+          }
+          return {
+            id: item._id,
+            date: new Date(item.createdAt || item.date).toLocaleDateString(),
+            desc: item.course?.title || "Course",
+            type: item.course?.category || "Academic",
+            totalAmount: typeof total === "number" ? total : 0,
+            paidAmount: typeof paid === "number" ? paid : 0,
+          };
+        });
 
         setPaymentHistory(formatted);
       } catch (err) {

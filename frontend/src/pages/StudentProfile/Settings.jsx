@@ -24,6 +24,7 @@ import {
   updateProfileSettings,
   changePassword,
 } from "../../lib/api";
+import Sanscript from "sanscript";
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState("student details");
@@ -75,6 +76,8 @@ const Settings = () => {
     );
   }
 
+  const hindi = Sanscript(profile.hindiName || "");
+
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-700 pb-10 ">
       {/* TOP SECTION: Header & Status Card */}
@@ -96,7 +99,7 @@ const Settings = () => {
             <h2 className="text-3xl font-serif font-bold text-gray-800 tracking-tight">
               {profile.firstName} {profile.lastName}{" "}
               <span className="text-gray-300 mx-1 sm:mx-2 font-light">/</span>{" "}
-              <span className="block sm:inline">{profile.hindiName}</span>
+              <span className="block sm:inline">{hindi}</span>
             </h2>
             <div className="flex flex-wrap justify-center sm:justify-start gap-2 sm:gap-3">
               <span className="px-3 sm:px-4 py-1 sm:py-1.5 bg-[#f7f1e3] text-[#c9a050] text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-full border border-[#c9a050]/20">
@@ -236,6 +239,7 @@ const Settings = () => {
                     val={profile.email}
                     isEditing={isEditing}
                     onChange={(v) => handleInputChange("email", v)}
+                    inputType="email"
                   />
                   <DetailItem
                     icon={<Smartphone size={15} />}
@@ -243,6 +247,7 @@ const Settings = () => {
                     val={profile.phone}
                     isEditing={isEditing}
                     onChange={(v) => handleInputChange("phone", v)}
+                    inputType="tel"
                   />
                   <DetailItem
                     icon={<MapPin size={15} />}
@@ -300,6 +305,23 @@ const DetailItem = ({ icon, label, val, isEditing, onChange, inputType }) => (
             min="1900-01-01"
             max={format(new Date(), "yyyy-MM-dd")}
             className="w-full text-sm sm:text-base font-bold text-gray-700 border-b-2 border-[#c9a050]/30 focus:border-[#c9a050] outline-none bg-transparent py-1 transition-all"
+          />
+        ) : inputType === "email" ? (
+          <input
+            type="email"
+            value={val || ""}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full text-sm sm:text-base font-bold text-gray-700 border-b-2 border-[#c9a050]/30 focus:border-[#c9a050] outline-none bg-transparent py-1 transition-all"
+            placeholder="name@example.com"
+          />
+        ) : inputType === "tel" ? (
+          <input
+            type="tel"
+            value={val || ""}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full text-sm sm:text-base font-bold text-gray-700 border-b-2 border-[#c9a050]/30 focus:border-[#c9a050] outline-none bg-transparent py-1 transition-all"
+            placeholder="+91 9876543210"
+            pattern="^\\+?\\d{10,15}$"
           />
         ) : (
           <input
