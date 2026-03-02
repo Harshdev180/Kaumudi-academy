@@ -101,9 +101,9 @@ const AuthPage = () => {
       if (formData.address?.trim()) {
         userData.address = formData.address.trim();
       }
-      
+
       console.log("Sending OTP with user data:", userData);
-      
+
       const resp = await sendEmailOtp(formData.email, userData);
       if (resp?.success) {
         setIsOtpSent(true);
@@ -291,10 +291,10 @@ const AuthPage = () => {
           setLoading(false);
           return;
         }
-        
+
         // Debug: Log form data before creating payload
         console.log("Form Data:", formData);
-        
+
         const payload = {
           firstName: formData.firstName,
           lastName: formData.lastName,
@@ -307,10 +307,10 @@ const AuthPage = () => {
         if (formData.address?.trim()) {
           payload.address = formData.address.trim();
         }
-        
+
         // Debug: Log payload before sending
         console.log("Sending Payload:", payload);
-        
+
         await api.post("/auth/student/register", payload);
         setFormData(initialFormData);
         setIsEmailVerified(false);
@@ -425,7 +425,7 @@ const AuthPage = () => {
                     {isLogin ? (
                       <>
                         <span className="text-[#b8973d] font-bold not-italic block mb-0.5">
-                          “सा विद्या या विमुक्तye”
+                          “सा विद्या या विमुक्त”
                         </span>
                         <span className="opacity-70">
                           Knowledge is that which liberates.

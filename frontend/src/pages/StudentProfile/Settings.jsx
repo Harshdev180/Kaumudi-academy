@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { format } from "date-fns";
 import {
   User,
   Lock,
@@ -21,7 +22,7 @@ import {
   updateProfileMe,
   getProfileSettings,
   updateProfileSettings,
-  changePassword
+  changePassword,
 } from "../../lib/api";
 
 const Settings = () => {
@@ -225,6 +226,7 @@ const Settings = () => {
                     val={profile.dob}
                     isEditing={isEditing}
                     onChange={(v) => handleInputChange("dob", v)}
+                    inputType="date"
                   />
                 </div>
                 <div className="space-y-6 sm:space-y-8">
@@ -267,7 +269,7 @@ const Settings = () => {
   );
 };
 
-const DetailItem = ({ icon, label, val, isEditing, onChange }) => (
+const DetailItem = ({ icon, label, val, isEditing, onChange, inputType }) => (
   <div className="flex items-start gap-4 group">
     <div className="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-[#f7f1e3] group-hover:text-[#c9a050] transition-colors shrink-0">
       {icon}
@@ -278,15 +280,48 @@ const DetailItem = ({ icon, label, val, isEditing, onChange }) => (
       </p>
 
       {isEditing ? (
-        <input
-          type="text"
-          value={val}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full text-sm sm:text-base font-bold text-gray-700 border-b-2 border-[#c9a050]/30 focus:border-[#c9a050] outline-none bg-transparent py-1 transition-all"
-        />
+        inputType === "date" ? (
+          <input
+            type="date"
+            value={
+              val
+                ? (() => {
+                    try {
+                      const d = new Date(val);
+                      if (Number.isNaN(d.getTime())) return "";
+                      return format(d, "yyyy-MM-dd");
+                    } catch {
+                      return "";
+                    }
+                  })()
+                : ""
+            }
+            onChange={(e) => onChange(e.target.value)}
+            min="1900-01-01"
+            max={format(new Date(), "yyyy-MM-dd")}
+            className="w-full text-sm sm:text-base font-bold text-gray-700 border-b-2 border-[#c9a050]/30 focus:border-[#c9a050] outline-none bg-transparent py-1 transition-all"
+          />
+        ) : (
+          <input
+            type="text"
+            value={val}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full text-sm sm:text-base font-bold text-gray-700 border-b-2 border-[#c9a050]/30 focus:border-[#c9a050] outline-none bg-transparent py-1 transition-all"
+          />
+        )
       ) : (
         <p className="text-sm sm:text-base font-bold text-gray-700 break-words">
-          {val}
+          {inputType === "date" && val
+            ? (() => {
+                try {
+                  const d = new Date(val);
+                  if (Number.isNaN(d.getTime())) return val;
+                  return format(d, "dd MMM yyyy");
+                } catch {
+                  return val;
+                }
+              })()
+            : val}
         </p>
       )}
     </div>
@@ -297,7 +332,7 @@ const ChangePasswordView = () => {
   const [passwords, setPasswords] = useState({
     currentPassword: "",
     newPassword: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -306,7 +341,7 @@ const ChangePasswordView = () => {
   const handleChange = (e) => {
     setPasswords({
       ...passwords,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
     setError("");
     setSuccess("");
@@ -318,7 +353,11 @@ const ChangePasswordView = () => {
     setSuccess("");
 
     // Validation
-    if (!passwords.currentPassword || !passwords.newPassword || !passwords.confirmPassword) {
+    if (
+      !passwords.currentPassword ||
+      !passwords.newPassword ||
+      !passwords.confirmPassword
+    ) {
       setError("All password fields are required");
       return;
     }
@@ -338,13 +377,13 @@ const ChangePasswordView = () => {
       await changePassword({
         currentPassword: passwords.currentPassword,
         newPassword: passwords.newPassword,
-        confirmPassword: passwords.confirmPassword
+        confirmPassword: passwords.confirmPassword,
       });
       setSuccess("Password changed successfully!");
       setPasswords({
         currentPassword: "",
         newPassword: "",
-        confirmPassword: ""
+        confirmPassword: "",
       });
     } catch (err) {
       setError(err?.response?.data?.message || "Failed to change password");
@@ -360,14 +399,14 @@ const ChangePasswordView = () => {
           <Lock size={120} />
         </div>
         <div className="relative z-10 space-y-6 sm:space-y-8">
-          <div className="text-center space-y-2">
+          {/* <div className="text-center space-y-2">
             <h3 className="text-xl font-bold text-gray-800">
               Update Credentials
             </h3>
             <p className="text-xs text-gray-400 font-medium uppercase tracking-widest">
-            Ensure your account remains secure
+              Ensure your account remains secure
             </p>
-          </div>
+          </div> */}
           <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
             {error && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm font-medium">

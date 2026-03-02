@@ -79,19 +79,11 @@ export const getMyEnrollments = async (req, res) => {
     const enrollments = await Enrollment.find({
       student: req.user._id,
     })
-      .populate({
-        path: "course",
-        select:
-          "title image startDate endDate category instructor duration level mode price",
-        populate: {
-          path: "instructor",
-          select: "name role image",
-        },
-      })
-      .populate({
-        path: "payment",
-        select: "originalAmount discountAmount finalAmount status",
-      })
+      .populate(
+        "course",
+        "title image startDate endDate category instructor duration level mode",
+      )
+      .populate("payment")
       .sort({ createdAt: -1 });
 
     res.json({
