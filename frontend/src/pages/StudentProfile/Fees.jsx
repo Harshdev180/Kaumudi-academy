@@ -24,7 +24,7 @@ const FeePurchase = () => {
       try {
         const res = await getProfileEnrollments();
 
-        // adjust if your backend structure differs
+        // adjust if your backend structure differs abc
         const formatted = res.data.map((item) => ({
           id: item._id,
           date: new Date(item.createdAt).toLocaleDateString(),
