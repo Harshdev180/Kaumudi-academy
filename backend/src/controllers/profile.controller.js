@@ -80,6 +80,7 @@ export const getMyEnrollments = async (req, res) => {
         "course",
         "title image startDate endDate category instructor duration level mode"
       )
+      .populate("payment")
       .sort({ createdAt: -1 });
 
     res.json({

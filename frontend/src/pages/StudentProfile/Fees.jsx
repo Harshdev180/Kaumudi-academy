@@ -28,32 +28,14 @@ const FeePurchase = () => {
         console.log(res);
 
         // adjust if your backend structure differs
-        const formatted = (Array.isArray(res?.data) ? res.data : []).map(
-          (item) => {
-            let total =
-              item.amount ?? item.totalAmount ?? item.course?.price ?? 0;
-            if (typeof total === "string") {
-              total = parseInt(total.replace(/[^0-9]/g, "")) || 0;
-            }
-            let paid =
-              item.paidAmount ??
-              item.amountPaid ??
-              item.payment?.paidAmount ??
-              item.payment?.amountPaid ??
-              0;
-            if (typeof paid === "string") {
-              paid = parseInt(paid.replace(/[^0-9]/g, "")) || 0;
-            }
-            return {
-              id: item._id,
-              date: new Date(item.createdAt || item.date).toLocaleDateString(),
-              desc: item.course?.title || "Course",
-              type: item.course?.category || "Academic",
-              totalAmount: typeof total === "number" ? total : 0,
-              paidAmount: typeof paid === "number" ? paid : 0,
-            };
-          },
-        );
+        const formatted = res.data.map((item) => ({
+          id: item._id,
+          date: new Date(item.createdAt).toLocaleDateString(),
+          desc: item.course?.title || "Course",
+          type: item.course?.category || "Academic",
+          totalAmount: item?.payment?.originalAmount || 0,
+          paidAmount: item?.payment?.finalAmount || 0,
+        }));
 
         setPaymentHistory(formatted);
       } catch (err) {
