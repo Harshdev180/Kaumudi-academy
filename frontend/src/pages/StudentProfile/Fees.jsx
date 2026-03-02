@@ -25,37 +25,7 @@ const FeePurchase = () => {
       try {
         const res = await getProfileEnrollments();
 
-        console.log(res);
-
-        // adjust if your backend structure differs
-        // const formatted = (Array.isArray(res?.data) ? res.data : []).map(
-        //   (item) => {
-        //     // Get total from course price
-        //     let total = item.course?.price ?? 0;
-        //     if (typeof total === "string") {
-        //       total = parseInt(total.replace(/[^0-9]/g, "")) || 0;
-        //     }
-        //     // Get paid amount from payment - check finalAmount (actual amount paid)
-        //     let paid =
-        //       item.payment?.finalAmount ?? item.payment?.originalAmount ?? 0;
-        //     if (typeof paid === "string") {
-        //       paid = parseInt(paid.replace(/[^0-9]/g, "")) || 0;
-        //     }
-        //     // Get payment status
-        //     const paymentStatus = item.payment?.status || "PENDING";
-        //     const isPaymentSuccess = paymentStatus === "SUCCESS";
-        //     return {
-        //       id: item._id,
-        //       date: new Date(item.createdAt || item.date).toLocaleDateString(),
-        //       desc: item.course?.title || "Course",
-        //       type: item.course?.category || "Academic",
-        //       totalAmount: typeof total === "number" ? total : 0,
-        //       paidAmount: typeof paid === "number" ? paid : 0,
-        //       paymentStatus: paymentStatus,
-        //       isPaid: isPaymentSuccess && paid >= total,
-        //     };
-        //   },
-        // );
+        // adjust if your backend structure differs abc
         const formatted = res.data.map((item) => ({
           id: item._id,
           date: new Date(item.createdAt).toLocaleDateString(),
