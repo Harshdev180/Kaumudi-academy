@@ -14,6 +14,9 @@ const parseJSONFields = (obj) => {
 
 const validate = (schema, property) => {
   return (req, res, next) => {
+    // Debug: Log what we're validating
+    console.log(`Validating ${property}:`, req[property]);
+    
     if (property === "body" && req.is("multipart/form-data")) {
       parseJSONFields(req.body);
     }

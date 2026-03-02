@@ -68,3 +68,38 @@ export const getAllEnrollments = async (req, res) => {
     });
   }
 };
+
+/**
+ * Check if current user is enrolled in a specific course
+ */
+export const checkEnrollment = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const studentId = req.user._id;
+
+    const enrollment = await Enrollment.findOne({
+      student: studentId,
+      course: courseId,
+    }).populate("course", "title price mode");
+
+    if (enrollment) {
+      res.json({
+        success: true,
+        enrolled: true,
+        data: enrollment,
+      });
+    } else {
+      res.json({
+        success: true,
+        enrolled: false,
+        data: null,
+      });
+    }
+  } catch (error) {
+    console.error("CHECK ENROLLMENT ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to check enrollment",
+    });
+  }
+};

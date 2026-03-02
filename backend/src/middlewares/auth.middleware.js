@@ -46,6 +46,7 @@ export const authMiddleware = async (req, res, next) => {
 
     req.user = account;
     req.user.role = verify.role;
+    console.log("User role set:", req.user.role); // Debug
     next();
   } catch (error) {
     console.error("AUTH ERROR:", error);

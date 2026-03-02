@@ -21,29 +21,50 @@ export const createRazorpayOrder = async (req, res) => {
     const { courseId, couponCode, paymentMode, captchaToken } = req.body;
 
     // ================= CAPTCHA VERIFY =================
-    if (!captchaToken) {
-      return res.status(400).json({
-        success: false,
-        message: "Captcha verification required"
-      });
-    }
-    const captchaVerify = await axios.post(
-      `https://www.google.com/recaptcha/api/siteverify`,
-      null,
-      {
-        params: {
-          secret: process.env.RECAPTCHA_SECRET_KEY,
-          response: captchaToken
+    // Skip captcha verification in development mode or when SKIP_CAPTCHA is set
+    const skipCaptcha = process.env.NODE_ENV === "development" || process.env.SKIP_CAPTCHA === "true" || process.env.SKIP_CAPTCHA === true;
+    
+    if (!skipCaptcha) {
+      if (!captchaToken) {
+        return res.status(400).json({
+          success: false,
+          message: "Captcha verification required"
+        });
+      }
+      
+      try {
+        const captchaVerify = await axios.post(
+          `https://www.google.com/recaptcha/api/siteverify`,
+          null,
+          {
+            params: {
+              secret: process.env.RECAPTCHA_SECRET_KEY,
+              response: captchaToken
+            },
+            timeout: 5000 // 5 second timeout
+          }
+        );
+
+        if (!captchaVerify.data.success) {
+          return res.status(400).json({
+            success: false,
+            message: "Captcha verification failed"
+          });
+        }
+      } catch (captchaError) {
+        console.error("CAPTCHA VERIFICATION ERROR:", captchaError.message);
+        // Allow payment to proceed if captcha verification fails due to network issues
+        if (captchaError.code === 'ETIMEDOUT' || captchaError.code === 'ENOTFOUND') {
+          console.warn("Captcha verification timed out - allowing request (network issue)");
+        } else {
+          return res.status(400).json({
+            success: false,
+            message: "Captcha verification error. Please try again."
+          });
         }
       }
-    );
-
-    if (!captchaVerify.data.success) {
-
-      return res.status(400).json({
-        success: false,
-        message: "Captcha verification failed"
-      });
+    } else {
+      console.log("CAPTCHA VERIFICATION SKIPPED (development mode or SKIP_CAPTCHA=true)");
     }
     // 1. Course find
     const course = await Course.findById(courseId);
@@ -106,13 +127,38 @@ export const createRazorpayOrder = async (req, res) => {
     }
 
     // 4. Razorpay Order
+    // Validate amount before creating order (Razorpay max: 10,00,000 INR)
+    const maxRazorpayAmount = 1000000; // 10 lakh INR in rupees
+    if (finalAmount > maxRazorpayAmount) {
+      return res.status(400).json({
+        success: false,
+        message: `Course price exceeds maximum allowed amount (₹${maxRazorpayAmount.toLocaleString('en-IN')}). Please contact support.`
+      });
+    }
+
     const options = {
       amount: Math.round(finalAmount * 100),
       currency: "INR",
       receipt: `rcpt_${Date.now()}`
     };
 
-    const order = await razorpay.orders.create(options);
+    // Create order with error handling
+    let order;
+    try {
+      order = await razorpay.orders.create(options);
+    } catch (razorpayError) {
+      console.error("RAZORPAY API ERROR:", razorpayError);
+      
+      // Handle specific Razorpay errors
+      if (razorpayError.statusCode === 400) {
+        return res.status(400).json({
+          success: false,
+          message: razorpayError.error?.description || "Invalid payment amount. Please check course pricing."
+        });
+      }
+      
+      throw new Error("Payment gateway error: " + razorpayError.error?.description);
+    }
 
     // 5. Payment Create
     const payment = await Payment.create({

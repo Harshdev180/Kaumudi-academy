@@ -88,7 +88,23 @@ const AuthPage = () => {
     setIsVerifying(true);
     setOtpStatus({ type: "", msg: "" });
     try {
-      const resp = await sendEmailOtp(formData.email);
+      // Build user data payload
+      const userData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+      };
+      if (formData.phoneNumber?.trim()) {
+        userData.phoneNumber = formData.phoneNumber.trim();
+      }
+      if (formData.address?.trim()) {
+        userData.address = formData.address.trim();
+      }
+      
+      console.log("Sending OTP with user data:", userData);
+      
+      const resp = await sendEmailOtp(formData.email, userData);
       if (resp?.success) {
         setIsOtpSent(true);
         setOtpCooldown(60);
@@ -275,6 +291,10 @@ const AuthPage = () => {
           setLoading(false);
           return;
         }
+        
+        // Debug: Log form data before creating payload
+        console.log("Form Data:", formData);
+        
         const payload = {
           firstName: formData.firstName,
           lastName: formData.lastName,
@@ -287,6 +307,10 @@ const AuthPage = () => {
         if (formData.address?.trim()) {
           payload.address = formData.address.trim();
         }
+        
+        // Debug: Log payload before sending
+        console.log("Sending Payload:", payload);
+        
         await api.post("/auth/student/register", payload);
         setFormData(initialFormData);
         setIsEmailVerified(false);

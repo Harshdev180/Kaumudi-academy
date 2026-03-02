@@ -9,7 +9,8 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("kaumudi_token");
+  // Check for both token keys - "kaumudi_token" for students, "token" for other users
+  let token = localStorage.getItem("kaumudi_token") || localStorage.getItem("token");
 
   if (token && token !== "null" && token !== "undefined") {
     config.headers.Authorization = `Bearer ${token}`;
@@ -61,12 +62,9 @@ export async function registerStudent({
   email,
   password,
 }) {
-  const res = await api.post("/auth/student/register", {
-    firstName,
-    lastName,
-    email,
-    password,
-  });
+  const payload = { firstName, lastName, email, password };
+  console.log("API - registerStudent payload:", payload);
+  const res = await api.post("/auth/student/register", payload);
   return res.data;
 }
 
@@ -442,9 +440,16 @@ export async function updateProfileSettings(settingsData) {
   return res.data;
 }
 
+export async function changePassword(passwordData) {
+  const res = await api.put("/profile/change-password", passwordData);
+  return res.data;
+}
+
 // ==================== OTP (Email) APIs ====================
 export async function sendEmailOtp(email, userData) {
   // This should call the register endpoint with all user data
+  console.log("sendEmailOtp - email:", email);
+  console.log("sendEmailOtp - userData:", userData);
   const res = await api.post("/auth/student/register", userData);
   return res.data;
 }

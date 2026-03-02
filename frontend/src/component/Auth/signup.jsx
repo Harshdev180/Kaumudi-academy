@@ -41,6 +41,10 @@ export default function Signup() {
     }
     try {
       setLoading(true);
+      
+      // Debug: Log the data being sent
+      console.log("Registering student with:", { firstName, lastName, email, password });
+      
       await registerStudent({ firstName, lastName, email, password });
       localStorage.setItem("kaumudi_user_name", `${firstName} ${lastName}`.trim());
       localStorage.setItem("kaumudi_user_email", email);

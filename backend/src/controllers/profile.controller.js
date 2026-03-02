@@ -1,5 +1,6 @@
 import Enrollment from "../models/Enrollment.model.js";
 import Certificate from "../models/Certificate.model.js";
+import bcrypt from "bcryptjs";
 
 /**
  * ==============================
@@ -9,29 +10,31 @@ import Certificate from "../models/Certificate.model.js";
 export const getDashboardStats = async (req, res) => {
   try {
     const enrollments = await Enrollment.find({
-      student: req.user._id
+      student: req.user._id,
     });
 
     const total = enrollments.length;
-    const active = enrollments.filter(e => e.status === "ACTIVE").length;
-    const completed = enrollments.filter(e => e.status === "COMPLETED").length;
+    const active = enrollments.filter((e) => e.status === "ACTIVE").length;
+    const completed = enrollments.filter(
+      (e) => e.status === "COMPLETED",
+    ).length;
 
     const avgProgress =
       total === 0
         ? 0
         : Math.round(
-            enrollments.reduce((sum, e) => sum + e.progress, 0) / total
+            enrollments.reduce((sum, e) => sum + e.progress, 0) / total,
           );
 
     res.json({
       success: true,
-      data: { total, active, completed, avgProgress }
+      data: { total, active, completed, avgProgress },
     });
   } catch (error) {
     console.error("DASHBOARD STATS ERROR:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to fetch dashboard stats"
+      message: "Failed to fetch dashboard stats",
     });
   }
 };
@@ -44,24 +47,24 @@ export const getDashboardStats = async (req, res) => {
 export const getRecentEnrollments = async (req, res) => {
   try {
     const enrollments = await Enrollment.find({
-      student: req.user._id
+      student: req.user._id,
     })
       .populate(
         "course",
-        "title image startDate endDate category instructor duration level mode"
+        "title image startDate endDate category instructor duration level mode",
       )
       .sort({ createdAt: -1 })
       .limit(5);
 
     res.json({
       success: true,
-      data: enrollments
+      data: enrollments,
     });
   } catch (error) {
     console.error("RECENT ENROLLMENTS ERROR:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to fetch recent enrollments"
+      message: "Failed to fetch recent enrollments",
     });
   }
 };
@@ -74,24 +77,32 @@ export const getRecentEnrollments = async (req, res) => {
 export const getMyEnrollments = async (req, res) => {
   try {
     const enrollments = await Enrollment.find({
-      student: req.user._id
+      student: req.user._id,
     })
-      .populate(
-        "course",
-        "title image startDate endDate category instructor duration level mode"
-      )
-      .populate("payment")
+      .populate({
+        path: "course",
+        select:
+          "title image startDate endDate category instructor duration level mode price",
+        populate: {
+          path: "instructor",
+          select: "name role image",
+        },
+      })
+      .populate({
+        path: "payment",
+        select: "originalAmount discountAmount finalAmount status",
+      })
       .sort({ createdAt: -1 });
 
     res.json({
       success: true,
-      data: enrollments
+      data: enrollments,
     });
   } catch (error) {
     console.error("GET ENROLLMENTS ERROR:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to fetch enrollments"
+      message: "Failed to fetch enrollments",
     });
   }
 };
@@ -104,18 +115,18 @@ export const getMyEnrollments = async (req, res) => {
 export const getMyCertificates = async (req, res) => {
   try {
     const certificates = await Certificate.find({
-      student: req.user._id
+      student: req.user._id,
     }).populate("course", "title");
 
     res.json({
       success: true,
-      data: certificates
+      data: certificates,
     });
   } catch (error) {
     console.error("GET CERTIFICATES ERROR:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to fetch certificates"
+      message: "Failed to fetch certificates",
     });
   }
 };
@@ -143,13 +154,13 @@ export const getMyProfile = async (req, res) => {
 
     res.json({
       success: true,
-      data: userObj
+      data: userObj,
     });
   } catch (error) {
     console.error("GET PROFILE ERROR:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to fetch profile"
+      message: "Failed to fetch profile",
     });
   }
 };
@@ -163,12 +174,44 @@ export const updateMyProfile = async (req, res) => {
 
     if (payload.name && !payload.firstName && !payload.lastName) {
       const parts = String(payload.name).trim().split(/\s+/);
-      payload.firstName = parts.shift() || "";
-      payload.lastName = parts.join(" ");
+      payload.firstName = parts.shift();
+      payload.lastName = parts.join(" ") || undefined; // Don't set empty string for required field
     }
 
     if (payload.phone && !payload.phoneNumber) {
       payload.phoneNumber = payload.phone;
+    }
+
+    // Handle date of birth - validate and parse properly
+    if (payload.dob !== undefined) {
+      if (payload.dob === "" || payload.dob === null) {
+        // Clear the dob if empty
+        payload.dob = undefined;
+      } else {
+        // Try to parse the date
+        const dobDate = new Date(payload.dob);
+        // Check if valid date
+        if (!isNaN(dobDate.getTime())) {
+          payload.dob = dobDate;
+        } else {
+          // Try parsing common date formats (MMDDYY, DDMMYY, YYMMDD)
+          const dateStr = String(payload.dob);
+          if (/^\d{6}$/.test(dateStr)) {
+            // Assume MMDDYY format
+            const month = parseInt(dateStr.substring(0, 2)) - 1;
+            const day = parseInt(dateStr.substring(2, 4));
+            let year = parseInt(dateStr.substring(4, 6));
+            year = year > 50 ? 1900 + year : 2000 + year;
+            const parsedDate = new Date(year, month, day);
+            if (!isNaN(parsedDate.getTime())) {
+              payload.dob = parsedDate;
+            }
+          } else {
+            // Invalid date format, don't update
+            delete payload.dob;
+          }
+        }
+      }
     }
 
     const allowedFields = [
@@ -182,11 +225,12 @@ export const updateMyProfile = async (req, res) => {
       "country",
       "bio",
       "sanskritKnowledge",
-      "occupation"
+      "occupation",
     ];
 
     allowedFields.forEach((field) => {
-      if (payload[field] !== undefined) {
+      // Only set field if it's defined and not an empty string
+      if (payload[field] !== undefined && payload[field] !== "") {
         req.user[field] = payload[field];
       }
     });
@@ -200,13 +244,13 @@ export const updateMyProfile = async (req, res) => {
     res.json({
       success: true,
       message: "Profile updated successfully",
-      data: userObj
+      data: userObj,
     });
   } catch (error) {
     console.error("UPDATE PROFILE ERROR:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to update profile"
+      message: "Failed to update profile",
     });
   }
 };
@@ -220,13 +264,13 @@ export const getMySettings = async (req, res) => {
   try {
     res.json({
       success: true,
-      data: req.user.settings || {}
+      data: req.user.settings || {},
     });
   } catch (error) {
     console.error("GET SETTINGS ERROR:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to fetch settings"
+      message: "Failed to fetch settings",
     });
   }
 };
@@ -243,16 +287,16 @@ export const updateMySettings = async (req, res) => {
       ...req.body,
       notifications: {
         ...(currentSettings.notifications || {}),
-        ...(req.body.notifications || {})
+        ...(req.body.notifications || {}),
       },
       preferences: {
         ...(currentSettings.preferences || {}),
-        ...(req.body.preferences || {})
+        ...(req.body.preferences || {}),
       },
       security: {
         ...(currentSettings.security || {}),
-        ...(req.body.security || {})
-      }
+        ...(req.body.security || {}),
+      },
     };
 
     await req.user.save();
@@ -260,13 +304,84 @@ export const updateMySettings = async (req, res) => {
     res.json({
       success: true,
       message: "Settings updated successfully",
-      data: req.user.settings
+      data: req.user.settings,
     });
   } catch (error) {
     console.error("UPDATE SETTINGS ERROR:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to update settings"
+      message: "Failed to update settings",
+    });
+  }
+};
+
+/**
+ * ==============================
+ * 🔐 CHANGE PASSWORD
+ * ==============================
+ */
+export const changeMyPassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    // Validate required fields
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "All password fields are required",
+      });
+    }
+
+    // Check if new passwords match
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "New password and confirm password do not match",
+      });
+    }
+
+    // Check password length
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must be at least 6 characters",
+      });
+    }
+
+    // Get user with password field
+    const user = await req.user.constructor
+      .findById(req.user._id)
+      .select("+password");
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Current password is incorrect",
+      });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    console.error("CHANGE PASSWORD ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to change password",
     });
   }
 };

@@ -171,7 +171,19 @@ const EnrollmentPage = () => {
     setIsVerifying(true);
     setOtpStatus({ type: "", msg: "" });
     try {
-      const resp = await sendEmailOtp(formData.email);
+      // Build user data for registration
+      const [firstName, ...lastNameParts] = formData.fullName.split(" ");
+      const lastName = lastNameParts.join(" ") || "Student";
+      
+      const userData = {
+        firstName: firstName,
+        lastName: lastName,
+        email: formData.email,
+        phoneNumber: formData.whatsapp || "",
+        address: formData.address || "",
+      };
+      
+      const resp = await sendEmailOtp(formData.email, userData);
       if (resp?.success) {
         setIsOtpSent(true);
         setOtpStatus({ type: "success", msg: "OTP sent to your email" });
