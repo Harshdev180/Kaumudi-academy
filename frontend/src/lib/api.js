@@ -189,6 +189,17 @@ export async function fakeVerifyPayment(courseId) {
   return res.data;
 }
 
+// EMI Installment APIs
+export async function createEmiInstallment(data) {
+  const res = await api.post("/payment/create-emi-installment", data);
+  return res.data;
+}
+
+export async function verifyEmiInstallment(paymentData) {
+  const res = await api.post("/payment/verify-emi-installment", paymentData);
+  return res.data;
+}
+
 // ==================== INQUIRY APIs ====================
 export async function submitInquiry(inquiryData) {
   const res = await api.post("/inquiries", inquiryData);

@@ -16,6 +16,8 @@ import {
   getProfileEnrollments,
   createPaymentOrder,
   verifyPayment,
+  createEmiInstallment,
+  verifyEmiInstallment,
 } from "../../lib/api";
 import logo from "../../assets/logo-bgremove.webp";
 
@@ -44,7 +46,7 @@ const FeePurchase = () => {
           const originalAmount = Number(payment.originalAmount) || 0;
           const discountAmount = Number(payment.discountAmount) || 0;
           const paidAmount = Number(payment.finalAmount) || 0;
-          const paymentMode = payment.paymentMode || "FULL";
+          let paymentMode = payment.paymentMode || "FULL";
           const couponCode = payment.couponCode || null;
 
           // Calculate discounted total (original - discount)
@@ -55,10 +57,17 @@ const FeePurchase = () => {
           let remaining = 0;
           let isPaid = false;
 
-          if (paymentMode === "EMI") {
-            // For EMI, remaining is the remaining 70%
+          // Detect EMI by payment pattern: if paidAmount is ~30% of discountedTotal, treat as EMI
+          // This handles cases where paymentMode was saved incorrectly as "FULL"
+          const paidPercentage =
+            discountedTotal > 0 ? (paidAmount / discountedTotal) * 100 : 0;
+          const isEmiPattern = paidPercentage > 0 && paidPercentage < 50; // Paid less than 50% suggests EMI
+
+          if (paymentMode === "EMI" || isEmiPattern) {
+            // For EMI, remaining is the remaining amount after first payment
+            paymentMode = "EMI"; // Force EMI mode for display
             remaining = discountedTotal - paidAmount;
-            // console.log("EMI calculation:", { discountedTotal, paidAmount, remaining });
+            // console.log("EMI calculation:", { discountedTotal, paidAmount, remaining, paidPercentage });
             // Only fully paid if remaining is 0 or negative
             isPaid = remaining <= 0;
           } else {
@@ -144,15 +153,33 @@ const FeePurchase = () => {
   // Function to load Razorpay script dynamically
   const loadRazorpay = () => {
     return new Promise((resolve, reject) => {
-      if (window.Razorpay) {
+      // Check if Razorpay is already loaded - use the checkout.js version (has open method)
+      console.log(
+        "Checking Razorpay: window.Razorpay =",
+        typeof window.Razorpay,
+      );
+
+      if (window.Razorpay && typeof window.Razorpay === "function") {
         resolve();
         return;
       }
 
       const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/razorpay.js";
-      script.onload = resolve;
-      script.onerror = reject;
+      // Use checkout.js which has the open method (same as courseBuy.jsx)
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => {
+        console.log(
+          "Razorpay loaded, window.Razorpay:",
+          typeof window.Razorpay,
+        );
+        if (window.Razorpay && typeof window.Razorpay === "function") {
+          resolve();
+        } else {
+          reject(new Error("Razorpay failed to initialize"));
+        }
+      };
+      script.onerror = () =>
+        reject(new Error("Failed to load Razorpay script"));
       document.head.appendChild(script);
     });
   };
@@ -194,15 +221,36 @@ const FeePurchase = () => {
         return;
       }
 
-      // Create payment order from backend
-      const orderResponse = await createPaymentOrder({
-        courseId: courseId,
-        paymentMode: paymentMode,
-      });
+      let orderResponse;
 
-      if (!orderResponse.success) {
-        alert(orderResponse.message || "Failed to create payment order");
-        return;
+      // Check if this is an EMI payment - use the new EMI installment endpoint
+      if (paymentMode === "EMI") {
+        console.log("Creating EMI installment order for course:", courseId);
+
+        // Use the new EMI installment API for continuing EMI payments
+        orderResponse = await createEmiInstallment({
+          courseId: courseId,
+        });
+
+        console.log("EMI installment response:", orderResponse);
+
+        if (!orderResponse.success) {
+          alert(
+            orderResponse.message || "Failed to create EMI installment order",
+          );
+          return;
+        }
+      } else {
+        // Use the original payment order API for full payments
+        orderResponse = await createPaymentOrder({
+          courseId: courseId,
+          paymentMode: paymentMode,
+        });
+
+        if (!orderResponse.success) {
+          alert(orderResponse.message || "Failed to create payment order");
+          return;
+        }
       }
 
       // Get user info from localStorage for prefill
@@ -212,23 +260,44 @@ const FeePurchase = () => {
       const userEmail = localStorage.getItem("kaumudi_user_email") || "";
 
       // Razorpay options
+      console.log("Creating Razorpay with amount:", orderResponse.amount);
+
       const razorpayOptions = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: orderResponse.amount,
         currency: "INR",
         order_id: orderResponse.orderId,
         name: "Kaumudi Trust",
-        description: `Payment for ${item.desc}`,
+        description:
+          paymentMode === "EMI"
+            ? `EMI Installment for ${item.desc}`
+            : `Payment for ${item.desc}`,
         handler: async function (response) {
           try {
-            const verifyResponse = await verifyPayment({
-              razorpayOrderId: response.razorpay_order_id,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpaySignature: response.razorpay_signature,
-            });
+            let verifyResponse;
+
+            // Use the appropriate verification API based on payment mode
+            if (paymentMode === "EMI") {
+              verifyResponse = await verifyEmiInstallment({
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+                paymentId: orderResponse.paymentId,
+              });
+            } else {
+              verifyResponse = await verifyPayment({
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+              });
+            }
 
             if (verifyResponse.success) {
-              alert("Payment successful!");
+              alert(
+                paymentMode === "EMI"
+                  ? "EMI installment payment successful!"
+                  : "Payment successful!",
+              );
               window.location.reload();
             } else {
               alert("Payment verification failed.");
@@ -248,9 +317,21 @@ const FeePurchase = () => {
 
       console.log("Razorpay options:", razorpayOptions);
 
-      // Open Razorpay
-      const rzp = new window.Razorpay(razorpayOptions);
-      rzp.open();
+      // Open Razorpay - using checkout.js version (has open method)
+      try {
+        const RazorpayConstructor = window.Razorpay;
+        console.log("Razorpay constructor:", typeof RazorpayConstructor);
+
+        if (!RazorpayConstructor) {
+          throw new Error("Razorpay not available");
+        }
+
+        const rzp = new RazorpayConstructor(razorpayOptions);
+        rzp.open();
+      } catch (openError) {
+        console.error("Error opening Razorpay:", openError);
+        alert("Failed to open payment window. Please try again.");
+      }
     } catch (err) {
       console.error("Payment error:", err);
       alert("Payment failed: " + (err.message || "Unknown error"));
@@ -779,7 +860,10 @@ const FeePurchase = () => {
                     </td>
 
                     <td className="px-8 py-5 text-right">
-                      <button className="inline-flex items-center shrink-0 whitespace-nowrap gap-2 px-4 py-2 bg-white border border-[#e8dfd0] text-gray-600 rounded-xl text-xs font-semibold hover:border-[#74271E] hover:text-[#74271E] transition-all hover:shadow-md">
+                      <button
+                        className="inline-flex items-center shrink-0 whitespace-nowrap gap-2 px-4 py-2 bg-white border border-[#e8dfd0] text-gray-600 rounded-xl text-xs font-semibold hover:border-[#74271E] hover:text-[#74271E] transition-all hover:shadow-md"
+                        onClick={handleDownloadReceipt}
+                      >
                         <Download size={14} className="shrink-0" />
                         Download
                       </button>
