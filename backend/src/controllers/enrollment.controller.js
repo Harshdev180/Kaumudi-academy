@@ -34,6 +34,7 @@ export const getMyEnrollments = async (req, res) => {
       student: req.user._id,
     })
       .populate("course")
+      .populate("payment")
       .sort({ createdAt: -1 });
 
     res.json({

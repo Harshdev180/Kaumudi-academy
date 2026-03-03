@@ -1,6 +1,7 @@
 import Enrollment from "../models/Enrollment.model.js";
 import Certificate from "../models/Certificate.model.js";
 import bcrypt from "bcryptjs";
+import Payment from "../models/Payment.model.js"
 
 /**
  * ==============================
@@ -23,8 +24,8 @@ export const getDashboardStats = async (req, res) => {
       total === 0
         ? 0
         : Math.round(
-            enrollments.reduce((sum, e) => sum + e.progress, 0) / total,
-          );
+          enrollments.reduce((sum, e) => sum + e.progress, 0) / total,
+        );
 
     res.json({
       success: true,
@@ -74,17 +75,108 @@ export const getRecentEnrollments = async (req, res) => {
  * VIDYA — ALL ENROLLMENTS
  * ==============================
  */
+// export const getMyEnrollments = async (req, res) => {
+//   try {
+//     const enrollments = await Enrollment.find({
+//       student: req.user._id,
+//     })
+//       .populate(
+//         "course",
+//         "title image startDate endDate category instructor duration level mode",
+//       )
+//       // In getMyEnrollments, change populate to:
+//       .populate({
+//         path: "payment",
+//         select: "originalAmount finalAmount discountAmount status",
+//         // Add this to debug:
+//         match: {}
+//       })
+//       .sort({ createdAt: -1 });
+
+//     res.json({
+//       success: true,
+//       data: enrollments,
+//     });
+//   } catch (error) {
+//     console.error("GET ENROLLMENTS ERROR:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Failed to fetch enrollments",
+//     });
+//   }
+// };
 export const getMyEnrollments = async (req, res) => {
   try {
-    const enrollments = await Enrollment.find({
-      student: req.user._id,
-    })
-      .populate(
-        "course",
-        "title image startDate endDate category instructor duration level mode",
-      )
-      .populate("payment")
-      .sort({ createdAt: -1 });
+    const enrollments = await Enrollment.aggregate([
+      // 1. Match only this student's enrollments
+      {
+        $match: {
+          student: req.user._id,
+        },
+      },
+
+      // 2. Lookup course details
+      {
+        $lookup: {
+          from: "courses",
+          localField: "course",
+          foreignField: "_id",
+          as: "course",
+        },
+      },
+      {
+        $unwind: {
+          path: "$course",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      // 3. Lookup payment details
+      {
+        $lookup: {
+          from: "payments",
+          localField: "payment",
+          foreignField: "_id",
+          as: "payment",
+        },
+      },
+      {
+        $unwind: {
+          path: "$payment",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      // 4. Shape the output — pick only needed fields
+      {
+        $project: {
+          _id: 1,
+          status: 1,
+          progress: 1,
+          enrolledAt: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          "course._id": 1,
+          "course.title": 1,
+          "course.image": 1,
+          "course.startDate": 1,
+          "course.endDate": 1,
+          "course.category": 1,
+          "course.instructor": 1,
+          "course.duration": 1,
+          "course.level": 1,
+          "course.mode": 1,
+          "payment._id": 1,
+          "payment.originalAmount": 1,
+          "payment.finalAmount": 1,
+          "payment.discountAmount": 1,
+          "payment.status": 1,
+        },
+      },
+
+      // 5. Sort newest first
+      { $sort: { createdAt: -1 } },
+    ]);
 
     res.json({
       success: true,
