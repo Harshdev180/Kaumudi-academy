@@ -75,11 +75,77 @@ const CourseDetails = () => {
   // 3. Fetch course data from API if ID is available
   useEffect(() => {
     const fetchCourse = async () => {
-      // Try to get course from location state first (navigation from CourseListing)
-      const incomingData = location.state?.course;
+      // ALWAYS fetch from API when there's an ID in the URL to get fresh data including instructor
+      if (id) {
+        // Try to fetch from API if ID is in URL
+        try {
+          setLoading(true);
+          setError("");
+          console.log("Fetching course detail for ID:", id);
+          const response = await getCourseDetail(id);
+          console.log("Full API Response:", response);
+          const apiCourse = response.data || response;
+          
+          console.log("Course API Response:", apiCourse);
+          console.log("Instructor from API:", apiCourse?.instructor);
 
-      if (incomingData) {
-        // Use data from navigation
+          // Check if instructor exists and is populated
+          const instructorData = apiCourse?.instructor;
+          console.log("Instructor data check:", {
+            exists: !!instructorData,
+            isObject: typeof instructorData === 'object',
+            name: instructorData?.name,
+            hasValidName: !!(instructorData?.name && instructorData.name !== "Instructor TBA")
+          });
+          
+          const hasValidInstructor = instructorData && 
+            typeof instructorData === 'object' && 
+            instructorData.name && 
+            instructorData.name !== "Instructor TBA";
+
+          console.log("hasValidInstructor:", hasValidInstructor);
+
+          const merged = {
+            ...defaultCourse,
+            _id: apiCourse._id || apiCourse.id,
+            id: apiCourse._id || apiCourse.id,
+            title: apiCourse.title || defaultCourse.title,
+            price: apiCourse.price || defaultCourse.price,
+            level: apiCourse.level || defaultCourse.level,
+            duration: apiCourse.duration || "",
+            language: Array.isArray(apiCourse.language)
+              ? apiCourse.language.join(", ")
+              : apiCourse.language || "",
+            image:
+              apiCourse.image?.url || apiCourse.image || defaultCourse.image,
+            description: apiCourse.description || defaultCourse.description,
+            category: apiCourse.category || "General",
+            mode: apiCourse.mode || "ONLINE",
+            startDate: apiCourse.startDate,
+            endDate: apiCourse.endDate,
+            instructor: hasValidInstructor
+              ? {
+                  name: instructorData.name,
+                  qualification: instructorData.role || "Faculty",
+                  bio: instructorData.description || "",
+                  tags: [],
+                  image: instructorData.image || null,
+                }
+              : defaultCourse.instructor,
+            curriculum: defaultCourse.curriculum,
+            schedule: defaultCourse.schedule,
+          };
+          setCourseData(merged);
+        } catch (err) {
+          console.error("Failed to fetch course:", err);
+          setError("Failed to load course details. Using default data.");
+          setCourseData(defaultCourse);
+        } finally {
+          setLoading(false);
+        }
+      } else if (location.state?.course) {
+        // Use data from navigation (course listing)
+        const incomingData = location.state.course;
         let priceValue = incomingData.price;
         if (typeof priceValue === "string") {
           priceValue = parseInt(priceValue.replace(/[^0-9]/g, "")) || 0;
@@ -110,6 +176,16 @@ const CourseDetails = () => {
                 pv = parseInt(pv.replace(/[^0-9]/g, "")) || 0;
               }
               priceValue = typeof pv === "number" ? pv : 0;
+              
+              // Also get instructor data from the matched course
+              if (match.instructor) {
+                incomingData.instructor = {
+                  name: match.instructor.name,
+                  qualification: match.instructor.role,
+                  image: match.instructor.image,
+                  bio: match.instructor.description || ""
+                };
+              }
             }
           } catch (e) {
             console.warn("Fallback pricing fetch failed", e);
@@ -160,52 +236,6 @@ const CourseDetails = () => {
             `Deep study into ${incomingData.category}. A ${incomingData.duration} immersive journey for ${incomingData.level} seekers.`,
         };
         setCourseData(merged);
-      } else if (id) {
-        // Try to fetch from API if ID is in URL
-        try {
-          setLoading(true);
-          setError("");
-          const response = await getCourseDetail(id);
-          const apiCourse = response.data || response;
-
-          const merged = {
-            ...defaultCourse,
-            _id: apiCourse._id || apiCourse.id,
-            id: apiCourse._id || apiCourse.id,
-            title: apiCourse.title || defaultCourse.title,
-            price: apiCourse.price || defaultCourse.price,
-            level: apiCourse.level || defaultCourse.level,
-            duration: apiCourse.duration || "",
-            language: Array.isArray(apiCourse.language)
-              ? apiCourse.language.join(", ")
-              : apiCourse.language || "",
-            image:
-              apiCourse.image?.url || apiCourse.image || defaultCourse.image,
-            description: apiCourse.description || defaultCourse.description,
-            category: apiCourse.category || "General",
-            mode: apiCourse.mode || "ONLINE",
-            startDate: apiCourse.startDate,
-            endDate: apiCourse.endDate,
-            instructor: apiCourse.instructor
-              ? {
-                  name: apiCourse.instructor.name,
-                  qualification: apiCourse.instructor.role || "Faculty",
-                  bio: "",
-                  tags: [],
-                  image: apiCourse.instructor.image || null,
-                }
-              : defaultCourse.instructor,
-            curriculum: defaultCourse.curriculum,
-            schedule: defaultCourse.schedule,
-          };
-          setCourseData(merged);
-        } catch (err) {
-          console.error("Failed to fetch course:", err);
-          setError("Failed to load course details. Using default data.");
-          setCourseData(defaultCourse);
-        } finally {
-          setLoading(false);
-        }
       } else {
         // No ID and no location state, use default
         setCourseData(defaultCourse);
@@ -432,6 +462,7 @@ const CourseDetails = () => {
           </div>
 
           <InstructorSection instructor={courseData.instructor} />
+          {console.log(" Passing to InstructorSection:", courseData.instructor)}
           <CurriculumAccordion curriculumData={courseData.curriculum} />
           <ScheduleTable scheduleData={courseData.schedule} />
         </div>

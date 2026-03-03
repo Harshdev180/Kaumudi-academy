@@ -1,5 +1,6 @@
 import Course from "../models/Course.model.js";
 import cloudinary from "../configs/cloudinary.js";
+import mongoose from "mongoose";
 import fs from "fs";
 import Enrollment from "../models/Enrollment.model.js";
 
@@ -62,7 +63,9 @@ export const createCourse = async (req, res) => {
       description,
       syllabus,
       duration,
-      instructor: instructor || undefined,
+      instructor: (instructor && mongoose.Types.ObjectId.isValid(instructor)) 
+        ? new mongoose.Types.ObjectId(instructor) 
+        : undefined,
       level: level || "Prathama (Beginner)",
       mode,
       price,
@@ -97,7 +100,7 @@ export const createCourse = async (req, res) => {
 export const updateCourse = async (req, res) => {
   try {
     const course = await Course.findById(req.params.id)
-      .populate("instructor", "name role image")
+      .populate("instructor", "name role image description")
       .populate("createdBy", "name email");
 
     if (!course) {
@@ -129,8 +132,13 @@ export const updateCourse = async (req, res) => {
         } else if (field === "startDate" || field === "endDate") {
           course[field] = new Date(req.body[field]);
         } else if (field === "instructor") {
-          // Allow unsetting instructor by passing empty string
-          course.instructor = req.body.instructor || undefined;
+          // Validate and convert instructor to ObjectId
+          const instructorValue = req.body.instructor;
+          if (instructorValue && mongoose.Types.ObjectId.isValid(instructorValue)) {
+            course.instructor = new mongoose.Types.ObjectId(instructorValue);
+          } else {
+            course.instructor = undefined;
+          }
         } else {
           course[field] = req.body[field];
         }
@@ -157,7 +165,7 @@ export const updateCourse = async (req, res) => {
     await course.save();
 
     // Re-populate instructor after save to return full object
-    await course.populate("instructor", "name role image");
+    await course.populate("instructor", "name role image description");
     await course.populate("createdBy", "name email");
 
     return res.json({
@@ -259,7 +267,7 @@ export const getAllCourses = async (req, res) => {
       ],
     })
       .sort({ createdAt: -1 })
-      .populate("instructor", "name role image")
+      .populate("instructor", "name role image description")
       .populate("createdBy", "name email");
 
     return res.json({
@@ -281,7 +289,7 @@ export const getAllCourses = async (req, res) => {
 export const getCourseDetail = async (req, res) => {
   try {
     const course = await Course.findById(req.params.id)
-      .populate("instructor", "name role image")
+      .populate("instructor", "name role image description")
       .populate("createdBy", "name email");
 
     if (!course) {
@@ -311,7 +319,7 @@ export const getAllCoursesForAdmin = async (req, res) => {
   try {
     const courses = await Course.find()
       .sort({ createdAt: -1 })
-      .populate("instructor", "name role image")
+      .populate("instructor", "name role image description")
       .populate("createdBy", "name email");
 
     return res.json({

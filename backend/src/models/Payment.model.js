@@ -34,6 +34,12 @@ const paymentSchema = new mongoose.Schema(
       default: null,
     },
 
+    paymentMode: {
+      type: String,
+      enum: ["FULL", "EMI", "EMI_INSTALLMENT"],
+      default: "FULL"
+    },
+
     paymentGateway: {
       type: String,
       enum: ["RAZORPAY"],
@@ -56,6 +62,18 @@ const paymentSchema = new mongoose.Schema(
       type: String,
       enum: ["PENDING", "SUCCESS", "FAILED"],
       default: "PENDING",
+    },
+
+    // For EMI installment tracking
+    isInstallment: {
+      type: Boolean,
+      default: false
+    },
+
+    parentPayment: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Payment",
+      default: null
     },
 
     notes: {
