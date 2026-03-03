@@ -257,6 +257,11 @@ export async function toggleCouponStatus(couponId) {
   return res.data;
 }
 
+export async function validateCouponCode(code) {
+  const res = await api.get(`/coupon/validate/${code}`);
+  return res.data;
+}
+
 // ==================== TESTIMONIAL APIs ====================
 export async function addTestimonial(testimonialData) {
   const res = await api.post("/testimonial", testimonialData);

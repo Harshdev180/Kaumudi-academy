@@ -32,6 +32,7 @@ import {
   updateStudentProfile,
   sendEmailOtp,
   verifyEmailOtp,
+  validateCouponCode,
 } from "../../lib/api";
 import SEO from "../../components/SEO";
 
@@ -138,27 +139,54 @@ const EnrollmentPage = () => {
     return parseInt(String(p).replace(/[^0-9]/g, "")) || 0;
   }, [courseData.price]);
 
-  // finalPayableAmount = Discount amount is applied via setDiscount() function
+  // Final price after discount
+  const finalPrice = useMemo(() => {
+    return Math.max(0, basePrice - Discount);
+  }, [basePrice, Discount]);
 
   // --- COUPON HANDLER ---
-  const applyCoupon = () => {
+  const applyCoupon = async () => {
     if (!couponCode) {
       setCouponStatus({ type: "error", msg: "Please enter a code" });
       return;
     }
+
     const code = couponCode.trim().toUpperCase();
-    if (code === "KAUMUDI10") {
-      const savings = Math.round(basePrice * 0.1);
-      setDiscount(savings);
-      setAppliedCouponName(code);
-      setCouponStatus({
-        type: "success",
-        msg: `Applied ₹${savings.toLocaleString("en-IN")} off`,
-      });
-    } else {
+    setIsApplying(true);
+    setCouponStatus({ type: "", msg: "" });
+
+    try {
+      const response = await validateCouponCode(code);
+      
+      if (response.success && response.data) {
+        const couponData = response.data;
+        let savings = 0;
+        
+        if (couponData.discountType === "percentage") {
+          const discountValue = couponData.discountPercentage || couponData.discountValue;
+          savings = Math.round(basePrice * (discountValue / 100));
+        } else if (couponData.discountType === "flat") {
+          savings = Math.min(couponData.discountValue, basePrice);
+        }
+        
+        setDiscount(savings);
+        setAppliedCouponName(code);
+        setCouponStatus({
+          type: "success",
+          msg: `Applied ₹${savings.toLocaleString("en-IN")} off`,
+        });
+      } else {
+        setDiscount(0);
+        setAppliedCouponName("");
+        setCouponStatus({ type: "error", msg: "Invalid or Expired Code" });
+      }
+    } catch (err) {
+      console.error("Coupon validation error:", err);
       setDiscount(0);
       setAppliedCouponName("");
       setCouponStatus({ type: "error", msg: "Invalid or Expired Code" });
+    } finally {
+      setIsApplying(false);
     }
   };
 
@@ -240,21 +268,34 @@ const EnrollmentPage = () => {
     setCouponError("");
 
     try {
-      // Backend simulation
-      setTimeout(() => {
-        if (couponCode.toUpperCase() === "KAUMUDI10") {
-          const savings = Math.round(basePrice * 0.1);
-          setDiscount(savings);
-          setAppliedCouponName(couponCode.toUpperCase());
-          setCouponError("");
-        } else {
-          setCouponError("Invalid or Expired Code");
-          setDiscount(0);
+      const code = couponCode.trim().toUpperCase();
+      const response = await validateCouponCode(code);
+      
+      if (response.success && response.data) {
+        const couponData = response.data;
+        let savings = 0;
+        
+        if (couponData.discountType === "percentage") {
+          const discountValue = couponData.discountPercentage || couponData.discountValue;
+          savings = Math.round(basePrice * (discountValue / 100));
+        } else if (couponData.discountType === "flat") {
+          savings = Math.min(couponData.discountValue, basePrice);
         }
-        setIsApplying(false);
-      }, 1000);
-    } catch {
-      setCouponError("Server error. Try again.");
+        
+        setDiscount(savings);
+        setAppliedCouponName(code);
+        setCouponError("");
+      } else {
+        setCouponError("Invalid or Expired Code");
+        setDiscount(0);
+        setAppliedCouponName("");
+      }
+    } catch (err) {
+      console.error("Coupon validation error:", err);
+      setCouponError("Invalid or Expired Code");
+      setDiscount(0);
+      setAppliedCouponName("");
+    } finally {
       setIsApplying(false);
     }
   };
@@ -825,6 +866,12 @@ const EnrollmentPage = () => {
                     <span>Additional Charges</span>
                     <span>₹0</span>
                   </div>
+                  {Discount > 0 && (
+                    <div className="flex justify-between items-center text-green-400 text-sm font-bold">
+                      <span>Coupon Discount</span>
+                      <span>-₹{Discount.toLocaleString("en-IN")}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between items-end pt-4">
                     <div className="flex flex-col">
                       <span className="text-[10px] uppercase font-bold tracking-widest text-stone-300">
@@ -832,14 +879,7 @@ const EnrollmentPage = () => {
                       </span>
                       <span className="text-3xl font-black text-white">
                         ₹
-                        {(typeof courseData.price === "number"
-                          ? courseData.price
-                          : parseInt(
-                              courseData.price
-                                .toString()
-                                .replace(/[^0-9]/g, ""),
-                            ) || 0
-                        ).toLocaleString("en-IN")}
+                        {finalPrice.toLocaleString("en-IN")}
                       </span>
                     </div>
                   </div>

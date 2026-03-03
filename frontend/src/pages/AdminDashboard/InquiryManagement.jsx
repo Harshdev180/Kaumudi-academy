@@ -120,6 +120,11 @@ const InquiryManagement = () => {
 
     // ================= ACTIONS =================
     const updateStatus = async (id, status) => {
+        // Show confirmation when closing an inquiry
+        if (status === "CLOSED") {
+            const confirmed = window.confirm("Are you sure you want to close this inquiry? This action indicates the inquiry has been resolved.");
+            if (!confirmed) return;
+        }
         try {
             setUpdatingId(id);
             const response = await updateAdminInquiryStatus(id, status);

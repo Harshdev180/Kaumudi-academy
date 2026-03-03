@@ -68,6 +68,7 @@ app.use("/api", subscriptionRoutes);
 app.use("/api", courseRoutes);
 app.use("/api", inquiryRoutes);
 app.use("/api", authRoutes);
+app.use("/api", couponRoutes);
 // 🔐 PROTECTED / ADMIN ROUTES (AFTER)
 app.use("/api", notificationRoutes);
 app.use("/api", paymentRoutes);
@@ -77,7 +78,6 @@ app.use("/api/profile", profileRoutes);
 app.use("/api", adminInquiryRoutes);
 app.use("/api", adminStudentRoutes);
 app.use("/api", staffRoutes);
-app.use("/api", couponRoutes);
 app.use("/api", enrollmentRoutes);
 app.use("/api", dashboardRoutes);
 app.use("/api", testimonialRoutes);

@@ -5,7 +5,8 @@ import {
   toggleCouponStatus,
   getAllCoupons,
   getAllCouponsForAdmin,
-  deleteCoupon
+  deleteCoupon,
+  validateCoupon
 } from "../controllers/coupon.controller.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
@@ -16,8 +17,10 @@ import { createCouponSchema } from "../validators/coupon.validator.js";
 const router = express.Router();
 
 /**
- * PUBLIC
+ * PUBLIC - More specific routes first
  */
+router.get("/coupon/validate/:code", validateCoupon);
+
 router.get("/coupon", getAllCoupons);
 router.get(
   "/coupon/admin/all",
