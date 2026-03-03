@@ -243,11 +243,16 @@ export const verifyRazorpayPayment = async (req, res) => {
 
     const course = await Course.findById(payment.course);
 
+    // Calculate the actual total after discount (not original price)
+    const discountedTotal = payment.originalAmount - payment.discountAmount;
+    const remainingAmount = Math.max(discountedTotal - payment.finalAmount, 0);
+
     await StudentFee.create({
       student: payment.user,
       course: payment.course,
-      totalAmount: payment.originalAmount,
+      totalAmount: discountedTotal, // Use discounted amount as total
       paidAmount: payment.finalAmount,
+      remainingAmount: remainingAmount, // Calculate remaining correctly
       paymentMode: payment.paymentMode,
       payment: payment._id,
       paymentStatus:

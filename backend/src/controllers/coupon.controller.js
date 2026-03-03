@@ -1,6 +1,46 @@
 import Coupon from "../models/Coupon.model.js";
 
 /**
+ * VALIDATE COUPON (PUBLIC)
+ * GET /coupon/validate/:code
+ */
+export const validateCoupon = async (req, res) => {
+  try {
+    const { code } = req.params;
+    const now = new Date();
+    const coupon = await Coupon.findOne({
+      code: code.toUpperCase(),
+      isActive: true,
+      startTime: { $lte: now },
+      endTime: { $gte: now }
+    });
+
+    if (!coupon) {
+      return res.status(404).json({
+        success: false,
+        message: "Invalid or Expired Code"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        code: coupon.code,
+        discountType: coupon.discountType,
+        discountValue: coupon.discountValue,
+        discountPercentage: coupon.discountPercentage
+      }
+    });
+  } catch (error) {
+    console.error("VALIDATE COUPON ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to validate coupon"
+    });
+  }
+};
+
+/**
  * CREATE COUPON (ADMIN)
  * POST /coupon
  */
