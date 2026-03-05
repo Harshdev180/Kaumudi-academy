@@ -192,7 +192,7 @@ export default function About() {
                 Our Mission
               </h3>
 
-              <p className="text-base sm:text-lg lg:text-l text-[#6b4b3e] leading-relaxed">
+              <p className="text-base sm:text-lg lg:text-l text-[#6b4b3e] leading-relaxed font-semibold">
                 To democratize Sanskrit education without diluting its rigor. We
                 aim to provide a structured, accessible path for any seeker to
                 master the “Divine Language” through modern pedagogical tools
@@ -211,7 +211,7 @@ export default function About() {
                 Our Vision
               </h3>
 
-              <p className="text-base sm:text-lg lg:text-l text-[#6b4b3e] leading-relaxed">
+              <p className="text-base sm:text-lg lg:text-l text-[#6b4b3e] leading-relaxed font-semibold">
                 To see Sanskrit recognized once again as a living language of
                 science, philosophy, and global dialogue, ensuring that the
                 wisdom of the Vedas and Upanishads continues to illuminate

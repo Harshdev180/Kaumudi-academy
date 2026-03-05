@@ -7,9 +7,45 @@ export default function TermsCondition() {
     <section className="bg-[#FBF4E2] min-h-screen py-10 mb-[-70px]">
       <SEO
         title="Terms & Conditions | Kaumudi Sanskrit Academy"
-        description="Review the terms and conditions for using Kaumudi Sanskrit Academy’s services."
+        description="Read the terms and conditions for using Kaumudi Sanskrit Academy services."
         canonicalPath="/terms"
         og={{ type: "website" }}
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            name: "Terms & Conditions",
+            description:
+              "Read the terms and conditions for using Kaumudi Sanskrit Academy services.",
+            url:
+              (typeof window !== "undefined" ? window.location.origin : "") +
+              "/terms",
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item:
+                  (typeof window !== "undefined"
+                    ? window.location.origin
+                    : "") + "/",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Terms & Conditions",
+                item:
+                  (typeof window !== "undefined"
+                    ? window.location.origin
+                    : "") + "/terms",
+              },
+            ],
+          },
+        ]}
       />
       <div className="flex justify-center">
         <motion.div

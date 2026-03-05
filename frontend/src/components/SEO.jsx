@@ -7,6 +7,7 @@ export default function SEO({
   robots,
   og = {},
   jsonLd,
+  keywords,
 }) {
   useEffect(() => {
     const origin = typeof window !== "undefined" ? window.location.origin : "";
@@ -45,6 +46,22 @@ export default function SEO({
         document.head.appendChild(ogDesc);
       }
       ogDesc.setAttribute("content", description);
+    }
+
+    /* =========================
+       KEYWORDS
+    ========================== */
+    if (keywords) {
+      const content = Array.isArray(keywords)
+        ? keywords.join(", ")
+        : String(keywords);
+      let kw = document.querySelector('meta[name="keywords"]');
+      if (!kw) {
+        kw = document.createElement("meta");
+        kw.setAttribute("name", "keywords");
+        document.head.appendChild(kw);
+      }
+      kw.setAttribute("content", content);
     }
 
     /* =========================
@@ -131,6 +148,7 @@ export default function SEO({
 
     setOg("og:type", og?.type || "website");
     setOg("og:site_name", siteName);
+    setOg("og:locale", og?.locale || "en_IN");
     if (title) setOg("og:title", title);
     if (description) setOg("og:description", description);
     if (ogImage) setOg("og:image", ogImage);
@@ -161,7 +179,7 @@ export default function SEO({
         if (s) s.remove();
       }
     };
-  }, [title, description, canonicalPath, robots, og, jsonLd]);
+  }, [title, description, canonicalPath, robots, og, jsonLd, keywords]);
 
   return null;
 }

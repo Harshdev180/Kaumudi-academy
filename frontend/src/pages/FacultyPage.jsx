@@ -56,6 +56,40 @@ const FacultyPage = () => {
       description="Meet our Acharyas and faculty who guide students across Vyakarana, Vedanta, Kavya and more."
       canonicalPath="/faculty"
       og={{ type: "website" }}
+      jsonLd={[
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          name: "Faculty",
+          description:
+            "Meet our Acharyas and faculty who guide students across Vyakarana, Vedanta, Kavya and more.",
+          url:
+            (typeof window !== "undefined" ? window.location.origin : "") +
+            "/faculty",
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item:
+                (typeof window !== "undefined" ? window.location.origin : "") +
+                "/",
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Faculty",
+              item:
+                (typeof window !== "undefined" ? window.location.origin : "") +
+                "/faculty",
+            },
+          ],
+        },
+      ]}
     />
   );
 
@@ -110,14 +144,14 @@ const FacultyPage = () => {
       {/* FACULTY GRID */}
       <section className="py-24 bg-[#fff9e9]">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 items-stretch">
             {facultyMembers.map((member, i) => (
               <motion.div
                 key={i}
                 whileHover={{ y: -8 }}
-                className="bg-[#f1e4c8] rounded-3xl shadow-lg overflow-hidden group transition"
+                className="bg-[#f1e4c8] rounded-3xl shadow-lg overflow-hidden group transition h-full flex flex-col"
               >
-                <div className="relative h-72 overflow-hidden">
+                <div className="relative h-56 sm:h-64 lg:h-72 overflow-hidden">
                   <img
                     src={member.image}
                     alt={member.name}
@@ -125,7 +159,7 @@ const FacultyPage = () => {
                   />
                 </div>
 
-                <div className="p-8 space-y-4">
+                <div className="p-8 space-y-3 flex-1 flex flex-col">
                   <h3 className="font-serif text-xl font-bold text-[#74271E]">
                     {member.name}
                   </h3>
@@ -138,7 +172,7 @@ const FacultyPage = () => {
                     {member.bio}
                   </p>
 
-                  <div className="flex gap-3 text-[#74271E]/70 pt-2">
+                  <div className="mt-auto flex gap-3 text-[#74271E]/70 pt-2">
                     <BookOpen size={18} />
                     <Award size={18} />
                     <ScrollText size={18} />

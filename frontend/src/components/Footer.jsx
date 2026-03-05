@@ -25,6 +25,8 @@ export default function Footer() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
   const [courses, setCourses] = useState([]); // State to store courses
+  const mapUrl =
+    "https://www.google.com/maps/search/?api=1&query=Kadi%2C%20Mehsana%2C%20Gujarat%2C%20India";
 
   // Fetch courses on component mount
   useEffect(() => {
@@ -380,20 +382,25 @@ export default function Footer() {
             </h4>
 
             <div className="space-y-3 sm:space-y-4 text-xs sm:text-sm text-white/90 font-medium">
-              <motion.div
+              <motion.a
                 whileHover={{ x: 4 }}
-                className="flex items-start gap-2 sm:gap-3"
+                href={mapUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-start gap-2 sm:gap-3 hover:text-[#d6b15c] transition-colors"
+                aria-label="Open location in Google Maps"
+                title="Open in Google Maps"
               >
                 <MapPin
                   size={14}
-                  className="text-white/70 mt-[2px] hover:text-[#d6b15c] transition-colors flex-shrink-0"
+                  className="text-white/70 mt-[2px] group-hover:text-[#d6b15c] transition-colors flex-shrink-0"
                 />
-                <p>
+                <span className="text-white/90">
                   Kadi, Mehsana,
                   <br />
                   Gujarat, India
-                </p>
-              </motion.div>
+                </span>
+              </motion.a>
 
               <motion.div
                 whileHover={{ x: 4 }}

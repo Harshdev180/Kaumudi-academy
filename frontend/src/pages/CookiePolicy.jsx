@@ -48,6 +48,42 @@ export default function CookiePolicy() {
           description="Learn how Kaumudi Sanskrit Academy uses cookies and how you can control them."
           canonicalPath="/cookies"
           og={{ type: "website" }}
+          jsonLd={[
+            {
+              "@context": "https://schema.org",
+              "@type": "WebPage",
+              name: "Cookie Policy",
+              description:
+                "Learn how Kaumudi Sanskrit Academy uses cookies and how you can control them.",
+              url:
+                (typeof window !== "undefined" ? window.location.origin : "") +
+                "/cookies",
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                {
+                  "@type": "ListItem",
+                  position: 1,
+                  name: "Home",
+                  item:
+                    (typeof window !== "undefined"
+                      ? window.location.origin
+                      : "") + "/",
+                },
+                {
+                  "@type": "ListItem",
+                  position: 2,
+                  name: "Cookie Policy",
+                  item:
+                    (typeof window !== "undefined"
+                      ? window.location.origin
+                      : "") + "/cookies",
+                },
+              ],
+            },
+          ]}
         />
 
         <motion.div

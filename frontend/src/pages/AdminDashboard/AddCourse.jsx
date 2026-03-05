@@ -12,6 +12,7 @@ const AddCourse = ({
   savingCourse = false,
   staffList = [],
 }) => {
+  const todayStr = new Date().toISOString().split("T")[0];
   // Reset form when opening for new course
   useEffect(() => {
     if (open && !editId) {
@@ -257,6 +258,7 @@ const AddCourse = ({
                   <input
                     type="date"
                     value={form.startDate || ""}
+                    min={todayStr}
                     onChange={(e) =>
                       setForm((prev) => ({ ...prev, startDate: e.target.value }))
                     }
@@ -268,6 +270,7 @@ const AddCourse = ({
                   <input
                     type="date"
                     value={form.endDate || ""}
+                    min={form.startDate || todayStr}
                     onChange={(e) =>
                       setForm((prev) => ({ ...prev, endDate: e.target.value }))
                     }

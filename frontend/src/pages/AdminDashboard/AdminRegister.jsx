@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { registerSuperAdmin, loginSuperAdmin, setAuthToken } from "../../lib/api";
 import adminregister from "../../assets/adminregister.webp";
+import SEO from "../../components/SEO";
 
 const AdminRegister = () => {
     const navigate = useNavigate();
@@ -97,6 +98,13 @@ const AdminRegister = () => {
             transition={{ duration: 0.5 }}
             className="min-h-screen bg-[#F4ECE1] flex items-center justify-center px-4"
         >
+            <SEO
+                title="Admin Register | Kaumudi Sanskrit Academy"
+                description="Create an administrator account for Kaumudi Sanskrit Academy."
+                canonicalPath="/admin-register"
+                robots="noindex, nofollow"
+                og={{ type: "website" }}
+            />
 
 
             {/* MAIN CARD */}

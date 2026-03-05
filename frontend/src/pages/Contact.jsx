@@ -121,6 +121,42 @@ export default function Contact() {
         description="Reach out for course inquiries, admissions, or collaborations with Kaumudi Sanskrit Academy."
         canonicalPath="/contact"
         og={{ type: "website" }}
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "ContactPage",
+            name: "Contact Kaumudi Sanskrit Academy",
+            description:
+              "Contact Kaumudi Sanskrit Academy for admissions, course inquiries, or collaborations.",
+            url:
+              (typeof window !== "undefined" ? window.location.origin : "") +
+              "/contact",
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item:
+                  (typeof window !== "undefined"
+                    ? window.location.origin
+                    : "") + "/",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Contact",
+                item:
+                  (typeof window !== "undefined"
+                    ? window.location.origin
+                    : "") + "/contact",
+              },
+            ],
+          },
+        ]}
       />
       <section className="relative w-full bg-gradient-to-b mb-[-6rem] from-[#f6edd7] to-[#ead9b8] py-24 overflow-hidden">
         {/* FLOATING ORBS */}
@@ -380,7 +416,7 @@ export default function Contact() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="mt-24 flex items-center gap-6"
+            className="mt-16 flex items-center gap-6 pb-6"
           >
             <p className="text-lg tracking-[0.3em] text-[#7b2d1f] font-bold">
               FOLLOW US
@@ -408,7 +444,7 @@ export default function Contact() {
           </motion.div>
         </div>
         {/* CONTACT STRIP BELOW CARDS */}
-        <motion.div
+        {/* <motion.div
           variants={stagger}
           className="grid md:grid-cols-3 gap-10 py-18 mx-7 xl:mx-auto max-w-7xl"
         >
@@ -455,7 +491,7 @@ export default function Contact() {
               </motion.div>
             );
           })}
-        </motion.div>
+        </motion.div> */}
       </section>
     </>
   );

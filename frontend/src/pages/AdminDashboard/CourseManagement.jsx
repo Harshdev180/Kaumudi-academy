@@ -144,6 +144,33 @@ const CourseManagement = () => {
     setError("");
 
     try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (form.startDate) {
+        const sd = new Date(form.startDate);
+        if (sd < today) {
+          setError("Start date must be upcoming (today or later).");
+          setSavingCourse(false);
+          return;
+        }
+      }
+      if (form.endDate) {
+        const ed = new Date(form.endDate);
+        if (ed < today) {
+          setError("End date must be upcoming (today or later).");
+          setSavingCourse(false);
+          return;
+        }
+      }
+      if (form.startDate && form.endDate) {
+        const sd = new Date(form.startDate);
+        const ed = new Date(form.endDate);
+        if (ed < sd) {
+          setError("End date cannot be before start date.");
+          setSavingCourse(false);
+          return;
+        }
+      }
       const payload = new FormData();
       payload.append("title", form.title);
       payload.append("description", form.description);

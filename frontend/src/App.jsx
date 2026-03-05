@@ -1,5 +1,5 @@
 // removed App.css to fix PostCSS import/parse issues
-import { Route, Routes, Outlet, Navigate } from "react-router-dom";
+import { Route, Routes, Outlet, Navigate, useLocation } from "react-router-dom";
 
 // ================= PUBLIC PAGES =================
 import Home from "./pages/Homepage/Home";
@@ -20,6 +20,8 @@ import RequireAuth from "./components/RequireAuth";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
+import SEO from "./components/SEO";
+import logo from "./assets/logo-bgremove.webp";
 
 // ================= ADMIN DASHBOARD =================
 import AdminLayout from "./pages/AdminDashboard/AdminLayout";
@@ -53,8 +55,23 @@ import Certificates from "./pages/StudentProfile/Certifications.jsx";
 
 // Public site layout with shared navbar/footer
 function PublicLayout() {
+  const location = useLocation();
   return (
     <>
+      <SEO
+        title="Kaumudi Sanskrit Academy | Sanskrit Courses & Scholars"
+        description="Learn Sanskrit with Kaumudi Sanskrit Academy: Paninian Grammar, Vedanta, Kavya and more. Live online courses guided by experienced Acharyas."
+        canonicalPath={location.pathname}
+        og={{ type: "website", image: logo }}
+        keywords={[
+          "Sanskrit courses",
+          "Vyakarana",
+          "Paninian grammar",
+          "Vedanta",
+          "Kavya",
+          "Kaumudi Sanskrit Academy",
+        ]}
+      />
       <ScrollToTop />
       <Navbar />
       <Outlet />

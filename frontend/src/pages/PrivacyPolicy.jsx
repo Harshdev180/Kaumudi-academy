@@ -10,6 +10,42 @@ export default function PrivacyPolicy() {
         description="Read how Kaumudi Sanskrit Academy collects, uses, and protects your information."
         canonicalPath="/privacy"
         og={{ type: "website" }}
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            name: "Privacy Policy",
+            description:
+              "Read how Kaumudi Sanskrit Academy collects, uses, and protects your information.",
+            url:
+              (typeof window !== "undefined" ? window.location.origin : "") +
+              "/privacy",
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item:
+                  (typeof window !== "undefined"
+                    ? window.location.origin
+                    : "") + "/",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Privacy Policy",
+                item:
+                  (typeof window !== "undefined"
+                    ? window.location.origin
+                    : "") + "/privacy",
+              },
+            ],
+          },
+        ]}
       />
 
       <div className="flex justify-center">

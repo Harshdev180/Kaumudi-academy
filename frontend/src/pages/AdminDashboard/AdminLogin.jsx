@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { loginSuperAdmin, forgotPassword } from "../../lib/api";
 import { useAuth } from "../../context/useAuthHook";
 import adminlogin from "../../assets/adminlogin.webp";
+import SEO from "../../components/SEO";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -98,6 +99,13 @@ const AdminLogin = () => {
       transition={{ duration: 0.5, ease: "easeOut" }}
       className="bg-[#f1e4c8] min-h-screen flex items-center justify-center px-4"
     >
+      <SEO
+        title="Admin Login | Kaumudi Sanskrit Academy"
+        description="Secure admin login for Kaumudi Sanskrit Academy."
+        canonicalPath="/admin-login"
+        robots="noindex, nofollow"
+        og={{ type: "website" }}
+      />
       {/* MAIN CARD */}
       <div className="w-full max-w-5xl bg-[#f7efe6] rounded-3xl overflow-hidden shadow-xl border border-[#d4af37]/20 grid md:grid-cols-[45%_55%]">
         {/* LEFT IMAGE */}
