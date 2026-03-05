@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Clock, Monitor, PlayCircle, Users } from "lucide-react";
-import { getMyEnrollments, getProfileEnrollments } from "../../lib/api";
+import { getMyEnrollments, getProfileEnrollments, getCourseProgress } from "../../lib/api";
 import { useNavigate } from "react-router-dom";
 
 const Courses = () => {
@@ -14,46 +14,6 @@ const Courses = () => {
   const navigate = useNavigate();
 
   const filters = ["ALL", "ACTIVE", "COMPLETED", "DROPPED"];
-
-  useEffect(() => {
-    let active = true;
-    const loadEnrollments = async () => {
-      try {
-        const res = await getProfileEnrollments();
-        const list = res?.data || res || [];
-        if (!active) return;
-        const mapped = Array.isArray(list)
-          ? list.map((item) => ({
-              id: item?._id || item?.id,
-              title: item?.course?.title || "Untitled Course",
-              category: item?.course?.category || "General",
-              // Properly extract instructor name from nested course object
-              instructor: item?.course?.instructor?.name 
-                ? `Sanskrit with ${item.course.instructor.name}` 
-                : "",
-              instructorObj: item?.course?.instructor,
-              duration: item?.course?.duration || "",
-              mode: item?.course?.mode || "",
-              level: item?.course?.level || "",
-              status: item?.status || "ACTIVE",
-              progress: typeof item?.progress === "number" ? item.progress : 0,
-              imageUrl: item?.course?.image?.url || "",
-              startDate: item?.course?.startDate,
-              endDate: item?.course?.endDate,
-            }))
-          : [];
-        setCourses(mapped);
-      } catch (error) {
-        console.error("Failed to load enrollments:", error);
-      } finally {
-        if (active) setLoading(false);
-      }
-    };
-    loadEnrollments();
-    return () => {
-      active = false;
-    };
-  }, []);
 
   const filteredCourses = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -79,50 +39,98 @@ const Courses = () => {
     });
   };
 
+  // useEffect(() => {
+  //   const fetchEnrollments = async () => {
+  //     try {
+  //       setLoading(true);
+  //       setError("");
+  //       const response = await getMyEnrollments();
+  //       const payload = response?.data ?? response;
+  //       const list = Array.isArray(payload) ? payload : payload?.data || [];
+
+  //       const mapped = list.map((en) => {
+  //         const c = en.course || en;
+  //         return {
+  //           id: c._id || c.id || en.id,
+  //           title: c.title || en.courseTitle || "Untitled Course",
+  //           category: c.category || "General",
+  //           instructor: c.instructor || en.instructor || "Faculty",
+  //           duration: c.duration || "",
+  //           students: c.enrolledCount || en.students || "—",
+  //           rating: c.rating || 4.8,
+  //           progress: en.progress ?? c.progress ?? 0,
+  //           image: c.image?.url ? `url(${c.image.url})` : null,
+  //           raw: en,
+  //         };
+  //       });
+
+  //       setCourses(mapped.length ? mapped : staticFallback);
+  //       setNotification({
+  //         type: "success",
+  //         message: `Loaded ${mapped.length || staticFallback.length} courses`,
+  //       });
+  //       setTimeout(() => setNotification(null), 2500);
+  //     } catch (err) {
+  //       console.error("Failed to load enrollments:", err);
+  //       setError("Unable to load your courses right now.");
+  //       setCourses(staticFallback);
+  //       setNotification({
+  //         type: "warning",
+  //         message: "Showing fallback courses",
+  //       });
+  //       setTimeout(() => setNotification(null), 3000);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchEnrollments();
+  // }, []);
+
   useEffect(() => {
     const fetchEnrollments = async () => {
       try {
         setLoading(true);
-        setError("");
+
         const response = await getMyEnrollments();
         const payload = response?.data ?? response;
         const list = Array.isArray(payload) ? payload : payload?.data || [];
 
-        const mapped = list.map((en) => {
-          const c = en.course || en;
-          return {
-            id: c._id || c.id || en.id,
-            title: c.title || en.courseTitle || "Untitled Course",
-            category: c.category || "General",
-            instructor: c.instructor || en.instructor || "Faculty",
-            duration: c.duration || "",
-            students: c.enrolledCount || en.students || "—",
-            rating: c.rating || 4.8,
-            progress: en.progress ?? c.progress ?? 0,
-            image: c.image?.url ? `url(${c.image.url})` : null,
-            raw: en,
-          };
-        });
+        const mapped = await Promise.all(
+          list.map(async (en) => {
+            const c = en.course || en;
 
-        setCourses(mapped.length ? mapped : staticFallback);
-        setNotification({
-          type: "success",
-          message: `Loaded ${mapped.length || staticFallback.length} courses`,
-        });
-        setTimeout(() => setNotification(null), 2500);
+            let progress = 0;
+
+            try {
+              const res = await getCourseProgress(c._id);
+              progress = res?.data?.progress || 0;
+            } catch (err) {
+              console.log("progress fetch failed");
+            }
+
+            return {
+              id: c._id,
+              title: c.title,
+              category: c.category || "General",
+              instructor: c.instructor?.name || "Faculty",
+              duration: c.duration || "",
+              mode: c.mode || "",
+              progress,
+              imageUrl: c.image?.url || "",
+              raw: en,
+            };
+          })
+        );
+
+        setCourses(mapped);
+
       } catch (err) {
         console.error("Failed to load enrollments:", err);
-        setError("Unable to load your courses right now.");
-        setCourses(staticFallback);
-        setNotification({
-          type: "warning",
-          message: "Showing fallback courses",
-        });
-        setTimeout(() => setNotification(null), 3000);
       } finally {
         setLoading(false);
       }
     };
+
     fetchEnrollments();
   }, []);
 
@@ -139,6 +147,7 @@ const Courses = () => {
   }, [courses, activeFilter, search]);
 
   const goToCourse = (course) => {
+    { console.log(course) }
     const id =
       course.id ||
       course.raw?.course?._id ||
@@ -157,13 +166,12 @@ const Courses = () => {
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
-            className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 ${
-              notification.type === "success"
-                ? "bg-green-500"
-                : notification.type === "warning"
-                  ? "bg-yellow-500"
-                  : "bg-[#74271E]"
-            } text-white`}
+            className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 ${notification.type === "success"
+              ? "bg-green-500"
+              : notification.type === "warning"
+                ? "bg-yellow-500"
+                : "bg-[#74271E]"
+              } text-white`}
           >
             <span className="text-sm font-medium">{notification.message}</span>
           </motion.div>
@@ -190,17 +198,16 @@ const Courses = () => {
             <motion.button
               key={status}
               onClick={() => setActiveFilter(status)}
-              className={`px-5 py-2 rounded-xl text-xs font-bold whitespace-nowrap shrink-0 transition-all ${
-                activeFilter === status
-                  ? "bg-[#74271E] text-white shadow-md"
-                  : "bg-white text-gray-500 hover:bg-gray-100"
-              }`}
+              className={`px-5 py-2 rounded-xl text-xs font-bold whitespace-nowrap shrink-0 transition-all ${activeFilter === status
+                ? "bg-[#74271E] text-white shadow-md"
+                : "bg-white text-gray-500 hover:bg-gray-100"
+                }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
               {status === "ALL"
                 ? "All"
-                : status.charAt(0) + status.slice(1).toLowerCase()}
+                : status?.charAt(0) + status.slice(1).toLowerCase()}
             </motion.button>
           ))}
         </div>
@@ -262,7 +269,7 @@ const Courses = () => {
                     {course.category}
                   </span>
                   <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
-                    {course.status.charAt(0) +
+                    {course.status?.charAt(0) +
                       course.status.slice(1).toLowerCase()}
                   </span>
                 </div>
@@ -298,8 +305,7 @@ const Courses = () => {
                     <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
-                        whileInView={{ width: `${course.progress}%` }}
-                        viewport={{ once: true }}
+                        animate={{ width: `${course.progress}%` }}
                         transition={{ duration: 0.8, ease: "easeOut" }}
                         className="bg-[#74271E] h-full rounded-full"
                       />

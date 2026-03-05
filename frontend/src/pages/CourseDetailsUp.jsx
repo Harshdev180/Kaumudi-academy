@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Download, FileText, Languages, Play, BookOpen } from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/useAuthHook";
+// import { useAuth } from "../context/useAuthHook";
 import HeroSection from "../component/CourseDetailsUpdated/HeroSection";
 import SidebarCard from "../component/CourseDetailsUpdated/SidebarCard";
 import InstructorSection from "../component/CourseDetailsUpdated/InstructorSection";
@@ -12,6 +12,7 @@ import { getCourseDetail } from "../lib/api";
 import { getAllCourses } from "../lib/api";
 import SEO from "../components/SEO";
 import logo from "../assets/logo-bgremove.webp";
+import { updateCourseProgress, getCourseProgress } from "../lib/api";
 
 const CourseDetails = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -21,6 +22,7 @@ const CourseDetails = () => {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const [progress, setProgress] = useState(0);
 
   const defaultCourse = {
     id: "default",
@@ -102,6 +104,47 @@ const CourseDetails = () => {
     fetchRecommended();
   }, [courseData]);
 
+  const handleTimeUpdate = () => {
+    const video = videoRef.current;
+    if (!video || !video.duration) return;
+
+    const percent = (video.currentTime / video.duration) * 100;
+    setProgress(Math.floor(percent));
+  };
+
+  useEffect(() => {
+    if (!id || progress === 0) return;
+
+    const timer = setTimeout(async () => {
+      try {
+        await updateCourseProgress({
+          courseId: id,
+          progress: progress,
+        });
+      } catch (err) {
+        console.log("Progress update failed");
+      }
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [progress, id]);
+
+  useEffect(() => {
+    const loadProgress = async () => {
+      try {
+        const res = await getCourseProgress(id);
+
+        if (res?.data?.progress) {
+          setProgress(res.data.progress);
+        }
+      } catch (err) {
+        console.log("Failed to load progress");
+      }
+    };
+
+    if (id) loadProgress();
+  }, [id]);
+
   // 3. Fetch course data from API if ID is available
   useEffect(() => {
     const fetchCourse = async () => {
@@ -111,26 +154,26 @@ const CourseDetails = () => {
         try {
           setLoading(true);
           setError("");
-          console.log("Fetching course detail for ID:", id);
+          // console.log("Fetching course detail for ID:", id);
           const response = await getCourseDetail(id);
-          console.log("Full API Response:", response);
+          // console.log("Full API Response:", response);
           // Handle both direct response and wrapped response { success, data }
           const apiCourse = response?.data?.data || response?.data || response;
-          console.log("Course API Response:", apiCourse);
-          console.log("Instructor from API:", apiCourse?.instructor);
+          // console.log("Course API Response:", apiCourse);
+          // console.log("Instructor from API:", apiCourse?.instructor);
 
           // Check if instructor exists and is populated
           const instructorData = apiCourse?.instructor;
-          console.log("Instructor data check:", {
-            exists: !!instructorData,
-            isObject: typeof instructorData === "object",
-            name: instructorData?.name,
-            role: instructorData?.role,
-            description: instructorData?.description,
-            hasValidName: !!(
-              instructorData?.name && instructorData.name !== "Instructor TBA"
-            ),
-          });
+          // console.log("Instructor data check:", {
+          //   exists: !!instructorData,
+          //   isObject: typeof instructorData === "object",
+          //   name: instructorData?.name,
+          //   role: instructorData?.role,
+          //   description: instructorData?.description,
+          //   hasValidName: !!(
+          //     instructorData?.name && instructorData.name !== "Instructor TBA"
+          //   ),
+          // });
 
           // More lenient check - just need a name that exists
           const hasValidInstructor =
@@ -140,7 +183,7 @@ const CourseDetails = () => {
             instructorData.name !== "Instructor TBA" &&
             instructorData.name !== "Instructor TBA";
 
-          console.log("hasValidInstructor:", hasValidInstructor);
+          // console.log("hasValidInstructor:", hasValidInstructor);
 
           const merged = {
             ...defaultCourse,
@@ -162,16 +205,16 @@ const CourseDetails = () => {
             endDate: apiCourse.endDate,
             instructor: hasValidInstructor
               ? {
-                  name: instructorData.name || "Instructor",
-                  qualification: instructorData.role || "Faculty",
-                  bio:
-                    (instructorData.description &&
-                      instructorData.description.trim()) ||
-                    instructorData.bio ||
-                    "No biography available",
-                  tags: [],
-                  image: instructorData.image || null,
-                }
+                name: instructorData.name || "Instructor",
+                qualification: instructorData.role || "Faculty",
+                bio:
+                  (instructorData.description &&
+                    instructorData.description.trim()) ||
+                  instructorData.bio ||
+                  "No biography available",
+                tags: [],
+                image: instructorData.image || null,
+              }
               : defaultCourse.instructor,
             curriculum: apiCourse.curriculum || defaultCourse.curriculum,
             // syllabus: apiCourse.syllabus || "",
@@ -254,22 +297,22 @@ const CourseDetails = () => {
           language: incomingData.language,
           instructor: incomingData.instructor
             ? {
-                name: incomingData.instructor.name || "Instructor TBA",
-                qualification:
-                  incomingData.instructor.qualification ||
-                  "Qualification not listed",
-                bio:
-                  incomingData.instructor.bio || "Instructor bio coming soon.",
-                tags: incomingData.instructor.tags || [],
-                image: incomingData.instructor.image || null,
-              }
+              name: incomingData.instructor.name || "Instructor TBA",
+              qualification:
+                incomingData.instructor.qualification ||
+                "Qualification not listed",
+              bio:
+                incomingData.instructor.bio || "Instructor bio coming soon.",
+              tags: incomingData.instructor.tags || [],
+              image: incomingData.instructor.image || null,
+            }
             : {
-                name: "Instructor TBA",
-                qualification: "To be announced",
-                bio: "An expert instructor will be assigned to this course soon.",
-                tags: [],
-                image: null,
-              },
+              name: "Instructor TBA",
+              qualification: "To be announced",
+              bio: "An expert instructor will be assigned to this course soon.",
+              tags: [],
+              image: null,
+            },
           curriculum: incomingData.curriculum || defaultCourse.curriculum,
           syllabus: incomingData.syllabus || "",
           schedule: incomingData.schedule || defaultCourse.schedule,
@@ -438,65 +481,57 @@ const CourseDetails = () => {
             <h1>${courseData.title}</h1>
           </div>
           <div class="meta">
-            <div><div class="lab">Level</div><div class="val">${
-              courseData.level || "All Levels"
-            }</div></div>
-            <div><div class="lab">Duration</div><div class="val">${
-              courseData.duration || "-"
-            }</div></div>
-            <div><div class="lab">Language</div><div class="val">${
-              courseData.language || "-"
-            }</div></div>
-            <div><div class="lab">Mode</div><div class="val">${
-              courseData.mode || "ONLINE"
-            }</div></div>
-            <div><div class="lab">Instructor</div><div class="val">${
-              courseData.instructor?.name || "Instructor TBA"
-            }</div></div>
+            <div><div class="lab">Level</div><div class="val">${courseData.level || "All Levels"
+      }</div></div>
+            <div><div class="lab">Duration</div><div class="val">${courseData.duration || "-"
+      }</div></div>
+            <div><div class="lab">Language</div><div class="val">${courseData.language || "-"
+      }</div></div>
+            <div><div class="lab">Mode</div><div class="val">${courseData.mode || "ONLINE"
+      }</div></div>
+            <div><div class="lab">Instructor</div><div class="val">${courseData.instructor?.name || "Instructor TBA"
+      }</div></div>
             <div><div class="lab">Fee</div><div class="val">${formatINR(
-              courseData.price,
-            )}</div></div>
+        courseData.price,
+      )}</div></div>
           </div>
           <div class="hero">
             <img class="poster" src="${posterUrl}" alt="${courseData.title} Poster"/>
           </div>
           <div class="section"><h2>About The Course</h2></div>
           <div class="desc">${(courseData.description || "")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")}</div>
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")}</div>
           <div class="section"><h2>Syllabus</h2></div>
           <div class="syllabus">
-            ${
-              syllabus.length
-                ? syllabus
-                    .map((m, idx) => {
-                      const items = Array.isArray(m?.content) ? m.content : [];
-                      const list =
-                        items.length > 0
-                          ? `<ul>${items
-                              .map(
-                                (li) =>
-                                  `<li>${String(li)
-                                    .replace(/</g, "&lt;")
-                                    .replace(/>/g, "&gt;")}</li>`,
-                              )
-                              .join("")}</ul>`
-                          : "";
-                      return `<div class="module">
+            ${syllabus.length
+        ? syllabus
+          .map((m, idx) => {
+            const items = Array.isArray(m?.content) ? m.content : [];
+            const list =
+              items.length > 0
+                ? `<ul>${items
+                  .map(
+                    (li) =>
+                      `<li>${String(li)
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")}</li>`,
+                  )
+                  .join("")}</ul>`
+                : "";
+            return `<div class="module">
                         <div class="module-h">
-                          <div class="module-title">${idx + 1}. ${
-                            m?.title || "Module"
-                          }</div>
-                          <div style="font-size:11px;color:#8c7a56;">${
-                            m?.isLocked ? "Preview" : "Open"
-                          }</div>
+                          <div class="module-title">${idx + 1}. ${m?.title || "Module"
+              }</div>
+                          <div style="font-size:11px;color:#8c7a56;">${m?.isLocked ? "Preview" : "Open"
+              }</div>
                         </div>
                         <div class="module-body">${list}</div>
                       </div>`;
-                    })
-                    .join("")
-                : '<div style="font-size:13px;color:#6b4b3e;">Syllabus will be updated soon.</div>'
-            }
+          })
+          .join("")
+        : '<div style="font-size:13px;color:#6b4b3e;">Syllabus will be updated soon.</div>'
+      }
           </div>
           <div class="footer">
             <div>© Kaumudi Sanskrit Academy</div>
@@ -617,19 +652,13 @@ const CourseDetails = () => {
               </h2>
             </div>
             <div className="relative group aspect-video bg-black rounded-4xl overflow-hidden shadow-2xl border-[6px] border-white cursor-pointer">
-              {/* <img
-                src={posterUrl}
-                alt={`${courseData.title} preview`}
-                className="absolute inset-0 w-full h-full object-cover"
-                aria-hidden="true"
-                loading="lazy"
-              /> */}
               <video
                 ref={videoRef}
                 className="w-full h-full object-cover"
                 poster={posterUrl}
                 onPause={() => setIsPlaying(false)}
                 onPlay={() => setIsPlaying(true)}
+                onTimeUpdate={handleTimeUpdate}
                 controls={isPlaying}
               >
                 <source
@@ -651,6 +680,19 @@ const CourseDetails = () => {
                   </div>
                 </div>
               )}
+            </div>
+            <div className="mt-3">
+              <div className="flex justify-between text-xs text-gray-600 mb-1">
+                <span>Progress</span>
+                <span>{progress}%</span>
+              </div>
+
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-[#74271E] h-2 rounded-full transition-all"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
             </div>
           </section>
 
@@ -716,9 +758,9 @@ const CourseDetails = () => {
           </div>
 
           <InstructorSection instructor={courseData.instructor} />
-          {console.log(" Passing to InstructorSection:", courseData.instructor)}
+          {/* {console.log(" Passing to InstructorSection:", courseData.instructor)} */}
           <CurriculumAccordion curriculumData={courseData.curriculum} />
-          {console.log("batchSchedule data:", courseData.batchSchedule)}
+          {/* {console.log("batchSchedule data:", courseData.batchSchedule)} */}
           <ScheduleTable
             scheduleData={courseData.batchSchedule || courseData.schedule || []}
           />
