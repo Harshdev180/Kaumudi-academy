@@ -21,8 +21,8 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 403 && 
-        error.response?.data?.message?.includes("deactivated")) {
+    if (error.response?.status === 403 &&
+      error.response?.data?.message?.includes("deactivated")) {
       // Clear all student auth data
       localStorage.removeItem("kaumudi_token");
       localStorage.removeItem("kaumudi_user_email");
@@ -32,7 +32,7 @@ api.interceptors.response.use(
       localStorage.removeItem("kaumudi_user_last_name");
       localStorage.removeItem("kaumudi_user_name");
       delete api.defaults.headers.common.Authorization;
-      
+
       // Redirect to login page
       window.location.href = "/login?message=account_deactivated";
     }
@@ -112,6 +112,16 @@ export async function createAdmin({ name, email, phoneNumber }) {
     email,
     phoneNumber,
   });
+  return res.data;
+}
+
+export async function updateCourseProgress(data) {
+  const res = await api.post("/progress/update", data);
+  return res.data;
+}
+
+export async function getCourseProgress(courseId) {
+  const res = await api.get(`/progress/${courseId}`);
   return res.data;
 }
 
@@ -453,7 +463,7 @@ export async function getProfileEnrollments() {
 }
 
 export async function getProfileCertificates() {
-  const res = await api.get("/profile/certificates");
+  const res = await api.get("/progress/certificates/my");
   return res.data;
 }
 

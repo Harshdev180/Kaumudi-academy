@@ -22,21 +22,21 @@ const Certificates = () => {
         if (!active) return;
         const mapped = Array.isArray(list)
           ? list.map((item) => ({
-              id: item?._id || item?.id || item?.certificateId,
-              certificateId: item?.certificateId || item?._id,
-              title: item?.course?.title || "Certificate",
-              sanskritTitle: item?.sanskritTitle || "",
-              date: item?.issuedAt
-                ? new Date(item.issuedAt).toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })
-                : "—",
-              grade: item?.grade || "—",
-              issuer: "Kaumudi Sanskrit Academy",
-              type: item?.type || "Course Completion",
-            }))
+            id: item?._id || item?.id || item?.certificateId,
+            certificateId: item?.certificateId || item?._id,
+            title: item?.course?.title || "Certificate",
+            sanskritTitle: item?.sanskritTitle || "",
+            date: item?.issuedAt
+              ? new Date(item.issuedAt).toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })
+              : "—",
+            grade: item?.grade || "—",
+            issuer: "Kaumudi Sanskrit Academy",
+            type: item?.type || "Course Completion",
+          }))
           : [];
         setCertificates(mapped);
       } catch (error) {
@@ -50,6 +50,20 @@ const Certificates = () => {
       active = false;
     };
   }, []);
+
+  const downloadCertificate = (certificateId) => {
+    window.open(
+      `${import.meta.env.VITE_API_URL}/api/certificates/download/${certificateId}`,
+      "_blank"
+    );
+  };
+
+  const verifyCertificate = (certificateId) => {
+    window.open(
+      `${import.meta.env.VITE_API_URL}/api/certificates/verify/${certificateId}`,
+      "_blank"
+    );
+  };
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-8 px-2 sm:px-4 mt-4">
@@ -112,7 +126,7 @@ const Certificates = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
           {certificates.map((cert) => (
             <div
-              key={cert.id}
+              key={cert.certificateId}
               className="group bg-white rounded-[2.5rem] p-4 sm:p-8 shadow-sm border border-black/5 flex flex-col relative overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-[#c9a050]/10 hover:-translate-y-1"
             >
               {/* Artistic Mandala Watermark Background */}
@@ -187,12 +201,18 @@ const Certificates = () => {
 
               {/* Action Footer */}
               <div className="mt-auto pt-4 sm:pt-6 border-t border-gray-50 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 relative z-10">
-                <button className="flex-1 flex items-center justify-center gap-3 bg-[#74271E] text-white py-3 sm:py-4 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-[#5a1e17] transition-all shadow-xl shadow-[#74271E]/10 active:scale-95">
+                <button
+                  onClick={() => downloadCertificate(cert.certificateId)}
+                  className="flex-1 flex items-center justify-center gap-3 bg-[#74271E] text-white py-3 sm:py-4 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-[#5a1e17] transition-all shadow-xl shadow-[#74271E]/10 active:scale-95"
+                >
                   <Download size={16} />
                   Download Certificate
                 </button>
 
-                <button className="flex items-center gap-2 px-5 py-3 sm:py-4 rounded-2xl border border-gray-100 text-gray-400 hover:text-[#c9a050] hover:border-[#c9a050]/30 hover:bg-[#f7f1e3]/30 transition-all group/btn">
+                <button
+                  onClick={() => verifyCertificate(cert.certificateId)}
+                  className="flex items-center gap-2 px-5 py-3 sm:py-4 rounded-2xl border border-gray-100 text-gray-400 hover:text-[#c9a050] hover:border-[#c9a050]/30 hover:bg-[#f7f1e3]/30 transition-all group/btn"
+                >
                   <ExternalLink
                     size={18}
                     className="group-hover/btn:scale-110 transition-transform"

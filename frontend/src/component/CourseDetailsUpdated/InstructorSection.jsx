@@ -1,17 +1,17 @@
 const InstructorSection = ({ instructor }) => {
-  console.log("InstructorSection received:", instructor);
-  console.log("Instructor name:", instructor?.name);
-  console.log("Name type:", typeof instructor?.name);
-  console.log("Name length:", instructor?.name?.length);
-  console.log(
-    "Is name 'Instructor TBA':",
-    instructor?.name === "Instructor TBA",
-  );
+  // console.log("InstructorSection received:", instructor);
+  // console.log("Instructor name:", instructor?.name);
+  // console.log("Name type:", typeof instructor?.name);
+  // console.log("Name length:", instructor?.name?.length);
+  // console.log(
+  //   "Is name 'Instructor TBA':",
+  //   instructor?.name === "Instructor TBA",
+  // );
 
   // If no instructor assigned, show a clean placeholder
   const isPlaceholder =
     !instructor || !instructor.name || instructor.name === "Instructor TBA";
-  console.log("Should show placeholder:", isPlaceholder);
+  // console.log("Should show placeholder:", isPlaceholder);
 
   if (isPlaceholder) {
     return (

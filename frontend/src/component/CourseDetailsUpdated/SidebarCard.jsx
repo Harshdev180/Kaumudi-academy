@@ -185,17 +185,45 @@ const SidebarCard = ({ price, courseData }) => {
   const courseId = courseData?._id || courseData?.id;
 
   // Check if already enrolled
+  // useEffect(() => {
+  //   if (!isAuthenticated || !courseId) return;
+
+  //   const check = async () => {
+  //     try {
+  //       setCheckingEnrollment(true);
+  //       const res = await getMyEnrollments();
+  //       const enrollments = res?.data || res?.enrollments || res || [];
+  //       const enrolled = enrollments.some(
+  //         (e) => (e.course?._id || e.course || e.courseId) === courseId,
+  //       );
+  //       setIsEnrolled(enrolled);
+  //     } catch (err) {
+  //       console.error("Enrollment check failed", err);
+  //     } finally {
+  //       setCheckingEnrollment(false);
+  //     }
+  //   };
+
+  //   check();
+  // }, [isAuthenticated, courseId]);
   useEffect(() => {
     if (!isAuthenticated || !courseId) return;
 
     const check = async () => {
       try {
         setCheckingEnrollment(true);
+
         const res = await getMyEnrollments();
+        console.log("swarup das check", res);
         const enrollments = res?.data || res?.enrollments || res || [];
-        const enrolled = enrollments.some(
-          (e) => (e.course?._id || e.course || e.courseId) === courseId,
-        );
+
+        const enrolled = enrollments.some((e) => {
+          const enrolledCourseId =
+            e?.course?._id || e?.courseId || e?.course || null;
+
+          return enrolledCourseId?.toString() === courseId?.toString();
+        });
+
         setIsEnrolled(enrolled);
       } catch (err) {
         console.error("Enrollment check failed", err);
@@ -304,17 +332,15 @@ const SidebarCard = ({ price, courseData }) => {
             {features.map((item, i) => (
               <li
                 key={i}
-                className={`flex gap-7 items-start leading-snug transition-all duration-500 ${
-                  i < visibleFeatures
+                className={`flex gap-7 items-start leading-snug transition-all duration-500 ${i < visibleFeatures
                     ? "opacity-100 translate-x-0"
                     : "opacity-0 -translate-x-4"
-                }`}
+                  }`}
               >
                 <CheckCircle
                   size={24}
-                  className={`text-[#d6b15c] shrink-0 transition-transform duration-500 ${
-                    i < visibleFeatures ? "scale-100" : "scale-0"
-                  }`}
+                  className={`text-[#d6b15c] shrink-0 transition-transform duration-500 ${i < visibleFeatures ? "scale-100" : "scale-0"
+                    }`}
                   fill="#B18E401A"
                   strokeWidth={2.5}
                 />
@@ -348,14 +374,14 @@ const SidebarCard = ({ price, courseData }) => {
               state={
                 isAuthenticated
                   ? {
-                      courseId,
-                      courseName: courseData?.title,
-                      price: courseData?.price,
-                      duration: courseData?.duration,
-                      level: courseData?.level,
-                      language: courseData?.language,
-                      mode: "Live Online",
-                    }
+                    courseId,
+                    courseName: courseData?.title,
+                    price: courseData?.price,
+                    duration: courseData?.duration,
+                    level: courseData?.level,
+                    language: courseData?.language,
+                    mode: "Live Online",
+                  }
                   : { from: `/coursedetail/${courseId}` }
               }
             >

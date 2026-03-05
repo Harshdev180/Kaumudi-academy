@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Certificate</title>
+
+    <style>
+        body {
+            background: #f3f3f3;
+            font-family: "Georgia", serif;
+        }
+
+        .certificate-container {
+            width: 1100px;
+            height: 700px;
+            background: white;
+            margin: auto;
+            border: 8px solid #e2e2e2;
+            padding: 60px;
+            text-align: center;
+            position: relative;
+        }
+
+        .logo {
+            width: 70px;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .course-banner {
+            display: inline-block;
+            background: #1f2937;
+            color: white;
+            padding: 10px 30px;
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+
+        .presented {
+            letter-spacing: 3px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .student-name {
+            font-size: 38px;
+            font-weight: 500;
+            margin-top: 20px;
+            border-bottom: 1px solid #aaa;
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .description {
+            margin-top: 25px;
+            color: #555;
+            font-size: 16px;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 60px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .signature {
+            text-align: right;
+        }
+
+        .signature img {
+            width: 120px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="certificate-container">
+
+        <img class="logo" src="https://yourdomain.com/favicon/favicon-96x96.png" />
+
+        <div class="title">Certificate of Completion</div>
+
+        <div class="course-banner">
+            {{courseTitle}}
+        </div>
+
+        <div class="presented">
+            PRESENTED TO
+        </div>
+
+        <div class="student-name">
+            {{studentName}}
+        </div>
+
+        <div class="description">
+            The bearer of this certificate has successfully completed the course
+            <br />
+            <strong>{{courseTitle}}</strong>
+        </div>
+
+        <div class="footer">
+
+            <div>
+                Earned on: <strong>{{date}}</strong><br />
+                Certificate ID: {{certificateId}}
+            </div>
+
+            <div class="signature">
+                <img src="https://yourdomain.com/favicon/favicon-96x96.png" />
+                <br />
+                Course Director
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
