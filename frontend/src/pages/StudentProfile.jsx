@@ -28,7 +28,7 @@ import { useAuth } from "../context/useAuthHook";
 
 export default function StudentProfile() {
   const navigate = useNavigate();
-  const { user, token: authToken, isAuthenticated } = useAuth();
+  const { user, updateUser, token: authToken, isAuthenticated } = useAuth();
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -99,6 +99,12 @@ export default function StudentProfile() {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setProfile(formData);
+
+    // Update global auth state
+    if (formData.name) {
+      updateUser({ name: formData.name });
+    }
+
     setEditing(false);
     setSaving(false);
     showNotification("Profile updated successfully!");

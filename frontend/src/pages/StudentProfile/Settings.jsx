@@ -25,8 +25,11 @@ import {
   changePassword,
 } from "../../lib/api";
 import Sanscript from "sanscript";
+import { useAuth } from "../../context/useAuthHook";
+import { formatEnrollmentId } from "../../lib/utils";
 
 const Settings = () => {
+  const { updateUser } = useAuth();
   const [activeTab, setActiveTab] = useState("student details");
   const [isEditing, setIsEditing] = useState(false); // Toggle for Edit mode
   const [notifications, setNotifications] = useState({
@@ -173,7 +176,10 @@ const Settings = () => {
                 Enrollment ID
               </p>
               <p className="font-mono font-bold text-[#74271E] text-xs sm:text-sm tracking-widest">
-                {profile.id}
+                {formatEnrollmentId(
+                  profile.id || profile._id,
+                  profile.createdAt,
+                )}
               </p>
             </div>
           </div>
@@ -227,10 +233,18 @@ const Settings = () => {
                       <button
                         onClick={async () => {
                           try {
-                            await updateProfileMe(profile);
+                            const res = await updateProfileMe(profile);
+                            // If backend returns the updated user data in res.data
+                            const updatedData = res.data || profile;
+                            updateUser({
+                              firstName: updatedData.firstName,
+                              lastName: updatedData.lastName,
+                              email: updatedData.email,
+                            });
                             setIsEditing(false);
                             alert("Profile Updated Successfully!");
-                          } catch {
+                          } catch (err) {
+                            console.error("Update failed:", err);
                             alert("Failed to update profile");
                           }
                         }}

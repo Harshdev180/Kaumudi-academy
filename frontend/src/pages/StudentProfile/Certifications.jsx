@@ -8,10 +8,224 @@ import {
   BadgeCheck,
 } from "lucide-react";
 import { getProfileCertificates } from "../../lib/api";
+import logo from "../../assets/logo-bgremove.webp";
+import { formatEnrollmentId } from "../../lib/utils";
 
 const Certificates = () => {
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const handleDownloadCertificate = (cert) => {
+    const studentName = localStorage.getItem("kaumudi_user_name") || "Student";
+    const studentFirstName =
+      localStorage.getItem("kaumudi_user_first_name") || "";
+    const studentLastName =
+      localStorage.getItem("kaumudi_user_last_name") || "";
+    const studentId = localStorage.getItem("kaumudi_user_id") || "";
+    const enrollmentId = formatEnrollmentId(
+      studentId,
+      cert.issuedAt || new Date(),
+    );
+
+    // Simple transliteration for demo purposes, in real app this would come from profile
+    const sanskritName = "श्रद्धेय छात्र"; // Default placeholder if not available
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Certificate - ${cert.title}</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Martel:wght@400;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  body { margin: 0; padding: 0; background: #fdfbf7; font-family: 'Cinzel', serif; }
+  .cert-container {
+    width: 1000px;
+    height: 700px;
+    padding: 40px;
+    position: relative;
+    box-sizing: border-box;
+    background: white;
+    margin: 20px auto;
+    border: 20px solid #74271E;
+    box-shadow: 0 0 50px rgba(0,0,0,0.1);
+  }
+  .inner-border {
+    height: 100%;
+    width: 100%;
+    border: 2px solid #c9a050;
+    box-sizing: border-box;
+    padding: 40px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .mandala-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: 500px;
+    opacity: 0.03;
+    z-index: 0;
+  }
+  .header { z-index: 1; margin-bottom: 20px; }
+  .logo { width: 100px; height: 100px; margin-bottom: 15px; }
+  .academy-name { font-size: 32px; font-weight: 900; color: #74271E; letter-spacing: 2px; margin: 0; }
+  .sub-header { font-size: 14px; color: #c9a050; font-weight: 700; margin-top: 5px; text-transform: uppercase; letter-spacing: 4px; }
+  
+  .cert-title { font-size: 54px; font-weight: 900; color: #74271E; margin: 30px 0 10px; text-transform: uppercase; }
+  .cert-subtitle { font-size: 18px; color: #8c7a56; margin: 0 0 30px; font-style: italic; }
+  
+  .presentation { font-size: 20px; color: #2D2417; margin-bottom: 10px; }
+  .student-name-container { margin: 10px 0 20px; }
+  .student-name-en { font-size: 42px; font-weight: 700; color: #74271E; border-bottom: 2px solid #c9a050; display: inline-block; padding: 0 40px 5px; margin-bottom: 5px; }
+  .student-name-sa { font-family: 'Martel', serif; font-size: 28px; color: #8c7a56; margin: 5px 0; }
+  
+  .course-info { font-size: 20px; color: #2D2417; line-height: 1.6; max-width: 800px; }
+  .course-name { font-weight: 700; color: #74271E; font-size: 24px; }
+  
+  .details-grid {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: auto;
+    padding: 0 20px;
+    z-index: 1;
+  }
+  .detail-item { text-align: left; }
+  .detail-label { font-size: 10px; font-weight: 900; color: #8c7a56; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+  .detail-value { font-size: 13px; font-weight: 700; color: #74271E; }
+  
+  .footer-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    width: 100%;
+    margin-top: 40px;
+    z-index: 1;
+  }
+  .sign-box { text-align: center; }
+  .signature { font-family: 'Martel', serif; font-size: 22px; color: #74271E; border-bottom: 1px solid #2D2417; padding-bottom: 5px; margin-bottom: 10px; width: 200px; }
+  .sign-label { font-size: 12px; font-weight: 700; color: #8c7a56; text-transform: uppercase; }
+  
+  .seal {
+    width: 120px;
+    height: 120px;
+    border: 2px double #c9a050;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle, #fff, #fdfbf7);
+    box-shadow: 0 0 15px rgba(201,160,80,0.2);
+    position: relative;
+  }
+  .seal-text { font-size: 8px; font-weight: 900; color: #c9a050; text-transform: uppercase; text-align: center; padding: 5px; }
+  .seal-inner { width: 80px; height: 80px; border: 1px solid #c9a050; border-radius: 50%; display: flex; items-center; justify-content: center; }
+  .seal-icon { font-size: 30px; color: #c9a050; line-height: 80px; }
+  
+  @media print {
+    .cert-container { margin: 0; box-shadow: none; border: 15px solid #74271E; }
+  }
+</style>
+</head>
+<body>
+  <div class="cert-container" id="certificate">
+    <div class="inner-border">
+      <div class="mandala-bg">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="0.5" stroke-dasharray="2 2" />
+          <path d="M50,5 L55,45 L95,50 L55,55 L50,95 L45,55 L5,50 L45,45 Z" fill="none" stroke="currentColor" stroke-width="0.5" />
+        </svg>
+      </div>
+      
+      <div class="header">
+        <img src="${logo}" class="logo" alt="Academy Logo">
+        <h2 class="academy-name">Kaumudi Sanskrit Academy</h2>
+        <div class="sub-header">विद्या परं भूषणम् | Vidya Param Bhushanam</div>
+      </div>
+      
+      <div class="cert-title">Pramāṇa-Patram</div>
+      <div class="cert-subtitle">Certificate of Excellence</div>
+      
+      <div class="presentation">This is to certify that</div>
+      
+      <div class="student-name-container">
+        <div class="student-name-en">${studentName}</div>
+        <div class="student-name-sa">${sanskritName}</div>
+      </div>
+      
+      <div class="course-info">
+        has successfully completed the course titled<br>
+        <span class="course-name">${cert.title}</span><br>
+        demonstrating proficiency with a final grade of <strong>${cert.grade}</strong>.
+      </div>
+      
+      <div class="details-grid">
+        <div class="detail-item">
+          <div class="detail-label">Enrollment ID</div>
+          <div class="detail-value">${enrollmentId}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Certificate No.</div>
+          <div class="detail-value">${cert.certificateId}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Issue Date</div>
+          <div class="detail-value">${cert.date}</div>
+        </div>
+      </div>
+      
+      <div class="footer-section">
+        <div class="sign-box">
+          <div class="signature">Dr. Rama Sharma</div>
+          <div class="sign-label">Course Instructor</div>
+        </div>
+        
+        <div class="seal">
+          <div class="seal-inner">
+            <span class="seal-icon">ॐ</span>
+          </div>
+          <div class="seal-text">OFFICIAL SEAL • कौमुदी</div>
+        </div>
+        
+        <div class="sign-box">
+          <div class="signature" style="font-family: 'Martel', serif;">आचार्यः शशिकांतः</div>
+          <div class="sign-label">Academy Director</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.onload = function() {
+      const element = document.getElementById('certificate');
+      html2pdf().set({
+        margin: 0,
+        filename: 'Certificate_${cert.title.replace(/[^a-z0-9]/gi, "_")}.pdf',
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+        jsPDF: { unit: 'px', format: [1000, 750], orientation: 'landscape' }
+      }).from(element).save().then(() => {
+        setTimeout(() => window.close(), 1000);
+      });
+    };
+  </script>
+</body>
+</html>
+    `;
+
+    const w = window.open("", "CERTIFICATE", "height=800,width=1100");
+    if (!w) return;
+    w.document.write(html);
+    w.document.close();
+  };
 
   useEffect(() => {
     let active = true;
@@ -187,7 +401,10 @@ const Certificates = () => {
 
               {/* Action Footer */}
               <div className="mt-auto pt-4 sm:pt-6 border-t border-gray-50 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 relative z-10">
-                <button className="flex-1 flex items-center justify-center gap-3 bg-[#74271E] text-white py-3 sm:py-4 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-[#5a1e17] transition-all shadow-xl shadow-[#74271E]/10 active:scale-95">
+                <button
+                  onClick={() => handleDownloadCertificate(cert)}
+                  className="flex-1 flex items-center justify-center gap-3 bg-[#74271E] text-white py-3 sm:py-4 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-[#5a1e17] transition-all shadow-xl shadow-[#74271E]/10 active:scale-95"
+                >
                   <Download size={16} />
                   Download Certificate
                 </button>

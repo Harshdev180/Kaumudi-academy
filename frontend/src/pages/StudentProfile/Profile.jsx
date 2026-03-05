@@ -15,9 +15,10 @@ import {
 } from "lucide-react";
 import { getProfileMe, updateProfileMe } from "../../lib/api";
 import { useAuth } from "../../context/useAuthHook";
+import { formatEnrollmentId } from "../../lib/utils";
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -122,6 +123,14 @@ const Profile = () => {
       };
       const res = await updateProfileMe(payload);
       const data = res?.data || res || {};
+
+      // Update global auth state
+      updateUser({
+        name: data.name,
+        firstName: data.firstName,
+        lastName: data.lastName,
+      });
+
       setProfile(normalizeProfile(data));
       setIsEditing(false);
     } catch (error) {
@@ -219,7 +228,10 @@ const Profile = () => {
                 Enrollment ID
               </p>
               <p className="font-mono font-bold text-[#74271E] text-sm tracking-widest">
-                {profile.id}
+                {formatEnrollmentId(
+                  profile.id || profile._id,
+                  profile.joinDate,
+                )}
               </p>
             </div>
           </div>

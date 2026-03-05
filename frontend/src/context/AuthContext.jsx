@@ -125,11 +125,37 @@ export function AuthProvider({ children }) {
     } catch {}
   };
 
+  const updateUser = (updatedUserData) => {
+    setUser((prevUser) => {
+      const nextUser = { ...prevUser, ...updatedUserData };
+
+      // Also update name if firstName or lastName changed
+      if (updatedUserData.firstName !== undefined || updatedUserData.lastName !== undefined) {
+        const firstName = nextUser.firstName || null;
+        const lastName = nextUser.lastName || null;
+        nextUser.name = [firstName, lastName].filter(Boolean).join(" ") || null;
+      }
+
+      // Sync with localStorage
+      if (nextUser.email) localStorage.setItem("kaumudi_user_email", nextUser.email);
+      if (nextUser.id) localStorage.setItem("kaumudi_user_id", nextUser.id);
+      if (nextUser.firstName) localStorage.setItem("kaumudi_user_first_name", nextUser.firstName);
+      else localStorage.removeItem("kaumudi_user_first_name");
+      if (nextUser.lastName) localStorage.setItem("kaumudi_user_last_name", nextUser.lastName);
+      else localStorage.removeItem("kaumudi_user_last_name");
+      if (nextUser.name) localStorage.setItem("kaumudi_user_name", nextUser.name);
+      else localStorage.removeItem("kaumudi_user_name");
+      if (nextUser.role) localStorage.setItem("kaumudi_role", nextUser.role);
+
+      return nextUser;
+    });
+  };
+
   const isAuthenticated = !!token && !!user;
 
   return (
     <AuthContext.Provider
-      value={{ user, token, loading, login, logout, isAuthenticated }}
+      value={{ user, token, loading, login, logout, updateUser, isAuthenticated }}
     >
       {children}
     </AuthContext.Provider>
