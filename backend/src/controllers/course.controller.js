@@ -36,6 +36,7 @@ export const createCourse = async (req, res) => {
       title,
       description,
       syllabus,
+      curriculum,
       duration,
       instructor,
       level,
@@ -44,6 +45,7 @@ export const createCourse = async (req, res) => {
       language,
       startDate,
       endDate,
+      batchSchedule,
     } = req.body;
 
     if (!req.file) {
@@ -62,6 +64,7 @@ export const createCourse = async (req, res) => {
       title,
       description,
       syllabus,
+      curriculum,
       duration,
       instructor: (instructor && mongoose.Types.ObjectId.isValid(instructor)) 
         ? new mongoose.Types.ObjectId(instructor) 
@@ -72,6 +75,7 @@ export const createCourse = async (req, res) => {
       language: parseLanguage(language),
       startDate: new Date(startDate),
       endDate: new Date(endDate),
+      batchSchedule: batchSchedule ? JSON.parse(batchSchedule) : [],
       image: {
         public_id: upload.public_id,
         url: upload.secure_url,
@@ -115,6 +119,7 @@ export const updateCourse = async (req, res) => {
       "title",
       "description",
       "syllabus",
+      "curriculum",
       "duration",
       "instructor",
       "level",
@@ -123,6 +128,7 @@ export const updateCourse = async (req, res) => {
       "language",
       "startDate",
       "endDate",
+      "batchSchedule",
     ];
 
     ALLOWED_FIELDS.forEach((field) => {
@@ -138,6 +144,15 @@ export const updateCourse = async (req, res) => {
             course.instructor = new mongoose.Types.ObjectId(instructorValue);
           } else {
             course.instructor = undefined;
+          }
+        } else if (field === "batchSchedule") {
+          // Parse batchSchedule JSON string
+          try {
+            course.batchSchedule = typeof req.body.batchSchedule === "string" 
+              ? JSON.parse(req.body.batchSchedule) 
+              : req.body.batchSchedule;
+          } catch (e) {
+            console.error("Error parsing batchSchedule:", e);
           }
         } else {
           course[field] = req.body[field];

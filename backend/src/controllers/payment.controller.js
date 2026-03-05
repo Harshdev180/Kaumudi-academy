@@ -82,12 +82,6 @@ export const createRazorpayOrder = async (req, res) => {
       throw new Error("Invalid price format in database");
     }
 
-    let payableAmount = originalAmount;
-
-    if (paymentMode === "EMI") {
-      payableAmount = originalAmount * 0.3; // 30% first installment
-    }
-
     let discountAmount = 0;
     let appliedCoupon = null;
 
@@ -119,12 +113,16 @@ export const createRazorpayOrder = async (req, res) => {
       }
     }
 
+    // Calculate discounted amount AFTER coupon is applied
     const discountedAmount = Math.max(originalAmount - discountAmount, 0);
 
+    // Calculate payable amount based on payment mode
+    // For EMI: First payment = 1/3 of discounted amount (after coupon)
+    // For FULL: Pay the full discounted amount
+    // Use 2 decimal places precision
     let finalAmount = discountedAmount;
-
     if (paymentMode === "EMI") {
-      finalAmount = discountedAmount * 0.3; // 30% EMI payment
+      finalAmount = Math.round((discountedAmount / 3) * 100) / 100; // First payment = 1/3 with 2 decimal places
     }
 
     // 4. Razorpay Order
@@ -183,12 +181,28 @@ export const createRazorpayOrder = async (req, res) => {
       actionUrl: "/admin/payments"
     });
 
+    // Build EMI details if EMI mode is selected
+    const emiDetails = paymentMode === "EMI" ? {
+      isEmi: true,
+      totalAmount: discountedAmount,
+      firstPayment: finalAmount, // First payment = 1/3 of discounted amount (with 2 decimal places)
+      remainingAmount: Math.round((discountedAmount - finalAmount) * 100) / 100, // Remaining = 2/3 with 2 decimal places
+      installments: 3,
+      installmentAmount: Math.round(((discountedAmount - finalAmount) / 2) * 100) / 100, // Remaining / 2 with 2 decimal places
+      perMonth: finalAmount // Same as firstPayment since it's divided by 3
+    } : null;
+
     res.json({
       success: true,
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
-      paymentId: payment._id
+      paymentId: payment._id,
+      originalAmount,
+      discountAmount,
+      discountedAmount,
+      finalAmount,
+      emiDetails
     });
   } catch (error) {
     console.error("CREATE ORDER ERROR:", error);
@@ -391,7 +405,7 @@ export const createEmiInstallment = async (req, res) => {
     }
 
     // Calculate installment amount (divide remaining into 2 parts for 2 more installments)
-    // Original: 30% paid, remaining: 70% = should be paid in 2 installments (35% each)
+    // Original: 33.3% paid (1/3), remaining: 66.6% = should be paid in 2 installments (33.3% each)
     const installmentAmount = remainingAmount / 2;
     
     console.log("EMI Installment Calculation:", {

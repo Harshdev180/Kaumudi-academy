@@ -86,7 +86,7 @@ const InquiryManagement = () => {
             id: item?._id || item?.id,
             name: item?.fullName || "Unnamed",
             email: item?.email || "",
-            phone: item?.phoneNumber || "",
+            phone: item?.whatsappNumber || item?.phoneNumber || "",
             level: formatPreferredLevel(item?.preferredLevel),
             message: item?.message || "",
             status: item?.status || "NEW",

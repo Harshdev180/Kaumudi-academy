@@ -127,6 +127,53 @@ export const getDashboardStats = async (req, res) => {
       enrollments: item.enrollments,
     }));
 
+    // ── 3.1 SALES BY CATEGORY (Course Distribution) ─────────────────────────────
+    // Grouping by instructor/faculty name instead of category
+    const salesByCategory = await Payment.aggregate([
+      { $match: { status: "SUCCESS" } },
+      {
+        $lookup: {
+          from: "courses",
+          localField: "course",
+          foreignField: "_id",
+          as: "courseInfo",
+        },
+      },
+      { $unwind: { path: "$courseInfo", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "staffs",
+          localField: "courseInfo.instructor",
+          foreignField: "_id",
+          as: "instructorInfo",
+        },
+      },
+      { $unwind: { path: "$instructorInfo", preserveNullAndEmptyArrays: true } },
+      // Filter out entries where instructor is null or empty
+      { $match: { "instructorInfo.name": { $exists: true, $ne: null, $ne: "" } } },
+      {
+        $group: {
+          _id: "$instructorInfo.name",
+          count: { $sum: 1 },
+          revenue: { $sum: "$finalAmount" },
+        },
+      },
+      { $sort: { count: -1 } },
+    ]);
+
+    // Generate colors for the pie chart
+    const categoryColors = [
+      "#D4AF37", "#6b1d14", "#8A2A1F", "#E0B84F", "#F3E6C9",
+      "#4A90A4", "#7B68EE", "#20B2AA", "#FF6B6B", "#2E8B57"
+    ];
+
+    const formattedSalesByCategory = salesByCategory.map((item, index) => ({
+      name: item._id || "No Instructor",
+      value: item.count,
+      revenue: item.revenue,
+      color: categoryColors[index % categoryColors.length],
+    }));
+
     // ── 4. TOP COURSES ─────────────────────────────────────────────────────────
     const topCourses = await Payment.aggregate([
       { $match: { status: "SUCCESS" } },
@@ -138,7 +185,7 @@ export const getDashboardStats = async (req, res) => {
         },
       },
       { $sort: { totalRevenue: -1 } },
-      { $limit: 5 },
+      { $limit: 4 },
       {
         $lookup: {
           from: "courses",
@@ -334,6 +381,7 @@ export const getDashboardStats = async (req, res) => {
         // Charts
         revenueChart: formattedRevenueChart,   // for RevnueChart
         salesChart: formattedSalesChart,       // for SalesChart
+        salesByCategory: formattedSalesByCategory, // for Sales by Category (pie chart)
 
         // Tables
         topCourses: topCoursesWithTrend,       // for TableSection type="top"

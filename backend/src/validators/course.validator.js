@@ -40,6 +40,8 @@ export const createCourseSchema = Joi.object({
   title: Joi.string().trim().min(3).max(150).required(),
   description: Joi.string().trim().min(10).required(),
   syllabus: Joi.string().trim().allow("", null).optional(),
+  curriculum: Joi.array().optional(),
+  batchSchedule: Joi.array().optional(),
   duration: Joi.string().trim().required(),
   mode: Joi.string().valid("ONLINE", "OFFLINE", "HYBRID").required(), // ← added HYBRID
   price: Joi.number().min(0).required(),
@@ -53,6 +55,8 @@ export const updateCourseSchema = Joi.object({
   title: Joi.string().trim().min(3).max(150),
   description: Joi.string().trim().min(10),
   syllabus: Joi.string().trim().allow("", null),
+  curriculum: Joi.array().optional(),
+  batchSchedule: Joi.array().optional(),
   duration: Joi.string().trim(),
   mode: Joi.string().valid("ONLINE", "OFFLINE", "HYBRID"),   // ← added HYBRID
   price: Joi.number().min(0),

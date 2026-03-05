@@ -143,15 +143,17 @@ const FacultyManagement = () => {
     const errors = {};
     
     // Salary validation
+    const salaryStr = String(form.salary || "");
     const salaryNum = Number(form.salary);
-    if (!form.salary || form.salary.trim() === "") {
+    if (!form.salary || salaryStr.trim() === "") {
       errors.salary = "Salary is required";
     } else if (isNaN(salaryNum) || salaryNum < 0) {
       errors.salary = "Salary must be a valid positive number";
     }
     
     // Bonus validation (optional but must be valid if provided)
-    if (form.bonus && form.bonus.trim() !== "") {
+    const bonusStr = String(form.bonus || "");
+    if (bonusStr && bonusStr.trim() !== "") {
       const bonusNum = Number(form.bonus);
       if (isNaN(bonusNum) || bonusNum < 0) {
         errors.bonus = "Bonus must be a valid positive number";
@@ -159,7 +161,8 @@ const FacultyManagement = () => {
     }
     
     // Deduction validation (optional but must be valid if provided)
-    if (form.deduction && form.deduction.trim() !== "") {
+    const deductionStr = String(form.deduction || "");
+    if (deductionStr && deductionStr.trim() !== "") {
       const deductionNum = Number(form.deduction);
       if (isNaN(deductionNum) || deductionNum < 0) {
         errors.deduction = "Deduction must be a valid positive number";

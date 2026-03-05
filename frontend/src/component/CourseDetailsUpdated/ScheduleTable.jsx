@@ -1,20 +1,13 @@
 import React from 'react';
 
 const ScheduleTable = ({ scheduleData }) => {
-  const batches = scheduleData || [
-    {
-      type: "Weekday Batch ",
-      days: "Mon, Wed, Fri",
-      time: "07:00 AM - 08:30 AM",
-      Date: "15th Oct, 2024"
-    },
-    {
-      type: "Weekend Intensive",
-      days: "Sat, Sun",
-      time: "06:00 PM - 08:30 PM",
-      Date: "20th Oct, 2024"
-    }
-  ];
+  // Support both old format (schedule) and new format (batchSchedule)
+  const batches = scheduleData || [];
+
+  // If no data, don't render anything
+  if (!batches || !Array.isArray(batches) || batches.length === 0) {
+    return null;
+  }
 
   return (
     <section className="pb-1 font-sans-serif">
@@ -32,8 +25,8 @@ const ScheduleTable = ({ scheduleData }) => {
               <tr>
                 <th className="p-8 text-[16px] font-bold tracking-tight whitespace-nowrap">Batch Type</th>
                 <th className="p-8 text-[16px] font-bold tracking-tight whitespace-nowrap">Days</th>
-                <th className="p-8 text-[16px] font-bold tracking-tight whitespace-nowrap">Time (IST)</th>
-                <th className="p-8 text-[16px] font-bold tracking-tight whitespace-nowrap">Start Date</th>
+                <th className="p-8 text-[16px] font-bold tracking-tight whitespace-nowrap">Start Time</th>
+                <th className="p-8 text-[16px] font-bold tracking-tight whitespace-nowrap">End Time</th>
               </tr>
             </thead>
             
@@ -41,16 +34,16 @@ const ScheduleTable = ({ scheduleData }) => {
               {batches.map((batch, idx) => (
                 <tr key={idx} className="hover:bg-[#F9F5F0] transition-colors">
                   <td className="p-8 font-bold text-[#631D11] text-[16px] leading-tight whitespace-nowrap">
-                    {batch.type}
+                    {batch.batchType || batch.type || "N/A"}
                   </td>
                   <td className="p-8 text-[#3D1A16] text-[15px] font-medium whitespace-nowrap">
-                    {batch.days}
+                    {batch.days || "N/A"}
                   </td>
                   <td className="p-8 text-[#3D1A16] text-[15px] font-medium leading-relaxed whitespace-nowrap">
-                    {batch.time}
+                    {batch.startTime || "N/A"}
                   </td>
-                  <td className="p-8 text-[#3D1A16] text-[15px] font-bold whitespace-nowrap">
-                    {batch.Date}
+                  <td className="p-8 text-[#3D1A16] text-[15px] font-medium leading-relaxed whitespace-nowrap">
+                    {batch.endTime || "N/A"}
                   </td>
                 </tr>
               ))}

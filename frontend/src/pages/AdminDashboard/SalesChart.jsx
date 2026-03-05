@@ -2,15 +2,18 @@ import React from "react";
 import { PieChart, Pie, ResponsiveContainer, Tooltip, Cell } from "recharts";
 import { motion } from "framer-motion";
 
-const data = [
-  { name: "Shlok", value: 45, color: "#D4AF37" },
-  { name: "Spoken Sanskrit", value: 30, color: "#6b1d14" },
-  { name: "Vyakaran Shastra", value: 15, color: "#8A2A1F" },
-  { name: "UGC NET", value: 10, color: "#E0B84F" },
-  { name: "BA", value: 12, color: "#F3E6C9" },
+// Default fallback data when no API data is available
+const defaultData = [
+  { name: "No Data", value: 1, color: "#E2E8F0" },
 ];
 
-function SalesChart() {
+function SalesChart({ data }) {
+  // Use API data if available, otherwise show default message
+  const chartData = data && data.length > 0 ? data : defaultData;
+
+  // Calculate total for percentage
+  const total = chartData.reduce((sum, item) => sum + (item.value || 0), 0);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -25,8 +28,8 @@ function SalesChart() {
         transition={{ delay: 0.2 }}
         className="mb-6"
       >
-        <h2 className="text-lg font-bold text-slate-800">Sales by Category</h2>
-        <p className="text-sm text-slate-500">Course distribution</p>
+        <h2 className="text-lg font-bold text-slate-800">Sales by Faculty</h2>
+        <p className="text-sm text-slate-500">Course distribution by instructor</p>
       </motion.div>
 
       <div className="flex flex-col items-center justify-between">
@@ -40,7 +43,7 @@ function SalesChart() {
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={data}
+                data={chartData}
                 cx="50%"
                 cy="50%"
                 dataKey="value"
@@ -50,7 +53,7 @@ function SalesChart() {
                 stroke="#ffffff"
                 strokeWidth={2}
               >
-                {data.map((entry, index) => (
+                {chartData.map((entry, index) => (
                   <Cell key={index} fill={entry.color} />
                 ))}
               </Pie>
@@ -60,6 +63,10 @@ function SalesChart() {
                   border: "none",
                   borderRadius: "12px",
                   boxShadow: "0 10px 40px rgba(0, 0, 0, 0.1)",
+                }}
+                formatter={(value, name, props) => {
+                  const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                  return [`${value} (${percentage}%)`, props.payload.name || "Category"];
                 }}
               />
             </PieChart>
@@ -81,29 +88,32 @@ function SalesChart() {
           }}
           className="space-y-3 mt-4 w-full"
         >
-          {data.map((item, index) => (
-            <motion.div
-              key={index}
-              variants={{
-                hidden: { opacity: 0, x: -10 },
-                visible: { opacity: 1, x: 0 },
-              }}
-              transition={{ duration: 0.3 }}
-              whileHover={{ scale: 1.03 }}
-              className="flex items-center justify-between"
-            >
-              <div className="flex items-center space-x-3">
-                <span
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: item.color }}
-                />
-                <span className="text-sm text-slate-600">{item.name}</span>
-              </div>
-              <span className="text-sm font-semibold text-slate-800">
-                {item.value}%
-              </span>
-            </motion.div>
-          ))}
+          {chartData.map((item, index) => {
+            const percentage = total > 0 ? ((item.value / total) * 100).toFixed(1) : 0;
+            return (
+              <motion.div
+                key={index}
+                variants={{
+                  hidden: { opacity: 0, x: -10 },
+                  visible: { opacity: 1, x: 0 },
+                }}
+                transition={{ duration: 0.3 }}
+                whileHover={{ scale: 1.03 }}
+                className="flex items-center justify-between"
+              >
+                <div className="flex items-center space-x-3">
+                  <span
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: item.color }}
+                  />
+                  <span className="text-sm text-slate-600">{item.name}</span>
+                </div>
+                <span className="text-sm font-semibold text-slate-800">
+                  {item.name === "No Data" ? "—" : `${percentage}%`}
+                </span>
+              </motion.div>
+            );
+          })}
         </motion.div>
       </div>
     </motion.div>
