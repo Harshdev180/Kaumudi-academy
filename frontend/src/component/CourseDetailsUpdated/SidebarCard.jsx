@@ -250,7 +250,7 @@ const SidebarCard = ({ price, courseData }) => {
         : "available";
 
   return (
-    <div className="sticky top-10 bg-white rounded-[24px] overflow-hidden shadow-xl border border-gray-100 max-w-[380px] min-h-[850px] flex flex-col">
+    <div className="sticky top-10 bg-white rounded-[24px] overflow-hidden shadow-xl border border-gray-100 max-w-[380px] min-h-[650px] flex flex-col">
       <div className="relative bg-[#74271E] p-8 text-white text-center flex-none">
         <div
           className="absolute top-0 right-0 w-25 h-10 bg-[#d6b15c]"
@@ -264,17 +264,17 @@ const SidebarCard = ({ price, courseData }) => {
             ₹{formatPrice(price)}
           </span>
           <span className="text-xl line-through text-stone-400 font-medium">
-            ₹24,000
+            ₹{formatPrice(price * 3)}
           </span>
         </div>
         <div className="mt-6 inline-block bg-[#d6b15c] text-[#3D1A16] text-[11px] font-bold px-6 py-2 rounded-full shadow-md">
-          EMI STARTS AT ₹1,500/MO
+          MONTHLY EMI STARTS
         </div>
       </div>
 
       <div className="p-8 flex-grow flex flex-col justify-between space-y-6">
-        <div className="space-y-10">
-          <div className="space-y-4">
+        <div className="space-y-6">
+          {/* <div className="space-y-4">
             <div className="flex justify-between items-start">
               <div className="flex gap-2">
                 <Flame size={22} className="text-[#d6b15c] fill-[#d6b15c]" />
@@ -298,9 +298,9 @@ const SidebarCard = ({ price, courseData }) => {
                 style={{ width: `${leftSeats > 0 ? progressPercent : 0}%` }}
               ></div>
             </div>
-          </div>
+          </div> */}
 
-          <ul className="space-y-8">
+          <ul className="space-y-6">
             {features.map((item, i) => (
               <li
                 key={i}
@@ -327,7 +327,7 @@ const SidebarCard = ({ price, courseData }) => {
         </div>
 
         {/* Buttons */}
-        <div className="flex flex-col space-y-6 mt-auto">
+        <div className="flex flex-col space-y-6 ">
           {/* ENROLL BUTTON */}
           {enrollState === "enrolled" ? (
             <div className="flex justify-center w-full">

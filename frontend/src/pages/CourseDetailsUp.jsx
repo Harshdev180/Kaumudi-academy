@@ -11,6 +11,7 @@ import Suggetion from "../component/CourseDetailsUpdated/suggetion";
 import { getCourseDetail } from "../lib/api";
 import { getAllCourses } from "../lib/api";
 import SEO from "../components/SEO";
+import logo from "../assets/logo-bgremove.webp";
 
 const CourseDetails = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -36,6 +37,35 @@ const CourseDetails = () => {
       tags: [],
       image: null,
     },
+    curriculum: [
+      {
+        title: "Introduction to Paspashahnika",
+        isLocked: false,
+        content: [
+          "Purpose of Grammar (Vyakarana-prayojanam)",
+          "Concept of Shabda and Artha",
+          "Linguistic Analysis methodology in Mahabhashya",
+        ],
+      },
+      {
+        title: "Shivasutra and Pratyahara Analysis",
+        isLocked: false,
+        content: [
+          "Significance of Maheshwara Sutras",
+          "Formation of Pratyaharas",
+          "Phonetic classifications",
+        ],
+      },
+      {
+        title: "Sutra Interpretation Principles",
+        isLocked: true,
+        content: [
+          "Sutra structure analysis",
+          "Paribhasha implementation",
+          "Vartika perspectives",
+        ],
+      },
+    ],
   };
 
   // 2. State for fetched course data
@@ -135,7 +165,11 @@ const CourseDetails = () => {
                   image: instructorData.image || null,
                 }
               : defaultCourse.instructor,
-            curriculum: defaultCourse.curriculum,
+            curriculum:
+              apiCourse.curriculum ||
+              apiCourse.syllabus ||
+              apiCourse.modules ||
+              defaultCourse.curriculum,
             schedule: defaultCourse.schedule,
           };
           setCourseData(merged);
@@ -311,6 +345,195 @@ const CourseDetails = () => {
     courseData?.images?.[0]?.url ||
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv8HjlPpt0rOT7SHaevW0xmnEg9DCgkEfvrA&s";
 
+  const formatINR = (n) =>
+    `₹ ${Number(n || 0).toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
+
+  const handleDownloadBrochure = () => {
+    const fallbackModules = defaultCourse.curriculum || [];
+    let syllabus = [];
+    const cur = courseData?.curriculum;
+    if (Array.isArray(cur) && cur.length) {
+      syllabus = cur;
+    } else if (cur && typeof cur === "object") {
+      syllabus = Object.entries(cur).map(([title, items]) => ({
+        title,
+        isLocked: false,
+        content: Array.isArray(items) ? items : [],
+      }));
+    } else if (
+      Array.isArray(courseData?.syllabus) &&
+      courseData.syllabus.length
+    ) {
+      syllabus = courseData.syllabus.map((s) =>
+        typeof s === "string" ? { title: s, isLocked: false, content: [] } : s,
+      );
+    } else {
+      syllabus = fallbackModules;
+    }
+    const html = `
+      <!doctype html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>${courseData.title} - Brochure</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-YcsIPbiG8C4wY2s7t3k+HUXoQli0T3t8t3yQvA8vKJ9xI1Fv4TtHjW6cM7cVfYzWwQhD/2dQjAqV3DkO4bczrA==" crossorigin="anonymous"></script>
+        <style>
+          @page { size: A4; margin: 20mm; }
+          body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:#2D2417; background:#faf7f2; }
+          .wrap { position:relative; max-width: 860px; margin: 0 auto; background:#fff; border:1px solid #e8dfd0; border-radius:20px; overflow:hidden; box-shadow:0 14px 45px rgba(0,0,0,0.08); }
+          .watermark { position:absolute; inset:0; background:url('${logo}') center 40% / 50% no-repeat; opacity:0.06; filter: saturate(110%) contrast(115%); pointer-events:none; }
+          .header { position:relative; display:flex; align-items:center; justify-content:space-between; padding:20px 26px; background:linear-gradient(90deg, #3b120e 0%, #5a1e17 55%, #2a0b08 100%); border-bottom:5px solid #d6b15c; }
+          .brand { display:flex; align-items:center; gap:12px; }
+          .brand img { width:60px; height:60px; object-fit:contain; border-radius:14px; background:#74271E; padding:6px; box-shadow:0 0 22px rgba(214,177,92,0.45); }
+          .brand .org { font-weight:900; letter-spacing:0.10em; font-size:15px; color:#d6b15c; text-transform:uppercase; }
+          .tag { font-size:11px; color:#e9d8b5; letter-spacing:0.16em; text-transform:uppercase; }
+          .badge { display:inline-block; padding:7px 12px; border-radius:999px; font-size:11px; font-weight:800; border:1px solid #d6b15c; color:#d6b15c; background:rgba(255,255,255,0.08);}
+          .title { padding:20px 26px 10px; }
+          .title h1 { margin:0; font-size:28px; color:#74271E; letter-spacing:0.02em; }
+          .meta { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px 18px; padding:2px 26px 14px; }
+          .meta .lab { font-size:11px; color:#8c7a56; font-weight:800; letter-spacing:0.10em; text-transform:uppercase; }
+          .meta .val { font-size:14px; font-weight:800; color:#2D2417;}
+          .hero { padding: 10px 26px 0; }
+          .hero .poster { width:100%; height:230px; object-fit:cover; border-radius:16px; border:1px solid #efe4cf; box-shadow: 0 10px 28px rgba(0,0,0,0.08); }
+          .section { padding:16px 26px 6px; }
+          .section h2 { font-size:16px; color:#631D11; margin:0 0 8px; letter-spacing:0.14em; text-transform:uppercase; }
+          .desc { padding:0 26px 16px; font-size:14px; color:#4a3f2e; line-height:1.6; }
+          .syllabus { padding:0 26px 24px; display:grid; grid-template-columns:1fr; gap:12px; }
+          .module { border:1px solid #efe4cf; border-radius:16px; overflow:hidden; background:#fff; box-shadow:0 8px 26px rgba(0,0,0,0.05); page-break-inside: avoid; }
+          .module-h { display:flex; justify-content:space-between; align-items:center; background:linear-gradient(90deg,#fff,#f9f5ef); padding:12px 16px; border-bottom:1px solid #efe4cf; }
+          .module-title { font-weight:900; color:#631D11; font-size:15px; letter-spacing:0.02em; }
+          .module-body { padding:12px 20px; }
+          .module-body ul { margin:0; padding-left:18px; }
+          .module-body li { margin:6px 0; font-size:13px; color:#2D2417; }
+          .footer { padding:12px 26px 20px; font-size:11px; color:#6b4b3e; border-top:1px dashed #efe4cf; display:flex; align-items:center; justify-content:space-between; }
+          .actions { display:flex; gap:10px; padding: 0 26px 20px; }
+          .btn { padding:10px 14px; background:#74271E; color:#fff; border:none; border-radius:10px; font-weight:800; font-size:12px; letter-spacing:0.08em; cursor:pointer; }
+          .btn-outline { background:#fff; color:#74271E; border:1px solid #74271E; }
+          @media print { .actions { display:none } .wrap { border:none } }
+        </style>
+      </head>
+      <body>
+        <div class="wrap">
+          <div class="watermark"></div>
+          <div class="header">
+            <div class="brand">
+              <img src="${logo}" alt="Kaumudi Sanskrit Academy" />
+              <div>
+                <div class="org">Kaumudi Sanskrit Academy</div>
+                <div class="tag">प्राचीन ज्ञान • आधुनिक पद्धति</div>
+              </div>
+            </div>
+            <div class="badge">${courseData.category || "Course"}</div>
+          </div>
+          <div class="title">
+            <h1>${courseData.title}</h1>
+          </div>
+          <div class="meta">
+            <div><div class="lab">Level</div><div class="val">${
+              courseData.level || "All Levels"
+            }</div></div>
+            <div><div class="lab">Duration</div><div class="val">${
+              courseData.duration || "-"
+            }</div></div>
+            <div><div class="lab">Language</div><div class="val">${
+              courseData.language || "-"
+            }</div></div>
+            <div><div class="lab">Mode</div><div class="val">${
+              courseData.mode || "ONLINE"
+            }</div></div>
+            <div><div class="lab">Instructor</div><div class="val">${
+              courseData.instructor?.name || "Instructor TBA"
+            }</div></div>
+            <div><div class="lab">Fee</div><div class="val">${formatINR(
+              courseData.price,
+            )}</div></div>
+          </div>
+          <div class="hero">
+            <img class="poster" src="${posterUrl}" alt="${courseData.title} Poster"/>
+          </div>
+          <div class="section"><h2>About The Course</h2></div>
+          <div class="desc">${(courseData.description || "")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")}</div>
+          <div class="section"><h2>Syllabus</h2></div>
+          <div class="syllabus">
+            ${
+              syllabus.length
+                ? syllabus
+                    .map((m, idx) => {
+                      const items = Array.isArray(m?.content) ? m.content : [];
+                      const list =
+                        items.length > 0
+                          ? `<ul>${items
+                              .map(
+                                (li) =>
+                                  `<li>${String(li)
+                                    .replace(/</g, "&lt;")
+                                    .replace(/>/g, "&gt;")}</li>`,
+                              )
+                              .join("")}</ul>`
+                          : "";
+                      return `<div class="module">
+                        <div class="module-h">
+                          <div class="module-title">${idx + 1}. ${
+                            m?.title || "Module"
+                          }</div>
+                          <div style="font-size:11px;color:#8c7a56;">${
+                            m?.isLocked ? "Preview" : "Open"
+                          }</div>
+                        </div>
+                        <div class="module-body">${list}</div>
+                      </div>`;
+                    })
+                    .join("")
+                : '<div style="font-size:13px;color:#6b4b3e;">Syllabus will be updated soon.</div>'
+            }
+          </div>
+          <div class="footer">
+            <div>© Kaumudi Sanskrit Academy</div>
+            <div class="badge">www.kaumudi.academy</div>
+          </div>
+          <div class="actions">
+            <button class="btn" onclick="window.print()">Print</button>
+            <button class="btn btn-outline" onclick="window.close()">Close</button>
+          </div>
+        </div>
+        <script>
+          (function() {
+            function download() {
+              var el = document.querySelector('.wrap');
+              if (!el || !window.html2pdf) return;
+              var opt = {
+                margin:       [10, 10, 10, 10],
+                filename:     '${courseData.title.replace(/[^a-z0-9]/gi, "_")}_Brochure.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak:    { mode: ['css', 'legacy'] }
+              };
+              html2pdf().set(opt).from(el).save().then(function(){
+                setTimeout(function(){ window.close(); }, 600);
+              });
+            }
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+              setTimeout(download, 300);
+            } else {
+              document.addEventListener('DOMContentLoaded', function(){ setTimeout(download, 300); });
+            }
+          })();
+        </script>
+      </body>
+      </html>
+    `;
+    const w = window.open("", "PRINT", "height=800,width=900");
+    if (!w) return;
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+  };
+
   return (
     <div className="bg-[#FBF4E2] min-h-screen font-sans-serif text-[#2D2417]">
       <SEO
@@ -428,7 +651,11 @@ const CourseDetails = () => {
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 text-center sm:text-left">
               {/* Icon Container: Iska size mobile par thoda balance kiya gaya hai */}
               <div className="bg-[#74271E] p-3 rounded-xl text-white shadow-lg shrink-0">
-                <FileText size={32} md:size={36} strokeWidth={1.5} />
+                <FileText
+                  size={32}
+                  strokeWidth={1.5}
+                  className="md:w-9 md:h-9"
+                />
               </div>
 
               {/* Text Container: Font sizes ko responsive banaya gaya hai  changr kiya hu px ko % me pahle 15 px tha text*/}
@@ -443,7 +670,10 @@ const CourseDetails = () => {
             </div>
 
             <div className="w-full sm:w-max">
-              <button className="group relative flex w-full sm:w-max items-center justify-center gap-2.5 sm:gap-3 overflow-hidden rounded-xl bg-[#74271E] px-6 sm:px-8 py-3 sm:py-3.5 font-bold text-white shadow-[0_10px_20px_rgba(116,39,30,0.3)] transition-all duration-300 hover:bg-[#d6b15c] hover:text-[#74271E] hover:shadow-[0_15px_30px_rgba(214,177,92,0.4)] active:scale-95">
+              <button
+                onClick={handleDownloadBrochure}
+                className="group relative flex w-full sm:w-max items-center justify-center gap-2.5 sm:gap-3 overflow-hidden rounded-xl bg-[#74271E] px-6 sm:px-8 py-3 sm:py-3.5 font-bold text-white shadow-[0_10px_20px_rgba(116,39,30,0.3)] transition-all duration-300 hover:bg-[#d6b15c] hover:text-[#74271E] hover:shadow-[0_15px_30px_rgba(214,177,92,0.4)] active:scale-95"
+              >
                 {/* Shine effect - Unchanged */}
                 <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
 
@@ -478,9 +708,11 @@ const CourseDetails = () => {
       </div>{" "}
       {/* 👈 CLOSE GRID HERE */}
       {/* Recommended Courses OUTSIDE grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
-        <Suggetion courses={recommendedCourses} />
-      </div>
+      {recommendedCourses.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-12">
+          <Suggetion courses={recommendedCourses} />
+        </div>
+      )}
     </div>
   );
 };

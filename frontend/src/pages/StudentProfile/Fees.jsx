@@ -366,284 +366,80 @@ const FeePurchase = () => {
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <title>Receipt ${item.id || ""}</title>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-YcsIPbiG8C4wY2s7t3k+HUXoQli0T3t8t3yQvA8vKJ9xI1Fv4TtHjW6cM7cVfYzWwQhD/2dQjAqV3DkO4bczrA==" crossorigin="anonymous"></script>
 
       <style>
-        body {
-          font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-          background:#faf7f2;
-          color:#2D2417;
-          margin:0;
-        }
-
-        .container {
-          max-width: 720px;
-          margin: 30px auto;
-          background:#ffffff;
-          border:1px solid #e8dfd0;
-          border-radius:16px;
-          padding:32px;
-        }
-
-        /* HEADER */
-        .header {
-          display:flex;
-          justify-content:space-between;
-          align-items:center;
-          border-bottom:1px solid #eee3d2;
-          padding-bottom:18px;
-          margin-bottom:22px;
-        }
-
-        .brand {
-          display:flex;
-          align-items:center;
-          gap:14px;
-        }
-
-        .logo-box {
-          background:#74271E;
-          height:48px;
-          width:48px;
-          border-radius:12px;
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          box-shadow:0 0 18px rgba(214,177,92,0.45);
-        }
-
-        .logo-box img {
-          height:32px;
-          width:auto;
-        }
-
-        .brand-title {
-          font-size:18px;
-          font-weight:800;
-          color:#74271E;
-        }
-
-        .brand-sub {
-          font-size:12px;
-          color:#6b4b3e;
-        }
-
-        .receipt-meta {
-          text-align:right;
-        }
-
-        .title {
-          font-size:20px;
-          font-weight:800;
-          color:#74271E;
-        }
-
-        .meta {
-          font-size:12px;
-          color:#6b4b3e;
-        }
-
-        .section {
-          padding-top:14px;
-          margin-top:14px;
-        }
-
-        .details-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          row-gap: 16px;   /* reduced */
-          column-gap: 40px;
-          margin-top: 6px; /* slightly tighter */
-        }
-
-        .detail {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-
-        .detail.right {
-          text-align: right;
-          align-items: flex-end;
-        }
-
-        .row {
-          display:flex;
-          justify-content:space-between;
-          align-items:center;
-          margin:10px 0;
-        }
-
-        .label {
-          font-size:12px;
-          font-weight:700;
-          color:#8c7a56;
-          letter-spacing:0.08em;
-          text-transform:uppercase;
-        }
-
-        .value {
-          font-size:14px;
-          font-weight:700;
-          color:#2D2417;
-        }
-
-        .amount {
-          font-size:18px;
-          font-weight:800;
-          color:#74271E;
-        }
-
-        .amount.original {
-          font-size:14px;
-          text-decoration: line-through;
-          color:#999;
-        }
-
-        .badge {
-          display:inline-block;
-          padding:6px 12px;
-          border-radius:999px;
-          font-size:11px;
-          font-weight:700;
-        }
-
-        .badge-paid {
-          background:#ecf7f1;
-          color:#0f766e;
-          border:1px solid #a7f3d0;
-        }
-
-        .badge-pending {
-          background:#fff7ed;
-          color:#b45309;
-          border:1px solid #fed7aa;
-        }
-
-        .badge-emi {
-          background:#fef3c7;
-          color:#b45309;
-          border:1px solid #fcd34d;
-        }
-
-        .badge-coupon {
-          background:#dcfce7;
-          color:#166534;
-          border:1px solid #86efac;
-        }
-
-        .discount-row {
-          background:#f0fdf4;
-          padding:10px;
-          border-radius:8px;
-          margin:10px 0;
-        }
-
-        .footer {
-          margin-top:24px;
-          font-size:11px;
-          color:#6b4b3e;
-          border-top:1px solid #eee3d2;
-          padding-top:14px;
-        }
-
-        @media print {
-          .actions { display:none }
-          .container { box-shadow:none; }
-        }
-
-        .actions {
-          margin-top:20px;
-          display:flex;
-          gap:10px;
-        }
-
-        .btn {
-          padding:10px 14px;
-          background:#74271E;
-          color:#fff;
-          border:none;
-          border-radius:10px;
-          font-weight:800;
-          font-size:12px;
-          letter-spacing:0.08em;
-          cursor:pointer;
-        }
-
-        .btn-outline {
-          background:#fff;
-          color:#74271E;
-          border:1px solid #74271E;
-        }
+        @page { size: A4; margin: 18mm; }
+        body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#faf7f2; color:#2D2417; margin:0; }
+        .wrap { position:relative; max-width: 860px; margin: 24px auto; background:#ffffff; border:1px solid #e8dfd0; border-radius:20px; overflow:hidden; box-shadow:0 14px 45px rgba(0,0,0,0.08); }
+        .watermark { position:absolute; inset:0; background:url('${logo}') center 42% / 48% no-repeat; opacity:0.06; filter:saturate(110%) contrast(115%); pointer-events:none; }
+        .header { position:relative; display:flex; align-items:center; justify-content:space-between; padding:20px 26px; background:linear-gradient(90deg, #3b120e 0%, #5a1e17 55%, #2a0b08 100%); border-bottom:5px solid #d6b15c; }
+        .brand { display:flex; align-items:center; gap:12px; }
+        .brand img { width:60px; height:60px; object-fit:contain; border-radius:14px; background:#74271E; padding:6px; box-shadow:0 0 22px rgba(214,177,92,0.45); }
+        .brand .org { font-weight:900; letter-spacing:0.10em; font-size:15px; color:#d6b15c; text-transform:uppercase; }
+        .sub { font-size:11px; color:#e9d8b5; letter-spacing:0.12em; text-transform:uppercase; }
+        .badge { display:inline-block; padding:7px 12px; border-radius:999px; font-size:11px; font-weight:800; border:1px solid #d6b15c; color:#d6b15c; background:rgba(255,255,255,0.10);}
+        .title { padding:18px 26px 6px; }
+        .title h1 { margin:0; font-size:22px; color:#74271E; letter-spacing:0.02em; }
+        .meta { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px 18px; padding:2px 26px 14px; }
+        .lab { font-size:11px; color:#8c7a56; font-weight:800; letter-spacing:0.10em; text-transform:uppercase; }
+        .val { font-size:14px; font-weight:800; color:#2D2417;}
+        .section { padding:14px 26px; }
+        .row { display:flex; justify-content:space-between; align-items:center; margin:8px 0; }
+        .amount { font-size:18px; font-weight:900; color:#74271E; }
+        .amount.original { font-size:14px; text-decoration: line-through; color:#999; }
+        .discount-row { background:#f0fdf4; padding:10px; border-radius:12px; margin:12px 0; border:1px solid #dcfce7; }
+        .footer { padding:12px 26px 20px; font-size:11px; color:#6b4b3e; border-top:1px dashed #efe4cf; display:flex; align-items:center; justify-content:space-between; }
+        .actions { display:flex; gap:10px; padding: 0 26px 20px; }
+        .btn { padding:10px 14px; background:#74271E; color:#fff; border:none; border-radius:10px; font-weight:800; font-size:12px; letter-spacing:0.08em; cursor:pointer; }
+        .btn-outline { background:#fff; color:#74271E; border:1px solid #74271E; }
+        .badge-paid { background:#ecf7f1; color:#0f766e; border:1px solid #a7f3d0; padding:6px 10px; border-radius:999px; font-size:11px; font-weight:800;}
+        .badge-pending { background:#fff7ed; color:#b45309; border:1px solid #fed7aa; padding:6px 10px; border-radius:999px; font-size:11px; font-weight:800;}
+        .badge-emi { background:#fef3c7; color:#b45309; border:1px solid #fcd34d; padding:6px 10px; border-radius:999px; font-size:11px; font-weight:800;}
+        @media print { .actions { display:none } .wrap { border:none } }
 
       </style>
     </head>
 
-    <body>
-      <div class="container">
-
-        <!-- HEADER -->
+      <div class="wrap">
+        <div class="watermark"></div>
         <div class="header">
           <div class="brand">
-            <div class="logo-box">
-              <img src="${logo}" alt="logo" />
-            </div>
+            <img src="${logo}" alt="Kaumudi Sanskrit Academy" />
             <div>
-              <div class="brand-title">Kaumudi Sanskrit Academy</div>
-              <div class="brand-sub">Excellence in Sanskrit Learning</div>
+              <div class="org">Kaumudi Sanskrit Academy</div>
+              <div class="sub">Payment Receipt</div>
             </div>
           </div>
-
-          <div class="receipt-meta">
-            <div class="title">Payment Receipt</div>
-            <div class="meta">Receipt No: ${item.id || "-"}</div>
-          </div>
+          <div class="badge">Receipt #${item.id || "-"}</div>
         </div>
-
-        <!-- DETAILS -->
-        <div class="section">
-          <div class="details-grid">
-
-            <div class="detail">
-              <div class="label">Date</div>
-              <div class="value">${item.date || "-"}</div>
-            </div>
-
-            <div class="detail right">
-              <div class="label">Status</div>
-              <span class="badge ${
-                status === "Paid"
-                  ? "badge-paid"
-                  : status === "Partial"
-                    ? "badge-emi"
-                    : "badge-pending"
-              }">${status}${item.paymentMode === "EMI" ? " (EMI)" : ""}</span>
-            </div>
-
-            <div class="detail">
-              <div class="label">Course</div>
-              <div class="value">${item.desc || "Course"}</div>
-            </div>
-
-            <div class="detail right">
-              <div class="label">Category</div>
-              <div class="value">${item.type || "Academic"}</div>
-            </div>
-
-          </div>
+        <div class="title">
+          <h1>${item.desc || "Course Fee"}</h1>
         </div>
-
-        <!-- AMOUNTS -->
+        <div class="meta">
+          <div><div class="lab">Date</div><div class="val">${item.date || "-"}</div></div>
+          <div><div class="lab">Status</div><div class="val"><span class="${
+            status === "Paid"
+              ? "badge-paid"
+              : status === "Partial"
+                ? "badge-emi"
+                : "badge-pending"
+          }">${status}${item.paymentMode === "EMI" ? " (EMI)" : ""}</span></div></div>
+          <div><div class="lab">Category</div><div class="val">${item.type || "Academic"}</div></div>
+          <div><div class="lab">Mode</div><div class="val">${item.paymentMode || "FULL"}</div></div>
+        </div>
         <div class="section">
           ${
             item.discountAmount > 0
               ? `
           <div class="discount-row">
             <div class="row">
-              <div class="label">Original Amount</div>
+              <div class="lab">Original Amount</div>
               <div class="amount original">${formatINR(item.originalAmount)}</div>
             </div>
             <div class="row">
-              <div class="label">Discount (${item.couponCode || "Applied"})</div>
+              <div class="lab">Discount (${item.couponCode || "Applied"})</div>
               <div class="amount" style="color:#16a34a">-${formatINR(item.discountAmount)}</div>
             </div>
           </div>
@@ -651,40 +447,61 @@ const FeePurchase = () => {
               : ""
           }
           <div class="row">
-            <div class="label">Total Amount</div>
+            <div class="lab">Total Amount</div>
             <div class="amount">${formatINR(item.totalAmount)}</div>
           </div>
           <div class="row">
-            <div class="label">Paid Amount</div>
+            <div class="lab">Paid Amount</div>
             <div class="amount">${formatINR(item.paidAmount)}</div>
           </div>
           <div class="row">
-            <div class="label">Remaining</div>
+            <div class="lab">Remaining</div>
             <div class="amount">${formatINR(remaining)}</div>
           </div>
           ${
             item.paymentMode === "EMI"
               ? `
-          <div class="row" style="margin-top:15px;padding-top:10px;border-top:1px dashed #ddd">
-            <div class="label">Payment Mode</div>
-            <span class="badge badge-emi">EMI (30% Paid)</span>
+          <div class="row" style="margin-top:10px;padding-top:10px;border-top:1px dashed #efe4cf">
+            <div class="lab">Payment Mode</div>
+            <span class="badge-emi">EMI (30% Paid)</span>
           </div>
           `
               : ""
           }
         </div>
-
-        <!-- FOOTER -->
         <div class="footer">
-          This is a computer-generated receipt.  
-          For queries, contact ksacademy@gmail.com.
+          <div>© Kaumudi Sanskrit Academy</div>
+          <div class="badge">www.kaumudi.academy</div>
         </div>
-
         <div class="actions">
           <button class="btn" onclick="window.print()">Print</button>
           <button class="btn btn-outline" onclick="window.close()">Close</button>
         </div>
-
+      </div>
+      <script>
+        (function() {
+          function download() {
+            var el = document.querySelector('.wrap');
+            if (!el || !window.html2pdf) return;
+            var opt = {
+              margin:       [10, 10, 10, 10],
+              filename:     'Receipt_${String(item.id || item.desc || "Payment").replace(/[^a-z0-9]/gi, "_")}.pdf',
+              image:        { type: 'jpeg', quality: 0.98 },
+              html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+              jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+              pagebreak:    { mode: ['css', 'legacy'] }
+            };
+            html2pdf().set(opt).from(el).save().then(function(){
+              setTimeout(function(){ window.close(); }, 600);
+            });
+          }
+          if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            setTimeout(download, 300);
+          } else {
+            document.addEventListener('DOMContentLoaded', function(){ setTimeout(download, 300); });
+          }
+        })();
+      </script>
       </div>
     </body>
   </html>
@@ -862,7 +679,7 @@ const FeePurchase = () => {
                     <td className="px-8 py-5 text-right">
                       <button
                         className="inline-flex items-center shrink-0 whitespace-nowrap gap-2 px-4 py-2 bg-white border border-[#e8dfd0] text-gray-600 rounded-xl text-xs font-semibold hover:border-[#74271E] hover:text-[#74271E] transition-all hover:shadow-md"
-                        onClick={handleDownloadReceipt}
+                        onClick={() => handleDownloadReceipt(item)}
                       >
                         <Download size={14} className="shrink-0" />
                         Download

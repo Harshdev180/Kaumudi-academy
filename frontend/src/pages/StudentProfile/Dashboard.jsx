@@ -17,6 +17,8 @@ const Dashboard = () => {
   });
   const [recentEnrollments, setRecentEnrollments] = useState([]);
   const [loadingStats, setLoadingStats] = useState(true);
+  const [hindi, setHindi] = useState("");
+  const [sanskrit, setSanskrit] = useState("");
 
   const daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
   const firstDayOfMonth = new Date(
@@ -71,6 +73,36 @@ const Dashboard = () => {
     const combined = [first, last].filter(Boolean).join(" ").trim();
     return combined || "Student";
   }, [user]);
+
+  const transliterate = async (text) => {
+    if (!text) return "";
+    try {
+      const res = await fetch(
+        `https://inputtools.google.com/request?text=${encodeURIComponent(
+          text,
+        )}&itc=hi-t-i0-und&num=5`,
+      );
+      const data = await res.json();
+      if (data[0] === "SUCCESS") {
+        return data[1][0][1][0];
+      }
+      return text;
+    } catch (err) {
+      console.error(err);
+      return text;
+    }
+  };
+  useEffect(() => {
+    if (!displayName) {
+      setHindi("");
+      setSanskrit("");
+      return;
+    }
+    transliterate(displayName).then((res) => {
+      setHindi(res);
+      setSanskrit(res);
+    });
+  }, [displayName]);
 
   const summaryStats = useMemo(() => {
     const total = stats.total || 0;
@@ -204,7 +236,7 @@ const Dashboard = () => {
           <h2 className="text-3xl md:text-4xl font-serif text-white leading-[1.25]">
             Welcome back, <br />
             <span className="font-bold bg-gradient-to-r from-white via-white to-[#c9a050] bg-clip-text text-transparent py-10">
-              {displayName}
+              {displayName} / {sanskrit}
             </span>
           </h2>
 

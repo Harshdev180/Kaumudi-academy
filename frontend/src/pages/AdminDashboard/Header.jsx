@@ -24,9 +24,10 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    api.get("/admin/notifications")
-      .then(res => setNotifications(res.data?.data || []))
-      .catch(err => console.error("Failed to fetch notifications:", err));
+    api
+      .get("/admin/notifications")
+      .then((res) => setNotifications(res.data?.data || []))
+      .catch((err) => console.error("Failed to fetch notifications:", err));
   }, []);
 
   const latestAlerts = notifications.slice(0, 4);
@@ -103,7 +104,6 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
   const profileInitials = loading ? "--" : initials;
 
   useEffect(() => {
-
     const checkScreen = () => {
       const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
@@ -114,10 +114,7 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
     window.addEventListener("resize", checkScreen);
 
     return () => window.removeEventListener("resize", checkScreen);
-
   }, []);
-
-
 
   return (
     <div className="relative z-[9999]">
@@ -165,9 +162,9 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
               >
                 <Bell className="w-5 h-5" />
 
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                  {notifications.filter(n => !n.isRead).length}
-                </span>
+                {notifications.some((n) => !n.isRead) && (
+                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full ring-1 ring-white" />
+                )}
               </button>
 
               <AnimatePresence>
@@ -176,7 +173,8 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
-                    className="fixed left-1/2 -translate-x-1/2 top-20 w-[92vw] max-w-sm md:absolute md:left-auto md:translate-x-0 md:right-0 md:top-auto md:mt-3 md:w-80 rounded-3xl shadow-xl text-[#6b1d14] overflow-hidden z-[9999]">
+                    className="fixed left-1/2 -translate-x-1/2 top-20 w-[92vw] max-w-sm md:absolute md:left-auto md:translate-x-0 md:right-0 md:top-auto md:mt-3 md:w-80 rounded-3xl shadow-xl text-[#6b1d14] overflow-hidden z-[9999]"
+                  >
                     <div className="px-5 py-4  flex items-center bg-[#EFE3D5] justify-between">
                       <div className="flex items-start  gap-3">
                         <BellRing className="w-5 h-5 text-[#6b1d14]" />
@@ -195,15 +193,22 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
                         <motion.div
                           key={alert._id}
                           whileHover={{ scale: 1.02 }}
-                          onClick={() => { setShowAlerts(false); navigate("/admin/notifications"); }}
+                          onClick={() => {
+                            setShowAlerts(false);
+                            navigate("/admin/notifications");
+                          }}
                           className="flex items-start gap-3 p-3 rounded-2xl bg-white/80 hover:bg-[#D4AF37] hover:text-[#6b1d14] cursor-pointer"
                         >
                           <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-[#D4AF37]/20">
                             {getAlertIcon((alert.type || "").toLowerCase())}
                           </div>
                           <div className="flex flex-col">
-                            <p className="text-sm font-semibold">{alert.title}</p>
-                            <p className="text-xs opacity-70 line-clamp-1">{alert.message}</p>
+                            <p className="text-sm font-semibold">
+                              {alert.title}
+                            </p>
+                            <p className="text-xs opacity-70 line-clamp-1">
+                              {alert.message}
+                            </p>
                           </div>
                         </motion.div>
                       ))}

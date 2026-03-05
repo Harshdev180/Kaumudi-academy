@@ -132,7 +132,9 @@ const AuthPage = () => {
         lastName: formData.lastName,
         email: formData.email,
         password: formData.password,
-        ...(formData.phoneNumber?.trim() && { phoneNumber: formData.phoneNumber.trim() }),
+        ...(formData.phoneNumber?.trim() && {
+          phoneNumber: formData.phoneNumber.trim(),
+        }),
         ...(formData.address?.trim() && { address: formData.address.trim() }),
       };
 
@@ -148,7 +150,10 @@ const AuthPage = () => {
           setOtpStatus({ type: "error", msg: msgs });
           toast.error(msgs); // ← also show toast
         } else {
-          setOtpStatus({ type: "error", msg: resp?.message || "Failed to send OTP" });
+          setOtpStatus({
+            type: "error",
+            msg: resp?.message || "Failed to send OTP",
+          });
           toast.error(resp?.message || "Failed to send OTP");
         }
       }
@@ -334,7 +339,9 @@ const AuthPage = () => {
           return;
         }
         if (!isEmailVerified) {
-          toast.error("Please verify your email with OTP before creating account.");
+          toast.error(
+            "Please verify your email with OTP before creating account.",
+          );
           setLoading(false);
           return;
         }
@@ -358,9 +365,7 @@ const AuthPage = () => {
         const response = await api.post("/auth/student/register", payload);
         if (!response.data.success) {
           if (response.data.errors?.length) {
-            response.data.errors.forEach(err =>
-              toast.error(err.message)
-            );
+            response.data.errors.forEach((err) => toast.error(err.message));
           } else {
             toast.error(response.data.message || "Registration failed");
           }
@@ -553,35 +558,176 @@ const AuthPage = () => {
                 </form>
               </motion.div>
             ) : /* 2. FORGOT PASSWORD FORM */
-              isForgot ? (
-                <motion.div
-                  key="forgot"
-                  variants={fadeUp}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  className="w-full space-y-10"
+            isForgot ? (
+              <motion.div
+                key="forgot"
+                variants={fadeUp}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="w-full space-y-10"
+              >
+                <button
+                  onClick={() => setIsForgot(false)}
+                  className="flex items-center gap-2 text-[#74271E] font-bold text-[10px] uppercase tracking-widest hover:gap-3 transition-all"
                 >
-                  <button
-                    onClick={() => setIsForgot(false)}
-                    className="flex items-center gap-2 text-[#74271E] font-bold text-[10px] uppercase tracking-widest hover:gap-3 transition-all"
-                  >
-                    <ArrowLeft size={14} /> Back to Login
-                  </button>
-                  <header>
-                    <h1 className="text-3xl font-black text-[#74271E] mb-1">
-                      Recover Access
-                    </h1>
-                    <p className="text-[#8c7a56] text-[12px] font-medium">
-                      Enter your email to receive a divine reset link.
-                    </p>
-                  </header>
-                  <form className="space-y-6" onSubmit={handleForgotPassword}>
+                  <ArrowLeft size={14} /> Back to Login
+                </button>
+                <header>
+                  <h1 className="text-3xl font-black text-[#74271E] mb-1">
+                    Recover Access
+                  </h1>
+                  <p className="text-[#8c7a56] text-[12px] font-medium">
+                    Enter your email to receive a divine reset link.
+                  </p>
+                </header>
+                <form className="space-y-6" onSubmit={handleForgotPassword}>
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] font-bold text-[#74271E] uppercase tracking-wider ml-1">
+                        Email Address{" "}
+                        {!isLogin && isEmailVerified && (
+                          <span className="ml-2 text-[10px] text-green-600 bg-green-100 px-2 py-0.5 rounded-full font-bold lowercase">
+                            verified
+                          </span>
+                        )}
+                      </label>
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="shastri@kaumudi.com"
+                        required
+                        className="w-full px-5 py-3 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner text-sm"
+                      />
+                      {!isLogin && !isEmailVerified && (
+                        <button
+                          type="button"
+                          onClick={handleSendOtp}
+                          className="px-4 py-3 rounded-2xl bg-[#74271E] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-[#b8973d] hover:text-[#74271E] transition-colors"
+                        >
+                          {isVerifying
+                            ? "Sending…"
+                            : isOtpSent
+                              ? "Resend"
+                              : "Send OTP"}
+                        </button>
+                      )}
+                    </div>
+                    {!isLogin && !isEmailVerified && isOtpSent && (
+                      <div className="flex gap-2 mt-2">
+                        <input
+                          type="text"
+                          value={otp}
+                          onChange={(e) => setOtp(e.target.value)}
+                          placeholder="Enter 4-digit OTP"
+                          className="w-full px-5 py-3 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner text-sm"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleVerifyOtp}
+                          className="px-5 py-3 rounded-2xl bg-[#b8973d] text-[#74271E] font-bold"
+                        >
+                          {isVerifying ? "Verifying…" : "Verify"}
+                        </button>
+                      </div>
+                    )}
+                    {!isLogin && otpStatus.msg && (
+                      <p
+                        className={`text-[12px] mt-1 font-semibold ${
+                          otpStatus.type === "success"
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }`}
+                      >
+                        {otpStatus.msg}
+                      </p>
+                    )}
+                  </div>
+                  <SubmitButton loading={loading} text="Send Recovery Link" />
+                </form>
+              </motion.div>
+            ) : (
+              /* 3. MAIN LOGIN/SIGNUP FORM */
+              <motion.div
+                key={isLogin ? "login" : "signup"}
+                variants={fadeUp}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className={`w-full ${isLogin ? "space-y-10" : "space-y-0"}`}
+              >
+                <header className={isLogin ? "mb-8" : "mb-4"}>
+                  <h1 className="text-3xl font-black text-[#74271E] mb-1">
+                    {isLogin ? "Welcome Back" : "Join the Gurukul"}
+                  </h1>
+                  <p className="text-[#8c7a56] text-[12px] font-medium">
+                    {isLogin
+                      ? "Sign in to access your Vedas."
+                      : "Register for the divine wisdom."}
+                  </p>
+                </header>
+
+                <form
+                  className={isLogin ? "space-y-6" : "space-y-3"}
+                  onSubmit={handleAuth}
+                >
+                  {!isLogin && (
+                    <>
+                      <div className="grid grid-cols-2 gap-3">
+                        <InputGroup
+                          label="First Name"
+                          name="firstName"
+                          value={formData.firstName}
+                          onChange={handleChange}
+                          placeholder="Vikram"
+                        />
+                        <InputGroup
+                          label="Last Name"
+                          name="lastName"
+                          value={formData.lastName}
+                          onChange={handleChange}
+                          placeholder="Shastri"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 mt-3">
+                        <InputGroup
+                          label="Phone"
+                          name="phoneNumber"
+                          type="tel"
+                          value={formData.phoneNumber}
+                          onChange={handleChange}
+                          placeholder="9876543210"
+                        />
+                        <InputGroup
+                          label="Address"
+                          name="address"
+                          value={formData.address}
+                          onChange={handleChange}
+                          placeholder="Varanasi"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {isLogin ? (
+                    <InputGroup
+                      label="Email Address"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="shastri@kaumudi.com"
+                    />
+                  ) : (
                     <div className="space-y-1">
                       <div className="flex items-center justify-between">
                         <label className="text-[10px] font-bold text-[#74271E] uppercase tracking-wider ml-1">
                           Email Address{" "}
-                          {!isLogin && isEmailVerified && (
+                          {isEmailVerified && (
                             <span className="ml-2 text-[10px] text-green-600 bg-green-100 px-2 py-0.5 rounded-full font-bold lowercase">
                               verified
                             </span>
@@ -598,21 +744,28 @@ const AuthPage = () => {
                           required
                           className="w-full px-5 py-3 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner text-sm"
                         />
-                        {!isLogin && !isEmailVerified && (
+                        {!isEmailVerified && (
                           <button
                             type="button"
                             onClick={handleSendOtp}
-                            className="px-4 py-3 rounded-2xl bg-[#74271E] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-[#b8973d] hover:text-[#74271E] transition-colors"
+                            disabled={isVerifying || otpCooldown > 0}
+                            className={`px-4 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-wider transition-colors ${
+                              isVerifying || otpCooldown > 0
+                                ? "bg-[#A88C64] text-white cursor-not-allowed"
+                                : "bg-[#74271E] text-white hover:bg-[#b8973d] hover:text-[#74271E]"
+                            }`}
                           >
                             {isVerifying
                               ? "Sending…"
-                              : isOtpSent
-                                ? "Resend"
-                                : "Send OTP"}
+                              : otpCooldown > 0
+                                ? `Resend in ${otpCooldown}s`
+                                : isOtpSent
+                                  ? "Resend"
+                                  : "Send OTP"}
                           </button>
                         )}
                       </div>
-                      {!isLogin && !isEmailVerified && isOtpSent && (
+                      {!isEmailVerified && isOtpSent && (
                         <div className="flex gap-2 mt-2">
                           <input
                             type="text"
@@ -630,225 +783,80 @@ const AuthPage = () => {
                           </button>
                         </div>
                       )}
-                      {!isLogin && otpStatus.msg && (
+                      {otpStatus.msg && (
                         <p
-                          className={`text-[12px] mt-1 font-semibold ${otpStatus.type === "success"
-                            ? "text-green-600"
-                            : "text-red-600"
-                            }`}
+                          className={`text-[12px] mt-1 font-semibold ${
+                            otpStatus.type === "success"
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }`}
                         >
                           {otpStatus.msg}
                         </p>
                       )}
                     </div>
-                    <SubmitButton loading={loading} text="Send Recovery Link" />
-                  </form>
-                </motion.div>
-              ) : (
-                /* 3. MAIN LOGIN/SIGNUP FORM */
-                <motion.div
-                  key={isLogin ? "login" : "signup"}
-                  variants={fadeUp}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  className={`w-full ${isLogin ? "space-y-10" : "space-y-0"}`}
-                >
-                  <header className={isLogin ? "mb-8" : "mb-4"}>
-                    <h1 className="text-3xl font-black text-[#74271E] mb-1">
-                      {isLogin ? "Welcome Back" : "Join the Gurukul"}
-                    </h1>
-                    <p className="text-[#8c7a56] text-[12px] font-medium">
-                      {isLogin
-                        ? "Sign in to access your Vedas."
-                        : "Register for the divine wisdom."}
-                    </p>
-                  </header>
+                  )}
 
-                  <form
-                    className={isLogin ? "space-y-6" : "space-y-3"}
-                    onSubmit={handleAuth}
-                  >
-                    {!isLogin && (
-                      <>
-                        <div className="grid grid-cols-2 gap-3">
-                          <InputGroup
-                            label="First Name"
-                            name="firstName"
-                            value={formData.firstName}
-                            onChange={handleChange}
-                            placeholder="Vikram"
-                          />
-                          <InputGroup
-                            label="Last Name"
-                            name="lastName"
-                            value={formData.lastName}
-                            onChange={handleChange}
-                            placeholder="Shastri"
-                          />
-                        </div>
-                        <div className="grid grid-cols-2 gap-3 mt-3">
-                          <InputGroup
-                            label="Phone"
-                            name="phoneNumber"
-                            type="tel"
-                            value={formData.phoneNumber}
-                            onChange={handleChange}
-                            placeholder="9876543210"
-                          />
-                          <InputGroup
-                            label="Address"
-                            name="address"
-                            value={formData.address}
-                            onChange={handleChange}
-                            placeholder="Varanasi"
-                          />
-                        </div>
-                      </>
-                    )}
-
-                    {isLogin ? (
-                      <InputGroup
-                        label="Email Address"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder="shastri@kaumudi.com"
-                      />
-                    ) : (
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between">
-                          <label className="text-[10px] font-bold text-[#74271E] uppercase tracking-wider ml-1">
-                            Email Address{" "}
-                            {isEmailVerified && (
-                              <span className="ml-2 text-[10px] text-green-600 bg-green-100 px-2 py-0.5 rounded-full font-bold lowercase">
-                                verified
-                              </span>
-                            )}
-                          </label>
-                        </div>
-                        <div className="flex gap-2">
-                          <input
-                            name="email"
-                            type="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            placeholder="shastri@kaumudi.com"
-                            required
-                            className="w-full px-5 py-3 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner text-sm"
-                          />
-                          {!isEmailVerified && (
-                            <button
-                              type="button"
-                              onClick={handleSendOtp}
-                              disabled={isVerifying || otpCooldown > 0}
-                              className={`px-4 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-wider transition-colors ${isVerifying || otpCooldown > 0
-                                ? "bg-[#A88C64] text-white cursor-not-allowed"
-                                : "bg-[#74271E] text-white hover:bg-[#b8973d] hover:text-[#74271E]"
-                                }`}
-                            >
-                              {isVerifying
-                                ? "Sending…"
-                                : otpCooldown > 0
-                                  ? `Resend in ${otpCooldown}s`
-                                  : isOtpSent
-                                    ? "Resend"
-                                    : "Send OTP"}
-                            </button>
-                          )}
-                        </div>
-                        {!isEmailVerified && isOtpSent && (
-                          <div className="flex gap-2 mt-2">
-                            <input
-                              type="text"
-                              value={otp}
-                              onChange={(e) => setOtp(e.target.value)}
-                              placeholder="Enter 4-digit OTP"
-                              className="w-full px-5 py-3 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner text-sm"
-                            />
-                            <button
-                              type="button"
-                              onClick={handleVerifyOtp}
-                              className="px-5 py-3 rounded-2xl bg-[#b8973d] text-[#74271E] font-bold"
-                            >
-                              {isVerifying ? "Verifying…" : "Verify"}
-                            </button>
-                          </div>
-                        )}
-                        {otpStatus.msg && (
-                          <p
-                            className={`text-[12px] mt-1 font-semibold ${otpStatus.type === "success"
-                              ? "text-green-600"
-                              : "text-red-600"
-                              }`}
-                          >
-                            {otpStatus.msg}
-                          </p>
-                        )}
-                      </div>
-                    )}
-
-                    <div className="space-y-1.5">
-                      <div className="flex justify-between px-1">
-                        <label className="text-[10px] font-bold text-[#74271E] uppercase tracking-wider">
-                          Password
-                        </label>
-                        {isLogin && (
-                          <button
-                            type="button"
-                            onClick={() => setIsForgot(true)}
-                            className="text-[10px] font-bold text-[#74271E] hover:underline transition-all"
-                          >
-                            Forgot?
-                          </button>
-                        )}
-                      </div>
-                      <div className="relative group">
-                        <input
-                          name="password"
-                          type={showPass ? "text" : "password"}
-                          value={formData.password}
-                          onChange={handleChange}
-                          placeholder="••••••••"
-                          required
-                          className="w-full px-5 py-3 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner text-sm"
-                        />
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between px-1">
+                      <label className="text-[10px] font-bold text-[#74271E] uppercase tracking-wider">
+                        Password
+                      </label>
+                      {isLogin && (
                         <button
                           type="button"
-                          onClick={() => setShowPass(!showPass)}
-                          className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#74271E]"
+                          onClick={() => setIsForgot(true)}
+                          className="text-[10px] font-bold text-[#74271E] hover:underline transition-all"
                         >
-                          {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                          Forgot?
                         </button>
-                      </div>
+                      )}
                     </div>
-
-                    {!isLogin && (
-                      <InputGroup
-                        label="Confirm Password"
-                        name="confirmPassword"
-                        type="password"
-                        value={formData.confirmPassword}
+                    <div className="relative group">
+                      <input
+                        name="password"
+                        type={showPass ? "text" : "password"}
+                        value={formData.password}
                         onChange={handleChange}
                         placeholder="••••••••"
+                        required
+                        className="w-full px-5 py-3 rounded-2xl bg-[#fdfaf2] border border-[#e8dfc4] focus:border-[#b8973d] focus:ring-4 focus:ring-[#b8973d]/10 outline-none transition-all shadow-inner text-sm"
                       />
-                    )}
+                      <button
+                        type="button"
+                        onClick={() => setShowPass(!showPass)}
+                        className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#74271E]"
+                      >
+                        {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
 
-                    <SubmitButton
-                      loading={loading}
-                      disabled={!isLogin && !isEmailVerified}
-                      text={
-                        isLogin
-                          ? "Enter Gurukul"
-                          : isEmailVerified
-                            ? "Create Account"
-                            : "Verify Email to Create"
-                      }
+                  {!isLogin && (
+                    <InputGroup
+                      label="Confirm Password"
+                      name="confirmPassword"
+                      type="password"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      placeholder="••••••••"
                     />
-                  </form>
+                  )}
 
-                  {/* <div className={isLogin ? "mt-10" : "mt-6"}>
+                  <SubmitButton
+                    loading={loading}
+                    disabled={!isLogin && !isEmailVerified}
+                    text={
+                      isLogin
+                        ? "Enter Gurukul"
+                        : isEmailVerified
+                          ? "Create Account"
+                          : "Verify Email to Create"
+                    }
+                  />
+                </form>
+
+                {/* <div className={isLogin ? "mt-10" : "mt-6"}>
                   <div className="relative flex items-center justify-center mb-5">
                     <div className="w-full h-[1px] bg-gray-200" />
                     <span className="absolute bg-[#fffcf5] px-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">
@@ -863,19 +871,19 @@ const AuthPage = () => {
                   </div>
                 </div> */}
 
-                  <footer className="mt-10 text-center">
-                    <p className="text-xs text-[#8c7a56] font-medium">
-                      {isLogin ? "New to the Academy?" : "Already a Vidhyarthi?"}
-                      <button
-                        onClick={() => setIsLogin(!isLogin)}
-                        className="ml-2 text-[#74271E] font-black border-b-2 border-[#b8973d] hover:text-[#b8973d] transition-all"
-                      >
-                        {isLogin ? "Create Account" : "Login Now"}
-                      </button>
-                    </p>
-                  </footer>
-                </motion.div>
-              )}
+                <footer className="mt-10 text-center">
+                  <p className="text-xs text-[#8c7a56] font-medium">
+                    {isLogin ? "New to the Academy?" : "Already a Vidhyarthi?"}
+                    <button
+                      onClick={() => setIsLogin(!isLogin)}
+                      className="ml-2 text-[#74271E] font-black border-b-2 border-[#b8973d] hover:text-[#b8973d] transition-all"
+                    >
+                      {isLogin ? "Create Account" : "Login Now"}
+                    </button>
+                  </p>
+                </footer>
+              </motion.div>
+            )}
           </AnimatePresence>
         </motion.div>
       </motion.div>
@@ -914,10 +922,11 @@ const SubmitButton = ({ loading, text, disabled }) => (
     whileTap={{ scale: 0.98 }}
     disabled={disabled || loading}
     type="submit"
-    className={`w-full py-4 rounded-2xl font-bold uppercase tracking-[0.3em] flex items-center justify-center gap-3 relative group mt-4 ${disabled || loading
-      ? "bg-[#A88C64] text-white cursor-not-allowed"
-      : "bg-[#74271E] text-white"
-      }`}
+    className={`w-full py-4 rounded-2xl font-bold uppercase tracking-[0.3em] flex items-center justify-center gap-3 relative group mt-4 ${
+      disabled || loading
+        ? "bg-[#A88C64] text-white cursor-not-allowed"
+        : "bg-[#74271E] text-white"
+    }`}
   >
     <span className="relative z-10 text-xs">
       {loading ? "Processing..." : text}

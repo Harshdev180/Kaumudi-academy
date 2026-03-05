@@ -1,49 +1,58 @@
-import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Lock } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { ChevronDown, ChevronUp, Lock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const CurriculumAccordion = ({ curriculumData }) => {
-  const [openIndex, setOpenIndex] = useState(-1); 
+  const [openIndex, setOpenIndex] = useState(-1);
   const navigate = useNavigate();
 
   // --- LOGIC ADDED: Login Check ---
   const isLoggedIn = !!localStorage.getItem("kaumudi_token");
 
-  // Props se data aayega, warna default show hoga
-  const modules = curriculumData || [
+  const fallbackModules = [
     {
       title: "Introduction to Paspashahnika",
       isLocked: false,
       content: [
         "Purpose of Grammar (Vyakarana-prayojanam)",
         "Concept of Shabda and Artha",
-        "Linguistic Analysis methodology in Mahabhashya"
-      ]
+        "Linguistic Analysis methodology in Mahabhashya",
+      ],
     },
-    { 
-      title: "Shivasutra and Pratyahara Analysis", 
+    {
+      title: "Shivasutra and Pratyahara Analysis",
       isLocked: false,
       content: [
         "Significance of Maheshwara Sutras",
         "Formation of Pratyaharas",
-        "Phonetic classifications"
-      ]
+        "Phonetic classifications",
+      ],
     },
-    { 
-      title: "Sutra Interpretation Principles", 
-      isLocked: true, 
+    {
+      title: "Sutra Interpretation Principles",
+      isLocked: true,
       content: [
         "Sutra structure analysis",
         "Paribhasha implementation",
-        "Vartika perspectives"
-      ] // Content add kiya takki login ke baad empty na dikhe
-    }
+        "Vartika perspectives",
+      ], // Content add kiya takki login ke baad empty na dikhe
+    },
   ];
+
+  const modules = Array.isArray(curriculumData) && curriculumData.length
+    ? curriculumData
+    : curriculumData && typeof curriculumData === "object"
+    ? Object.entries(curriculumData).map(([title, items]) => ({
+        title,
+        isLocked: false,
+        content: Array.isArray(items) ? items : [],
+      }))
+    : fallbackModules;
 
   const handleToggle = (index, isLocked) => {
     // Agar module locked hai AUR user login NAHI hai, tabhi redirect karein
     if (isLocked && !isLoggedIn) {
-      navigate('/auth'); 
+      navigate("/auth");
       return;
     }
     setOpenIndex(openIndex === index ? -1 : index);
@@ -61,25 +70,29 @@ const CurriculumAccordion = ({ curriculumData }) => {
           const isOpen = openIndex === index;
           // UI Logic: Agar login hai toh lock icon hide kar sakte hain ya color change
           const showAsLocked = module.isLocked && !isLoggedIn;
-          
+
           return (
-            <div 
-              key={index} 
-              className={`rounded-[16px] overflow-hidden border border-[#E8DFD3] shadow-sm transition-all ${isOpen ? 'ring-1 ring-[#B18E40]' : ''}`}
+            <div
+              key={index}
+              className={`rounded-[16px] overflow-hidden border border-[#E8DFD3] shadow-sm transition-all ${isOpen ? "ring-1 ring-[#B18E40]" : ""}`}
             >
-              <button 
+              <button
                 onClick={() => handleToggle(index, module.isLocked)}
-                className={`w-full flex justify-between items-center p-6 text-left transition-colors ${isOpen ? 'bg-white' : 'bg-white hover:bg-[#F9F5F0]'}`}
+                className={`w-full flex justify-between items-center p-6 text-left transition-colors ${isOpen ? "bg-white" : "bg-white hover:bg-[#F9F5F0]"}`}
               >
                 <div className="flex items-center gap-4">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[14px] font-bold ${showAsLocked ? 'bg-[#D9C5B2] text-white' : 'bg-[#631D11] text-white'}`}>
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-[14px] font-bold ${showAsLocked ? "bg-[#D9C5B2] text-white" : "bg-[#631D11] text-white"}`}
+                  >
                     {index + 1}
                   </div>
-                  <span className={`text-[18px] font-bold ${showAsLocked ? 'text-gray-400' : 'text-[#631D11]'}`}>
+                  <span
+                    className={`text-[18px] font-bold ${showAsLocked ? "text-gray-400" : "text-[#631D11]"}`}
+                  >
                     {module.title}
                   </span>
                 </div>
-                
+
                 <div className="text-gray-400">
                   {showAsLocked ? (
                     <Lock size={20} className="text-[#B18E40]" />
@@ -90,17 +103,21 @@ const CurriculumAccordion = ({ curriculumData }) => {
                   )}
                 </div>
               </button>
-              
+
               {/* Login hone par ya unlocked hone par content dikhayein */}
               {isOpen && (!module.isLocked || isLoggedIn) && (
                 <div className="bg-[#EFE3C8] p-8 border-t border-[#D9C5B2]">
                   <ul className="space-y-4">
-                    {module.content && module.content.map((item, i) => (
-                      <li key={i} className="flex items-start gap-3 text-[#631D11] font-medium text-[16px]">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#631D11] mt-2 shrink-0"></div>
-                        {item}
-                      </li>
-                    ))}
+                    {module.content &&
+                      module.content.map((item, i) => (
+                        <li
+                          key={i}
+                          className="flex items-start gap-3 text-[#631D11] font-medium text-[16px]"
+                        >
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#631D11] mt-2 shrink-0"></div>
+                          {item}
+                        </li>
+                      ))}
                   </ul>
                 </div>
               )}

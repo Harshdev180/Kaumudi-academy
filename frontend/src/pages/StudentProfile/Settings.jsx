@@ -36,6 +36,8 @@ const Settings = () => {
   });
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [hindi, setHindi] = useState("");
+  const [sanskrit, setSanskrit] = useState("");
 
   // Handle Input Changes
   const handleInputChange = (field, value) => {
@@ -69,14 +71,45 @@ const Settings = () => {
     loadProfile();
   }, []);
 
+  // transliteration helpers placed before any early return to satisfy Hooks rules
+  const romanName =
+    `${profile?.firstName || ""} ${profile?.lastName || ""}`.trim();
+  const transliterate = async (text) => {
+    if (!text) return "";
+    try {
+      const res = await fetch(
+        `https://inputtools.google.com/request?text=${encodeURIComponent(
+          text,
+        )}&itc=hi-t-i0-und&num=5`,
+      );
+      const data = await res.json();
+      if (data[0] === "SUCCESS") {
+        return data[1][0][1][0];
+      }
+      return text;
+    } catch (err) {
+      console.error(err);
+      return text;
+    }
+  };
+  useEffect(() => {
+    if (!romanName) {
+      setHindi("");
+      setSanskrit("");
+      return;
+    }
+    transliterate(romanName).then((res) => {
+      setHindi(res);
+      setSanskrit(res);
+    });
+  }, [romanName]);
+
   const tabs = ["student details", "change password", "notification settings"];
   if (loading || !profile) {
     return (
       <div className="p-10 text-center text-gray-400">Loading profile...</div>
     );
   }
-
-  const hindi = Sanscript(profile.hindiName || "");
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-700 pb-10 ">
@@ -101,12 +134,22 @@ const Settings = () => {
               <span className="text-gray-300 mx-1 sm:mx-2 font-light">/</span>{" "}
               <span className="block sm:inline">{hindi}</span>
             </h2>
+            {/* {(hindi || sanskrit) && (
+              <p className="text-sm text-gray-500">
+                <span className="mr-4">
+                  <span className="font-semibold">हिंदी:</span>{" "}
+                  <span className="font-serif">{hindi}</span>
+                </span>
+              </p>
+            )} */}
             <div className="flex flex-wrap justify-center sm:justify-start gap-2 sm:gap-3">
               <span className="px-3 sm:px-4 py-1 sm:py-1.5 bg-[#f7f1e3] text-[#c9a050] text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-full border border-[#c9a050]/20">
                 Verified Student
               </span>
               <span className="px-3 sm:px-4 py-1 sm:py-1.5 bg-gray-100 text-gray-500 text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-full">
-                MA Sanskrit Lit.
+                {sanskrit && (
+                  <span className="font-serif text-xs">{sanskrit}</span>
+                )}
               </span>
             </div>
           </div>
@@ -187,7 +230,7 @@ const Settings = () => {
                             await updateProfileMe(profile);
                             setIsEditing(false);
                             alert("Profile Updated Successfully!");
-                          } catch (err) {
+                          } catch {
                             alert("Failed to update profile");
                           }
                         }}
@@ -568,7 +611,7 @@ const NotificationView = ({ notifications, setNotifications }) => (
                   },
                 });
                 alert("Notification settings updated!");
-              } catch (err) {
+              } catch {
                 alert("Failed to update settings");
               }
             }}

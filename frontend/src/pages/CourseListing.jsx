@@ -69,8 +69,8 @@ const AllCoursesPage = () => {
           "https://i.pinimg.com/736x/c6/3c/1d/c63c1d8721a4226db27c8a2b6fd3448e.jpg";
 
         // Properly extract instructor name from populated object
-        const instructorName = c.instructor?.name 
-          ? `Sanskrit with ${c.instructor.name}` 
+        const instructorName = c.instructor?.name
+          ? `Sanskrit with ${c.instructor.name}`
           : "";
 
         return {
@@ -128,6 +128,35 @@ const AllCoursesPage = () => {
     setDurationFilter([]);
   };
 
+  const durationOptions = useMemo(() => {
+    const set = new Set(
+      courses
+        .map((c) => (c.duration || "").trim())
+        .filter((d) => d && d.length > 0),
+    );
+    return Array.from(set);
+  }, [courses]);
+
+  const fixedDurationOptions = useMemo(
+    () => [
+      { label: "Monthly", val: "__fixed_monthly" },
+      { label: "Semester", val: "__fixed_semester" },
+      { label: "3 Months", val: "__fixed_3m" },
+      { label: "6 Months", val: "__fixed_6m" },
+      { label: "Year", val: "__fixed_year" },
+    ],
+    [],
+  );
+
+  const normalizedDynamicDurations = useMemo(() => {
+    const fixedLabels = new Set(
+      fixedDurationOptions.map((o) => o.label.toLowerCase()),
+    );
+    return durationOptions
+      .filter((d) => !fixedLabels.has(String(d).toLowerCase()))
+      .map((d) => ({ label: d, val: d }));
+  }, [durationOptions, fixedDurationOptions]);
+
   // Helper to toggle items in an array
   const handleToggleFilter = (state, setter, value) => {
     if (state.includes(value)) {
@@ -160,13 +189,36 @@ const AllCoursesPage = () => {
       const matchesLevel =
         levelFilter.length === 0 || levelFilter.includes(course.level);
 
+      const cd = (course.duration || "").trim();
+      const s = cd.toLowerCase();
+      const weekMatch = s.match(/(\d+)\s*week/);
+      const monthMatch = s.match(/(\d+)\s*month/);
+      const yearMatch = s.match(/(\d+)\s*year/);
+      const weeks = weekMatch ? Number(weekMatch[1]) : 0;
+      const months = monthMatch ? Number(monthMatch[1]) : 0;
+      const years = yearMatch ? Number(yearMatch[1]) : 0;
+      const isMonthly =
+        s.includes("monthly") ||
+        (months === 1 && s.includes("month")) ||
+        (weeks >= 3 && weeks <= 5);
+      const is3m =
+        (months === 3 && s.includes("month")) || (weeks >= 12 && weeks <= 14);
+      const is6m =
+        s.includes("semester") ||
+        (months === 6 && s.includes("month")) ||
+        (weeks >= 24 && weeks <= 28);
+      const isYear =
+        years >= 1 || (months >= 12 && s.includes("month")) || weeks >= 48;
       const matchesDuration =
         durationFilter.length === 0 ||
-        (durationFilter.includes("<3m") &&
-          course.duration.toLowerCase().includes("week")) ||
-        (durationFilter.includes("6m") && course.duration.includes("6")) ||
-        (durationFilter.includes("1y+") &&
-          course.duration.toLowerCase().includes("year"));
+        durationFilter.some((val) => {
+          if (val === "__fixed_monthly") return isMonthly;
+          if (val === "__fixed_3m") return is3m;
+          if (val === "__fixed_6m") return is6m;
+          if (val === "__fixed_semester") return is6m;
+          if (val === "__fixed_year") return isYear;
+          return val === cd;
+        });
 
       return (
         matchesSearch &&
@@ -337,7 +389,7 @@ const AllCoursesPage = () => {
       "
           >
             {/* CATEGORY CHIPS */}
-            <motion.div
+            {/* <motion.div
               layout
               className="
           flex items-center gap-2
@@ -371,7 +423,7 @@ const AllCoursesPage = () => {
                   {cat}
                 </motion.button>
               ))}
-            </motion.div>
+            </motion.div> */}
 
             {/* FILTER BUTTON */}
             <motion.button
@@ -434,9 +486,8 @@ const AllCoursesPage = () => {
                   state: durationFilter,
                   setter: setDurationFilter,
                   options: [
-                    { label: "Short-term", val: "<3m" },
-                    { label: "6 Months", val: "6m" },
-                    { label: "1 Year+", val: "1y+" },
+                    ...fixedDurationOptions,
+                    // ...normalizedDynamicDurations,
                   ],
                 },
                 {
@@ -541,7 +592,18 @@ const AllCoursesPage = () => {
                       }
                       className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white border border-[#E6DDC8] text-xs"
                     >
-                      {d} <X className="w-3 h-3" />
+                      {d === "__fixed_monthly"
+                        ? "Monthly"
+                        : d === "__fixed_semester"
+                          ? "Semester"
+                          : d === "__fixed_3m"
+                            ? "3 Months"
+                            : d === "__fixed_6m"
+                              ? "6 Months"
+                              : d === "__fixed_year"
+                                ? "Year"
+                                : d}{" "}
+                      <X className="w-3 h-3" />
                     </button>
                   ))}
                   <button

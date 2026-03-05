@@ -173,6 +173,21 @@ const EnrollmentPage = () => {
     return Math.max(0, basePrice - Discount);
   }, [basePrice, Discount]);
 
+  // --- ADDITIONAL CHARGES ---
+  const processingFee = 99;
+  const platformFee = 199;
+  const gstPercent = 18;
+  const gstAmount = useMemo(() => {
+    const preTaxSubtotal = finalPrice + processingFee + platformFee;
+    return Math.round((preTaxSubtotal * gstPercent) / 100);
+  }, [finalPrice]);
+  const additionalChargesTotal = useMemo(() => {
+    return processingFee + gstAmount;
+  }, [gstAmount]);
+  const finalPayable = useMemo(() => {
+    return Math.max(0, finalPrice + additionalChargesTotal);
+  }, [finalPrice, additionalChargesTotal]);
+
   // --- COUPON HANDLER ---
   const applyCoupon = async () => {
     if (!couponCode) {
@@ -218,6 +233,13 @@ const EnrollmentPage = () => {
     } finally {
       setIsApplying(false);
     }
+  };
+
+  const removeCoupon = () => {
+    setDiscount(0);
+    setAppliedCouponName("");
+    setCouponCode("");
+    setCouponStatus({ type: "", msg: "" });
   };
 
   // --- EMAIL OTP HANDLER (Backend email via API) ---
@@ -847,6 +869,20 @@ const EnrollmentPage = () => {
                       {couponStatus.msg}
                     </p>
                   )}
+                  {appliedCouponName && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className="px-2 py-1 rounded-full bg-green-100 text-green-700 text-[10px] font-bold">
+                        {appliedCouponName}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={removeCoupon}
+                        className="text-[10px] font-bold text-red-300 hover:text-red-400 underline"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-6 px-2">
@@ -893,9 +929,19 @@ const EnrollmentPage = () => {
                       ).toLocaleString("en-IN")}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center text-[#d6b15c] text-sm font-bold">
-                    <span>Additional Charges</span>
-                    <span>₹0</span>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center text-[#d6b15c] text-sm font-bold">
+                      <span>Processing Fee</span>
+                      <span>₹{processingFee.toLocaleString("en-IN")}</span>
+                    </div>
+                    {/* <div className="flex justify-between items-center text-[#d6b15c] text-sm font-bold">
+                      <span>Platform Fee</span>
+                      <span>₹{platformFee.toLocaleString("en-IN")}</span>
+                    </div> */}
+                    <div className="flex justify-between items-center text-[#d6b15c] text-sm font-bold">
+                      <span>GST ({gstPercent}%)</span>
+                      <span>₹{gstAmount.toLocaleString("en-IN")}</span>
+                    </div>
                   </div>
                   {Discount > 0 && (
                     <div className="flex justify-between items-center text-green-400 text-sm font-bold">
@@ -909,7 +955,7 @@ const EnrollmentPage = () => {
                         Net Payable
                       </span>
                       <span className="text-3xl font-black text-white">
-                        ₹{finalPrice.toLocaleString("en-IN")}
+                        ₹{finalPayable.toLocaleString("en-IN")}
                       </span>
                     </div>
                   </div>
@@ -950,7 +996,7 @@ const EnrollmentPage = () => {
                 }`}
               >
                 <p className="font-bold">Full Payment</p>
-                <p>₹{basePrice}</p>
+                <p>₹{finalPayable.toLocaleString("en-IN")}</p>
               </div>
 
               <div
@@ -960,7 +1006,9 @@ const EnrollmentPage = () => {
                 }`}
               >
                 <p className="font-bold">EMI</p>
-                <p>₹{Math.ceil(basePrice / 3)} × 3</p>
+                <p>
+                  ₹{Math.ceil(finalPayable / 3).toLocaleString("en-IN")} × 3
+                </p>
               </div>
             </div>
 
