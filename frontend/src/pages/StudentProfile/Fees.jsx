@@ -358,154 +358,416 @@ const FeePurchase = () => {
         : item.paymentMode === "EMI"
           ? "Partial"
           : "Pending";
+    const studentName =
+      localStorage.getItem("kaumudi_user_name") ||
+      `${(localStorage.getItem("kaumudi_user_first_name") || "").trim()} ${(localStorage.getItem("kaumudi_user_last_name") || "").trim()}`.trim() ||
+      "Student";
+    const studentEmail = localStorage.getItem("kaumudi_user_email") || "";
+    const studentId = localStorage.getItem("kaumudi_user_id") || "";
 
     const html = `
-  <!doctype html>
-  <html>
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <title>Receipt ${item.id || ""}</title>
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-YcsIPbiG8C4wY2s7t3k+HUXoQli0T3t8t3yQvA8vKJ9xI1Fv4TtHjW6cM7cVfYzWwQhD/2dQjAqV3DkO4bczrA==" crossorigin="anonymous"></script>
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Receipt ${item.id || ""}</title>
 
-      <style>
-        @page { size: A4; margin: 18mm; }
-        body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#faf7f2; color:#2D2417; margin:0; }
-        .wrap { position:relative; max-width: 860px; margin: 24px auto; background:#ffffff; border:1px solid #e8dfd0; border-radius:20px; overflow:hidden; box-shadow:0 14px 45px rgba(0,0,0,0.08); }
-        .watermark { position:absolute; inset:0; background:url('${logo}') center 42% / 48% no-repeat; opacity:0.06; filter:saturate(110%) contrast(115%); pointer-events:none; }
-        .header { position:relative; display:flex; align-items:center; justify-content:space-between; padding:20px 26px; background:linear-gradient(90deg, #3b120e 0%, #5a1e17 55%, #2a0b08 100%); border-bottom:5px solid #d6b15c; }
-        .brand { display:flex; align-items:center; gap:12px; }
-        .brand img { width:60px; height:60px; object-fit:contain; border-radius:14px; background:#74271E; padding:6px; box-shadow:0 0 22px rgba(214,177,92,0.45); }
-        .brand .org { font-weight:900; letter-spacing:0.10em; font-size:15px; color:#d6b15c; text-transform:uppercase; }
-        .sub { font-size:11px; color:#e9d8b5; letter-spacing:0.12em; text-transform:uppercase; }
-        .badge { display:inline-block; padding:7px 12px; border-radius:999px; font-size:11px; font-weight:800; border:1px solid #d6b15c; color:#d6b15c; background:rgba(255,255,255,0.10);}
-        .title { padding:18px 26px 6px; }
-        .title h1 { margin:0; font-size:22px; color:#74271E; letter-spacing:0.02em; }
-        .meta { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px 18px; padding:2px 26px 14px; }
-        .lab { font-size:11px; color:#8c7a56; font-weight:800; letter-spacing:0.10em; text-transform:uppercase; }
-        .val { font-size:14px; font-weight:800; color:#2D2417;}
-        .section { padding:14px 26px; }
-        .row { display:flex; justify-content:space-between; align-items:center; margin:8px 0; }
-        .amount { font-size:18px; font-weight:900; color:#74271E; }
-        .amount.original { font-size:14px; text-decoration: line-through; color:#999; }
-        .discount-row { background:#f0fdf4; padding:10px; border-radius:12px; margin:12px 0; border:1px solid #dcfce7; }
-        .footer { padding:12px 26px 20px; font-size:11px; color:#6b4b3e; border-top:1px dashed #efe4cf; display:flex; align-items:center; justify-content:space-between; }
-        .actions { display:flex; gap:10px; padding: 0 26px 20px; }
-        .btn { padding:10px 14px; background:#74271E; color:#fff; border:none; border-radius:10px; font-weight:800; font-size:12px; letter-spacing:0.08em; cursor:pointer; }
-        .btn-outline { background:#fff; color:#74271E; border:1px solid #74271E; }
-        .badge-paid { background:#ecf7f1; color:#0f766e; border:1px solid #a7f3d0; padding:6px 10px; border-radius:999px; font-size:11px; font-weight:800;}
-        .badge-pending { background:#fff7ed; color:#b45309; border:1px solid #fed7aa; padding:6px 10px; border-radius:999px; font-size:11px; font-weight:800;}
-        .badge-emi { background:#fef3c7; color:#b45309; border:1px solid #fcd34d; padding:6px 10px; border-radius:999px; font-size:11px; font-weight:800;}
-        @media print { .actions { display:none } .wrap { border:none } }
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-      </style>
-    </head>
+<style>
 
-      <div class="wrap">
-        <div class="watermark"></div>
-        <div class="header">
-          <div class="brand">
-            <img src="${logo}" alt="Kaumudi Sanskrit Academy" />
-            <div>
-              <div class="org">Kaumudi Sanskrit Academy</div>
-              <div class="sub">Payment Receipt</div>
-            </div>
-          </div>
-          <div class="badge">Receipt #${item.id || "-"}</div>
-        </div>
-        <div class="title">
-          <h1>${item.desc || "Course Fee"}</h1>
-        </div>
-        <div class="meta">
-          <div><div class="lab">Date</div><div class="val">${item.date || "-"}</div></div>
-          <div><div class="lab">Status</div><div class="val"><span class="${
-            status === "Paid"
-              ? "badge-paid"
-              : status === "Partial"
-                ? "badge-emi"
-                : "badge-pending"
-          }">${status}${item.paymentMode === "EMI" ? " (EMI)" : ""}</span></div></div>
-          <div><div class="lab">Category</div><div class="val">${item.type || "Academic"}</div></div>
-          <div><div class="lab">Mode</div><div class="val">${item.paymentMode || "FULL"}</div></div>
-        </div>
-        <div class="section">
-          ${
-            item.discountAmount > 0
-              ? `
-          <div class="discount-row">
-            <div class="row">
-              <div class="lab">Original Amount</div>
-              <div class="amount original">${formatINR(item.originalAmount)}</div>
-            </div>
-            <div class="row">
-              <div class="lab">Discount (${item.couponCode || "Applied"})</div>
-              <div class="amount" style="color:#16a34a">-${formatINR(item.discountAmount)}</div>
-            </div>
-          </div>
-          `
-              : ""
-          }
-          <div class="row">
-            <div class="lab">Total Amount</div>
-            <div class="amount">${formatINR(item.totalAmount)}</div>
-          </div>
-          <div class="row">
-            <div class="lab">Paid Amount</div>
-            <div class="amount">${formatINR(item.paidAmount)}</div>
-          </div>
-          <div class="row">
-            <div class="lab">Remaining</div>
-            <div class="amount">${formatINR(remaining)}</div>
-          </div>
-          ${
-            item.paymentMode === "EMI"
-              ? `
-          <div class="row" style="margin-top:10px;padding-top:10px;border-top:1px dashed #efe4cf">
-            <div class="lab">Payment Mode</div>
-            <span class="badge-emi">EMI (30% Paid)</span>
-          </div>
-          `
-              : ""
-          }
-        </div>
-        <div class="footer">
-          <div>© Kaumudi Sanskrit Academy</div>
-          <div class="badge">www.kaumudi.academy</div>
-        </div>
-        <div class="actions">
-          <button class="btn" onclick="window.print()">Print</button>
-          <button class="btn btn-outline" onclick="window.close()">Close</button>
-        </div>
-      </div>
-      <script>
-        (function() {
-          function download() {
-            var el = document.querySelector('.wrap');
-            if (!el || !window.html2pdf) return;
-            var opt = {
-              margin:       [10, 10, 10, 10],
-              filename:     'Receipt_${String(item.id || item.desc || "Payment").replace(/[^a-z0-9]/gi, "_")}.pdf',
-              image:        { type: 'jpeg', quality: 0.98 },
-              html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
-              jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-              pagebreak:    { mode: ['css', 'legacy'] }
-            };
-            html2pdf().set(opt).from(el).save().then(function(){
-              setTimeout(function(){ window.close(); }, 600);
-            });
-          }
-          if (document.readyState === 'complete' || document.readyState === 'interactive') {
-            setTimeout(download, 300);
-          } else {
-            document.addEventListener('DOMContentLoaded', function(){ setTimeout(download, 300); });
-          }
-        })();
-      </script>
-      </div>
-    </body>
-  </html>
-  `;
+@page { size:A4; margin:18mm; }
+
+body{
+font-family:Inter,system-ui;
+background:#faf7f2;
+color:#2D2417;
+margin:0;
+}
+
+.wrap{
+position:relative;
+max-width:850px;
+margin:24px auto;
+background:#fff;
+border-radius:20px;
+border:1px solid #e8dfd0;
+box-shadow:0 15px 40px rgba(0,0,0,0.08);
+overflow:hidden;
+}
+
+.watermark{
+position:absolute;
+inset:0;
+background:url('${logo}') center / 42% no-repeat;
+opacity:0.05;
+pointer-events:none;
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:22px 26px;
+background:linear-gradient(90deg,#3b120e,#5a1e17,#2a0b08);
+border-bottom:4px solid #d6b15c;
+}
+
+.brand{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.brand img{
+width:58px;
+height:58px;
+object-fit:contain;
+border-radius:12px;
+background:#74271E;
+padding:6px;
+}
+
+.org{
+font-weight:900;
+letter-spacing:0.08em;
+color:#d6b15c;
+font-size:15px;
+text-transform:uppercase;
+}
+
+.sub{
+font-size:11px;
+color:#e9d8b5;
+letter-spacing:0.1em;
+}
+
+.receipt-badge{
+font-weight:800;
+font-size:12px;
+color:#d6b15c;
+border:1px solid #d6b15c;
+padding:6px 12px;
+border-radius:999px;
+}
+
+.section{
+padding:20px 26px;
+border-bottom:1px solid #efe4cf;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:14px 30px;
+}
+
+.label{
+font-size:11px;
+font-weight:800;
+letter-spacing:.1em;
+text-transform:uppercase;
+color:#8c7a56;
+}
+
+.value{
+font-size:14px;
+font-weight:700;
+}
+
+.title{
+padding:18px 26px 6px;
+}
+
+.title h1{
+margin:0;
+font-size:22px;
+color:#74271E;
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+margin:10px 0;
+}
+
+.amount{
+font-weight:900;
+font-size:18px;
+color:#74271E;
+}
+
+.amount.small{
+font-size:14px;
+color:#999;
+text-decoration:line-through;
+}
+
+.discount-box{
+background:#f0fdf4;
+border:1px solid #dcfce7;
+border-radius:12px;
+padding:12px;
+margin-bottom:14px;
+}
+
+.footer{
+padding:16px 26px;
+font-size:11px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-top:1px dashed #efe4cf;
+}
+
+.actions{
+display:flex;
+gap:10px;
+padding:0 26px 22px;
+}
+
+.btn{
+padding:10px 14px;
+border:none;
+border-radius:10px;
+font-weight:800;
+cursor:pointer;
+background:#74271E;
+color:#fff;
+}
+
+.btn-outline{
+background:#fff;
+border:1px solid #74271E;
+color:#74271E;
+}
+
+.badge-paid{
+background:#ecf7f1;
+border:1px solid #a7f3d0;
+color:#0f766e;
+padding:5px 10px;
+border-radius:999px;
+font-weight:800;
+font-size:11px;
+}
+
+.badge-emi{
+background:#fef3c7;
+border:1px solid #fcd34d;
+color:#b45309;
+padding:5px 10px;
+border-radius:999px;
+font-weight:800;
+font-size:11px;
+}
+
+.badge-pending{
+background:#fff7ed;
+border:1px solid #fed7aa;
+color:#b45309;
+padding:5px 10px;
+border-radius:999px;
+font-weight:800;
+font-size:11px;
+}
+
+@media print{
+.actions{display:none}
+.wrap{border:none}
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+<div class="watermark"></div>
+
+<!-- HEADER -->
+<div class="header">
+<div class="brand">
+<img src="${logo}" />
+<div>
+<div class="org">Kaumudi Sanskrit Academy</div>
+<div class="sub">Official Payment Receipt</div>
+</div>
+</div>
+<div class="receipt-badge">Receipt #${item.id || "-"}</div>
+</div>
+
+<!-- COURSE -->
+<div class="title">
+<h1>${item.desc || "Course Fee Payment"}</h1>
+</div>
+
+<!-- STUDENT DETAILS -->
+<div class="section">
+<div class="grid">
+
+<div>
+<div class="label">Student Name</div>
+<div class="value">${item.studentName || "Student"}</div>
+</div>
+
+<div>
+<div class="label">Enrollment No</div>
+<div class="value">${item.enrollmentNo || "-"}</div>
+</div>
+
+<div>
+<div class="label">Email</div>
+<div class="value">${item.email || "-"}</div>
+</div>
+
+<div>
+<div class="label">Phone</div>
+<div class="value">${item.phone || "-"}</div>
+</div>
+
+</div>
+</div>
+
+<!-- RECEIPT DETAILS -->
+<div class="section">
+<div class="grid">
+
+<div>
+<div class="label">Student</div>
+<div class="value">${studentName}</div>
+</div>
+
+<div>
+<div class="label">Email</div>
+<div class="value">${studentEmail || "-"}</div>
+</div>
+
+<div>
+<div class="label">Enrollment ID</div>
+<div class="value">${item.id || "-"}</div>
+</div>
+
+<div>
+<div class="label">Student ID</div>
+<div class="value">${studentId || "-"}</div>
+</div>
+
+<div>
+<div class="label">Date</div>
+<div class="value">${item.date || "-"}</div>
+</div>
+
+<div>
+<div class="label">Payment Mode</div>
+<div class="value">${item.paymentMode || "FULL"}</div>
+</div>
+
+<div>
+<div class="label">Category</div>
+<div class="value">${item.type || "Academic"}</div>
+</div>
+
+<div>
+<div class="label">Status</div>
+<div class="value">
+<span class="${
+      status === "Paid"
+        ? "badge-paid"
+        : status === "Partial"
+          ? "badge-emi"
+          : "badge-pending"
+    }">
+${status}
+</span>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- PAYMENT BREAKDOWN -->
+<div class="section">
+
+${
+  item.discountAmount > 0
+    ? `
+<div class="discount-box">
+
+<div class="row">
+<div class="label">Original Amount</div>
+<div class="amount small">${formatINR(item.originalAmount)}</div>
+</div>
+
+<div class="row">
+<div class="label">Discount (${item.couponCode || "Applied"})</div>
+<div class="amount" style="color:#16a34a">-${formatINR(item.discountAmount)}</div>
+</div>
+
+</div>
+`
+    : ""
+}
+
+<div class="row">
+<div class="label">Total Amount</div>
+<div class="amount">${formatINR(item.totalAmount)}</div>
+</div>
+
+<div class="row">
+<div class="label">Paid Amount</div>
+<div class="amount">${formatINR(item.paidAmount)}</div>
+</div>
+
+<div class="row">
+<div class="label">Remaining</div>
+<div class="amount">${formatINR(remaining)}</div>
+</div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+<div>© Kaumudi Sanskrit Academy</div>
+<div>www.kaumudi.academy</div>
+</div>
+
+<div class="actions">
+<button class="btn" onclick="window.print()">Print</button>
+<button class="btn btn-outline" onclick="window.close()">Close</button>
+</div>
+
+</div>
+
+<script>
+(function(){
+
+function download(){
+var el=document.querySelector('.wrap');
+if(!el||!window.html2pdf)return;
+
+html2pdf().set({
+margin:[10,10,10,10],
+filename:'Receipt_${String(item.id || item.desc || "Payment").replace(/[^a-z0-9]/gi, "_")}.pdf',
+image:{type:'jpeg',quality:0.98},
+html2canvas:{scale:2,useCORS:true},
+jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}
+}).from(el).save().then(function(){
+setTimeout(function(){window.close();},600);
+});
+
+}
+
+setTimeout(download,400);
+
+})();
+</script>
+
+</body>
+</html>
+`;
 
     const w = window.open("", "PRINT", "height=700,width=900");
     if (!w) return;

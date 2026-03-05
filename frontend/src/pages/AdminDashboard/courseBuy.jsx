@@ -518,7 +518,7 @@ const EnrollmentPage = () => {
     );
   }
 
-  // ---   SHARED STYLES ---
+  // --- SHARED STYLES ---
   const inputStyle =
     "w-full bg-[#fdfaf5]/80 backdrop-blur-sm border-b-2 border-[#631D11]/10 p-4 outline-none focus:border-[#d6b15c] transition-all duration-300 text-[#3D1A16] font-medium placeholder:text-gray-400 placeholder:font-normal rounded-t-lg group-hover:bg-white";
   const labelStyle =

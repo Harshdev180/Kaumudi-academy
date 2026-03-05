@@ -137,7 +137,9 @@ const CourseManagement = () => {
       ...initialForm,
       ...course,
       duration: course.dur,
-      curriculumText: course.curriculum ? JSON.stringify(course.curriculum, null, 2) : "",
+      curriculumText: course.curriculum
+        ? JSON.stringify(course.curriculum, null, 2)
+        : "",
     });
     setDrawerOpen(true);
   };
@@ -147,13 +149,15 @@ const CourseManagement = () => {
 
   const saveCourse = async (e) => {
     e.preventDefault();
-    
+
     // Check for pending curriculum items
     if (hasPendingCurriculum) {
-      setError("Please click 'Add Module' to save your curriculum module before submitting.");
+      setError(
+        "Please click 'Add Module' to save your curriculum module before submitting.",
+      );
       return;
     }
-    
+
     setSavingCourse(true);
     setError("");
 
@@ -370,15 +374,33 @@ const CourseManagement = () => {
   return (
     <main className="w-full bg-[#F3E6C9] p-6 space-y-8">
       {/* HEADER */}
-      <div className="bg-gradient-to-r from-[#7a1f16] to-[#6b1d14] text-white rounded-3xl p-6 flex justify-between">
-        <h1 className="text-sm md:text-3xl font-black">Course Management</h1>
-
-        <button
-          onClick={openAdd}
-          className="flex items-center gap-2 bg-[#e6b86a] text-[#4a2b07] px-5 py-2 rounded-xl font-semibold shadow hover:scale-105 transition"
-        >
-          <MdAdd /> Add Course
-        </button>
+      <div className="relative rounded-3xl overflow-hidden text-white shadow-lg">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#6b1d14] via-[#7a2318] to-[#6b1d14]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(209,176,98,0.22),transparent_60%)]" />
+        <div className="relative px-6 md:px-8 py-6 md:py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white/10 flex items-center justify-center text-xl md:text-2xl">
+              <MdAutoStories />
+            </div>
+            <div>
+              <h1 className="text-xl md:text-3xl font-black tracking-tight">
+                Course Management
+              </h1>
+              <p className="text-xs md:text-sm text-white/80">
+                Create, edit and publish academy courses with ease.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={openAdd}
+              className="flex items-center gap-2 bg-[#d6b15c] text-[#4a2b07] px-4 md:px-5 py-2 rounded-xl font-semibold shadow hover:scale-105 transition"
+            >
+              <MdAdd /> <span className="hidden sm:inline">Add Course</span>
+              <span className="sm:hidden">New</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* ERROR BANNER */}
