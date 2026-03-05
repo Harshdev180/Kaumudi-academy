@@ -62,6 +62,7 @@ const EnrollmentPage = () => {
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [paymentType, setPaymentType] = useState("FULL");
   const [captchaToken, setCaptchaToken] = useState(null);
+  const [orderResponse, setOrderResponse] = useState(null);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -422,6 +423,9 @@ const EnrollmentPage = () => {
         return;
       }
 
+      // Store order response for EMI details
+      setOrderResponse(orderResponse);
+
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
 
@@ -430,7 +434,10 @@ const EnrollmentPage = () => {
         order_id: orderResponse.orderId,
 
         name: "Kaumudi Trust",
-        description: `Enrollment for ${courseData.courseName}`,
+        description:
+          paymentType === "EMI"
+            ? `EMI Payment (1/3) for ${courseData.courseName}`
+            : `Enrollment for ${courseData.courseName}`,
 
         handler: async function (response) {
           try {
@@ -511,7 +518,7 @@ const EnrollmentPage = () => {
     );
   }
 
-  // --- SHARED STYLES ---
+  // ---   SHARED STYLES ---
   const inputStyle =
     "w-full bg-[#fdfaf5]/80 backdrop-blur-sm border-b-2 border-[#631D11]/10 p-4 outline-none focus:border-[#d6b15c] transition-all duration-300 text-[#3D1A16] font-medium placeholder:text-gray-400 placeholder:font-normal rounded-t-lg group-hover:bg-white";
   const labelStyle =
@@ -949,13 +956,26 @@ const EnrollmentPage = () => {
                       <span>-₹{Discount.toLocaleString("en-IN")}</span>
                     </div>
                   )}
+                  {paymentType === "EMI" && orderResponse?.emiDetails && (
+                    <div className="flex justify-between items-center text-blue-400 text-sm font-bold">
+                      <span>EMI (First of 3)</span>
+                      <span>
+                        ₹{orderResponse.emiDetails.firstPayment.toFixed(2)}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between items-end pt-4">
                     <div className="flex flex-col">
                       <span className="text-[10px] uppercase font-bold tracking-widest text-stone-300">
-                        Net Payable
+                        {paymentType === "EMI" && orderResponse?.emiDetails
+                          ? "First Payment"
+                          : "Net Payable"}
                       </span>
                       <span className="text-3xl font-black text-white">
-                        ₹{finalPayable.toLocaleString("en-IN")}
+                        ₹
+                        {paymentType === "EMI" && orderResponse?.emiDetails
+                          ? orderResponse.emiDetails.firstPayment.toFixed(2)
+                          : finalPrice.toLocaleString("en-IN")}
                       </span>
                     </div>
                   </div>
@@ -990,13 +1010,16 @@ const EnrollmentPage = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div
-                onClick={() => setPaymentType("FULL")}
+                onClick={() => {
+                  setPaymentType("FULL");
+                  setOrderResponse(null);
+                }}
                 className={`p-4 border rounded-xl cursor-pointer ${
                   paymentType === "FULL" ? "bg-[#d6b15c] text-[#631D11]" : ""
                 }`}
               >
                 <p className="font-bold">Full Payment</p>
-                <p>₹{finalPayable.toLocaleString("en-IN")}</p>
+                <p>₹{finalPrice.toLocaleString("en-IN")}</p>
               </div>
 
               <div
@@ -1006,9 +1029,11 @@ const EnrollmentPage = () => {
                 }`}
               >
                 <p className="font-bold">EMI</p>
-                <p>
-                  ₹{Math.ceil(finalPayable / 3).toLocaleString("en-IN")} × 3
-                </p>
+                {orderResponse?.emiDetails ? (
+                  <p>₹{orderResponse.emiDetails.firstPayment.toFixed(2)} × 3</p>
+                ) : (
+                  <p>₹{(finalPrice / 3).toFixed(2)} × 3</p>
+                )}
               </div>
             </div>
 

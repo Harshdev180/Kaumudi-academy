@@ -43,6 +43,7 @@ function Dashboard() {
       <ChartSection
         revenueChart={data?.revenueChart}
         salesChart={data?.salesChart}
+        salesByCategory={data?.salesByCategory}
       />
 
       {/* TOP COURSES + INQUIRIES */}

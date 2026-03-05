@@ -23,6 +23,9 @@ const CourseManagement = () => {
     title: "",
     description: "",
     syllabus: "",
+    curriculum: [],
+    curriculumText: "",
+    batchSchedule: [],
     duration: "",
     faculty: "",
     level: "Prathama (Beginner)",
@@ -54,6 +57,7 @@ const CourseManagement = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editId, setEditId] = useState(null);
   const [form, setForm] = useState(initialForm);
+  const [hasPendingCurriculum, setHasPendingCurriculum] = useState(false);
 
   /* ================= FETCH COURSES ================= */
 
@@ -79,6 +83,8 @@ const CourseManagement = () => {
         imagePublicId: course.image?.public_id || "",
         language: course.language,
         syllabus: course.syllabus,
+        curriculum: course.curriculum,
+        batchSchedule: course.batchSchedule || [],
         startDate: course.startDate ? course.startDate.split("T")[0] : "",
         endDate: course.endDate ? course.endDate.split("T")[0] : "",
         icon: <MdAutoStories />,
@@ -131,6 +137,7 @@ const CourseManagement = () => {
       ...initialForm,
       ...course,
       duration: course.dur,
+      curriculumText: course.curriculum ? JSON.stringify(course.curriculum, null, 2) : "",
     });
     setDrawerOpen(true);
   };
@@ -140,6 +147,13 @@ const CourseManagement = () => {
 
   const saveCourse = async (e) => {
     e.preventDefault();
+    
+    // Check for pending curriculum items
+    if (hasPendingCurriculum) {
+      setError("Please click 'Add Module' to save your curriculum module before submitting.");
+      return;
+    }
+    
     setSavingCourse(true);
     setError("");
 
@@ -175,6 +189,16 @@ const CourseManagement = () => {
       payload.append("title", form.title);
       payload.append("description", form.description);
       payload.append("syllabus", form.syllabus || "");
+      // Parse curriculumText to curriculum array
+      let curriculumData = [];
+      if (form.curriculumText) {
+        try {
+          curriculumData = JSON.parse(form.curriculumText);
+        } catch (err) {
+          console.error("Invalid curriculum JSON:", err);
+        }
+      }
+      payload.append("curriculum", JSON.stringify(curriculumData));
       payload.append("duration", form.duration);
       payload.append("instructor", form.instructor);
       payload.append("mode", form.mode);
@@ -200,6 +224,9 @@ const CourseManagement = () => {
       if (form.endDate) {
         payload.append("endDate", new Date(form.endDate).toISOString());
       }
+
+      // ✅ batch schedule
+      payload.append("batchSchedule", JSON.stringify(form.batchSchedule || []));
 
       // ✅ Image file
       if (form.imageFile) {
@@ -597,6 +624,8 @@ const CourseManagement = () => {
         editId={editId}
         savingCourse={savingCourse}
         staffList={staffList}
+        onHasPendingCurriculum={setHasPendingCurriculum}
+        curriculumError={error}
       />
     </main>
   );

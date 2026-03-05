@@ -403,6 +403,14 @@ export const login = async (req, res) => {
       });
     }
 
+    // Check if student account is active
+    if (role === "STUDENT" && account.status === "INACTIVE") {
+      return res.status(403).json({
+        success: false,
+        message: "Your account has been deactivated. Please contact admin."
+      });
+    }
+
     const isMatch = await verifyPassword(password, account.password, account);
     if (!isMatch) {
       return res.status(401).json({

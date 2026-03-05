@@ -17,6 +17,29 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Response interceptor to handle 403 errors (account deactivated)
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 403 && 
+        error.response?.data?.message?.includes("deactivated")) {
+      // Clear all student auth data
+      localStorage.removeItem("kaumudi_token");
+      localStorage.removeItem("kaumudi_user_email");
+      localStorage.removeItem("kaumudi_user_id");
+      localStorage.removeItem("kaumudi_role");
+      localStorage.removeItem("kaumudi_user_first_name");
+      localStorage.removeItem("kaumudi_user_last_name");
+      localStorage.removeItem("kaumudi_user_name");
+      delete api.defaults.headers.common.Authorization;
+      
+      // Redirect to login page
+      window.location.href = "/login?message=account_deactivated";
+    }
+    return Promise.reject(error);
+  }
+);
+
 export function setAuthToken(token) {
   if (token) {
     api.defaults.headers.common.Authorization = `Bearer ${token}`;

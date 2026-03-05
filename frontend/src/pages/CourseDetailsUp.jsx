@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Download, FileText, Languages, Play } from "lucide-react";
+import { Download, FileText, Languages, Play, BookOpen } from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuthHook";
 import HeroSection from "../component/CourseDetailsUpdated/HeroSection";
@@ -114,8 +114,8 @@ const CourseDetails = () => {
           console.log("Fetching course detail for ID:", id);
           const response = await getCourseDetail(id);
           console.log("Full API Response:", response);
-          const apiCourse = response.data || response;
-
+          // Handle both direct response and wrapped response { success, data }
+          const apiCourse = response?.data?.data || response?.data || response;
           console.log("Course API Response:", apiCourse);
           console.log("Instructor from API:", apiCourse?.instructor);
 
@@ -125,15 +125,19 @@ const CourseDetails = () => {
             exists: !!instructorData,
             isObject: typeof instructorData === "object",
             name: instructorData?.name,
+            role: instructorData?.role,
+            description: instructorData?.description,
             hasValidName: !!(
               instructorData?.name && instructorData.name !== "Instructor TBA"
             ),
           });
 
+          // More lenient check - just need a name that exists
           const hasValidInstructor =
             instructorData &&
             typeof instructorData === "object" &&
             instructorData.name &&
+            instructorData.name !== "Instructor TBA" &&
             instructorData.name !== "Instructor TBA";
 
           console.log("hasValidInstructor:", hasValidInstructor);
@@ -158,19 +162,21 @@ const CourseDetails = () => {
             endDate: apiCourse.endDate,
             instructor: hasValidInstructor
               ? {
-                  name: instructorData.name,
+                  name: instructorData.name || "Instructor",
                   qualification: instructorData.role || "Faculty",
-                  bio: instructorData.description || "",
+                  bio:
+                    (instructorData.description &&
+                      instructorData.description.trim()) ||
+                    instructorData.bio ||
+                    "No biography available",
                   tags: [],
                   image: instructorData.image || null,
                 }
               : defaultCourse.instructor,
-            curriculum:
-              apiCourse.curriculum ||
-              apiCourse.syllabus ||
-              apiCourse.modules ||
-              defaultCourse.curriculum,
-            schedule: defaultCourse.schedule,
+            curriculum: apiCourse.curriculum || defaultCourse.curriculum,
+            // syllabus: apiCourse.syllabus || "",
+            schedule: apiCourse.batchSchedule || defaultCourse.schedule,
+            batchSchedule: apiCourse.batchSchedule || [],
           };
           setCourseData(merged);
         } catch (err) {
@@ -265,6 +271,7 @@ const CourseDetails = () => {
                 image: null,
               },
           curriculum: incomingData.curriculum || defaultCourse.curriculum,
+          syllabus: incomingData.syllabus || "",
           schedule: incomingData.schedule || defaultCourse.schedule,
           image: incomingData.image,
           description:
@@ -647,8 +654,8 @@ const CourseDetails = () => {
             </div>
           </section>
 
-          <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between bg-[#F9F5F0] p-5 sm:p-6 rounded-2xl border border-[#E8DFD3] shadow-sm gap-5 sm:gap-6">
-            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 text-center sm:text-left">
+          <div className="flex flex-col sm:flex-row items-start justify-between bg-[#F9F5F0] p-5 sm:p-6 rounded-2xl border border-[#E8DFD3] shadow-sm gap-6">
+            <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-5 text-center sm:text-left w-full">
               {/* Icon Container: Iska size mobile par thoda balance kiya gaya hai */}
               <div className="bg-[#74271E] p-3 rounded-xl text-white shadow-lg shrink-0">
                 <FileText
@@ -659,21 +666,32 @@ const CourseDetails = () => {
               </div>
 
               {/* Text Container: Font sizes ko responsive banaya gaya hai  changr kiya hu px ko % me pahle 15 px tha text*/}
-              <div className="space-y-1">
+              <div className="space-y-1 w-full">
                 <h3 className="font-bold text-lg sm:text-xl md:text-2xl text-[#3D1A16] leading-tight">
                   {courseData.title} Syllabus
                 </h3>
                 <p className="text-[#7A5C58] text-sm sm:text-base md:text-lg italic font-medium">
                   Curriculum for {courseData.level} level course.
                 </p>
+                {/* Syllabus Content */}
+                {courseData.syllabus && (
+                  <div className="mt-4 p-5 bg-gradient-to-br from-white to-[#FEF8ED] rounded-xl border-2 border-[#E8DFD3] shadow-md max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-[#d6b15c] scrollbar-track-[#F5E6C8]">
+                    <div className="flex items-center gap-2 mb-3 sticky top-0 bg-gradient-to-br from-white to-[#FEF8ED] pb-2 border-b border-[#E8DFD3]">
+                      <BookOpen size={18} className="text-[#d6b15c]" />
+                      <span className="text-[#74271E] font-bold text-sm uppercase tracking-wide">
+                        Course Syllabus
+                      </span>
+                    </div>
+                    <div className="text-[#3D1A16] text-sm md:text-base leading-7 whitespace-pre-line font-medium pt-2">
+                      {courseData.syllabus}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="w-full sm:w-max">
-              <button
-                onClick={handleDownloadBrochure}
-                className="group relative flex w-full sm:w-max items-center justify-center gap-2.5 sm:gap-3 overflow-hidden rounded-xl bg-[#74271E] px-6 sm:px-8 py-3 sm:py-3.5 font-bold text-white shadow-[0_10px_20px_rgba(116,39,30,0.3)] transition-all duration-300 hover:bg-[#d6b15c] hover:text-[#74271E] hover:shadow-[0_15px_30px_rgba(214,177,92,0.4)] active:scale-95"
-              >
+            <div className="w-full sm:w-max shrink-0">
+              <button className="group relative flex w-full sm:w-max items-center justify-center gap-2.5 sm:gap-3 overflow-hidden rounded-xl bg-[#74271E] px-6 sm:px-8 py-3 sm:py-3.5 font-bold text-white shadow-[0_10px_20px_rgba(116,39,30,0.3)] transition-all duration-300 hover:bg-[#d6b15c] hover:text-[#74271E] hover:shadow-[0_15px_30px_rgba(214,177,92,0.4)] active:scale-95">
                 {/* Shine effect - Unchanged */}
                 <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
 
@@ -697,7 +715,10 @@ const CourseDetails = () => {
           <InstructorSection instructor={courseData.instructor} />
           {console.log(" Passing to InstructorSection:", courseData.instructor)}
           <CurriculumAccordion curriculumData={courseData.curriculum} />
-          <ScheduleTable scheduleData={courseData.schedule} />
+          {console.log("batchSchedule data:", courseData.batchSchedule)}
+          <ScheduleTable
+            scheduleData={courseData.batchSchedule || courseData.schedule || []}
+          />
         </div>
 
         <div className="lg:col-span-1">

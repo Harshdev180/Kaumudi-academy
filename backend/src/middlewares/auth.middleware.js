@@ -44,6 +44,14 @@ export const authMiddleware = async (req, res, next) => {
       });
     }
 
+    // Check if student account is active
+    if (verify.role === "STUDENT" && account.status === "INACTIVE") {
+      return res.status(403).json({
+        success: false,
+        message: "Your account has been deactivated. Please contact admin."
+      });
+    }
+
     req.user = account;
     req.user.role = verify.role;
     console.log("User role set:", req.user.role); // Debug

@@ -17,6 +17,11 @@ const courseSchema = new mongoose.Schema(
       type: String,
     },
 
+    curriculum: {
+      type: Array,
+      default: []
+    },
+
     duration: {
       type: String,
       required: true,
@@ -70,6 +75,16 @@ const courseSchema = new mongoose.Schema(
     language: {
       type: [String],
       required: true
+    },
+
+    batchSchedule: {
+      type: [{
+        batchType: { type: String, default: "" },
+        days: { type: String, default: "" },
+        startTime: { type: String, default: "" },
+        endTime: { type: String, default: "" }
+      }],
+      default: []
     },
 
     createdBy: {

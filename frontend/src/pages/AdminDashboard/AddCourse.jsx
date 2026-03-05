@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MdClose, MdVideocam, MdImage } from "react-icons/md";
+import { MdClose, MdVideocam, MdImage, MdAdd, MdDelete, MdEdit, MdArrowUpward, MdArrowDownward } from "react-icons/md";
 
 const AddCourse = ({
   open,
@@ -11,6 +11,8 @@ const AddCourse = ({
   editId,
   savingCourse = false,
   staffList = [],
+  onHasPendingCurriculum, // Callback to notify parent about pending items
+  curriculumError, // Error message from parent
 }) => {
   const todayStr = new Date().toISOString().split("T")[0];
   // Reset form when opening for new course
@@ -25,6 +27,193 @@ const AddCourse = ({
       }));
     }
   }, [open, editId, setForm]);
+
+  // CURRICULUM EDITOR STATE
+  const [curriculumItems, setCurriculumItems] = useState([]);
+  const [newItemTitle, setNewItemTitle] = useState("");
+  const [newItemContent, setNewItemContent] = useState("");
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // BATCH SCHEDULE STATE
+  const [batchSchedules, setBatchSchedules] = useState([]);
+  const [newBatch, setNewBatch] = useState({ batchType: "", days: "", startTime: "", endTime: "" });
+  const [editingBatchIndex, setEditingBatchIndex] = useState(null);
+
+  // Initialize batch schedules
+  useEffect(() => {
+    if (open && isInitialized && form.batchSchedule) {
+      setBatchSchedules(form.batchSchedule);
+    }
+  }, [open, isInitialized]);
+
+  // Update form.batchSchedule when batchSchedules changes
+  useEffect(() => {
+    if (isInitialized) {
+      setForm((prev) => ({
+        ...prev,
+        batchSchedule: batchSchedules,
+      }));
+    }
+  }, [batchSchedules, isInitialized, setForm]);
+
+  const handleAddBatch = () => {
+    if (!newBatch.batchType.trim()) return;
+    setBatchSchedules([...batchSchedules, { ...newBatch }]);
+    setNewBatch({ batchType: "", days: "", startTime: "", endTime: "" });
+  };
+
+  const handleDeleteBatch = (index) => {
+    setBatchSchedules(batchSchedules.filter((_, i) => i !== index));
+  };
+
+  const handleEditBatch = (index) => {
+    setNewBatch(batchSchedules[index]);
+    setEditingBatchIndex(index);
+  };
+
+  const handleUpdateBatch = () => {
+    if (!newBatch.batchType.trim()) return;
+    const updated = [...batchSchedules];
+    updated[editingBatchIndex] = { ...newBatch };
+    setBatchSchedules(updated);
+    setNewBatch({ batchType: "", days: "", startTime: "", endTime: "" });
+    setEditingBatchIndex(null);
+  };
+
+  const cancelBatchEdit = () => {
+    setNewBatch({ batchType: "", days: "", startTime: "", endTime: "" });
+    setEditingBatchIndex(null);
+  };
+
+  // Initialize curriculum items only when the drawer opens for edit
+  useEffect(() => {
+    if (open && !isInitialized) {
+      if (form.curriculumText) {
+        try {
+          const parsed = JSON.parse(form.curriculumText);
+          if (Array.isArray(parsed)) {
+            setCurriculumItems(parsed);
+          }
+        } catch (e) {
+          console.error("Failed to parse curriculum:", e);
+          setCurriculumItems([]);
+        }
+      } else {
+        setCurriculumItems([]);
+      }
+      setIsInitialized(true);
+    }
+    if (!open) {
+      // Reset when drawer closes
+      setCurriculumItems([]);
+      setNewItemTitle("");
+      setNewItemContent("");
+      setEditingIndex(null);
+      setIsInitialized(false);
+    }
+  }, [open, editId, isInitialized]);
+
+  // Update form.curriculumText when curriculumItems changes
+  useEffect(() => {
+    if (isInitialized && curriculumItems) {
+      setForm((prev) => ({
+        ...prev,
+        curriculumText: JSON.stringify(curriculumItems, null, 2),
+      }));
+    }
+  }, [curriculumItems, isInitialized, setForm]);
+
+  // Check if there are pending (unsaved) items
+  const hasPendingItems = () => {
+    return newItemTitle.trim() !== "" || newItemContent.trim() !== "";
+  };
+
+  // Notify parent about pending curriculum items
+  useEffect(() => {
+    if (onHasPendingCurriculum) {
+      onHasPendingCurriculum(hasPendingItems());
+    }
+  }, [newItemTitle, onHasPendingCurriculum]);
+
+  const handleAddCurriculumItem = () => {
+    if (!newItemTitle.trim()) return;
+    
+    const contentArray = newItemContent
+      .split("\n")
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0);
+
+    const newItem = {
+      title: newItemTitle.trim(),
+      isLocked: false,
+      content: contentArray,
+    };
+
+    setCurriculumItems([...curriculumItems, newItem]);
+    setNewItemTitle("");
+    setNewItemContent("");
+  };
+
+  const handleDeleteCurriculumItem = (index) => {
+    setCurriculumItems(curriculumItems.filter((_, i) => i !== index));
+  };
+
+  const handleEditCurriculumItem = (index) => {
+    const item = curriculumItems[index];
+    setNewItemTitle(item.title);
+    setNewItemContent(item.content.join("\n"));
+    setEditingIndex(index);
+  };
+
+  const handleUpdateCurriculumItem = () => {
+    if (!newItemTitle.trim()) return;
+
+    const contentArray = newItemContent
+      .split("\n")
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0);
+
+    const updatedItem = {
+      title: newItemTitle.trim(),
+      isLocked: curriculumItems[editingIndex]?.isLocked || false,
+      content: contentArray,
+    };
+
+    const updatedItems = [...curriculumItems];
+    updatedItems[editingIndex] = updatedItem;
+    setCurriculumItems(updatedItems);
+    setNewItemTitle("");
+    setNewItemContent("");
+    setEditingIndex(null);
+  };
+
+  const cancelEdit = () => {
+    setNewItemTitle("");
+    setNewItemContent("");
+    setEditingIndex(null);
+  };
+
+  // Add any pending (un-added) curriculum items before saving
+  const savePendingCurriculumItems = () => {
+    if (newItemTitle.trim()) {
+      handleAddCurriculumItem();
+    }
+  };
+
+  const moveCurriculumItemUp = (index) => {
+    if (index === 0) return;
+    const newItems = [...curriculumItems];
+    [newItems[index - 1], newItems[index]] = [newItems[index], newItems[index - 1]];
+    setCurriculumItems(newItems);
+  };
+
+  const moveCurriculumItemDown = (index) => {
+    if (index === curriculumItems.length - 1) return;
+    const newItems = [...curriculumItems];
+    [newItems[index], newItems[index + 1]] = [newItems[index + 1], newItems[index]];
+    setCurriculumItems(newItems);
+  };
 
   if (!open) return null;
 
@@ -145,6 +334,257 @@ const AddCourse = ({
                 }
                 className="w-full p-3 rounded-xl bg-[#EFE3D5] h-28 outline-none focus:ring-2 focus:ring-[#D1B062] resize-none"
               />
+            </div>
+
+            {/* CURRICULUM */}
+            <div>
+              <p className="text-xs font-bold text-[#856966] mb-2 uppercase">
+                Curriculum
+              </p>
+              
+              {/* Error message from parent */}
+              {curriculumError && (newItemTitle.trim() || newItemContent.trim()) && (
+                <div className="bg-red-100 text-red-700 border border-red-300 px-3 py-2 rounded-lg mb-3 text-sm">
+                  {curriculumError}
+                </div>
+              )}
+
+              {/* Warning when there's content but no title */}
+              {!curriculumError && newItemContent.trim() && !newItemTitle.trim() && (
+                <div className="bg-amber-100 text-amber-700 border border-amber-300 px-3 py-2 rounded-lg mb-3 text-sm">
+                  Please add a module title to save the topics
+                </div>
+              )}
+              
+              {/* Add New Item Form */}
+              <div className="bg-[#EFE3D5] rounded-xl p-4 mb-4 space-y-3">
+                <input
+                  placeholder="Module/Chapter Title"
+                  value={newItemTitle}
+                  onChange={(e) => setNewItemTitle(e.target.value)}
+                  className="w-full p-3 rounded-lg bg-white outline-none focus:ring-2 focus:ring-[#D1B062]"
+                />
+                <textarea
+                  placeholder="Content/Topics (one per line)"
+                  value={newItemContent}
+                  onChange={(e) => setNewItemContent(e.target.value)}
+                  className="w-full p-3 rounded-lg bg-white outline-none focus:ring-2 focus:ring-[#D1B062] h-20 resize-none"
+                />
+                <div className="flex gap-2">
+                  {editingIndex !== null ? (
+                    <>
+                      <button
+                        onClick={handleUpdateCurriculumItem}
+                        className="flex-1 py-2 bg-[#D1B062] text-[#6b1d14] rounded-lg font-semibold hover:bg-[#c9a355] transition-colors"
+                      >
+                        Update
+                      </button>
+                      <button
+                        onClick={cancelEdit}
+                        className="flex-1 py-2 bg-gray-400 text-white rounded-lg font-semibold hover:bg-gray-500 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={handleAddCurriculumItem}
+                      disabled={!newItemTitle.trim()}
+                      className="flex-1 py-2 bg-[#D1B062] text-[#6b1d14] rounded-lg font-semibold hover:bg-[#c9a355] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      <MdAdd size={18} /> Add Module
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Curriculum Items List */}
+              {curriculumItems.length > 0 && (
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {curriculumItems.map((item, index) => (
+                    <div
+                      key={index}
+                      className="bg-white rounded-lg p-3 border border-[#D1B062]/30 flex items-start justify-between"
+                    >
+                      <div className="flex items-center gap-2">
+                        {/* Move Up/Down Buttons */}
+                        <div className="flex flex-col gap-1">
+                          <button
+                            onClick={() => moveCurriculumItemUp(index)}
+                            disabled={index === 0}
+                            className="p-1 text-[#856966] hover:text-[#6b1d14] hover:bg-[#EFE3D5] rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                            title="Move up"
+                          >
+                            <MdArrowUpward size={14} />
+                          </button>
+                          <button
+                            onClick={() => moveCurriculumItemDown(index)}
+                            disabled={index === curriculumItems.length - 1}
+                            className="p-1 text-[#856966] hover:text-[#6b1d14] hover:bg-[#EFE3D5] rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                            title="Move down"
+                          >
+                            <MdArrowDownward size={14} />
+                          </button>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-[#6b1d14] text-sm">
+                            {index + 1}. {item.title}
+                          </h4>
+                          {item.content && item.content.length > 0 && (
+                            <ul className="mt-1 ml-4 text-xs text-gray-600">
+                              {item.content.slice(0, 3).map((content, i) => (
+                                <li key={i}>• {content}</li>
+                              ))}
+                              {item.content.length > 3 && (
+                                <li className="text-gray-400 italic">
+                                  +{item.content.length - 3} more...
+                                </li>
+                              )}
+                            </ul>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex gap-1 ml-2">
+                        <button
+                          onClick={() => handleEditCurriculumItem(index)}
+                          className="p-2 text-[#856966] hover:text-[#6b1d14] hover:bg-[#EFE3D5] rounded-lg transition-colors"
+                          title="Edit"
+                        >
+                          <MdEdit size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteCurriculumItem(index)}
+                          className="p-2 text-[#856966] hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete"
+                        >
+                          <MdDelete size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {curriculumItems.length === 0 && (
+                <p className="text-xs text-gray-400 text-center py-4">
+                  No curriculum modules added yet. Add your first module above.
+                </p>
+              )}
+            </div>
+
+            {/* BATCH SCHEDULE */}
+            <div>
+              <p className="text-xs font-bold text-[#856966] mb-2 uppercase">
+                Batch Schedule
+              </p>
+              
+              {/* Add New Batch Form */}
+              <div className="bg-[#EFE3D5] rounded-xl p-4 mb-4 space-y-3">
+                <input
+                  placeholder="Batch Type (e.g., Weekday Batch, Weekend Intensive)"
+                  value={newBatch.batchType}
+                  onChange={(e) => setNewBatch({ ...newBatch, batchType: e.target.value })}
+                  className="w-full p-3 rounded-lg bg-white outline-none focus:ring-2 focus:ring-[#D1B062]"
+                />
+                <input
+                  placeholder="Days (e.g., Mon, Wed, Fri or Sat, Sun)"
+                  value={newBatch.days}
+                  onChange={(e) => setNewBatch({ ...newBatch, days: e.target.value })}
+                  className="w-full p-3 rounded-lg bg-white outline-none focus:ring-2 focus:ring-[#D1B062]"
+                />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-gray-600 mb-1 block">Start Time</label>
+                    <input
+                      type="time"
+                      value={newBatch.startTime || ""}
+                      onChange={(e) => setNewBatch({ ...newBatch, startTime: e.target.value })}
+                      className="w-full p-3 rounded-lg bg-white outline-none focus:ring-2 focus:ring-[#D1B062]"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-600 mb-1 block">End Time</label>
+                    <input
+                      type="time"
+                      value={newBatch.endTime || ""}
+                      onChange={(e) => setNewBatch({ ...newBatch, endTime: e.target.value })}
+                      className="w-full p-3 rounded-lg bg-white outline-none focus:ring-2 focus:ring-[#D1B062]"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  {editingBatchIndex !== null ? (
+                    <>
+                      <button
+                        onClick={handleUpdateBatch}
+                        className="flex-1 py-2 bg-[#D1B062] text-[#6b1d14] rounded-lg font-semibold hover:bg-[#c9a355] transition-colors"
+                      >
+                        Update Batch
+                      </button>
+                      <button
+                        onClick={cancelBatchEdit}
+                        className="flex-1 py-2 bg-gray-400 text-white rounded-lg font-semibold hover:bg-gray-500 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={handleAddBatch}
+                      disabled={!newBatch.batchType.trim()}
+                      className="flex-1 py-2 bg-[#D1B062] text-[#6b1d14] rounded-lg font-semibold hover:bg-[#c9a355] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      <MdAdd size={18} /> Add Batch
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Batch List */}
+              {batchSchedules.length > 0 && (
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {batchSchedules.map((batch, index) => (
+                    <div
+                      key={index}
+                      className="bg-white rounded-lg p-3 border border-[#D1B062]/30 flex items-start justify-between"
+                    >
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-[#6b1d14] text-sm">
+                          {batch.batchType}
+                        </h4>
+                        <p className="text-xs text-gray-600 mt-1">
+                          <span className="font-medium">Days:</span> {batch.days}
+                        </p>
+                        <p className="text-xs text-gray-600">
+                          <span className="font-medium">Time:</span> {batch.startTime} - {batch.endTime}
+                        </p>
+                      </div>
+                      <div className="flex gap-1 ml-2">
+                        <button
+                          onClick={() => handleEditBatch(index)}
+                          className="p-2 text-[#856966] hover:text-[#6b1d14] hover:bg-[#EFE3D5] rounded-lg transition-colors"
+                          title="Edit"
+                        >
+                          <MdEdit size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteBatch(index)}
+                          className="p-2 text-[#856966] hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete"
+                        >
+                          <MdDelete size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {batchSchedules.length === 0 && (
+                <p className="text-xs text-gray-400 text-center py-4">
+                  No batch schedules added yet. Add your first batch above.
+                </p>
+              )}
             </div>
 
             {/* FACULTY & LEVEL */}

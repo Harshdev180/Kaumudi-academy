@@ -57,17 +57,17 @@ const FacultyManagement = () => {
         if (mounted) {
           const mapped = Array.isArray(list)
             ? list.map((item) => ({
-              id: item?._id || item?.id,
-              name: item?.name || "Unnamed",
-              course: item?.role || "Faculty",
-              description: item?.description || "",
-              salary: item?.salary ?? 0,
-              bonus: item?.bonus ?? 0,
-              deduction: item?.deduction ?? 0,
-              netSalary: item?.netSalary ?? item?.salary ?? 0,
-              status: item?.status || "ACTIVE",
-              paid: !!item?.paid,
-            }))
+                id: item?._id || item?.id,
+                name: item?.name || "Unnamed",
+                course: item?.role || "Faculty",
+                description: item?.description || "",
+                salary: item?.salary ?? 0,
+                bonus: item?.bonus ?? 0,
+                deduction: item?.deduction ?? 0,
+                netSalary: item?.netSalary ?? item?.salary ?? 0,
+                status: item?.status || "ACTIVE",
+                paid: !!item?.paid,
+              }))
             : [];
           setFaculty(mapped);
         }
@@ -143,15 +143,17 @@ const FacultyManagement = () => {
     const errors = {};
 
     // Salary validation
+    const salaryStr = String(form.salary || "");
     const salaryNum = Number(form.salary);
-    if (!form.salary) {
+    if (!form.salary || salaryStr.trim() === "") {
       errors.salary = "Salary is required";
     } else if (isNaN(salaryNum) || salaryNum < 0) {
       errors.salary = "Salary must be a valid positive number";
     }
 
     // Bonus validation (optional but must be valid if provided)
-    if (form.bonus) {
+    const bonusStr = String(form.bonus || "");
+    if (bonusStr && bonusStr.trim() !== "") {
       const bonusNum = Number(form.bonus);
       if (isNaN(bonusNum) || bonusNum < 0) {
         errors.bonus = "Bonus must be a valid positive number";
@@ -159,7 +161,8 @@ const FacultyManagement = () => {
     }
 
     // Deduction validation (optional but must be valid if provided)
-    if (form.deduction) {
+    const deductionStr = String(form.deduction || "");
+    if (deductionStr && deductionStr.trim() !== "") {
       const deductionNum = Number(form.deduction);
       if (isNaN(deductionNum) || deductionNum < 0) {
         errors.deduction = "Deduction must be a valid positive number";
@@ -200,32 +203,32 @@ const FacultyManagement = () => {
       const created = responsePayload?.data ?? responsePayload;
       const next = created
         ? {
-          id: created?._id || created?.id,
-          name: created?.name || form.name,
-          course: created?.role || form.role,
-          description: created?.description ?? form.description ?? "",
-          salary: created?.salary ?? form.salary,
-          bonus: created?.bonus ?? form.bonus ?? 0,
-          deduction: created?.deduction ?? form.deduction ?? 0,
-          netSalary: created?.netSalary ?? created?.salary ?? form.salary,
-          status: created?.status || form.status || "ACTIVE",
-          paid: !!created?.paid,
-        }
+            id: created?._id || created?.id,
+            name: created?.name || form.name,
+            course: created?.role || form.role,
+            description: created?.description ?? form.description ?? "",
+            salary: created?.salary ?? form.salary,
+            bonus: created?.bonus ?? form.bonus ?? 0,
+            deduction: created?.deduction ?? form.deduction ?? 0,
+            netSalary: created?.netSalary ?? created?.salary ?? form.salary,
+            status: created?.status || form.status || "ACTIVE",
+            paid: !!created?.paid,
+          }
         : {
-          id: Date.now(),
-          name: form.name,
-          course: form.role,
-          description: form.description,
-          salary: form.salary,
-          bonus: form.bonus || 0,
-          deduction: form.deduction || 0,
-          netSalary:
-            Number(form.salary || 0) +
-            Number(form.bonus || 0) -
-            Number(form.deduction || 0),
-          status: form.status || "ACTIVE",
-          paid: false,
-        };
+            id: Date.now(),
+            name: form.name,
+            course: form.role,
+            description: form.description,
+            salary: form.salary,
+            bonus: form.bonus || 0,
+            deduction: form.deduction || 0,
+            netSalary:
+              Number(form.salary || 0) +
+              Number(form.bonus || 0) -
+              Number(form.deduction || 0),
+            status: form.status || "ACTIVE",
+            paid: false,
+          };
 
       setFaculty((prev) =>
         editingId
@@ -364,10 +367,11 @@ const FacultyManagement = () => {
 
               <div className="flex flex-wrap gap-2 mb-4">
                 <span
-                  className={`text-[10px] px-2 py-1 rounded-full font-bold ${f.status === "ACTIVE"
+                  className={`text-[10px] px-2 py-1 rounded-full font-bold ${
+                    f.status === "ACTIVE"
                       ? "bg-green-100 text-green-700"
                       : "bg-zinc-200 text-zinc-600"
-                    }`}
+                  }`}
                 >
                   {f.status}
                 </span>
@@ -534,10 +538,12 @@ const FacultyManagement = () => {
                       onChange={(e) =>
                         setForm({ ...form, name: e.target.value })
                       }
-                      className={`w-full px-4 py-3 rounded-lg bg-white border-2 ${validationErrors.name ? 'border-red-500 focus:border-red-500' : 'border-[#D1B062]/30 focus:border-[#D1B062]'} focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50`}
+                      className={`w-full px-4 py-3 rounded-lg bg-white border-2 ${validationErrors.name ? "border-red-500 focus:border-red-500" : "border-[#D1B062]/30 focus:border-[#D1B062]"} focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50`}
                     />
                     {validationErrors.name && (
-                      <p className="text-xs text-red-500 font-medium">{validationErrors.name}</p>
+                      <p className="text-xs text-red-500 font-medium">
+                        {validationErrors.name}
+                      </p>
                     )}
                   </motion.div>
 
@@ -559,10 +565,12 @@ const FacultyManagement = () => {
                       onChange={(e) =>
                         setForm({ ...form, role: e.target.value })
                       }
-                      className={`w-full px-4 py-3 rounded-lg bg-white border-2 ${validationErrors.role ? 'border-red-500 focus:border-red-500' : 'border-[#D1B062]/30 focus:border-[#D1B062]'} focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50`}
+                      className={`w-full px-4 py-3 rounded-lg bg-white border-2 ${validationErrors.role ? "border-red-500 focus:border-red-500" : "border-[#D1B062]/30 focus:border-[#D1B062]"} focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50`}
                     />
                     {validationErrors.role && (
-                      <p className="text-xs text-red-500 font-medium">{validationErrors.role}</p>
+                      <p className="text-xs text-red-500 font-medium">
+                        {validationErrors.role}
+                      </p>
                     )}
                   </motion.div>
 
@@ -613,11 +621,13 @@ const FacultyManagement = () => {
                         onChange={(e) =>
                           setForm({ ...form, salary: e.target.value })
                         }
-                        className={`w-full px-4 py-3 pl-7 rounded-lg bg-white border-2 ${validationErrors.salary ? 'border-red-500 focus:border-red-500' : 'border-[#D1B062]/30 focus:border-[#D1B062]'} focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50`}
+                        className={`w-full px-4 py-3 pl-7 rounded-lg bg-white border-2 ${validationErrors.salary ? "border-red-500 focus:border-red-500" : "border-[#D1B062]/30 focus:border-[#D1B062]"} focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50`}
                       />
                     </div>
                     {validationErrors.salary && (
-                      <p className="text-xs text-red-500 font-medium">{validationErrors.salary}</p>
+                      <p className="text-xs text-red-500 font-medium">
+                        {validationErrors.salary}
+                      </p>
                     )}
                   </motion.div>
 
@@ -641,10 +651,12 @@ const FacultyManagement = () => {
                       onChange={(e) =>
                         setForm({ ...form, bonus: e.target.value })
                       }
-                      className={`w-full px-4 py-3 rounded-lg bg-white border-2 ${validationErrors.bonus ? 'border-red-500 focus:border-red-500' : 'border-[#D1B062]/30 focus:border-[#D1B062]'} focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50`}
+                      className={`w-full px-4 py-3 rounded-lg bg-white border-2 ${validationErrors.bonus ? "border-red-500 focus:border-red-500" : "border-[#D1B062]/30 focus:border-[#D1B062]"} focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50`}
                     />
                     {validationErrors.bonus && (
-                      <p className="text-xs text-red-500 font-medium">{validationErrors.bonus}</p>
+                      <p className="text-xs text-red-500 font-medium">
+                        {validationErrors.bonus}
+                      </p>
                     )}
                   </motion.div>
 
@@ -668,10 +680,12 @@ const FacultyManagement = () => {
                       onChange={(e) =>
                         setForm({ ...form, deduction: e.target.value })
                       }
-                      className={`w-full px-4 py-3 rounded-lg bg-white border-2 ${validationErrors.deduction ? 'border-red-500 focus:border-red-500' : 'border-[#D1B062]/30 focus:border-[#D1B062]'} focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50`}
+                      className={`w-full px-4 py-3 rounded-lg bg-white border-2 ${validationErrors.deduction ? "border-red-500 focus:border-red-500" : "border-[#D1B062]/30 focus:border-[#D1B062]"} focus:outline-none transition text-[#6b1d14] placeholder-[#856966]/50`}
                     />
                     {validationErrors.deduction && (
-                      <p className="text-xs text-red-500 font-medium">{validationErrors.deduction}</p>
+                      <p className="text-xs text-red-500 font-medium">
+                        {validationErrors.deduction}
+                      </p>
                     )}
                   </motion.div>
 
