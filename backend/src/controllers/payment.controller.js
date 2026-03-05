@@ -434,6 +434,9 @@ export const createEmiInstallment = async (req, res) => {
 
     const payment = enrollment.payment;
 
+    // Fetch course details for notifications
+    const course = await Course.findById(courseId);
+
     if (!payment) {
       return res.status(404).json({
         success: false,
@@ -597,12 +600,18 @@ export const verifyEmiInstallmentPayment = async (req, res) => {
       });
     }
 
+    // Get course and student for notifications
+    const course = await Course.findById(payment.course);
+    const studentId = payment.user;
+    const courseId = payment.course;
+
     payment.status = "SUCCESS";
     payment.razorpayPaymentId = razorpayPaymentId;
     payment.razorpaySignature = razorpaySignature;
     await payment.save();
 
     // Update the parent payment's paid amount
+    let newRemaining = 0;
     const parentPayment = await Payment.findById(payment.parentPayment);
     if (parentPayment) {
       parentPayment.finalAmount += payment.finalAmount;
@@ -610,7 +619,7 @@ export const verifyEmiInstallmentPayment = async (req, res) => {
 
       // Update StudentFee record
       const discountedTotal = parentPayment.originalAmount - parentPayment.discountAmount;
-      const newRemaining = discountedTotal - parentPayment.finalAmount;
+      newRemaining = discountedTotal - parentPayment.finalAmount;
 
       await StudentFee.findOneAndUpdate(
         { payment: parentPayment._id },
@@ -623,18 +632,19 @@ export const verifyEmiInstallmentPayment = async (req, res) => {
     }
 
     // 🔔 NOTIFICATION: EMI Installment Success - Notify both Admin and Student
+    const courseName = course ? course.title : "the course";
     await notifyBoth({
       adminTitle: "EMI Installment Paid",
-      adminMessage: `EMI installment of ₹${installmentPayment.finalAmount} received for ${course.title}`,
+      adminMessage: `EMI installment of ₹${payment.finalAmount} received for ${courseName}`,
       studentId: studentId,
       studentTitle: "EMI Installment Received",
-      studentMessage: `Your installment payment of ₹${installmentPayment.finalAmount} for ${course.title} has been received. Remaining: ₹${newRemaining}`,
+      studentMessage: `Your installment payment of ₹${payment.finalAmount} for ${courseName} has been received. Remaining: ₹${newRemaining}`,
       type: "PAYMENT",
       subType: "EMI_INSTALLMENT_PAID",
       adminActionUrl: "/admin/payments",
       studentActionUrl: "/student/fees",
       priority: "HIGH",
-      metadata: { courseId, courseName: course.title, installmentPaymentId: installmentPayment._id, amount: installmentPayment.finalAmount, remainingAmount: newRemaining },
+      metadata: { courseId, courseName, installmentPaymentId: payment._id, amount: payment.finalAmount, remainingAmount: newRemaining },
       userId: studentId,
       userRole: "STUDENT"
     });

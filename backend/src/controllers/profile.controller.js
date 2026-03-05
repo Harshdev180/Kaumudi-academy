@@ -3,9 +3,7 @@ import Certificate from "../models/Certificate.model.js";
 import bcrypt from "bcryptjs";
 
 /**
- * ==============================
  * 📊 DASHBOARD STATS
- * ==============================
  */
 export const getDashboardStats = async (req, res) => {
   try {
@@ -83,12 +81,38 @@ export const getMyEnrollments = async (req, res) => {
         "course",
         "title image startDate endDate category instructor duration level mode",
       )
-      .populate("payment")
+      .populate({
+        path: "payment",
+        select: "originalAmount discountAmount finalAmount couponCode paymentMode status"
+      })
       .sort({ createdAt: -1 });
+
+    // Calculate remaining amount based on payment details
+    const enrollmentsWithRemaining = enrollments.map(enrollment => {
+      const payment = enrollment.payment;
+      if (payment) {
+        // Calculate discounted total (original - discount)
+        const discountedTotal = payment.originalAmount - payment.discountAmount;
+        
+        // For EMI, calculate remaining based on payment mode
+        let remainingAmount = 0;
+        if (payment.paymentMode === "EMI") {
+          // EMI: remaining is total after first payment (70% remaining)
+          remainingAmount = discountedTotal - payment.finalAmount;
+        } else {
+          remainingAmount = discountedTotal - payment.finalAmount;
+        }
+        return {
+          ...enrollment.toObject(),
+          remainingAmount: Math.max(remainingAmount, 0)
+        };
+      }
+      return enrollment;
+    });
 
     res.json({
       success: true,
-      data: enrollments,
+      data: enrollmentsWithRemaining,
     });
   } catch (error) {
     console.error("GET ENROLLMENTS ERROR:", error);
