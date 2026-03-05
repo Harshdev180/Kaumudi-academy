@@ -1,4 +1,5 @@
 import Inquiry from "../models/Inquiry.model.js";
+import { notifyStudent } from "../services/notification.service.js";
 
 /**
  * @desc Get all inquiries (Admin)
@@ -63,11 +64,11 @@ export const getInquiryById = async (req, res) => {
  * @route PATCH /api/admin/inquiries/:id/status
  */
 export const updateInquiryStatus = async (req, res) => {
-  const { status } = req.body;
+  const { status, response } = req.body;
 
   const inquiry = await Inquiry.findByIdAndUpdate(
     req.params.id,
-    { status },
+    { status, response },
     { new: true }
   );
 
@@ -75,6 +76,20 @@ export const updateInquiryStatus = async (req, res) => {
     return res.status(404).json({
       success: false,
       message: "Inquiry not found"
+    });
+  }
+
+  // 🔔 NOTIFICATION: Inquiry Responded - Notify the inquirer if they provided email
+  if (inquiry.email && response) {
+    await notifyStudent({
+      studentId: null, // Will be sent as email notification instead
+      title: "Inquiry Response Received",
+      message: `We have responded to your inquiry: ${inquiry.subject || 'Your question'}`,
+      type: "STUDENT_QUERY",
+      subType: "INQUIRY_RESPONSE",
+      actionUrl: "/contact",
+      priority: "HIGH",
+      metadata: { inquiryId: inquiry._id, response }
     });
   }
 

@@ -1,6 +1,7 @@
 import Inquiry from "../models/Inquiry.model.js";
 import { sendInquiryMailToAdmin } from "../services/mail.service.js";
-import Notification from "../models/Notification.model.js";
+import { notifyAdmins } from "../services/notification.service.js";
+
 /**
  * @desc Submit course inquiry
  * @route POST /api/inquiries
@@ -17,12 +18,20 @@ export const submitInquiry = async (req, res, next) => {
     // Send admin notification (async – non-blocking)
     sendInquiryMailToAdmin(inquiry).catch(console.error);
 
-    await Notification.create({
-      title: "New Inquiry",
-      message: `Asked about ${inquiry.subject || "course details"}`,
-      type: "INQUIRY",
-      recipientRole: "ADMIN",
-      actionUrl: "/admin/inquiries"
+    // 🔔 NOTIFICATION: New Inquiry
+    await notifyAdmins({
+      title: "New Inquiry Received",
+      message: `${inquiry.name || 'Someone'} asked about ${inquiry.subject || "course details"} - ${inquiry.email || ''}`,
+      type: "STUDENT_QUERY",
+      subType: "NEW_INQUIRY",
+      actionUrl: "/admin/inquiries",
+      priority: "HIGH",
+      metadata: { 
+        inquiryId: inquiry._id, 
+        email: inquiry.email, 
+        phone: inquiry.phone,
+        inquirerName: inquiry.name  // Store name directly for display
+      }
     });
 
     res.status(201).json({
