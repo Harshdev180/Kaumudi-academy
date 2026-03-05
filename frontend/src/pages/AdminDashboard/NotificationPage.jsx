@@ -1,34 +1,68 @@
-import { Clock, Trash, Loader2, RefreshCw } from "lucide-react";
+import { Clock, Trash, Loader2, RefreshCw, Bell, CreditCard, GraduationCap, MessageCircle, MoreHorizontal, CheckCircle, X, ExternalLink, User, BookOpen, Mail, Phone, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { api } from "../../lib/api";
 
 function NotificationsPage() {
   const [notifications, setNotifications] = useState([]);
+  const [stats, setStats] = useState(null);
   const [activeFilter, setActiveFilter] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [selectedNotification, setSelectedNotification] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+  const navigate = useNavigate();
+
+  // Notification categories with icons and labels
+  const categories = [
+    { id: "all", label: "All", icon: Bell, color: "bg-gray-500" },
+    { id: "payment", label: "Payments", icon: CreditCard, color: "bg-green-500" },
+    { id: "enrollment", label: "Enrollment", icon: GraduationCap, color: "bg-blue-500" },
+    { id: "student_query", label: "Student Query", icon: MessageCircle, color: "bg-purple-500" },
+    { id: "others", label: "Others", icon: MoreHorizontal, color: "bg-orange-500" }
+  ];
 
   // ── Fetch ────────────────────────────────────────────────────────
   useEffect(() => {
     fetchNotifications();
+    fetchStats();
   }, []);
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = async (filter = activeFilter, page = currentPage) => {
     try {
       setLoading(true);
       setError(null);
-      const res = await api.get("/admin/notifications");
+      
+      // Build query params
+      const params = new URLSearchParams();
+      if (filter !== "all") {
+        params.append("type", filter);
+      }
+      params.append("limit", "10");
+      params.append("page", page.toString());
+      
+      const res = await api.get(`/admin/notifications?${params.toString()}`);
       const raw = res.data?.data || [];
+      const paginationData = res.data?.pagination || {};
+
+      // Update pagination state
+      setTotalPages(paginationData.pages || 1);
+      setTotal(paginationData.total || 0);
+      setCurrentPage(paginationData.page || 1);
 
       const normalized = raw.map((n) => ({
         id: n._id,
         type: (n.type || "notification").toLowerCase(),
-        message: n.title,
-        description: n.message,
-        user: n.metadata?.user || null,
-        inquiryType: n.metadata?.inquiryType || null,
+        subType: n.subType || null,
+        title: n.title,
+        message: n.message,
+        priority: n.priority || "MEDIUM",
+        actionUrl: n.actionUrl || null,
+        metadata: n.metadata || {},
         createdAt: n.createdAt,
         isRead: n.isRead,
       }));
@@ -42,6 +76,42 @@ function NotificationsPage() {
     }
   };
 
+  const fetchStats = async () => {
+    try {
+      const res = await api.get("/admin/notifications/stats");
+      setStats(res.data?.data || null);
+    } catch (err) {
+      console.error("Failed to fetch stats:", err);
+    }
+  };
+
+  // Handle filter change
+  const handleFilterChange = (filterId) => {
+    setActiveFilter(filterId);
+    setCurrentPage(1); // Reset to first page when filter changes
+    fetchNotifications(filterId, 1);
+  };
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      fetchNotifications(activeFilter, newPage);
+    }
+  };
+
+  // ── Mark all as read ────────────────────────────────────────────
+  const handleMarkAllRead = async () => {
+    try {
+      await api.patch("/admin/notifications/read-all");
+      // Update local state
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+      fetchStats();
+    } catch (err) {
+      console.error("Failed to mark all as read:", err);
+    }
+  };
+
   // ── Delete ───────────────────────────────────────────────────────
   const handleDelete = async (id) => {
     setDeletingId(id);
@@ -49,6 +119,7 @@ function NotificationsPage() {
     setNotifications((prev) => prev.filter((item) => item.id !== id));
     try {
       await api.delete(`/admin/notifications/${id}`);
+      fetchStats();
     } catch (err) {
       console.error("Failed to delete notification:", err);
       // Refetch to restore if failed
@@ -58,11 +129,35 @@ function NotificationsPage() {
     }
   };
 
-  // ── Filter ───────────────────────────────────────────────────────
-  const filteredNotifications =
-    activeFilter === "all"
-      ? notifications
-      : notifications.filter((n) => n.type === activeFilter);
+  // ── Mark single as read ─────────────────────────────────────────
+  const handleMarkAsRead = async (id) => {
+    try {
+      await api.patch(`/admin/notifications/${id}/read`);
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+      );
+      fetchStats();
+    } catch (err) {
+      console.error("Failed to mark as read:", err);
+    }
+  };
+
+  // ── Handle notification click ────────────────────────────────────────
+  const handleNotificationClick = (notification) => {
+    setSelectedNotification(notification);
+    if (!notification.isRead) {
+      handleMarkAsRead(notification.id);
+    }
+  };
+
+  // ── Handle action click ─────────────────────────────────────────────
+  const handleActionClick = (e, actionUrl) => {
+    e.stopPropagation();
+    if (actionUrl) {
+      navigate(actionUrl);
+      setSelectedNotification(null);
+    }
+  };
 
   // ── Relative time helper ─────────────────────────────────────────
   const timeAgo = (dateStr) => {
@@ -72,6 +167,81 @@ function NotificationsPage() {
     if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
     if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
     return `${Math.floor(diff / 86400)}d ago`;
+  };
+
+  // Get badge count for category
+  const getBadgeCount = (categoryId) => {
+    if (!stats) return 0;
+    if (categoryId === "all") return stats.all?.unread || 0;
+    return stats[categoryId]?.unread || 0;
+  };
+
+  // Get priority color
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case "HIGH": return "border-l-red-500";
+      case "MEDIUM": return "border-l-yellow-500";
+      case "LOW": return "border-l-gray-400";
+      default: return "border-l-gray-400";
+    }
+  };
+
+  // Get category icon
+  const getCategoryIcon = (type) => {
+    const category = categories.find((c) => c.id === type);
+    if (category) {
+      const Icon = category.icon;
+      return <Icon size={16} />;
+    }
+    return <Bell size={16} />;
+  };
+
+  // Get category color
+  const getCategoryColor = (type) => {
+    const category = categories.find((c) => c.id === type);
+    return category?.color || "bg-gray-500";
+  };
+
+  // Format notification details for display
+  const formatDetails = (notification) => {
+    const details = [];
+    const { metadata, type, subType, actionUrl } = notification;
+
+    // Add user details if available
+    if (metadata?.userDetails) {
+      const user = metadata.userDetails;
+      details.push({ label: "User Name", value: user.name || "N/A", isBold: true });
+      details.push({ label: "Email", value: user.email || "N/A" });
+      if (user.phone && user.phone !== "N/A") {
+        details.push({ label: "Phone", value: user.phone });
+      }
+      details.push({ label: "User ID", value: user.id ? String(user.id).slice(-8) : "N/A" });
+    }
+
+    // Add type info
+    details.push({ label: "Category", value: type?.replace("_", " ").toUpperCase() || "N/A" });
+    details.push({ label: "Type", value: subType?.replace("_", " ") || "Notification" });
+    
+    // Add metadata fields
+    if (metadata) {
+      if (metadata.studentId) details.push({ label: "Student ID", value: String(metadata.studentId).slice(-8) });
+      if (metadata.courseId) details.push({ label: "Course ID", value: String(metadata.courseId).slice(-8) });
+      if (metadata.courseName) details.push({ label: "Course Name", value: metadata.courseName, isBold: true });
+      if (metadata.paymentId) details.push({ label: "Payment ID", value: String(metadata.paymentId).slice(-8) });
+      if (metadata.amount) details.push({ label: "Amount Paid", value: `₹${metadata.amount}`, isBold: true });
+      if (metadata.email) details.push({ label: "Email", value: metadata.email });
+      if (metadata.phone) details.push({ label: "Phone", value: metadata.phone });
+      if (metadata.inquiryId) details.push({ label: "Inquiry ID", value: String(metadata.inquiryId).slice(-8) });
+      if (metadata.enrollmentId) details.push({ label: "Enrollment ID", value: String(metadata.enrollmentId).slice(-8) });
+      if (metadata.isTest) details.push({ label: "Note", value: "Test Payment" });
+    }
+
+    // Add timestamp
+    if (notification.createdAt) {
+      details.push({ label: "Received", value: new Date(notification.createdAt).toLocaleString() });
+    }
+
+    return details;
   };
 
   return (
@@ -91,35 +261,44 @@ function NotificationsPage() {
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={fetchNotifications}
+              onClick={() => fetchNotifications()}
               disabled={loading}
               className="bg-white/10 hover:bg-white/20 text-white p-2 rounded-full transition"
               title="Refresh"
             >
               <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
             </button>
-            <div className="bg-[#D4AF37] text-[#74271E] font-semibold text-xs px-4 py-2 rounded-full w-fit shadow-md">
-              Smart Alert Center
-            </div>
+            <button
+              onClick={handleMarkAllRead}
+              className="bg-[#D4AF37] hover:bg-[#c9a040] text-[#74271E] font-semibold text-xs px-4 py-2 rounded-full w-fit shadow-md flex items-center gap-2"
+            >
+              <CheckCircle size={14} />
+              Mark All Read
+            </button>
           </div>
         </div>
       </div>
 
       {/* FILTER BAR */}
       <div className="flex flex-wrap gap-3 mb-6">
-        {["all", "course", "coupon", "payment", "inquiry"].map((type) => (
-          <button
-            key={type}
-            onClick={() => setActiveFilter(type)}
-            className={`px-4 py-2 rounded-full text-xs font-semibold transition ${
-              activeFilter === type
-                ? "bg-[#74271E] text-white"
-                : "bg-[#FBF4E2] text-[#74271E] border border-[#74271E]/20"
-            }`}
-          >
-            {type.toUpperCase()}
-          </button>
-        ))}
+        {categories.map((cat) => {
+          const Icon = cat.icon;
+          
+          return (
+            <button
+              key={cat.id}
+              onClick={() => handleFilterChange(cat.id)}
+              className={`px-4 py-2 rounded-full text-xs font-semibold transition flex items-center gap-2 ${
+                activeFilter === cat.id
+                  ? "bg-[#74271E] text-white"
+                  : "bg-[#FBF4E2] text-[#74271E] border border-[#74271E]/20 hover:bg-[#74271E]/10"
+              }`}
+            >
+              <Icon size={14} />
+              {cat.label.toUpperCase()}
+            </button>
+          );
+        })}
       </div>
 
       {/* LOADING */}
@@ -135,7 +314,7 @@ function NotificationsPage() {
         <div className="flex flex-col items-center justify-center py-24 gap-4">
           <p className="text-red-500 font-semibold">{error}</p>
           <button
-            onClick={fetchNotifications}
+            onClick={() => fetchNotifications()}
             className="px-5 py-2 text-sm font-bold text-white bg-[#74271E] rounded-xl hover:bg-[#74271E]/90 transition"
           >
             Retry
@@ -144,87 +323,274 @@ function NotificationsPage() {
       )}
 
       {/* EMPTY */}
-      {!loading && !error && filteredNotifications.length === 0 && (
+      {!loading && !error && notifications.length === 0 && (
         <div className="flex flex-col items-center justify-center py-24 gap-2 text-[#74271E]/50">
+          <Bell size={48} className="opacity-50" />
           <p className="text-xl font-bold text-[#74271E]">No notifications</p>
           <p className="text-sm">Nothing here for the selected filter.</p>
         </div>
       )}
 
       {/* LIST */}
-      {!loading && !error && (
-        <div className="space-y-6">
+      {!loading && !error && notifications.length > 0 && (
+        <div className="space-y-4">
           <AnimatePresence>
-            {filteredNotifications.map((item) => (
+            {notifications.map((item) => (
               <motion.div
                 key={item.id}
                 layout
                 initial={{ opacity: 0, y: 20, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, x: 120, scale: 0.95, transition: { duration: 0.35 } }}
-                whileHover={{ y: -4 }}
-                className={`border border-[#74271E]/10 rounded-2xl p-5 flex justify-between items-start shadow-sm hover:shadow-xl transition ${
-                  item.isRead ? "bg-[#FBF4E2]" : "bg-white"
+                whileHover={{ y: -2 }}
+                onClick={() => handleNotificationClick(item)}
+                className={`border-l-4 ${getPriorityColor(item.priority)} rounded-xl p-5 flex justify-between items-start shadow-sm hover:shadow-md transition cursor-pointer ${
+                  item.isRead ? "bg-[#FBF4E2]/50" : "bg-white"
                 }`}
               >
                 {/* LEFT */}
-                <div className="flex gap-4">
-                  <div>
-                    <span className="text-[11px] px-3 py-[3px] rounded-full bg-[#74271E]/10 text-[#74271E] font-semibold">
-                      {item.type || "Notification"}
-                    </span>
+                <div className="flex gap-4 flex-1">
+                  {/* Category Icon */}
+                  <div className={`mt-1 p-2 rounded-lg ${getCategoryColor(item.type)} text-white`}>
+                    {getCategoryIcon(item.type)}
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#74271E]/10 text-[#74271E] font-semibold uppercase">
+                        {item.type.replace("_", " ")}
+                      </span>
+                      {item.priority === "HIGH" && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-600 font-semibold uppercase">
+                          Urgent
+                        </span>
+                      )}
+                      {!item.isRead && (
+                        <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                      )}
+                    </div>
 
                     <p className="mt-2 text-sm md:text-base font-semibold text-[#5a1b14]">
-                      {item.type === "inquiry" && item.user ? (
-                        <>
-                          <span className="text-[#74271E] font-bold">{item.user}</span>{" "}
-                          • {item.message}
-                        </>
-                      ) : (
-                        item.message
-                      )}
+                      {item.title}
                     </p>
 
-                    {item.description && (
-                      <p className="text-xs md:text-sm text-[#74271E]/60 mt-1 max-w-xl">
-                        {item.description}
+                    {item.message && (
+                      <p className="text-xs md:text-sm text-[#74271E]/70 mt-1 max-w-xl">
+                        {item.message}
                       </p>
                     )}
 
-                    {item.type === "inquiry" && item.inquiryType && (
-                      <span className="text-xs text-[#74271E]/80 font-medium block mt-1">
-                        Inquiry Type: {item.inquiryType}
-                      </span>
+                    {/* Metadata display */}
+                    {item.metadata && Object.keys(item.metadata).length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {item.metadata.studentId && (
+                          <span className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                            Student ID: {String(item.metadata.studentId).slice(-6)}
+                          </span>
+                        )}
+                        {item.metadata.amount && (
+                          <span className="text-[10px] bg-green-100 text-green-600 px-2 py-0.5 rounded">
+                            ₹{item.metadata.amount}
+                          </span>
+                        )}
+                        {item.metadata.courseId && (
+                          <span className="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded">
+                            Course
+                          </span>
+                        )}
+                      </div>
                     )}
 
-                    <span className="text-xs text-[#74271E] font-medium mt-2 block">
-                      Kaumudi Sanskrit Academy
+                    <span className="text-xs text-[#74271E]/50 mt-2 block">
+                      {timeAgo(item.createdAt)}
                     </span>
                   </div>
                 </div>
 
                 {/* RIGHT */}
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2 text-xs text-[#74271E]/60">
-                    <Clock size={14} />
-                    {timeAgo(item.createdAt)}
-                  </div>
-
+                <div className="flex items-center gap-2 ml-4">
+                  {!item.isRead && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleMarkAsRead(item.id);
+                      }}
+                      className="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center hover:bg-green-200 transition"
+                      title="Mark as read"
+                    >
+                      <CheckCircle size={14} />
+                    </button>
+                  )}
+                  
                   <button
-                    onClick={() => handleDelete(item.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(item.id);
+                    }}
                     disabled={deletingId === item.id}
-                    className="w-9 h-9 rounded-lg bg-[#74271E]/10 text-[#74271E] flex items-center justify-center hover:bg-red-100 hover:text-red-500 transition disabled:opacity-50"
+                    className="w-8 h-8 rounded-lg bg-[#74271E]/10 text-[#74271E] flex items-center justify-center hover:bg-red-100 hover:text-red-500 transition disabled:opacity-50"
                   >
                     {deletingId === item.id ? (
-                      <Loader2 size={16} className="animate-spin" />
+                      <Loader2 size={14} className="animate-spin" />
                     ) : (
-                      <Trash size={16} />
+                      <Trash size={14} />
                     )}
                   </button>
                 </div>
               </motion.div>
             ))}
           </AnimatePresence>
+        </div>
+      )}
+
+      {/* NOTIFICATION DETAILS MODAL */}
+      <AnimatePresence>
+        {selectedNotification && (
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+            onClick={() => setSelectedNotification(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+            >
+              {/* Modal Header */}
+              <div className="bg-gradient-to-r from-[#74271E] to-[#5a1b14] p-6 text-white">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-lg ${getCategoryColor(selectedNotification.type)} text-white`}>
+                      {getCategoryIcon(selectedNotification.type)}
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold">{selectedNotification.title}</h3>
+                      <p className="text-xs text-white/70 mt-0.5">
+                        {selectedNotification.type?.replace("_", " ").toUpperCase()}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setSelectedNotification(null)}
+                    className="p-2 hover:bg-white/10 rounded-lg transition"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6">
+                {/* User Info Section */}
+                {selectedNotification.metadata?.userDetails && (
+                  <div className="mb-4 p-4 bg-gradient-to-r from-[#74271E]/5 to-[#D4AF37]/5 rounded-xl border border-[#74271E]/10">
+                    <p className="text-xs text-[#74271E] font-semibold uppercase mb-2">User Information</p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[#74271E] text-white flex items-center justify-center font-bold">
+                        {selectedNotification.metadata.userDetails.name?.charAt(0) || "U"}
+                      </div>
+                      <div>
+                        <p className="font-bold text-gray-900">{selectedNotification.metadata.userDetails.name}</p>
+                        <p className="text-sm text-gray-500">{selectedNotification.metadata.userDetails.email}</p>
+                        {selectedNotification.metadata.userDetails.phone && selectedNotification.metadata.userDetails.phone !== "N/A" && (
+                          <p className="text-sm text-gray-500">{selectedNotification.metadata.userDetails.phone}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="mb-4">
+                  <p className="text-sm text-gray-600 mb-2 font-medium">Message</p>
+                  <p className="text-gray-800">{selectedNotification.message}</p>
+                </div>
+
+                {/* Details */}
+                <div className="border-t border-gray-100 pt-4">
+                  <p className="text-sm text-gray-600 mb-3 font-medium">Additional Details</p>
+                  <div className="space-y-2">
+                    {formatDetails(selectedNotification).map((detail, index) => (
+                      <div key={index} className={`flex justify-between items-center text-sm ${detail.isBold ? 'bg-gray-50 -mx-2 px-2 py-1 rounded' : ''}`}>
+                        <span className="text-gray-500">{detail.label}</span>
+                        {detail.isAction ? (
+                          <button
+                            onClick={(e) => handleActionClick(e, detail.value)}
+                            className="text-[#74271E] font-medium hover:underline flex items-center gap-1"
+                          >
+                            {detail.value} <ExternalLink size={12} />
+                          </button>
+                        ) : (
+                          <span className={`text-gray-800 font-medium ${detail.isBold ? 'font-bold text-[#74271E]' : ''}`}>{detail.value}</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-3 mt-6">
+                  <button
+                    onClick={() => setSelectedNotification(null)}
+                    className="flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 font-medium hover:bg-gray-50 transition"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* PAGINATION */}
+      {!loading && !error && totalPages > 1 && (
+        <div className="flex items-center justify-between mt-6 px-2">
+          <div className="text-sm text-gray-500">
+            Showing {((currentPage - 1) * 10) + 1} to {Math.min(currentPage * 10, total)} of {total} notifications
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className={`p-2 rounded-lg transition ${
+                currentPage === 1
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : "bg-[#74271E]/10 text-[#74271E] hover:bg-[#74271E]/20"
+              }`}
+            >
+              <ChevronLeft size={20} />
+            </button>
+            
+            {/* Page numbers */}
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`w-10 h-10 rounded-lg text-sm font-medium transition ${
+                    page === currentPage
+                      ? "bg-[#74271E] text-white"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className={`p-2 rounded-lg transition ${
+                currentPage === totalPages
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : "bg-[#74271E]/10 text-[#74271E] hover:bg-[#74271E]/20"
+              }`}
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
         </div>
       )}
     </div>

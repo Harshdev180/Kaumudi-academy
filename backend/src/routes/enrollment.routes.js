@@ -5,7 +5,9 @@ const router = express.Router();
 import {
   getMyEnrollments,
   getAllEnrollments,
-  checkEnrollment
+  checkEnrollment,
+  updateEnrollmentStatus,
+  completeCourse
 } from "../controllers/enrollment.controller.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
@@ -31,6 +33,22 @@ router.get(
   authMiddleware,
   roleMiddleware("admin", "ADMIN", "SUPER_ADMIN"),
   getAllEnrollments
+);
+
+// Admin: Update enrollment status
+router.patch(
+  "/enrollment/:enrollmentId/status",
+  authMiddleware,
+  roleMiddleware("ADMIN", "SUPER_ADMIN"),
+  updateEnrollmentStatus
+);
+
+// Admin: Mark course as completed
+router.patch(
+  "/enrollment/:enrollmentId/complete",
+  authMiddleware,
+  roleMiddleware("ADMIN", "SUPER_ADMIN"),
+  completeCourse
 );
 
 export default router;

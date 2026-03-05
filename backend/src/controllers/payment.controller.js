@@ -6,7 +6,7 @@ import { config } from "../configs/env.js";
 import Course from "../models/Course.model.js";
 import Coupon from "../models/Coupon.model.js";
 import { createEnrollment } from "./enrollment.controller.js";
-import Notification from "../models/Notification.model.js";
+import { createNotification, notifyAdmins, notifyStudent, notifyBoth } from "../services/notification.service.js";
 import axios from "axios"
 import StudentFee from "../models/StudentFee.model.js";
 import { sendCourseEnrollmentSuccessMail } from "../services/mail.service.js";
@@ -21,7 +21,7 @@ export const createRazorpayOrder = async (req, res) => {
   try {
     const { courseId, couponCode, paymentMode, captchaToken } = req.body;
 
-    // ================= CAPTCHA VERIFY =================
+    // CAPTCHA VERIFY
     // Skip captcha verification in development mode or when SKIP_CAPTCHA is set
     const skipCaptcha = process.env.NODE_ENV === "development" || process.env.SKIP_CAPTCHA === "true" || process.env.SKIP_CAPTCHA === true;
     
@@ -75,6 +75,9 @@ export const createRazorpayOrder = async (req, res) => {
         message: "Course not available"
       });
     }
+
+    // Get user details for notification
+    const user = await Student.findById(req.user._id).select("firstName lastName fullName email");
 
     // 2. Price clean
     const originalAmount = Number(course.price.toString().replace(/,/g, ""));
@@ -173,12 +176,25 @@ export const createRazorpayOrder = async (req, res) => {
     });
 
     // 🔔 NOTIFICATION: Payment Initiated
-    await Notification.create({
+    const payerName = user.firstName && user.lastName 
+      ? `${user.firstName} ${user.lastName}` 
+      : (user.fullName || 'A student');
+      
+    await notifyAdmins({
       title: "Payment Initiated",
-      message: `Payment started for ${course.title}`,
+      message: `${payerName} started payment for ${course.title} - ₹${finalAmount}`,
       type: "PAYMENT",
-      recipientRole: "ADMIN",
-      actionUrl: "/admin/payments"
+      subType: "PAYMENT_INITIATED",
+      actionUrl: "/admin/payments",
+      priority: "MEDIUM",
+      metadata: { 
+        courseId, 
+        courseName: course.title,
+        paymentId: payment._id, 
+        amount: finalAmount 
+      },
+      userId: req.user._id,
+      userRole: "STUDENT"  // Explicitly indicate this is a student action
     });
 
     // Build EMI details if EMI mode is selected
@@ -284,13 +300,45 @@ export const verifyRazorpayPayment = async (req, res) => {
       paymentMode: payment.paymentMode
     });
 
-    // 🔔 NOTIFICATION: Payment Success
-    await Notification.create({
-      title: "Payment Successful",
-      message: "A course payment was completed successfully",
+    // 🔔 NOTIFICATION: Payment Success - Notify both Admin and Student
+    await notifyBoth({
+      adminTitle: "Payment Successful",
+      adminMessage: `${user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : (user.fullName || 'A student')} paid ₹${payment.finalAmount} for ${course.title}`,
+      studentId: payment.user,
+      studentTitle: "Enrollment Confirmed!",
+      studentMessage: `You have successfully enrolled in ${course.title}. Your payment of ₹${payment.finalAmount} has been received.`,
       type: "PAYMENT",
-      recipientRole: "ADMIN",
-      actionUrl: "/admin/payments"
+      subType: "PAYMENT_SUCCESS",
+      adminActionUrl: "/admin/payments",
+      studentActionUrl: "/student/courses",
+      priority: "HIGH",
+      metadata: { 
+        courseId: payment.course, 
+        courseName: course.title,
+        paymentId: payment._id, 
+        amount: payment.finalAmount 
+      },
+      userId: payment.user,
+      userRole: "STUDENT"
+    });
+
+    // 🔔 NOTIFICATION: New Enrollment
+    await notifyAdmins({
+      title: "New Enrollment",
+      message: `${user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : (user.fullName || 'A student')} enrolled in ${course.title} - ₹${payment.finalAmount}`,
+      type: "ENROLLMENT",
+      subType: "NEW_ENROLLMENT",
+      actionUrl: "/admin/enrollments",
+      priority: "HIGH",
+      metadata: { 
+        studentId: payment.user, 
+        courseId: payment.course, 
+        courseName: course.title,
+        paymentId: payment._id,
+        amount: payment.finalAmount
+      },
+      userId: payment.user,
+      userRole: "STUDENT"
     });
 
     return res.json({
@@ -329,12 +377,24 @@ export const fakeVerifyPayment = async (req, res) => {
       paymentId: payment._id
     });
 
-    // 🔔 NOTIFICATION: Fake Payment (Testing)
-    await Notification.create({
-      title: "Payment Successful (Test)",
-      message: "Fake payment verified successfully",
+    const course = await Course.findById(payment.course);
+    const user = await Student.findById(payment.user);
+
+    // 🔔 NOTIFICATION: Test Payment Success
+    const testPayerName = user.firstName && user.lastName 
+      ? `${user.firstName} ${user.lastName}` 
+      : (user.fullName || 'A student');
+      
+    await notifyAdmins({
+      title: "Test Payment Verified",
+      message: `${testPayerName} paid ₹${payment.finalAmount} for ${course.title}`,
       type: "PAYMENT",
-      recipientRole: "ADMIN"
+      subType: "PAYMENT_SUCCESS",
+      actionUrl: "/admin/payments",
+      priority: "MEDIUM",
+      metadata: { courseId: payment.course, paymentId: payment._id, isTest: true, amount: payment.finalAmount },
+      userId: payment.user,
+      userRole: "STUDENT"
     });
 
     return res.json({
@@ -460,12 +520,21 @@ export const createEmiInstallment = async (req, res) => {
     });
 
     // 🔔 NOTIFICATION: EMI Installment Initiated
-    await Notification.create({
-      title: "EMI Installment Initiated",
-      message: `EMI installment payment started for course enrollment`,
+    const courseName = course ? course.title : "the course";
+    await notifyBoth({
+      adminTitle: "EMI Installment Initiated",
+      adminMessage: `Student started EMI installment payment for ${courseName}`,
+      studentId: studentId,
+      studentTitle: "EMI Payment Started",
+      studentMessage: `Your next installment payment for ${courseName} has been initiated. Amount: ₹${Math.round(installmentAmount * 100) / 100}`,
       type: "PAYMENT",
-      recipientRole: "STUDENT",
-      recipient: studentId
+      subType: "EMI_INSTALLMENT_INITIATED",
+      adminActionUrl: "/admin/payments",
+      studentActionUrl: "/student/fees",
+      priority: "MEDIUM",
+      metadata: { courseId, courseName, installmentPaymentId: installmentPayment._id, amount: installmentAmount },
+      userId: studentId,
+      userRole: "STUDENT"
     });
 
     res.json({
@@ -553,13 +622,21 @@ export const verifyEmiInstallmentPayment = async (req, res) => {
       );
     }
 
-    // 🔔 NOTIFICATION: EMI Installment Success
-    await Notification.create({
-      title: "EMI Installment Paid",
-      message: "An EMI installment payment was completed successfully",
+    // 🔔 NOTIFICATION: EMI Installment Success - Notify both Admin and Student
+    await notifyBoth({
+      adminTitle: "EMI Installment Paid",
+      adminMessage: `EMI installment of ₹${installmentPayment.finalAmount} received for ${course.title}`,
+      studentId: studentId,
+      studentTitle: "EMI Installment Received",
+      studentMessage: `Your installment payment of ₹${installmentPayment.finalAmount} for ${course.title} has been received. Remaining: ₹${newRemaining}`,
       type: "PAYMENT",
-      recipientRole: "ADMIN",
-      actionUrl: "/admin/payments"
+      subType: "EMI_INSTALLMENT_PAID",
+      adminActionUrl: "/admin/payments",
+      studentActionUrl: "/student/fees",
+      priority: "HIGH",
+      metadata: { courseId, courseName: course.title, installmentPaymentId: installmentPayment._id, amount: installmentPayment.finalAmount, remainingAmount: newRemaining },
+      userId: studentId,
+      userRole: "STUDENT"
     });
 
     return res.json({

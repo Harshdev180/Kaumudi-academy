@@ -8,6 +8,7 @@ import {
   sendOtpVerificationMail 
 } from "../services/mail.service.js";
 
+import { notifyAdmins } from "../services/notification.service.js";
 import { config } from "../configs/env.js";
 import SuperAdmin from "../models/SuperAdmin.model.js";
 import Admin from "../models/Admin.model.js";
@@ -300,6 +301,23 @@ export const verifyStudentOtp = async (req, res) => {
 
     // Delete temporary data
     await TempStudent.deleteOne({ email });
+
+    // 🔔 NOTIFICATION: New Student Registration
+    const studentName = student.firstName && student.lastName 
+      ? `${student.firstName} ${student.lastName}` 
+      : (student.fullName || 'A student');
+    
+    await notifyAdmins({
+      title: "New Student Registered",
+      message: `${studentName} has registered. Email: ${student.email}`,
+      type: "STUDENT_QUERY",
+      subType: "NEW_REGISTRATION",
+      actionUrl: "/admin/students",
+      priority: "HIGH",
+      metadata: { studentId: student._id, email: student.email },
+      userId: student._id,
+      userRole: "STUDENT"
+    });
 
     // Generate token for auto-login
     const token = generateToken(student._id, "STUDENT");
