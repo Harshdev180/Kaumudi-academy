@@ -1297,25 +1297,22 @@ const FeePurchase = () => {
               </div>
             </div>
 
-            <span className="text-xs font-semibold bg-[#74271E]/10 text-[#74271E] px-4 py-2 rounded-lg">
-              {paymentHistory.length} Records
-            </span>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleRefresh}
-              disabled={refreshing}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-[#74271E] bg-white border border-[#e8dfd0] rounded-full hover:bg-[#faf7f2] transition disabled:opacity-50"
-            >
-              <RefreshCw
-                size={14}
-                className={refreshing ? "animate-spin" : ""}
-              />
-              {refreshing ? "Refreshing..." : "Refresh"}
-            </button>
-            <span className="text-xs font-semibold text-gray-400 bg-white px-4 py-2 rounded-full border border-[#eee3d2] whitespace-nowrap shrink-0">
-              {paymentHistory.length} Transactions
-            </span>
+            <div>
+              {/* <span className="text-xs font-semibold bg-[#74271E]/10 text-[#74271E] px-4 py-2 rounded-lg">
+                {paymentHistory.length} Records
+              </span> */}
+              <button
+                onClick={handleRefresh}
+                disabled={refreshing}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-[#74271E] bg-white border border-[#e8dfd0] rounded-full hover:bg-[#faf7f2] transition disabled:opacity-50"
+              >
+                <RefreshCw
+                  size={14}
+                  className={refreshing ? "animate-spin" : ""}
+                />
+                {refreshing ? "Refreshing..." : "Refresh"}
+              </button>
+            </div>
           </div>
         </div>
 

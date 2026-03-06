@@ -271,35 +271,101 @@ function NotificationsPage() {
 
     // Add course and payment details
     if (metadata) {
-      if (metadata.courseName) details.push({ label: "Course Name", value: metadata.courseName, isBold: true });
-      
+      if (metadata.courseName)
+        details.push({
+          label: "Course Name",
+          value: metadata.courseName,
+          isBold: true,
+        });
+
       // Handle EMI/Installment payments - show total price, total paid, and remaining
-      if (metadata.totalPrice && (metadata.totalPaid !== undefined || metadata.remainingAmount !== undefined)) {
-        details.push({ label: "Total Price", value: `₹${metadata.totalPrice}`, isBold: true });
+      if (
+        metadata.totalPrice &&
+        (metadata.totalPaid !== undefined ||
+          metadata.remainingAmount !== undefined)
+      ) {
+        details.push({
+          label: "Total Price",
+          value: `₹${metadata.totalPrice}`,
+          isBold: true,
+        });
         if (metadata.totalPaid !== undefined) {
-          details.push({ label: "Total Paid", value: `₹${metadata.totalPaid}`, isBold: true });
+          details.push({
+            label: "Total Paid",
+            value: `₹${metadata.totalPaid}`,
+            isBold: true,
+          });
         }
-        if (metadata.remainingAmount !== undefined && metadata.remainingAmount > 0) {
-          details.push({ label: "Remaining", value: `₹${metadata.remainingAmount.toFixed(2)}`, isBold: true });
+        if (
+          metadata.remainingAmount !== undefined &&
+          metadata.remainingAmount > 0
+        ) {
+          details.push({
+            label: "Remaining",
+            value: `₹${metadata.remainingAmount.toFixed(2)}`,
+            isBold: true,
+          });
         }
       } else if (metadata.totalPrice) {
         // Regular payments - show total, paid, and remaining
-        details.push({ label: "Total Price", value: `₹${metadata.totalPrice}`, isBold: true });
+        details.push({
+          label: "Total Price",
+          value: `₹${metadata.totalPrice}`,
+          isBold: true,
+        });
         // Calculate remaining amount
-        const paidAmount = metadata.paidPrice || metadata.paidAmount || metadata.amount || 0;
+        const paidAmount =
+          metadata.paidPrice || metadata.paidAmount || metadata.amount || 0;
         const remainingAmount = metadata.totalPrice - paidAmount;
         if (remainingAmount > 0) {
-          details.push({ label: "Remaining Amount", value: `₹${remainingAmount.toFixed(2)}`, isBold: true });
+          details.push({
+            label: "Remaining Amount",
+            value: `₹${remainingAmount.toFixed(2)}`,
+            isBold: true,
+          });
         }
       }
-      
-      if (metadata.discountAmount) details.push({ label: "Discount", value: `₹${metadata.discountAmount}`, isBold: true });
-      if (metadata.paidPrice || metadata.paidAmount) details.push({ label: "Paid Price", value: `₹${metadata.paidPrice || metadata.paidAmount}`, isBold: true });
-      if (metadata.paymentId) details.push({ label: "Payment ID", value: String(metadata.paymentId).slice(-8) });
-      if (metadata.amount && !metadata.paidPrice && !metadata.paidAmount && !metadata.totalPaid) details.push({ label: "Amount Paid", value: `₹${metadata.amount}`, isBold: true });
-      if (metadata.inquiryId) details.push({ label: "Inquiry ID", value: String(metadata.inquiryId).slice(-8) });
-      if (metadata.enrollmentId) details.push({ label: "Enrollment ID", value: String(metadata.enrollmentId).slice(-8) });
-      if (metadata.isTest) details.push({ label: "Note", value: "Test Payment" });
+
+      if (metadata.discountAmount)
+        details.push({
+          label: "Discount",
+          value: `₹${metadata.discountAmount}`,
+          isBold: true,
+        });
+      if (metadata.paidPrice || metadata.paidAmount)
+        details.push({
+          label: "Paid Price",
+          value: `₹${metadata.paidPrice || metadata.paidAmount}`,
+          isBold: true,
+        });
+      if (metadata.paymentId)
+        details.push({
+          label: "Payment ID",
+          value: String(metadata.paymentId).slice(-8),
+        });
+      if (
+        metadata.amount &&
+        !metadata.paidPrice &&
+        !metadata.paidAmount &&
+        !metadata.totalPaid
+      )
+        details.push({
+          label: "Amount Paid",
+          value: `₹${metadata.amount}`,
+          isBold: true,
+        });
+      if (metadata.inquiryId)
+        details.push({
+          label: "Inquiry ID",
+          value: String(metadata.inquiryId).slice(-8),
+        });
+      if (metadata.enrollmentId)
+        details.push({
+          label: "Enrollment ID",
+          value: String(metadata.enrollmentId).slice(-8),
+        });
+      if (metadata.isTest)
+        details.push({ label: "Note", value: "Test Payment" });
     }
 
     // Add timestamp
@@ -334,7 +400,11 @@ function NotificationsPage() {
               className="bg-white/10 hover:bg-white/20 text-white p-2 rounded-full transition"
               title="Refresh"
             >
-              <RefreshCw size={14} sm:size={16} className={loading ? "animate-spin" : ""} />
+              <RefreshCw
+                size={14}
+                sm:size={16}
+                className={loading ? "animate-spin" : ""}
+              />
             </button>
             <button
               onClick={handleMarkAllRead}
@@ -425,7 +495,9 @@ function NotificationsPage() {
                 {/* LEFT */}
                 <div className="flex gap-3 sm:gap-4 flex-1">
                   {/* Category Icon */}
-                  <div className={`mt-1 p-1.5 sm:p-2 rounded-lg ${getCategoryColor(item.type)} text-white flex-shrink-0`}>
+                  <div
+                    className={`mt-1 p-1.5 sm:p-2 h-full rounded-lg ${getCategoryColor(item.type)} text-white flex-shrink-0`}
+                  >
                     {getCategoryIcon(item.type)}
                   </div>
 
@@ -493,7 +565,11 @@ function NotificationsPage() {
                     className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#74271E]/10 text-[#74271E] flex items-center justify-center hover:bg-red-100 hover:text-red-500 transition disabled:opacity-50"
                   >
                     {deletingId === item.id ? (
-                      <Loader2 size={12} sm:size={14} className="animate-spin" />
+                      <Loader2
+                        size={12}
+                        sm:size={14}
+                        className="animate-spin"
+                      />
                     ) : (
                       <Trash size={12} sm:size={14} />
                     )}
@@ -524,7 +600,11 @@ function NotificationsPage() {
                 {/* Type Badge at Top */}
                 <div className="mb-3">
                   <span className="inline-block px-3 py-1 bg-[#D4AF37] text-[#74271E] text-xs font-bold rounded-full uppercase">
-                    {selectedNotification.type === "student_query" ? "New Registration" : selectedNotification.type?.replace("_", " ").toUpperCase()}
+                    {selectedNotification.type === "student_query"
+                      ? "New Registration"
+                      : selectedNotification.type
+                          ?.replace("_", " ")
+                          .toUpperCase()}
                   </span>
                 </div>
                 <div className="flex items-start justify-between">
@@ -535,7 +615,9 @@ function NotificationsPage() {
                       {getCategoryIcon(selectedNotification.type)}
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-base sm:text-lg font-bold truncate">{selectedNotification.title}</h3>
+                      <h3 className="text-base sm:text-lg font-bold truncate">
+                        {selectedNotification.title}
+                      </h3>
                     </div>
                   </div>
                   <button
@@ -557,22 +639,36 @@ function NotificationsPage() {
                     </p>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-[#74271E] text-white flex items-center justify-center font-bold flex-shrink-0">
-                        {selectedNotification.metadata.userDetails.name?.charAt(0) || "U"}
+                        {selectedNotification.metadata.userDetails.name?.charAt(
+                          0,
+                        ) || "U"}
                       </div>
                       <div className="min-w-0">
-                        <p className="font-bold text-gray-900 truncate">{selectedNotification.metadata.userDetails.name}</p>
-                        <p className="text-sm text-gray-500 truncate">{selectedNotification.metadata.userDetails.email}</p>
-                        {selectedNotification.metadata.userDetails.phone && selectedNotification.metadata.userDetails.phone !== "N/A" && (
-                          <p className="text-sm text-gray-500">{selectedNotification.metadata.userDetails.phone}</p>
-                        )}
+                        <p className="font-bold text-gray-900 truncate">
+                          {selectedNotification.metadata.userDetails.name}
+                        </p>
+                        <p className="text-sm text-gray-500 truncate">
+                          {selectedNotification.metadata.userDetails.email}
+                        </p>
+                        {selectedNotification.metadata.userDetails.phone &&
+                          selectedNotification.metadata.userDetails.phone !==
+                            "N/A" && (
+                            <p className="text-sm text-gray-500">
+                              {selectedNotification.metadata.userDetails.phone}
+                            </p>
+                          )}
                       </div>
                     </div>
                   </div>
                 )}
 
                 <div className="mb-4">
-                  <p className="text-sm text-gray-600 mb-2 font-medium">Message</p>
-                  <p className="text-gray-800 break-words">{selectedNotification.message}</p>
+                  <p className="text-sm text-gray-600 mb-2 font-medium">
+                    Message
+                  </p>
+                  <p className="text-gray-800 break-words">
+                    {selectedNotification.message}
+                  </p>
                 </div>
 
                 {/* Details */}
@@ -581,21 +677,32 @@ function NotificationsPage() {
                     Additional Details
                   </p>
                   <div className="space-y-2">
-                    {formatDetails(selectedNotification).map((detail, index) => (
-                      <div key={index} className={`flex flex-col sm:flex-row sm:justify-between sm:items-center text-sm ${detail.isBold ? 'bg-gray-50 -mx-2 px-2 py-1 rounded' : ''}`}>
-                        <span className="text-gray-500">{detail.label}</span>
-                        {detail.isAction ? (
-                          <button
-                            onClick={(e) => handleActionClick(e, detail.value)}
-                            className="text-[#74271E] font-medium hover:underline flex items-center gap-1 mt-1 sm:mt-0"
-                          >
-                            {detail.value} <ExternalLink size={12} />
-                          </button>
-                        ) : (
-                          <span className={`text-gray-800 font-medium truncate ${detail.isBold ? 'font-bold text-[#74271E]' : ''}`}>{detail.value}</span>
-                        )}
-                      </div>
-                    ))}
+                    {formatDetails(selectedNotification).map(
+                      (detail, index) => (
+                        <div
+                          key={index}
+                          className={`flex flex-col sm:flex-row sm:justify-between sm:items-center text-sm ${detail.isBold ? "bg-gray-50 -mx-2 px-2 py-1 rounded" : ""}`}
+                        >
+                          <span className="text-gray-500">{detail.label}</span>
+                          {detail.isAction ? (
+                            <button
+                              onClick={(e) =>
+                                handleActionClick(e, detail.value)
+                              }
+                              className="text-[#74271E] font-medium hover:underline flex items-center gap-1 mt-1 sm:mt-0"
+                            >
+                              {detail.value} <ExternalLink size={12} />
+                            </button>
+                          ) : (
+                            <span
+                              className={`text-gray-800 font-medium truncate ${detail.isBold ? "font-bold text-[#74271E]" : ""}`}
+                            >
+                              {detail.value}
+                            </span>
+                          )}
+                        </div>
+                      ),
+                    )}
                   </div>
                 </div>
 
