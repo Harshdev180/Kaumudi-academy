@@ -12,6 +12,7 @@ export const createEnrollment = async ({ studentId, courseId, paymentId }) => {
       student: studentId,
       course: courseId,
     });
+    //thisis
 
     if (exists) {
       console.log("Enrollment already exists, updating payment:", exists._id);
