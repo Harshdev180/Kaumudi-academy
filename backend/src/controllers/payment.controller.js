@@ -288,9 +288,9 @@ export const verifyRazorpayPayment = async (req, res) => {
     const discountedTotal = payment.originalAmount - payment.discountAmount;
     const remainingAmount = Math.max(discountedTotal - payment.finalAmount, 0);
 
-    // Get enrollment ID for notifications
-    const enrollment = await Enrollment.findOne({ student: payment.user, course: payment.course }).select('_id createdAt');
-    const formattedEnrollmentId = enrollment ? formatEnrollmentId(enrollment._id, enrollment.createdAt) : null;
+    // Get enrollment ID for notifications - use student's unique ID
+    const student = await Student.findById(payment.user).select('_id createdAt studentId');
+    const formattedEnrollmentId = student ? formatEnrollmentId(student._id, student.createdAt) : null;
 
     console.log("Creating/updating StudentFee for student:", payment.user, "course:", payment.course);
 
@@ -464,6 +464,9 @@ export const createEmiInstallment = async (req, res) => {
       course: courseId
     }).populate("payment").select('_id createdAt');
 
+    // Get student info for enrollment ID
+    const student = await Student.findById(studentId).select('_id createdAt studentId');
+
     if (!enrollment) {
       return res.status(404).json({
         success: false,
@@ -472,7 +475,7 @@ export const createEmiInstallment = async (req, res) => {
     }
 
     const payment = enrollment.payment;
-    const formattedEnrollmentId = formatEnrollmentId(enrollment._id, enrollment.createdAt);
+    const formattedEnrollmentId = student ? formatEnrollmentId(student._id, student.createdAt) : null;
 
     // Fetch course details for notifications
     const course = await Course.findById(courseId);
@@ -686,9 +689,10 @@ export const verifyEmiInstallmentPayment = async (req, res) => {
     const studentId = payment.user;
     const courseId = payment.course;
 
-    // Get enrollment ID for notifications
+    // Get enrollment ID for notifications - use student's unique ID
     const enrollment = await Enrollment.findOne({ student: studentId, course: courseId }).select('_id createdAt');
-    const formattedEnrollmentId = enrollment ? formatEnrollmentId(enrollment._id, enrollment.createdAt) : null;
+    const student = await Student.findById(studentId).select('_id createdAt studentId');
+    const formattedEnrollmentId = student ? formatEnrollmentId(student._id, student.createdAt) : null;
 
     payment.status = "SUCCESS";
     payment.razorpayPaymentId = razorpayPaymentId;

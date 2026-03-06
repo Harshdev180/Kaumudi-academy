@@ -2,6 +2,7 @@ import Enrollment from "../models/Enrollment.model.js";
 import Certificate from "../models/Certificate.model.js";
 import bcrypt from "bcryptjs";
 import Payment from "../models/Payment.model.js";
+import { formatEnrollmentId } from "../utils/enrollment.utils.js";
 
 /**
  * 📊 DASHBOARD STATS
@@ -207,6 +208,9 @@ export const getMyProfile = async (req, res) => {
     if (!userObj.phone && userObj.phoneNumber) {
       userObj.phone = userObj.phoneNumber;
     }
+
+    // Add formatted enrollment ID
+    userObj.enrollmentId = formatEnrollmentId(userObj._id, userObj.createdAt);
 
     res.json({
       success: true,

@@ -362,7 +362,7 @@ function NotificationsPage() {
       if (metadata.enrollmentId)
         details.push({
           label: "Enrollment ID",
-          value: String(metadata.enrollmentId).slice(-8),
+          value: String(metadata.enrollmentId),
         });
       if (metadata.isTest)
         details.push({ label: "Note", value: "Test Payment" });

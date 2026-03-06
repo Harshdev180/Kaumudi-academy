@@ -175,7 +175,7 @@ const Settings = () => {
                 Enrollment ID
               </p>
               <p className="font-mono font-bold text-[#74271E] text-xs sm:text-sm tracking-widest">
-                {profile.id || profile._id}
+                {profile.enrollmentId || profile.id || profile._id}
               </p>
             </div>
           </div>

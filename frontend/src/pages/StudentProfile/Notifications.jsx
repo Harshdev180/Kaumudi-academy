@@ -210,7 +210,7 @@ const Notifications = () => {
       if (metadata.courseId) details.push({ label: "Course ID", value: String(metadata.courseId).slice(-8) });
       if (metadata.paymentId) details.push({ label: "Payment ID", value: String(metadata.paymentId).slice(-8) });
       if (metadata.amount) details.push({ label: "Amount", value: `₹${metadata.amount}` });
-      if (metadata.enrollmentId) details.push({ label: "Enrollment ID", value: String(metadata.enrollmentId).slice(-8) });
+      if (metadata.enrollmentId) details.push({ label: "Enrollment ID", value: String(metadata.enrollmentId) });
       if (metadata.response) details.push({ label: "Response", value: metadata.response });
     }
 
