@@ -869,6 +869,7 @@ const Certificates = () => {
               issuer: "Kaumudi Sanskrit Academy",
               type: item?.type || "Course Completion",
               description: item?.description || "Certificate of Excellence",
+              enrollmentId: item?.enrollmentId || "",
             }))
           : [];
         setCertificates(mapped);

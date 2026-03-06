@@ -1,8 +1,11 @@
 import Progress from "../models/CourseProgress.model.js";
 import Certificate from "../models/Certificate.model.js";
+import Enrollment from "../models/Enrollment.model.js";
 import { v4 as uuid } from "uuid";
 import fs from "fs";
 import path from "path";
+import { formatEnrollmentId } from "../utils/enrollment.utils.js";
+import mongoose from "mongoose";
 
 export const downloadCertificate = async (req, res) => {
     try {
@@ -136,15 +139,27 @@ export const updateProgress = async (req, res) => {
 
 export const getMyCertificates = async (req, res) => {
     try {
-        const userId = req.user.id;
+        // Use _id for consistency with mongoose
+        const userId = req.user._id;
 
         const certificates = await Certificate.find({ user: userId })
             .populate("course", "title image")
             .sort({ createdAt: -1 });
 
+        // Get user's enrollment ID (formatted like in profile/settings)
+        const userEnrollmentId = formatEnrollmentId(userId, req.user.createdAt);
+
+        // For each certificate, set the enrollment ID to the user's enrollment ID
+        const certificatesWithEnrollment = certificates.map((cert) => {
+            const certObj = cert.toObject();
+            // Use the user's enrollment ID (same as shown in profile/settings)
+            certObj.enrollmentId = userEnrollmentId;
+            return certObj;
+        });
+
         res.json({
             success: true,
-            data: certificates,
+            data: certificatesWithEnrollment,
         });
     } catch (error) {
         console.error("Get certificates error:", error);

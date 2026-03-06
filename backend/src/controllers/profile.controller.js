@@ -3,6 +3,7 @@ import Certificate from "../models/Certificate.model.js";
 import bcrypt from "bcryptjs";
 import Payment from "../models/Payment.model.js";
 import { formatEnrollmentId } from "../utils/enrollment.utils.js";
+import mongoose from "mongoose";
 
 /**
  * 📊 DASHBOARD STATS
@@ -171,13 +172,53 @@ export const getMyEnrollments = async (req, res) => {
  */
 export const getMyCertificates = async (req, res) => {
   try {
+    const userId = req.user._id;
+    
     const certificates = await Certificate.find({
-      student: req.user._id,
+      user: userId,
     }).populate("course", "title");
+
+    // For each certificate, find the corresponding enrollment to get enrollment ID
+    const certificatesWithEnrollment = await Promise.all(
+      certificates.map(async (cert) => {
+        const certObj = cert.toObject();
+        
+        try {
+          // Find the enrollment for this user and course
+          // Use the certificate's course._id after population
+          const courseId = cert.course?._id;
+          
+          let enrollment = null;
+          if (courseId) {
+            // Try to find enrollment with explicit ObjectId conversion
+            enrollment = await Enrollment.findOne({
+              student: new mongoose.Types.ObjectId(userId),
+              course: new mongoose.Types.ObjectId(courseId),
+            }).sort({ createdAt: -1 });
+          }
+          
+          // Format enrollment ID using the enrollment's _id
+          if (enrollment) {
+            certObj.enrollmentId = formatEnrollmentId(enrollment._id, enrollment.createdAt);
+            console.log("Found enrollment:", enrollment._id, "-> formatted:", certObj.enrollmentId);
+          } else {
+            // Fallback to user ID if no enrollment found
+            certObj.enrollmentId = formatEnrollmentId(userId, req.user.createdAt);
+            console.log("No enrollment found, using userId:", certObj.enrollmentId);
+          }
+        } catch (enrollErr) {
+          console.error("Enrollment lookup error:", enrollErr);
+          // Fallback on error
+          certObj.enrollmentId = formatEnrollmentId(userId, req.user.createdAt);
+        }
+        
+        return certObj;
+      })
+    );
 
     res.json({
       success: true,
-      data: certificates,
+      data: certificatesWithEnrollment,
     });
   } catch (error) {
     console.error("GET CERTIFICATES ERROR:", error);
