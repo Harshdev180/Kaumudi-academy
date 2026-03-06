@@ -335,6 +335,9 @@ export const verifyRazorpayPayment = async (req, res) => {
         courseId: payment.course, 
         courseName: course.title,
         paymentId: payment._id,
+        totalPrice: payment.originalAmount,
+        discountAmount: payment.discountAmount,
+        paidPrice: payment.finalAmount,
         amount: payment.finalAmount
       },
       userId: payment.user,
@@ -458,7 +461,8 @@ export const createEmiInstallment = async (req, res) => {
     }
 
     // Check if already fully paid
-    const remainingAmount = discountedTotal - payment.finalAmount;
+    const totalPaidSoFar = payment.finalAmount;
+    const remainingAmount = discountedTotal - totalPaidSoFar;
 
     if (remainingAmount <= 0) {
       return res.status(400).json({
@@ -467,9 +471,48 @@ export const createEmiInstallment = async (req, res) => {
       });
     }
 
-    // Calculate installment amount (divide remaining into 2 parts for 2 more installments)
-    // Original: 33.3% paid (1/3), remaining: 66.6% = should be paid in 2 installments (33.3% each)
-    const installmentAmount = remainingAmount / 2;
+    // Count how many EMI installments have already been paid
+    // parentPayment.finalAmount starts with the first payment (1/3), then increases with each installment
+    const firstPaymentAmount = Math.round((discountedTotal / 3) * 100) / 100;
+    const expectedPerInstallment = Math.round((discountedTotal - firstPaymentAmount) / 2 * 100) / 100;
+    
+    // Calculate how many installments have been paid (excluding the initial first payment)
+    // After first payment (enrollment): paid = firstPaymentAmount (1/3)
+    // After second payment: paid = firstPaymentAmount + installmentAmount (2/3)
+    // After third payment: paid = firstPaymentAmount + 2*installmentAmount (3/3)
+    const amountPaidBeyondFirst = totalPaidSoFar - firstPaymentAmount;
+    let installmentsPaid = 0;
+    if (amountPaidBeyondFirst > 0) {
+      installmentsPaid = Math.round(amountPaidBeyondFirst / expectedPerInstallment);
+    }
+
+    console.log("EMI Installment Tracking:", {
+      discountedTotal,
+      firstPaymentAmount,
+      expectedPerInstallment,
+      totalPaidSoFar,
+      amountPaidBeyondFirst,
+      installmentsPaid,
+      remainingAmount
+    });
+
+    // Calculate installment amount based on how many installments have been paid
+    // If 0 installments paid beyond first payment → this is 2nd payment (1st installment)
+    // If 1 installment paid beyond first payment → this is 3rd payment (2nd/final installment)
+    let installmentAmount;
+    if (installmentsPaid >= 2) {
+      // Already paid both installments, shouldn't reach here but safety check
+      return res.status(400).json({
+        success: false,
+        message: "All EMI installments have already been paid"
+      });
+    } else if (installmentsPaid >= 1) {
+      // This is the 3rd/final payment - pay the full remaining amount
+      installmentAmount = remainingAmount;
+    } else {
+      // This is the 2nd payment - divide remaining into 2 parts
+      installmentAmount = remainingAmount / 2;
+    }
     
     console.log("EMI Installment Calculation:", {
       originalAmount: payment.originalAmount,
@@ -547,14 +590,15 @@ export const createEmiInstallment = async (req, res) => {
       currency: order.currency,
       paymentId: installmentPayment._id,
       remainingAmount: remainingAmount - installmentAmount,
-      installmentNumber: 2, // This is the 2nd payment (first was 30%)
+      installmentNumber: installmentsPaid >= 1 ? 3 : 2, // If already paid 1 installment beyond first, this is the 3rd payment
       debug: {
         originalAmount: payment.originalAmount,
         discountAmount: payment.discountAmount,
         finalAmount: payment.finalAmount,
         discountedTotal,
         remainingAmount,
-        installmentAmount
+        installmentAmount,
+        installmentsPaid
       }
     });
   } catch (error) {
@@ -633,6 +677,12 @@ export const verifyEmiInstallmentPayment = async (req, res) => {
 
     // 🔔 NOTIFICATION: EMI Installment Success - Notify both Admin and Student
     const courseName = course ? course.title : "the course";
+    
+    // Get parent payment details for total calculation
+    const parentPaymentData = parentPayment ? await Payment.findById(payment.parentPayment) : null;
+    const totalPrice = parentPaymentData?.originalAmount || payment.originalAmount;
+    const totalPaid = parentPaymentData?.finalAmount || payment.finalAmount;
+    
     await notifyBoth({
       adminTitle: "EMI Installment Paid",
       adminMessage: `EMI installment of ₹${payment.finalAmount} received for ${courseName}`,
@@ -644,7 +694,15 @@ export const verifyEmiInstallmentPayment = async (req, res) => {
       adminActionUrl: "/admin/payments",
       studentActionUrl: "/student/fees",
       priority: "HIGH",
-      metadata: { courseId, courseName, installmentPaymentId: payment._id, amount: payment.finalAmount, remainingAmount: newRemaining },
+      metadata: { 
+        courseId, 
+        courseName, 
+        installmentPaymentId: payment._id, 
+        amount: payment.finalAmount, 
+        totalPrice: totalPrice,
+        totalPaid: totalPaid,
+        remainingAmount: newRemaining 
+      },
       userId: studentId,
       userRole: "STUDENT"
     });

@@ -33,6 +33,12 @@ export const createEnrollment = async ({ studentId, courseId, paymentId }) => {
         ? `${student.firstName} ${student.lastName}` 
         : (student.fullName || 'A student');
       
+      // Get payment details if available
+      let paymentData = null;
+      if (paymentId) {
+        paymentData = await Payment.findById(paymentId);
+      }
+      
       await notifyAdmins({
         title: "New Course Enrollment",
         message: `${studentName} enrolled in ${course.title}`,
@@ -44,7 +50,10 @@ export const createEnrollment = async ({ studentId, courseId, paymentId }) => {
           courseId, 
           courseName: course.title,
           enrollmentId: enrollment._id,
-          amount: paymentId ? (await Payment.findById(paymentId))?.finalAmount : null
+          totalPrice: paymentData?.originalAmount || course.price,
+          discountAmount: paymentData?.discountAmount,
+          paidPrice: paymentData?.finalAmount,
+          amount: paymentData?.finalAmount
         },
         userId: studentId,
         userRole: "STUDENT"
