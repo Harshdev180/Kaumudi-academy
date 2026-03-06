@@ -50,7 +50,7 @@ function NotificationsPage() {
       id: "enrollment",
       label: "Enrollment",
       icon: GraduationCap,
-      color: "bg-blue-500",
+      color: "bg-green-500",
     },
     {
       id: "student_query",
@@ -467,7 +467,7 @@ function NotificationsPage() {
                 <div className="flex gap-4 flex-1">
                   {/* Category Icon */}
                   <div
-                    className={`mt-1 p-2 rounded-lg ${getCategoryColor(item.type)} text-white`}
+                    className={`mt-1 p-2 h-full rounded-lg ${getCategoryColor(item.type)} text-white`}
                   >
                     {getCategoryIcon(item.type)}
                   </div>

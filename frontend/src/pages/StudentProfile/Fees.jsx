@@ -1313,34 +1313,42 @@ const FeePurchase = () => {
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="bg-gray-50">
-                <th className="px-8 py-5 text-xs font-bold uppercase tracking-wider text-gray-500">
+        <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
+          <table className="w-full table-fixed text-sm">
+            {/* Header */}
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr className="text-gray-500 uppercase tracking-wider text-xs">
+                <th className="w-[140px] px-6 py-4 text-left font-semibold">
                   Date
                 </th>
-                <th className="px-6 py-5 text-xs font-bold uppercase tracking-wider text-gray-500">
+
+                <th className="px-6 py-4 text-left font-semibold">
                   Description
                 </th>
-                <th className="px-6 py-5 text-xs font-bold uppercase tracking-wider text-gray-500">
+
+                <th className="w-[170px] px-6 py-4 text-left font-semibold">
                   Receipt No.
                 </th>
-                <th className="px-6 py-5 text-xs font-bold uppercase tracking-wider text-gray-500">
+
+                <th className="w-[130px] px-6 py-4 text-left font-semibold">
                   Total
                 </th>
-                <th className="px-6 py-5 text-xs font-bold uppercase tracking-wider text-gray-500">
+
+                <th className="w-[140px] px-6 py-4 text-left font-semibold">
                   Remaining
                 </th>
-                <th className="px-6 py-5 text-xs font-bold uppercase tracking-wider text-gray-500 text-center">
+
+                <th className="w-[140px] px-6 py-4 text-center font-semibold">
                   Status
                 </th>
-                <th className="px-8 py-5 text-xs font-bold uppercase tracking-wider text-gray-500 text-right">
+
+                <th className="w-[200px] px-6 py-4 text-right font-semibold">
                   Actions
                 </th>
               </tr>
             </thead>
 
+            {/* Body */}
             <tbody className="divide-y divide-gray-100">
               {currentRows.map((item) => {
                 const isPaid = item.isPaid;
@@ -1349,34 +1357,37 @@ const FeePurchase = () => {
                 return (
                   <tr
                     key={item.id}
-                    className="group hover:bg-gradient-to-r hover:from-[#74271E]/5 hover:to-transparent transition-all duration-300"
+                    className="hover:bg-[#74271E]/5 transition-colors duration-200"
                   >
-                    <td className="px-8 py-6">
-                      <div className="flex items-center gap-2">
+                    {/* Date */}
+                    <td className="px-6 py-5">
+                      <div className="flex items-center gap-2 text-gray-700 font-medium">
                         <Calendar size={14} className="text-gray-400" />
-                        <span className="text-sm font-medium text-gray-700">
-                          {item.date}
-                        </span>
+                        {item.date}
                       </div>
                     </td>
 
-                    <td className="px-6 py-6">
-                      <div>
-                        <p className="text-sm font-semibold text-gray-800 mb-1">
+                    {/* Description */}
+                    <td className="px-6 py-5">
+                      <div className="space-y-1">
+                        <p className="font-semibold text-gray-800">
                           {item.desc}
                         </p>
+
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-[10px] font-bold px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
+                          <span className="text-[10px] font-semibold px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
                             {item.type}
                           </span>
+
                           {item.paymentMode === "EMI" && (
-                            <span className="text-[10px] font-bold px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full flex items-center gap-1">
+                            <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full">
                               <Wallet size={10} />
                               EMI
                             </span>
                           )}
+
                           {item.couponCode && (
-                            <span className="text-[10px] font-bold px-2 py-0.5 bg-green-100 text-green-700 rounded-full">
+                            <span className="text-[10px] font-semibold px-2 py-0.5 bg-green-100 text-green-700 rounded-full">
                               {item.couponCode}
                             </span>
                           )}
@@ -1384,37 +1395,39 @@ const FeePurchase = () => {
                       </div>
                     </td>
 
-                    <td className="px-6 py-6">
-                      <div className="flex items-center gap-2">
+                    {/* Receipt */}
+                    <td className="px-6 py-5">
+                      <div className="flex items-center gap-2 text-gray-600 font-mono text-xs">
                         <Hash size={12} className="text-[#c9a050]" />
-                        <span className="text-xs font-mono font-medium text-gray-600">
-                          {item.academicReceiptNumber}
-                        </span>
+                        {item.academicReceiptNumber}
                       </div>
                     </td>
 
-                    <td className="px-6 py-6">
-                      <span className="text-base font-bold text-[#74271E]">
+                    {/* Total */}
+                    <td className="px-6 py-5">
+                      <span className="font-bold text-[#74271E] text-base">
                         {formatINR(item.totalAmount)}
                       </span>
                     </td>
 
-                    <td className="px-6 py-6">
+                    {/* Remaining */}
+                    <td className="px-6 py-5">
                       {remaining > 0 ? (
-                        <span className="text-base font-bold text-amber-600">
+                        <span className="font-semibold text-amber-600">
                           {formatINR(remaining)}
                         </span>
                       ) : (
-                        <span className="text-sm font-medium text-green-600 flex items-center gap-1">
+                        <span className="flex items-center gap-1 text-green-600 font-medium">
                           <CheckCircle2 size={14} />
                           Cleared
                         </span>
                       )}
                     </td>
 
-                    <td className="px-6 py-6 text-center">
+                    {/* Status */}
+                    <td className="px-6 py-5 text-center">
                       {isPaid ? (
-                        <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-green-50 text-green-700 rounded-full text-xs font-semibold border border-green-100">
+                        <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-50 text-green-700 border border-green-200 rounded-full text-xs font-semibold">
                           <CheckCircle2 size={12} />
                           Paid
                         </span>
@@ -1426,7 +1439,7 @@ const FeePurchase = () => {
                             e.stopPropagation();
                             handlePayment(item, e);
                           }}
-                          className="inline-flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-[#74271E] to-[#8b3d32] text-white rounded-xl text-xs font-semibold hover:shadow-lg hover:shadow-[#74271E]/30 transform hover:scale-105 transition-all duration-300"
+                          className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-[#74271E] to-[#8b3d32] rounded-lg hover:shadow-md hover:scale-105 transition-all"
                         >
                           <Wallet size={12} />
                           Pay Now
@@ -1434,13 +1447,14 @@ const FeePurchase = () => {
                       )}
                     </td>
 
-                    <td className="px-8 py-6 text-right">
+                    {/* Actions */}
+                    <td className="px-6 py-5 text-right">
                       <button
                         onClick={() => handleDownloadReceipt(item)}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl text-xs font-semibold hover:border-[#74271E] hover:text-[#74271E] hover:shadow-md transition-all duration-300"
+                        className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold border border-gray-200 text-gray-600 rounded-lg hover:border-[#74271E] hover:text-[#74271E] hover:bg-[#74271E]/5 transition"
                       >
                         <Download size={14} />
-                        Download Receipt
+                        Download
                       </button>
                     </td>
                   </tr>
