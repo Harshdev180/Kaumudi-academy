@@ -328,18 +328,19 @@ const Layout = () => {
                   </h3>
                   <div className="mt-6 bg-[#f7f1e3]/30 border border-[#e6d5b8]/30 rounded-2xl p-6">
                     <div className="space-y-3 text-sm">
-                      {Object.entries(selectedNotification.details).map(
-                        ([key, value]) => (
-                          <div className="flex justify-between" key={key}>
-                            <span className="capitalize text-gray-400">
-                              {key}:
-                            </span>
-                            <span className="font-bold text-gray-700">
-                              {value}
-                            </span>
+                      {Object.entries(selectedNotification.details).map(([key, value]) => (
+                        key === "message" ? (
+                          <div className="flex flex-col items-start" key={key}>
+                            <span className="capitalize text-gray-400 mb-1">{key}:</span>
+                            <span className="font-bold text-gray-700 block w-full text-left wrap-break-word whitespace-pre-line leading-relaxed p-2 bg-gray-50 rounded-md border border-gray-100">{value}</span>
                           </div>
-                        ),
-                      )}
+                        ) : (
+                          <div className="flex justify-between" key={key}>
+                            <span className="capitalize text-gray-400">{key}:</span>
+                            <span className="font-bold text-gray-700">{value}</span>
+                          </div>
+                        )
+                      ))}
                     </div>
                   </div>
                   <div className="mt-8 flex gap-3">
