@@ -1,4 +1,23 @@
-import { Clock, Trash, Loader2, RefreshCw, Bell, CreditCard, GraduationCap, MessageCircle, MoreHorizontal, CheckCircle, X, ExternalLink, User, BookOpen, Mail, Phone, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Clock,
+  Trash,
+  Loader2,
+  RefreshCw,
+  Bell,
+  CreditCard,
+  GraduationCap,
+  MessageCircle,
+  MoreHorizontal,
+  CheckCircle,
+  X,
+  ExternalLink,
+  User,
+  BookOpen,
+  Mail,
+  Phone,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -21,10 +40,30 @@ function NotificationsPage() {
   // Notification categories with icons and labels
   const categories = [
     { id: "all", label: "All", icon: Bell, color: "bg-gray-500" },
-    { id: "payment", label: "Payments", icon: CreditCard, color: "bg-green-500" },
-    { id: "enrollment", label: "Enrollment", icon: GraduationCap, color: "bg-blue-500" },
-    { id: "student_query", label: "Student Query", icon: MessageCircle, color: "bg-purple-500" },
-    { id: "others", label: "Others", icon: MoreHorizontal, color: "bg-orange-500" }
+    {
+      id: "payment",
+      label: "Payments",
+      icon: CreditCard,
+      color: "bg-[#74271E]",
+    },
+    {
+      id: "enrollment",
+      label: "Enrollment",
+      icon: GraduationCap,
+      color: "bg-blue-500",
+    },
+    {
+      id: "student_query",
+      label: "Student Query",
+      icon: MessageCircle,
+      color: "bg-purple-500",
+    },
+    {
+      id: "others",
+      label: "Others",
+      icon: MoreHorizontal,
+      color: "bg-orange-500",
+    },
   ];
 
   // ── Fetch ────────────────────────────────────────────────────────
@@ -37,7 +76,9 @@ function NotificationsPage() {
   useEffect(() => {
     const highlightId = searchParams.get("highlight");
     if (highlightId && notifications.length > 0) {
-      const notificationToHighlight = notifications.find(n => n.id === highlightId);
+      const notificationToHighlight = notifications.find(
+        (n) => n.id === highlightId,
+      );
       if (notificationToHighlight) {
         setSelectedNotification(notificationToHighlight);
         // Clear the URL parameter after opening
@@ -46,11 +87,14 @@ function NotificationsPage() {
     }
   }, [notifications, searchParams]);
 
-  const fetchNotifications = async (filter = activeFilter, page = currentPage) => {
+  const fetchNotifications = async (
+    filter = activeFilter,
+    page = currentPage,
+  ) => {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Build query params
       const params = new URLSearchParams();
       if (filter !== "all") {
@@ -58,7 +102,7 @@ function NotificationsPage() {
       }
       params.append("limit", "10");
       params.append("page", page.toString());
-      
+
       const res = await api.get(`/admin/notifications?${params.toString()}`);
       const raw = res.data?.data || [];
       const paginationData = res.data?.pagination || {};
@@ -148,7 +192,7 @@ function NotificationsPage() {
     try {
       await api.patch(`/admin/notifications/${id}/read`);
       setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+        prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
       );
       fetchStats();
     } catch (err) {
@@ -193,10 +237,14 @@ function NotificationsPage() {
   // Get priority color
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case "HIGH": return "border-l-red-500";
-      case "MEDIUM": return "border-l-yellow-500";
-      case "LOW": return "border-l-gray-400";
-      default: return "border-l-gray-400";
+      case "HIGH":
+        return "border-l-red-500";
+      case "MEDIUM":
+        return "border-l-yellow-500";
+      case "LOW":
+        return "border-l-gray-400";
+      default:
+        return "border-l-gray-400";
     }
   };
 
@@ -224,35 +272,84 @@ function NotificationsPage() {
     // Add user details if available
     if (metadata?.userDetails) {
       const user = metadata.userDetails;
-      details.push({ label: "User Name", value: user.name || "N/A", isBold: true });
+      details.push({
+        label: "User Name",
+        value: user.name || "N/A",
+        isBold: true,
+      });
       details.push({ label: "Email", value: user.email || "N/A" });
       if (user.phone && user.phone !== "N/A") {
         details.push({ label: "Phone", value: user.phone });
       }
-      details.push({ label: "User ID", value: user.id ? String(user.id).slice(-8) : "N/A" });
+      details.push({
+        label: "User ID",
+        value: user.id ? String(user.id).slice(-8) : "N/A",
+      });
     }
 
     // Add type info
-    details.push({ label: "Category", value: type?.replace("_", " ").toUpperCase() || "N/A" });
-    details.push({ label: "Type", value: subType?.replace("_", " ") || "Notification" });
-    
+    details.push({
+      label: "Category",
+      value: type?.replace("_", " ").toUpperCase() || "N/A",
+    });
+    details.push({
+      label: "Type",
+      value: subType?.replace("_", " ") || "Notification",
+    });
+
     // Add metadata fields
     if (metadata) {
-      if (metadata.studentId) details.push({ label: "Student ID", value: String(metadata.studentId).slice(-8) });
-      if (metadata.courseId) details.push({ label: "Course ID", value: String(metadata.courseId).slice(-8) });
-      if (metadata.courseName) details.push({ label: "Course Name", value: metadata.courseName, isBold: true });
-      if (metadata.paymentId) details.push({ label: "Payment ID", value: String(metadata.paymentId).slice(-8) });
-      if (metadata.amount) details.push({ label: "Amount Paid", value: `₹${metadata.amount}`, isBold: true });
-      if (metadata.email) details.push({ label: "Email", value: metadata.email });
-      if (metadata.phone) details.push({ label: "Phone", value: metadata.phone });
-      if (metadata.inquiryId) details.push({ label: "Inquiry ID", value: String(metadata.inquiryId).slice(-8) });
-      if (metadata.enrollmentId) details.push({ label: "Enrollment ID", value: String(metadata.enrollmentId).slice(-8) });
-      if (metadata.isTest) details.push({ label: "Note", value: "Test Payment" });
+      if (metadata.studentId)
+        details.push({
+          label: "Student ID",
+          value: String(metadata.studentId).slice(-8),
+        });
+      if (metadata.courseId)
+        details.push({
+          label: "Course ID",
+          value: String(metadata.courseId).slice(-8),
+        });
+      if (metadata.courseName)
+        details.push({
+          label: "Course Name",
+          value: metadata.courseName,
+          isBold: true,
+        });
+      if (metadata.paymentId)
+        details.push({
+          label: "Payment ID",
+          value: String(metadata.paymentId).slice(-8),
+        });
+      if (metadata.amount)
+        details.push({
+          label: "Amount Paid",
+          value: `₹${metadata.amount}`,
+          isBold: true,
+        });
+      if (metadata.email)
+        details.push({ label: "Email", value: metadata.email });
+      if (metadata.phone)
+        details.push({ label: "Phone", value: metadata.phone });
+      if (metadata.inquiryId)
+        details.push({
+          label: "Inquiry ID",
+          value: String(metadata.inquiryId).slice(-8),
+        });
+      if (metadata.enrollmentId)
+        details.push({
+          label: "Enrollment ID",
+          value: String(metadata.enrollmentId).slice(-8),
+        });
+      if (metadata.isTest)
+        details.push({ label: "Note", value: "Test Payment" });
     }
 
     // Add timestamp
     if (notification.createdAt) {
-      details.push({ label: "Received", value: new Date(notification.createdAt).toLocaleString() });
+      details.push({
+        label: "Received",
+        value: new Date(notification.createdAt).toLocaleString(),
+      });
     }
 
     return details;
@@ -260,7 +357,6 @@ function NotificationsPage() {
 
   return (
     <div className="min-h-screen bg-[#F1E4C8] p-4 md:p-8">
-
       {/* HEADER */}
       <div className="relative mb-10 rounded-3xl overflow-hidden bg-gradient-to-r from-[#74271E] via-[#8a2a1f] to-[#5a1b14] text-white px-6 md:px-10 py-8 shadow-lg">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.25),transparent_60%)]" />
@@ -297,7 +393,7 @@ function NotificationsPage() {
       <div className="flex flex-wrap gap-3 mb-6">
         {categories.map((cat) => {
           const Icon = cat.icon;
-          
+
           return (
             <button
               key={cat.id}
@@ -355,7 +451,12 @@ function NotificationsPage() {
                 layout
                 initial={{ opacity: 0, y: 20, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, x: 120, scale: 0.95, transition: { duration: 0.35 } }}
+                exit={{
+                  opacity: 0,
+                  x: 120,
+                  scale: 0.95,
+                  transition: { duration: 0.35 },
+                }}
                 whileHover={{ y: -2 }}
                 onClick={() => handleNotificationClick(item)}
                 className={`border-l-4 ${getPriorityColor(item.priority)} rounded-xl p-5 flex justify-between items-start shadow-sm hover:shadow-md transition cursor-pointer ${
@@ -365,10 +466,12 @@ function NotificationsPage() {
                 {/* LEFT */}
                 <div className="flex gap-4 flex-1">
                   {/* Category Icon */}
-                  <div className={`mt-1 p-2 rounded-lg ${getCategoryColor(item.type)} text-white`}>
+                  <div
+                    className={`mt-1 p-2 rounded-lg ${getCategoryColor(item.type)} text-white`}
+                  >
                     {getCategoryIcon(item.type)}
                   </div>
-                  
+
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#74271E]/10 text-[#74271E] font-semibold uppercase">
@@ -399,7 +502,8 @@ function NotificationsPage() {
                       <div className="flex flex-wrap gap-2 mt-2">
                         {item.metadata.studentId && (
                           <span className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
-                            Student ID: {String(item.metadata.studentId).slice(-6)}
+                            Student ID:{" "}
+                            {String(item.metadata.studentId).slice(-6)}
                           </span>
                         )}
                         {item.metadata.amount && (
@@ -435,7 +539,7 @@ function NotificationsPage() {
                       <CheckCircle size={14} />
                     </button>
                   )}
-                  
+
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -460,7 +564,7 @@ function NotificationsPage() {
       {/* NOTIFICATION DETAILS MODAL */}
       <AnimatePresence>
         {selectedNotification && (
-          <div 
+          <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
             onClick={() => setSelectedNotification(null)}
           >
@@ -475,13 +579,19 @@ function NotificationsPage() {
               <div className="bg-gradient-to-r from-[#74271E] to-[#5a1b14] p-6 text-white">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${getCategoryColor(selectedNotification.type)} text-white`}>
+                    <div
+                      className={`p-2 rounded-lg ${getCategoryColor(selectedNotification.type)} text-white`}
+                    >
                       {getCategoryIcon(selectedNotification.type)}
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold">{selectedNotification.title}</h3>
+                      <h3 className="text-lg font-bold">
+                        {selectedNotification.title}
+                      </h3>
                       <p className="text-xs text-white/70 mt-0.5">
-                        {selectedNotification.type?.replace("_", " ").toUpperCase()}
+                        {selectedNotification.type
+                          ?.replace("_", " ")
+                          .toUpperCase()}
                       </p>
                     </div>
                   </div>
@@ -499,46 +609,75 @@ function NotificationsPage() {
                 {/* User Info Section */}
                 {selectedNotification.metadata?.userDetails && (
                   <div className="mb-4 p-4 bg-gradient-to-r from-[#74271E]/5 to-[#D4AF37]/5 rounded-xl border border-[#74271E]/10">
-                    <p className="text-xs text-[#74271E] font-semibold uppercase mb-2">User Information</p>
+                    <p className="text-xs text-[#74271E] font-semibold uppercase mb-2">
+                      User Information
+                    </p>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-[#74271E] text-white flex items-center justify-center font-bold">
-                        {selectedNotification.metadata.userDetails.name?.charAt(0) || "U"}
+                        {selectedNotification.metadata.userDetails.name?.charAt(
+                          0,
+                        ) || "U"}
                       </div>
                       <div>
-                        <p className="font-bold text-gray-900">{selectedNotification.metadata.userDetails.name}</p>
-                        <p className="text-sm text-gray-500">{selectedNotification.metadata.userDetails.email}</p>
-                        {selectedNotification.metadata.userDetails.phone && selectedNotification.metadata.userDetails.phone !== "N/A" && (
-                          <p className="text-sm text-gray-500">{selectedNotification.metadata.userDetails.phone}</p>
-                        )}
+                        <p className="font-bold text-gray-900">
+                          {selectedNotification.metadata.userDetails.name}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {selectedNotification.metadata.userDetails.email}
+                        </p>
+                        {selectedNotification.metadata.userDetails.phone &&
+                          selectedNotification.metadata.userDetails.phone !==
+                            "N/A" && (
+                            <p className="text-sm text-gray-500">
+                              {selectedNotification.metadata.userDetails.phone}
+                            </p>
+                          )}
                       </div>
                     </div>
                   </div>
                 )}
 
                 <div className="mb-4">
-                  <p className="text-sm text-gray-600 mb-2 font-medium">Message</p>
-                  <p className="text-gray-800">{selectedNotification.message}</p>
+                  <p className="text-sm text-gray-600 mb-2 font-medium">
+                    Message
+                  </p>
+                  <p className="text-gray-800">
+                    {selectedNotification.message}
+                  </p>
                 </div>
 
                 {/* Details */}
                 <div className="border-t border-gray-100 pt-4">
-                  <p className="text-sm text-gray-600 mb-3 font-medium">Additional Details</p>
+                  <p className="text-sm text-gray-600 mb-3 font-medium">
+                    Additional Details
+                  </p>
                   <div className="space-y-2">
-                    {formatDetails(selectedNotification).map((detail, index) => (
-                      <div key={index} className={`flex justify-between items-center text-sm ${detail.isBold ? 'bg-gray-50 -mx-2 px-2 py-1 rounded' : ''}`}>
-                        <span className="text-gray-500">{detail.label}</span>
-                        {detail.isAction ? (
-                          <button
-                            onClick={(e) => handleActionClick(e, detail.value)}
-                            className="text-[#74271E] font-medium hover:underline flex items-center gap-1"
-                          >
-                            {detail.value} <ExternalLink size={12} />
-                          </button>
-                        ) : (
-                          <span className={`text-gray-800 font-medium ${detail.isBold ? 'font-bold text-[#74271E]' : ''}`}>{detail.value}</span>
-                        )}
-                      </div>
-                    ))}
+                    {formatDetails(selectedNotification).map(
+                      (detail, index) => (
+                        <div
+                          key={index}
+                          className={`flex justify-between items-center text-sm ${detail.isBold ? "bg-gray-50 -mx-2 px-2 py-1 rounded" : ""}`}
+                        >
+                          <span className="text-gray-500">{detail.label}</span>
+                          {detail.isAction ? (
+                            <button
+                              onClick={(e) =>
+                                handleActionClick(e, detail.value)
+                              }
+                              className="text-[#74271E] font-medium hover:underline flex items-center gap-1"
+                            >
+                              {detail.value} <ExternalLink size={12} />
+                            </button>
+                          ) : (
+                            <span
+                              className={`text-gray-800 font-medium ${detail.isBold ? "font-bold text-[#74271E]" : ""}`}
+                            >
+                              {detail.value}
+                            </span>
+                          )}
+                        </div>
+                      ),
+                    )}
                   </div>
                 </div>
 
@@ -561,7 +700,8 @@ function NotificationsPage() {
       {!loading && !error && totalPages > 1 && (
         <div className="flex items-center justify-between mt-6 px-2">
           <div className="text-sm text-gray-500">
-            Showing {((currentPage - 1) * 10) + 1} to {Math.min(currentPage * 10, total)} of {total} notifications
+            Showing {(currentPage - 1) * 10 + 1} to{" "}
+            {Math.min(currentPage * 10, total)} of {total} notifications
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -575,22 +715,24 @@ function NotificationsPage() {
             >
               <ChevronLeft size={20} />
             </button>
-            
+
             {/* Page numbers */}
             <div className="flex items-center gap-1">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  className={`w-10 h-10 rounded-lg text-sm font-medium transition ${
-                    page === currentPage
-                      ? "bg-[#74271E] text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`w-10 h-10 rounded-lg text-sm font-medium transition ${
+                      page === currentPage
+                        ? "bg-[#74271E] text-white"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ),
+              )}
             </div>
 
             <button
