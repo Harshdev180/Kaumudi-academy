@@ -74,6 +74,9 @@ export const getRecentEnrollments = async (req, res) => {
  */
 export const getMyEnrollments = async (req, res) => {
   try {
+    console.log("getMyEnrollments - User ID:", req.user?._id, "Role:", req.user?.role);
+    console.log("User ID type:", typeof req.user?._id);
+    
     const enrollments = await Enrollment.find({
       student: req.user._id,
     })
@@ -86,6 +89,11 @@ export const getMyEnrollments = async (req, res) => {
         select: "originalAmount discountAmount finalAmount couponCode paymentMode status"
       })
       .sort({ createdAt: -1 });
+
+    console.log("Found enrollments:", enrollments.length);
+    enrollments.forEach((e, i) => {
+      console.log(`  ${i + 1}. enrollment._id: ${e._id}, student: ${e.student}, payment: ${e.payment?._id || 'null'}`);
+    });
 
     // Calculate remaining amount based on payment details
     const enrollmentsWithRemaining = enrollments.map(enrollment => {

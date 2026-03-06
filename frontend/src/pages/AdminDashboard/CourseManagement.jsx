@@ -274,10 +274,16 @@ const CourseManagement = () => {
       setForm(initialForm);
     } catch (err) {
       console.error("Save course error:", err);
-      const msg =
-        err?.response?.data?.message ||
-        err?.response?.data?.errors?.[0]?.message ||
-        "Failed to save course. Please try again.";
+      const validationErrors = err?.response?.data?.errors;
+      let msg;
+      if (validationErrors && Array.isArray(validationErrors) && validationErrors.length > 0) {
+        msg = validationErrors.join(', ');
+      } else {
+        msg =
+          err?.response?.data?.message ||
+          err?.response?.data?.errors?.[0]?.message ||
+          "Failed to save course. Please try again.";
+      }
       setError(msg);
     } finally {
       setSavingCourse(false);

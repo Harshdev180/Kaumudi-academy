@@ -399,24 +399,12 @@ function NotificationsPage() {
                       </p>
                     )}
 
-                    {/* Metadata display */}
-                    {item.metadata && Object.keys(item.metadata).length > 0 && (
+                    {/* Metadata display - only show amount, not studentId/courseId */}
+                    {item.metadata && item.metadata.amount && (
                       <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
-                        {item.metadata.studentId && (
-                          <span className="text-[9px] sm:text-[10px] bg-gray-100 text-gray-600 px-1.5 sm:px-2 py-0.5 rounded">
-                            Student ID: {String(item.metadata.studentId).slice(-6)}
-                          </span>
-                        )}
-                        {item.metadata.amount && (
-                          <span className="text-[9px] sm:text-[10px] bg-green-100 text-green-600 px-1.5 sm:px-2 py-0.5 rounded">
-                            ₹{item.metadata.amount}
-                          </span>
-                        )}
-                        {item.metadata.courseId && (
-                          <span className="text-[9px] sm:text-[10px] bg-blue-100 text-blue-600 px-1.5 sm:px-2 py-0.5 rounded">
-                            Course
-                          </span>
-                        )}
+                        <span className="text-[9px] sm:text-[10px] bg-green-100 text-green-600 px-1.5 sm:px-2 py-0.5 rounded">
+                          ₹{item.metadata.amount}
+                        </span>
                       </div>
                     )}
 

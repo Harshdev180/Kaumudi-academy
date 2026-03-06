@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   Download,
   History,
@@ -10,6 +10,7 @@ import {
   Landmark,
   ChevronLeft,
   ChevronRight,
+  RefreshCw,
 } from "lucide-react";
 import { useEffect } from "react";
 import { getProfileEnrollments, createPaymentOrder, verifyPayment, createEmiInstallment, verifyEmiInstallment } from "../../lib/api";
@@ -18,88 +19,97 @@ import logo from "../../assets/logo-bgremove.webp";
 const FeePurchase = () => {
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const loadFees = useCallback(async () => {
+    try {
+      // Add cache-busting timestamp
+      const res = await getProfileEnrollments();
+
+      console.log("Enrollment response:", res);
+      console.log("Enrollment data:", res.data);
+
+      // adjust if your backend structure differs abc
+      const formatted = res.data.map((item) => {
+        // Get payment info from enrollment
+        const payment = item.payment || {};
+        
+        // Get course - it could be an object with _id or just an ObjectId
+        const courseData = item.course;
+        const courseId = courseData?._id || courseData;
+        
+        // Get original amount and discount
+        const originalAmount = Number(payment.originalAmount) || 0;
+        const discountAmount = Number(payment.discountAmount) || 0;
+        const paidAmount = Number(payment.finalAmount) || 0;
+        let paymentMode = payment.paymentMode || "FULL";
+        const couponCode = payment.couponCode || null;
+        
+        // Calculate discounted total (original - discount)
+        const discountedTotal = originalAmount - discountAmount;
+        
+        // For EMI, remaining is the rest of the installments (70% remaining)
+        // For FULL, remaining is discountedTotal - paidAmount
+        let remaining = 0;
+        let isPaid = false;
+        
+        // Detect EMI by payment pattern: if paidAmount is ~30% of discountedTotal, treat as EMI
+        // This handles cases where paymentMode was saved incorrectly as "FULL"
+        const paidPercentage = discountedTotal > 0 ? (paidAmount / discountedTotal) * 100 : 0;
+        const isEmiPattern = paidPercentage > 0 && paidPercentage < 50; // Paid less than 50% suggests EMI
+        
+        if (paymentMode === "EMI" || isEmiPattern) {
+          // For EMI, remaining is the remaining amount after first payment
+          paymentMode = "EMI"; // Force EMI mode for display
+          remaining = discountedTotal - paidAmount;
+          // console.log("EMI calculation:", { discountedTotal, paidAmount, remaining, paidPercentage });
+          // Only fully paid if remaining is 0 or negative
+          isPaid = remaining <= 0;
+        } else {
+          // For FULL payment
+          remaining = discountedTotal - paidAmount;
+          isPaid = remaining <= 0;
+        }
+        
+
+        
+        return {
+          id: item._id,
+          courseId: courseId,
+          course: courseData,
+          date: new Date(item.createdAt).toLocaleDateString(),
+          desc: courseData?.title || "Course",
+          type: courseData?.category || "Academic",
+          // Show discounted total instead of original
+          totalAmount: discountedTotal,
+          paidAmount: paidAmount,
+          remaining: Math.max(remaining, 0),
+          // Add payment mode and coupon info
+          paymentMode: paymentMode,
+          couponCode: couponCode,
+          discountAmount: discountAmount,
+          originalAmount: originalAmount,
+          isPaid: isPaid
+        };
+      });
+
+      setPaymentHistory(formatted);
+    } catch (err) {
+      console.error("Failed to load fee data", err);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const loadFees = async () => {
-      try {
-        const res = await getProfileEnrollments();
-
-        // console.log("Enrollment response:", res.data);
-
-        // adjust if your backend structure differs abc
-        const formatted = res.data.map((item) => {
-          // Get payment info from enrollment
-          const payment = item.payment || {};
-          
-          // Get course - it could be an object with _id or just an ObjectId
-          const courseData = item.course;
-          const courseId = courseData?._id || courseData;
-          
-          // Get original amount and discount
-          const originalAmount = Number(payment.originalAmount) || 0;
-          const discountAmount = Number(payment.discountAmount) || 0;
-          const paidAmount = Number(payment.finalAmount) || 0;
-          let paymentMode = payment.paymentMode || "FULL";
-          const couponCode = payment.couponCode || null;
-          
-          // Calculate discounted total (original - discount)
-          const discountedTotal = originalAmount - discountAmount;
-          
-          // For EMI, remaining is the rest of the installments (70% remaining)
-          // For FULL, remaining is discountedTotal - paidAmount
-          let remaining = 0;
-          let isPaid = false;
-          
-          // Detect EMI by payment pattern: if paidAmount is ~30% of discountedTotal, treat as EMI
-          // This handles cases where paymentMode was saved incorrectly as "FULL"
-          const paidPercentage = discountedTotal > 0 ? (paidAmount / discountedTotal) * 100 : 0;
-          const isEmiPattern = paidPercentage > 0 && paidPercentage < 50; // Paid less than 50% suggests EMI
-          
-          if (paymentMode === "EMI" || isEmiPattern) {
-            // For EMI, remaining is the remaining amount after first payment
-            paymentMode = "EMI"; // Force EMI mode for display
-            remaining = discountedTotal - paidAmount;
-            // console.log("EMI calculation:", { discountedTotal, paidAmount, remaining, paidPercentage });
-            // Only fully paid if remaining is 0 or negative
-            isPaid = remaining <= 0;
-          } else {
-            // For FULL payment
-            remaining = discountedTotal - paidAmount;
-            isPaid = remaining <= 0;
-          }
-          
-
-          
-          return {
-            id: item._id,
-            courseId: courseId,
-            course: courseData,
-            date: new Date(item.createdAt).toLocaleDateString(),
-            desc: courseData?.title || "Course",
-            type: courseData?.category || "Academic",
-            // Show discounted total instead of original
-            totalAmount: discountedTotal,
-            paidAmount: paidAmount,
-            remaining: Math.max(remaining, 0),
-            // Add payment mode and coupon info
-            paymentMode: paymentMode,
-            couponCode: couponCode,
-            discountAmount: discountAmount,
-            originalAmount: originalAmount,
-            isPaid: isPaid
-          };
-        });
-
-        setPaymentHistory(formatted);
-      } catch (err) {
-        console.error("Failed to load fee data", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadFees();
-  }, []);
+  }, [loadFees]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadFees();
+  };
 
   const totalFee = paymentHistory.reduce(
     (sum, item) => sum + item.totalAmount,
@@ -273,6 +283,7 @@ const FeePurchase = () => {
 
             if (verifyResponse.success) {
               alert(paymentMode === "EMI" ? "EMI installment payment successful!" : "Payment successful!");
+              // Force complete page reload with cache bypass
               window.location.reload();
             } else {
               alert("Payment verification failed.");
@@ -723,9 +734,19 @@ const FeePurchase = () => {
               Payment History
             </h4>
           </div>
-          <span className="text-xs font-semibold text-gray-400 bg-white px-4 py-2 rounded-full border border-[#eee3d2] whitespace-nowrap shrink-0 ml-2">
-            {paymentHistory.length} Transactions
-          </span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-[#74271E] bg-white border border-[#e8dfd0] rounded-full hover:bg-[#faf7f2] transition disabled:opacity-50"
+            >
+              <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
+              {refreshing ? "Refreshing..." : "Refresh"}
+            </button>
+            <span className="text-xs font-semibold text-gray-400 bg-white px-4 py-2 rounded-full border border-[#eee3d2] whitespace-nowrap shrink-0">
+              {paymentHistory.length} Transactions
+            </span>
+          </div>
         </div>
 
         {/* Table */}

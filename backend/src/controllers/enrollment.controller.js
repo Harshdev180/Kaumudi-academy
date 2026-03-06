@@ -6,15 +6,22 @@ import { createNotification, notifyStudent, notifyAdmins } from "../services/not
 
 export const createEnrollment = async ({ studentId, courseId, paymentId }) => {
   try {
+    console.log("createEnrollment - studentId:", studentId, "courseId:", courseId, "paymentId:", paymentId);
+    
     const exists = await Enrollment.findOne({
       student: studentId,
       course: courseId,
     });
 
     if (exists) {
+      console.log("Enrollment already exists, updating payment:", exists._id);
+      // Update the existing enrollment with the new payment
+      exists.payment = paymentId;
+      await exists.save();
       return exists;
     }
 
+    console.log("Creating new enrollment...");
     const enrollment = await Enrollment.create({
       student: studentId,
       course: courseId,

@@ -163,6 +163,8 @@ export const createRazorpayOrder = async (req, res) => {
     }
 
     // 5. Payment Create
+    console.log("Creating payment for user:", req.user._id, "course:", courseId);
+    
     const payment = await Payment.create({
       user: req.user._id,
       course: courseId,
@@ -265,12 +267,19 @@ export const verifyRazorpayPayment = async (req, res) => {
     payment.razorpaySignature = razorpaySignature;
     await payment.save();
 
-    // Enrollment trigger
-    await createEnrollment({
-  studentId: payment.user,
-  courseId: payment.course,
-  paymentId: payment._id
-});
+    console.log("Payment verified - creating enrollment for student:", payment.user, "course:", payment.course);
+
+    try {
+      // Enrollment trigger
+      await createEnrollment({
+        studentId: payment.user,
+        courseId: payment.course,
+        paymentId: payment._id
+      });
+      console.log("Enrollment created successfully!");
+    } catch (enrollmentError) {
+      console.error("ERROR creating enrollment:", enrollmentError);
+    }
 
     const course = await Course.findById(payment.course);
 
@@ -278,17 +287,37 @@ export const verifyRazorpayPayment = async (req, res) => {
     const discountedTotal = payment.originalAmount - payment.discountAmount;
     const remainingAmount = Math.max(discountedTotal - payment.finalAmount, 0);
 
-    await StudentFee.create({
+    console.log("Creating/updating StudentFee for student:", payment.user, "course:", payment.course);
+
+    // Check if StudentFee exists for this student and course
+    const existingFee = await StudentFee.findOne({
       student: payment.user,
-      course: payment.course,
-      totalAmount: discountedTotal, // Use discounted amount as total
-      paidAmount: payment.finalAmount,
-      remainingAmount: remainingAmount, // Calculate remaining correctly
-      paymentMode: payment.paymentMode,
-      payment: payment._id,
-      paymentStatus:
-        payment.paymentMode === "EMI" ? "PARTIAL" : "PAID"
+      course: payment.course
     });
+
+    if (existingFee) {
+      // Update existing fee record
+      existingFee.paidAmount = payment.finalAmount;
+      existingFee.remainingAmount = remainingAmount;
+      existingFee.payment = payment._id;
+      existingFee.paymentStatus = payment.paymentMode === "EMI" ? "PARTIAL" : "PAID";
+      await existingFee.save();
+      console.log("StudentFee updated:", existingFee._id);
+    } else {
+      // Create new fee record
+      await StudentFee.create({
+        student: payment.user,
+        course: payment.course,
+        totalAmount: discountedTotal, // Use discounted amount as total
+        paidAmount: payment.finalAmount,
+        remainingAmount: remainingAmount, // Calculate remaining correctly
+        paymentMode: payment.paymentMode,
+        payment: payment._id,
+        paymentStatus:
+          payment.paymentMode === "EMI" ? "PARTIAL" : "PAID"
+      });
+      console.log("StudentFee created");
+    }
 
     const user = await Student.findById(payment.user);
 

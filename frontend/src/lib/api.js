@@ -450,7 +450,8 @@ export async function getProfileRecentEnrollments() {
 }
 
 export async function getProfileEnrollments() {
-  const res = await api.get("/profile/enrollments");
+  // Add timestamp to prevent caching
+  const res = await api.get(`/profile/enrollments?_t=${Date.now()}`);
   return res.data;
 }
 
