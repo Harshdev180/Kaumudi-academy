@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://kaumudi-academy.onrender.com/api/$1"
+      "destination": "https://kaumudi-academy-sb3d.onrender.com/api/$1"
     },
     {
       "source": "/(.*)",

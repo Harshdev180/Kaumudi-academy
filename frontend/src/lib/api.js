@@ -1,14 +1,15 @@
 import axios from "axios";
 
-const API_BASE = import.meta.env.VITE_API_URL;
+// const API_BASE = import.meta.env.VITE_API_URL;
 
 export const api = axios.create({
-  baseURL: `${API_BASE}/api`,
+  baseURL: `/api`,
 });
 
 api.interceptors.request.use((config) => {
   // Check for both token keys - "kaumudi_token" for students, "token" for other users
-  let token = localStorage.getItem("kaumudi_token") || localStorage.getItem("token");
+  let token =
+    localStorage.getItem("kaumudi_token") || localStorage.getItem("token");
 
   if (token && token !== "null" && token !== "undefined") {
     config.headers.Authorization = `Bearer ${token}`;
@@ -21,8 +22,10 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 403 &&
-      error.response?.data?.message?.includes("deactivated")) {
+    if (
+      error.response?.status === 403 &&
+      error.response?.data?.message?.includes("deactivated")
+    ) {
       // Clear all student auth data
       localStorage.removeItem("kaumudi_token");
       localStorage.removeItem("kaumudi_user_email");
@@ -37,7 +40,7 @@ api.interceptors.response.use(
       window.location.href = "/login?message=account_deactivated";
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export function setAuthToken(token) {
