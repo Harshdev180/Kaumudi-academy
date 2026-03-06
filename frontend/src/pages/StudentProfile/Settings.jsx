@@ -26,7 +26,6 @@ import {
 } from "../../lib/api";
 import Sanscript from "sanscript";
 import { useAuth } from "../../context/useAuthHook";
-import { formatEnrollmentId } from "../../lib/utils";
 
 const Settings = () => {
   const { updateUser } = useAuth();
@@ -176,10 +175,7 @@ const Settings = () => {
                 Enrollment ID
               </p>
               <p className="font-mono font-bold text-[#74271E] text-xs sm:text-sm tracking-widest">
-                {formatEnrollmentId(
-                  profile.id || profile._id,
-                  profile.createdAt,
-                )}
+                {profile.id || profile._id}
               </p>
             </div>
           </div>

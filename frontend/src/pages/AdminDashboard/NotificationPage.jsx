@@ -657,6 +657,11 @@ function NotificationsPage() {
                               {selectedNotification.metadata.userDetails.phone}
                             </p>
                           )}
+                        {(selectedNotification.metadata.enrollmentId || selectedNotification.metadata.userDetails?.enrollmentId) && (
+                          <p className="text-xs text-[#74271E] font-semibold mt-1">
+                            Enrollment ID: {selectedNotification.metadata.enrollmentId || selectedNotification.metadata.userDetails?.enrollmentId}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>

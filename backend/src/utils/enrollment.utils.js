@@ -9,7 +9,21 @@
 export const formatEnrollmentId = (rawId, createdAt) => {
   if (!rawId) return "KSA-PENDING";
   
-  const year = createdAt ? new Date(createdAt).getFullYear() : new Date().getFullYear();
+  // Ensure we have a valid year
+  let year = new Date().getFullYear();
+  if (createdAt) {
+    try {
+      // Handle both Date objects and ISO strings
+      const dateStr = createdAt instanceof Date ? createdAt.toISOString() : String(createdAt);
+      const date = new Date(dateStr);
+      if (!isNaN(date.getFullYear())) {
+        year = date.getFullYear();
+      }
+    } catch (e) {
+      console.log("Error parsing date:", e);
+    }
+  }
+  
   const shortId = String(rawId).slice(-6).toUpperCase();
   
   return `KSA-${year}-${shortId}`;

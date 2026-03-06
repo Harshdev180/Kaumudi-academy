@@ -11,6 +11,7 @@ import axios from "axios"
 import StudentFee from "../models/StudentFee.model.js";
 import { sendCourseEnrollmentSuccessMail } from "../services/mail.service.js";
 import Student from "../models/Student.model.js"
+import { formatEnrollmentId } from "../utils/enrollment.utils.js";
 // Helper function price clean karne ke liye (6,499 -> 6499)
 const sanitizePrice = (price) => {
   if (typeof price === "number") return price;
@@ -287,6 +288,10 @@ export const verifyRazorpayPayment = async (req, res) => {
     const discountedTotal = payment.originalAmount - payment.discountAmount;
     const remainingAmount = Math.max(discountedTotal - payment.finalAmount, 0);
 
+    // Get enrollment ID for notifications
+    const enrollment = await Enrollment.findOne({ student: payment.user, course: payment.course }).select('_id createdAt');
+    const formattedEnrollmentId = enrollment ? formatEnrollmentId(enrollment._id, enrollment.createdAt) : null;
+
     console.log("Creating/updating StudentFee for student:", payment.user, "course:", payment.course);
 
     // Check if StudentFee exists for this student and course
@@ -345,7 +350,8 @@ export const verifyRazorpayPayment = async (req, res) => {
         courseId: payment.course, 
         courseName: course.title,
         paymentId: payment._id, 
-        amount: payment.finalAmount 
+        amount: payment.finalAmount,
+        enrollmentId: formattedEnrollmentId
       },
       userId: payment.user,
       userRole: "STUDENT"
@@ -367,7 +373,8 @@ export const verifyRazorpayPayment = async (req, res) => {
         totalPrice: payment.originalAmount,
         discountAmount: payment.discountAmount,
         paidPrice: payment.finalAmount,
-        amount: payment.finalAmount
+        amount: payment.finalAmount,
+        enrollmentId: formattedEnrollmentId
       },
       userId: payment.user,
       userRole: "STUDENT"
@@ -455,7 +462,7 @@ export const createEmiInstallment = async (req, res) => {
     const enrollment = await Enrollment.findOne({
       student: studentId,
       course: courseId
-    }).populate("payment");
+    }).populate("payment").select('_id createdAt');
 
     if (!enrollment) {
       return res.status(404).json({
@@ -465,6 +472,7 @@ export const createEmiInstallment = async (req, res) => {
     }
 
     const payment = enrollment.payment;
+    const formattedEnrollmentId = formatEnrollmentId(enrollment._id, enrollment.createdAt);
 
     // Fetch course details for notifications
     const course = await Course.findById(courseId);
@@ -607,7 +615,7 @@ export const createEmiInstallment = async (req, res) => {
       adminActionUrl: "/admin/payments",
       studentActionUrl: "/student/fees",
       priority: "MEDIUM",
-      metadata: { courseId, courseName, installmentPaymentId: installmentPayment._id, amount: installmentAmount },
+      metadata: { courseId, courseName, installmentPaymentId: installmentPayment._id, amount: installmentAmount, enrollmentId: formattedEnrollmentId },
       userId: studentId,
       userRole: "STUDENT"
     });
@@ -678,6 +686,10 @@ export const verifyEmiInstallmentPayment = async (req, res) => {
     const studentId = payment.user;
     const courseId = payment.course;
 
+    // Get enrollment ID for notifications
+    const enrollment = await Enrollment.findOne({ student: studentId, course: courseId }).select('_id createdAt');
+    const formattedEnrollmentId = enrollment ? formatEnrollmentId(enrollment._id, enrollment.createdAt) : null;
+
     payment.status = "SUCCESS";
     payment.razorpayPaymentId = razorpayPaymentId;
     payment.razorpaySignature = razorpaySignature;
@@ -730,7 +742,8 @@ export const verifyEmiInstallmentPayment = async (req, res) => {
         amount: payment.finalAmount, 
         totalPrice: totalPrice,
         totalPaid: totalPaid,
-        remainingAmount: newRemaining 
+        remainingAmount: newRemaining,
+        enrollmentId: formattedEnrollmentId
       },
       userId: studentId,
       userRole: "STUDENT"

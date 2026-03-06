@@ -22,11 +22,20 @@ const getUserDetails = async (userId, role) => {
     }
     
     if (user) {
+      // For student users, try to get enrollment ID if course context is available
+      let enrollmentId = null;
+      if (role === "STUDENT") {
+        // We'll add enrollment ID from the notification metadata instead
+        // This is a placeholder that will be overridden by the calling function
+        enrollmentId = null;
+      }
+      
       const userData = {
         id: user._id.toString(),
         name: `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Unknown",
         email: user.email || "N/A",
-        phone: user.phoneNumber || "N/A"
+        phone: user.phoneNumber || "N/A",
+        enrollmentId: enrollmentId
       };
       console.log(`✅ getUserDetails: Found user -`, userData);
       return userData;
@@ -83,6 +92,14 @@ export const createNotification = async ({
     }
 
     // Merge user details into metadata
+    // If metadata contains enrollmentId, also add it to userDetails
+    if (userDetails && metadata.enrollmentId) {
+      userDetails = {
+        ...userDetails,
+        enrollmentId: metadata.enrollmentId
+      };
+    }
+    
     const enrichedMetadata = {
       ...metadata,
       userDetails: userDetails
