@@ -103,10 +103,14 @@ const Settings = () => {
     transliterate(romanName).then((res) => {
       setHindi(res);
       setSanskrit(res);
+      if (res) {
+        localStorage.setItem("kaumudi_user_name_hindi", res);
+        localStorage.setItem("kaumudi_user_name_sanskrit", res);
+      }
     });
   }, [romanName]);
 
-  const tabs = ["student details", "change password", "notification settings"];
+  const tabs = ["student details", "change password"];
   if (loading || !profile) {
     return (
       <div className="p-10 text-center text-gray-400">Loading profile...</div>
@@ -175,7 +179,7 @@ const Settings = () => {
                 Enrollment ID
               </p>
               <p className="font-mono font-bold text-[#74271E] text-xs sm:text-sm tracking-widest">
-                {profile.id || profile._id}
+                {profile.enrollmentId || profile.id || profile._id}
               </p>
             </div>
           </div>
@@ -315,12 +319,12 @@ const Settings = () => {
           )}
 
           {activeTab === "change password" && <ChangePasswordView />}
-          {activeTab === "notification settings" && (
+          {/* {activeTab === "notification settings" && (
             <NotificationView
               notifications={notifications}
               setNotifications={setNotifications}
             />
-          )}
+          )} */}
         </div>
       </div>
     </div>
@@ -552,101 +556,101 @@ const ChangePasswordView = () => {
   );
 };
 
-const NotificationView = ({ notifications, setNotifications }) => (
-  <div className="animate-in fade-in zoom-in-95 duration-700 space-y-6 sm:space-y-10">
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-12">
-      <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-lg sm:text-xl font-bold text-gray-800 border-l-4 border-[#c9a050] pl-4">
-          Alert Preferences
-        </h3>
-        {[
-          {
-            id: "email",
-            label: "Email Notifications",
-            desc: "Course updates and news",
-            icon: <Mail size={18} />,
-          },
-          {
-            id: "sms",
-            label: "SMS Alerts",
-            desc: "Urgent schedule reminders",
-            icon: <Smartphone size={18} />,
-          },
-          {
-            id: "system",
-            label: "System Alerts",
-            desc: "Internal dashboard notes",
-            icon: <Monitor size={18} />,
-          },
-        ].map((pref) => (
-          <div
-            key={pref.id}
-            className="flex items-center justify-between p-5 rounded-[2rem] bg-gray-50/50 hover:bg-white border border-transparent hover:border-gray-100 transition-all group"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-gray-400 group-hover:text-[#c9a050] shadow-sm">
-                {pref.icon}
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-bold text-gray-700">{pref.label}</p>
-                <p className="text-[10px] text-gray-400 font-medium truncate">
-                  {pref.desc}
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={() =>
-                setNotifications((prev) => ({
-                  ...prev,
-                  [pref.id]: !prev[pref.id],
-                }))
-              }
-              className={`w-11 h-6 sm:w-12 sm:h-6 rounded-full transition-colors relative shrink-0 ${notifications[pref.id] ? "bg-[#74271E]" : "bg-gray-200"}`}
-            >
-              <div
-                className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${notifications[pref.id] ? "translate-x-5 sm:translate-x-6" : "translate-x-0"}`}
-              />
-            </button>
-          </div>
-        ))}
-        <div className="pt-6">
-          <button
-            onClick={async () => {
-              try {
-                await updateProfileSettings({
-                  notifications: {
-                    email: notifications.email,
-                    sms: notifications.sms,
-                    courseUpdates: notifications.system,
-                  },
-                });
-                alert("Notification settings updated!");
-              } catch {
-                alert("Failed to update settings");
-              }
-            }}
-            className="bg-[#74271E] text-white py-3 px-6 rounded-xl font-bold text-xs shadow-lg"
-          >
-            Save Preferences
-          </button>
-        </div>
-      </div>
-      <div className="bg-[#fdfbf7] p-8 rounded-[3rem] border border-[#e6d5b8]/30 flex flex-col justify-center text-center space-y-6">
-        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto text-[#c9a050] shadow-sm">
-          <ShieldCheck size={28} />
-        </div>
-        <div>
-          <h4 className="text-xs sm:text-sm font-black uppercase tracking-widest text-gray-700 mb-2">
-            Privacy Assurance
-          </h4>
-          <p className="text-[11px] sm:text-xs text-gray-500 leading-relaxed font-medium italic">
-            "We respect your peace. Notifications are sent only for essential
-            academic progress."
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-);
+// const NotificationView = ({ notifications, setNotifications }) => (
+//   <div className="animate-in fade-in zoom-in-95 duration-700 space-y-6 sm:space-y-10">
+//     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-12">
+//       <div className="space-y-4 sm:space-y-6">
+//         <h3 className="text-lg sm:text-xl font-bold text-gray-800 border-l-4 border-[#c9a050] pl-4">
+//           Alert Preferences
+//         </h3>
+//         {[
+//           {
+//             id: "email",
+//             label: "Email Notifications",
+//             desc: "Course updates and news",
+//             icon: <Mail size={18} />,
+//           },
+//           {
+//             id: "sms",
+//             label: "SMS Alerts",
+//             desc: "Urgent schedule reminders",
+//             icon: <Smartphone size={18} />,
+//           },
+//           {
+//             id: "system",
+//             label: "System Alerts",
+//             desc: "Internal dashboard notes",
+//             icon: <Monitor size={18} />,
+//           },
+//         ].map((pref) => (
+//           <div
+//             key={pref.id}
+//             className="flex items-center justify-between p-5 rounded-[2rem] bg-gray-50/50 hover:bg-white border border-transparent hover:border-gray-100 transition-all group"
+//           >
+//             <div className="flex items-center gap-4">
+//               <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-gray-400 group-hover:text-[#c9a050] shadow-sm">
+//                 {pref.icon}
+//               </div>
+//               <div className="min-w-0">
+//                 <p className="text-sm font-bold text-gray-700">{pref.label}</p>
+//                 <p className="text-[10px] text-gray-400 font-medium truncate">
+//                   {pref.desc}
+//                 </p>
+//               </div>
+//             </div>
+//             <button
+//               onClick={() =>
+//                 setNotifications((prev) => ({
+//                   ...prev,
+//                   [pref.id]: !prev[pref.id],
+//                 }))
+//               }
+//               className={`w-11 h-6 sm:w-12 sm:h-6 rounded-full transition-colors relative shrink-0 ${notifications[pref.id] ? "bg-[#74271E]" : "bg-gray-200"}`}
+//             >
+//               <div
+//                 className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${notifications[pref.id] ? "translate-x-5 sm:translate-x-6" : "translate-x-0"}`}
+//               />
+//             </button>
+//           </div>
+//         ))}
+//         <div className="pt-6">
+//           <button
+//             onClick={async () => {
+//               try {
+//                 await updateProfileSettings({
+//                   notifications: {
+//                     email: notifications.email,
+//                     sms: notifications.sms,
+//                     courseUpdates: notifications.system,
+//                   },
+//                 });
+//                 alert("Notification settings updated!");
+//               } catch {
+//                 alert("Failed to update settings");
+//               }
+//             }}
+//             className="bg-[#74271E] text-white py-3 px-6 rounded-xl font-bold text-xs shadow-lg"
+//           >
+//             Save Preferences
+//           </button>
+//         </div>
+//       </div>
+//       <div className="bg-[#fdfbf7] p-8 rounded-[3rem] border border-[#e6d5b8]/30 flex flex-col justify-center text-center space-y-6">
+//         <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto text-[#c9a050] shadow-sm">
+//           <ShieldCheck size={28} />
+//         </div>
+//         <div>
+//           <h4 className="text-xs sm:text-sm font-black uppercase tracking-widest text-gray-700 mb-2">
+//             Privacy Assurance
+//           </h4>
+//           <p className="text-[11px] sm:text-xs text-gray-500 leading-relaxed font-medium italic">
+//             "We respect your peace. Notifications are sent only for essential
+//             academic progress."
+//           </p>
+//         </div>
+//       </div>
+//     </div>
+//   </div>
+// );
 
 export default Settings;

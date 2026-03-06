@@ -132,16 +132,38 @@ const CourseManagement = () => {
   };
 
   const openEdit = (course) => {
+    console.log("Opening edit for course:", course);
     setEditId(course.id);
+    // Parse curriculum if it's a string, otherwise use as-is
+    let curriculumText = "";
+    if (course.curriculum) {
+      if (typeof course.curriculum === "string") {
+        try {
+          curriculumText = JSON.stringify(JSON.parse(course.curriculum), null, 2);
+        } catch (e) {
+          curriculumText = course.curriculum;
+        }
+      } else if (Array.isArray(course.curriculum)) {
+        // Even if array is empty, we need to show it as JSON string
+        curriculumText = JSON.stringify(course.curriculum, null, 2);
+      }
+    }
+    console.log("curriculumText:", curriculumText);
+    console.log("batchSchedule:", course.batchSchedule);
+    
+    // First set the form data
     setForm({
       ...initialForm,
       ...course,
-      duration: course.dur,
-      curriculumText: course.curriculum
-        ? JSON.stringify(course.curriculum, null, 2)
-        : "",
+      duration: course.dur || course.duration || "",
+      curriculumText: curriculumText,
+      batchSchedule: course.batchSchedule || [],
     });
-    setDrawerOpen(true);
+    
+    // Then open the drawer after a small delay to ensure state is updated
+    setTimeout(() => {
+      setDrawerOpen(true);
+    }, 100);
   };
 
   /* ================= SAVE COURSE ================= */

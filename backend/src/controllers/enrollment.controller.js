@@ -3,6 +3,7 @@ import Payment from "../models/Payment.model.js";
 import Course from "../models/Course.model.js";
 import Student from "../models/Student.model.js";
 import { createNotification, notifyStudent, notifyAdmins } from "../services/notification.service.js";
+import { formatEnrollmentId } from "../utils/enrollment.utils.js";
 
 export const createEnrollment = async ({ studentId, courseId, paymentId }) => {
   try {
@@ -35,6 +36,9 @@ export const createEnrollment = async ({ studentId, courseId, paymentId }) => {
     const course = await Course.findById(courseId);
     const student = await Student.findById(studentId);
 
+    // Format enrollment ID using student's unique ID and creation date
+    const formattedEnrollmentId = student ? formatEnrollmentId(student._id, student.createdAt) : null;
+
     // 🔔 NOTIFICATION: New Enrollment - Notify Admin
     if (student && course) {
       const studentName = student.firstName && student.lastName 
@@ -57,7 +61,7 @@ export const createEnrollment = async ({ studentId, courseId, paymentId }) => {
         metadata: { 
           courseId, 
           courseName: course.title,
-          enrollmentId: enrollment._id,
+          enrollmentId: formattedEnrollmentId,
           totalPrice: paymentData?.originalAmount || course.price,
           discountAmount: paymentData?.discountAmount,
           paidPrice: paymentData?.finalAmount,
@@ -78,7 +82,7 @@ export const createEnrollment = async ({ studentId, courseId, paymentId }) => {
         subType: "ENROLLMENT_CONFIRMED",
         actionUrl: "/student/courses",
         priority: "HIGH",
-        metadata: { courseId, enrollmentId: enrollment._id }
+        metadata: { courseId, enrollmentId: formattedEnrollmentId }
       });
 
       // 🔔 NOTIFICATION: Course Started
@@ -90,7 +94,7 @@ export const createEnrollment = async ({ studentId, courseId, paymentId }) => {
         subType: "COURSE_STARTED",
         actionUrl: `/coursedetail/${courseId}`,
         priority: "MEDIUM",
-        metadata: { courseId, enrollmentId: enrollment._id }
+        metadata: { courseId, enrollmentId: formattedEnrollmentId }
       });
     }
 
@@ -214,7 +218,7 @@ export const updateEnrollmentStatus = async (req, res) => {
     const { status, progress } = req.body;
 
     const enrollment = await Enrollment.findById(enrollmentId)
-      .populate("student", "fullName email")
+      .populate("student", "fullName email createdAt")
       .populate("course", "title");
 
     if (!enrollment) {
@@ -229,6 +233,11 @@ export const updateEnrollmentStatus = async (req, res) => {
 
     await enrollment.save();
 
+    // Format enrollment ID using student's unique ID and creation date
+    const formattedEnrollmentId = enrollment.student?.createdAt 
+      ? formatEnrollmentId(enrollment.student._id, enrollment.student.createdAt) 
+      : enrollmentId;
+
     // 🔔 NOTIFICATION: Enrollment Cancelled
     if (status === "CANCELLED") {
       await notifyStudent({
@@ -239,7 +248,7 @@ export const updateEnrollmentStatus = async (req, res) => {
         subType: "ENROLLMENT_CANCELLED",
         actionUrl: "/student/courses",
         priority: "HIGH",
-        metadata: { enrollmentId, courseId: enrollment.course._id }
+        metadata: { enrollmentId: formattedEnrollmentId, courseId: enrollment.course._id }
       });
     }
 
@@ -265,7 +274,7 @@ export const completeCourse = async (req, res) => {
     const { enrollmentId } = req.params;
 
     const enrollment = await Enrollment.findById(enrollmentId)
-      .populate("student", "fullName email")
+      .populate("student", "fullName email createdAt")
       .populate("course", "title");
 
     if (!enrollment) {
@@ -279,6 +288,11 @@ export const completeCourse = async (req, res) => {
     enrollment.progress = 100;
     await enrollment.save();
 
+    // Format enrollment ID using student's unique ID and creation date
+    const formattedEnrollmentId = enrollment.student?.createdAt 
+      ? formatEnrollmentId(enrollment.student._id, enrollment.student.createdAt) 
+      : enrollmentId;
+
     // 🔔 NOTIFICATION: Course Completed
     await notifyStudent({
       studentId: enrollment.student._id,
@@ -288,7 +302,7 @@ export const completeCourse = async (req, res) => {
       subType: "COURSE_COMPLETED",
       actionUrl: "/student/certificates",
       priority: "HIGH",
-      metadata: { enrollmentId, courseId: enrollment.course._id }
+      metadata: { enrollmentId: formattedEnrollmentId, courseId: enrollment.course._id }
     });
 
     res.json({

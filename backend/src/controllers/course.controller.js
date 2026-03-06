@@ -65,7 +65,7 @@ export const createCourse = async (req, res) => {
       title,
       description,
       syllabus,
-      curriculum,
+      curriculum: parseJSON(curriculum, []),
       duration,
       instructor:
         instructor && mongoose.Types.ObjectId.isValid(instructor)
@@ -164,6 +164,9 @@ export const updateCourse = async (req, res) => {
         } else if (field === "batchSchedule") {
           // Parse batchSchedule JSON - handle both string and object
           course.batchSchedule = parseJSON(req.body.batchSchedule, []);
+        } else if (field === "curriculum") {
+          // Parse curriculum JSON - handle both string and object
+          course.curriculum = parseJSON(req.body.curriculum, []);
         } else {
           course[field] = req.body[field];
         }

@@ -40,23 +40,6 @@ const AddCourse = ({
   const [newBatch, setNewBatch] = useState({ batchType: "", days: "", startTime: "", endTime: "" });
   const [editingBatchIndex, setEditingBatchIndex] = useState(null);
 
-  // Initialize batch schedules
-  useEffect(() => {
-    if (open && isInitialized && form.batchSchedule) {
-      setBatchSchedules(form.batchSchedule);
-    }
-  }, [open, isInitialized]);
-
-  // Update form.batchSchedule when batchSchedules changes
-  useEffect(() => {
-    if (isInitialized) {
-      setForm((prev) => ({
-        ...prev,
-        batchSchedule: batchSchedules,
-      }));
-    }
-  }, [batchSchedules, isInitialized, setForm]);
-
   const handleAddBatch = () => {
     if (!newBatch.batchType.trim()) return;
     setBatchSchedules([...batchSchedules, { ...newBatch }]);
@@ -86,14 +69,27 @@ const AddCourse = ({
     setEditingBatchIndex(null);
   };
 
+  // Update form.batchSchedule when batchSchedules changes
+  useEffect(() => {
+    if (isInitialized) {
+      setForm((prev) => ({
+        ...prev,
+        batchSchedule: batchSchedules,
+      }));
+    }
+  }, [batchSchedules, isInitialized, setForm]);
+
   // Initialize curriculum items only when the drawer opens for edit
   useEffect(() => {
-    if (open && !isInitialized) {
-      if (form.curriculumText) {
+    console.log("AddCourse useEffect - open:", open, "form.curriculumText:", form?.curriculumText, "form.batchSchedule:", form?.batchSchedule);
+    if (open) {
+      // Always initialize on open
+      if (form?.curriculumText) {
         try {
           const parsed = JSON.parse(form.curriculumText);
           if (Array.isArray(parsed)) {
             setCurriculumItems(parsed);
+            console.log("Loaded curriculum items:", parsed);
           }
         } catch (e) {
           console.error("Failed to parse curriculum:", e);
@@ -102,9 +98,15 @@ const AddCourse = ({
       } else {
         setCurriculumItems([]);
       }
+      // Also initialize batch schedules
+      if (form?.batchSchedule && Array.isArray(form.batchSchedule)) {
+        setBatchSchedules(form.batchSchedule);
+        console.log("Loaded batch schedules:", form.batchSchedule);
+      } else {
+        setBatchSchedules([]);
+      }
       setIsInitialized(true);
-    }
-    if (!open) {
+    } else {
       // Reset when drawer closes
       setCurriculumItems([]);
       setNewItemTitle("");
@@ -112,7 +114,7 @@ const AddCourse = ({
       setEditingIndex(null);
       setIsInitialized(false);
     }
-  }, [open, editId, isInitialized]);
+  }, [open, form?.curriculumText, form?.batchSchedule]);
 
   // Update form.curriculumText when curriculumItems changes
   useEffect(() => {
