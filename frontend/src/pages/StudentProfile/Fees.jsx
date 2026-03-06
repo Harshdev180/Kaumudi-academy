@@ -402,39 +402,48 @@ const FeePurchase = () => {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-print-color-adjust: exact;
         }
 
         body {
             font-family: 'Inter', sans-serif;
             background: #f3f4f6;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            margin: 0;
             padding: 20px;
         }
 
         .receipt-container {
-            width: 794px;
+            width: 210mm;
+            min-height: 297mm;
             margin: 0 auto;
+            background: white;
+            padding: 15mm;
+            position: relative;
+            box-sizing: border-box;
         }
 
         .receipt {
             background: white;
-            border-radius: 32px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            overflow: hidden;
+            border: 1px solid #e8dfd0;
             position: relative;
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         /* Academic Header Strip */
         .academic-strip {
             background: linear-gradient(135deg, #74271E 0%, #8B3D2F 50%, #C9A050 100%);
-            height: 8px;
+            height: 6px;
             width: 100%;
         }
 
@@ -455,10 +464,10 @@ const FeePurchase = () => {
         }
 
         .institution-logo {
-            width: 90px;
-            height: 90px;
+            width: 80px;
+            height: 80px;
             background: #faf7f2;
-            border-radius: 20px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -470,35 +479,24 @@ const FeePurchase = () => {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            background: #74271E
+            background: #74271E;
         }
 
         .institution-text h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 800;
-            background: linear-gradient(135deg, #74271E 0%, #C9A050 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
+            color: #74271E;
+            margin-bottom: 2px;
             letter-spacing: -0.3px;
-            white-space: nowrap;     /* keeps it in one line */
         }
 
         .institution-text p {
-            font-size: 14px;
+            font-size: 12px;
             color: #8c7a56;
-            font-weight: 500;
-            letter-spacing: 2px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
-        }
-
-        .sanskrit-motto {
-            font-family: 'Playfair Display', serif;
-            font-size: 18px;
-            color: #C9A050;
-            font-weight: 700;
-            margin-top: 5px;
         }
 
         .receipt-title-section {
@@ -506,25 +504,20 @@ const FeePurchase = () => {
         }
 
         .receipt-title {
-            background: linear-gradient(135deg, #74271E 0%, #8B3D2F 100%);
+            background: #74271E;
             color: white;
-            padding: 8px 18px;        /* reduced height & width */
-            border-radius: 32px;
+            padding: 6px 16px;
+            border-radius: 4px;
             font-weight: 700;
-            font-size: 16px;          /* smaller text */
-            letter-spacing: 1.2px;    /* tighter spacing */
+            font-size: 14px;
+            letter-spacing: 1px;
             display: inline-block;
-            box-shadow: 0 6px 12px -3px rgba(116, 39, 30, 0.25);
         }
 
         .receipt-number {
-            margin-top: 12px;
-            font-size: 12px;      /* smaller text */
+            margin-top: 8px;
+            font-size: 11px;
             color: #4b5563;
-            background: #f3f4f6;
-            padding: 5px 14px;    /* smaller box */
-            border-radius: 20px;
-            display: inline-block;
             font-weight: 600;
         }
 
@@ -532,8 +525,8 @@ const FeePurchase = () => {
             color: #74271E;
             font-weight: 700;
             font-family: monospace;
-            font-size: 13px;   /* smaller number */
-            margin-left: 6px;
+            font-size: 13px;
+            margin-left: 4px;
         }
 
         /* Watermark */
@@ -542,9 +535,9 @@ const FeePurchase = () => {
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-45deg);
-            font-size: 120px;
+            font-size: 80px;
             font-weight: 900;
-            color: rgba(201, 160, 80, 0.03);
+            color: rgba(201, 160, 80, 0.05);
             white-space: nowrap;
             font-family: 'Playfair Display', serif;
             pointer-events: none;
@@ -556,6 +549,7 @@ const FeePurchase = () => {
             padding: 30px 40px;
             position: relative;
             z-index: 1;
+            flex-grow: 1;
         }
 
         /* Info Grid */
@@ -563,215 +557,122 @@ const FeePurchase = () => {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .info-card {
             background: #faf7f2;
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid #e8dfd0;
-            transition: all 0.3s ease;
-        }
-
-        .info-card:hover {
-            border-color: #C9A050;
-            box-shadow: 0 10px 25px -5px rgba(201, 160, 80, 0.2);
-        }
-
-        .info-icon {
-            width: 40px;
-            height: 40px;
-            background: white;
             border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #74271E;
-            margin-bottom: 15px;
+            padding: 15px;
             border: 1px solid #e8dfd0;
         }
 
         .info-label {
-            font-size: 11px;
-            font-weight: 600;
+            font-size: 10px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
             color: #8c7a56;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .info-value {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
             color: #1f2937;
-            line-height: 1.4;
         }
 
         .info-sub {
-            font-size: 13px;
+            font-size: 12px;
             color: #6b7280;
-            margin-top: 5px;
+            margin-top: 2px;
         }
 
-        /* Academic Details Section */
+        /* Academic Details */
         .academic-details {
-            background: linear-gradient(135deg, #f8f4ee 0%, #faf7f2 100%);
-            border-radius: 24px;
-            padding: 25px;
-            margin-bottom: 30px;
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
             border: 1px solid #e8dfd0;
         }
 
         .section-title {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            font-size: 16px;
+            gap: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
             font-weight: 700;
             color: #74271E;
             text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .section-title svg {
-            width: 20px;
-            height: 20px;
+            letter-spacing: 0.8px;
+            border-bottom: 1px solid #f0e9dc;
+            padding-bottom: 8px;
         }
 
         .course-details {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
+            gap: 15px;
         }
 
         .course-item {
             display: flex;
             flex-direction: column;
-            gap: 5px;
         }
 
         .course-label {
-            font-size: 12px;
+            font-size: 10px;
             font-weight: 600;
             color: #8c7a56;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .course-value {
-            font-size: 18px;
+            font-size: 14px;
             font-weight: 700;
             color: #1f2937;
-        }
-
-        .course-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            background: #74271E;
-            color: #C9A050;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-left: 10px;
         }
 
         /* Transaction Table */
         .transaction-table {
             width: 100%;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             border-collapse: collapse;
         }
 
         .transaction-table th {
             text-align: left;
-            padding: 15px;
+            padding: 12px;
             background: #74271E;
-            color: #C9A050;
-            font-size: 13px;
+            color: white;
+            font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .transaction-table th:first-child {
-            border-radius: 12px 0 0 12px;
-        }
-
-        .transaction-table th:last-child {
-            border-radius: 0 12px 12px 0;
         }
 
         .transaction-table td {
-            padding: 15px;
+            padding: 12px;
             border-bottom: 1px solid #e8dfd0;
-            font-size: 15px;
-        }
-
-        .transaction-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .course-name {
-            font-weight: 700;
-            color: #74271E;
-        }
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 6px 15px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .status-paid {
-            background: #ecf7f1;
-            color: #16a34a;
-            border: 1px solid #16a34a;
-        }
-
-        .status-partial {
-            background: #fff7ed;
-            color: #c2410c;
-            border: 1px solid #c2410c;
-        }
-
-        .status-pending {
-            background: #fee2e2;
-            color: #dc2626;
-            border: 1px solid #dc2626;
+            font-size: 13px;
         }
 
         /* Fee Breakdown */
         .fee-breakdown {
-            background: #faf7f2;
-            border-radius: 24px;
-            padding: 25px;
-            margin-bottom: 30px;
-            border: 1px solid #e8dfd0;
+            margin-bottom: 25px;
         }
 
         .breakdown-row {
             display: flex;
             justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px dashed #d4c5b0;
-        }
-
-        .breakdown-row:last-child {
-            border-bottom: none;
+            padding: 8px 0;
+            border-bottom: 1px dashed #e8dfd0;
         }
 
         .breakdown-label {
-            font-size: 14px;
+            font-size: 13px;
             color: #4b5563;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .breakdown-value {
@@ -779,17 +680,13 @@ const FeePurchase = () => {
             color: #1f2937;
         }
 
-        .discount-value {
-            color: #16a34a;
-            font-weight: 700;
-        }
-
         .total-row {
-            margin-top: 15px;
-            padding-top: 15px;
+            margin-top: 10px;
+            padding: 12px 0;
             border-top: 2px solid #74271E;
+            border-bottom: 2px solid #74271E;
             font-weight: 800;
-            font-size: 18px;
+            font-size: 16px;
             color: #74271E;
         }
 
@@ -802,269 +699,91 @@ const FeePurchase = () => {
         }
 
         .summary-card {
-            background: white;
-            border: 1px solid #e8dfd0;
-            border-radius: 20px;
-            padding: 20px;
+            padding: 15px;
+            border-radius: 12px;
             text-align: center;
+            border: 1px solid #e8dfd0;
         }
 
-        .summary-card.paid {
-            background: linear-gradient(135deg, #ecf7f1 0%, #d9f0e3 100%);
-            border-color: #16a34a;
-        }
+        .summary-card.paid { background: #f0fdf4; border-color: #bbf7d0; }
+        .summary-card.due { background: #fff7ed; border-color: #fed7aa; }
 
-        .summary-card.due {
-            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
-            border-color: #c2410c;
-        }
-
-        .summary-amount {
-            font-size: 28px;
-            font-weight: 800;
-            margin: 10px 0 5px;
-        }
-
-        .summary-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        .summary-amount { font-size: 20px; font-weight: 800; color: #1f2937; }
+        .summary-label { font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; }
 
         /* Footer */
         .receipt-footer {
-            margin-top: 40px;
-            padding-top: 25px;
-            border-top: 2px solid #C9A050;
+            padding: 30px 40px;
+            border-top: 1px solid #f0e9dc;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 30px;
+            gap: 40px;
         }
 
         .signature-area {
             text-align: center;
-            padding-top: 35px;
         }
 
         .signature-line {
-            width: 200px;
+            width: 100%;
             height: 1px;
             background: #1f2937;
-            margin: 10px auto 15px;
+            margin: 40px auto 10px;
         }
 
         .signature-text {
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: 700;
             color: #4b5563;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 2px;
-        }
-
-        .stamp {
-            margin-top: 2px;
-            color: #74271E;
-            font-weight: 800;
-            font-size: 14px;
-            opacity: 0.7;
         }
 
         .footer-note {
-            text-align: right;
-            font-size: 12px;
+            font-size: 10px;
             color: #6b7280;
+            line-height: 1.5;
         }
 
-        .footer-note p {
-            margin: 5px 0;
-        }
-
-        .verification-code {
-            font-family: monospace;
-            background: #f3f4f6;
-            padding: 5px 10px;
-            border-radius: 8px;
-            font-size: 12px;
-            color: #74271E;
-            display: inline-block;
-            margin-top: 10px;
-        }
-
-        /* Print and Download Buttons */
+        /* Action Buttons */
         .action-buttons {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
             gap: 15px;
-            justify-content: center;
-            margin-top: 30px;
-            padding: 20px;
+            z-index: 100;
         }
 
         .btn {
-            padding: 14px 30px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             font-weight: 700;
             font-size: 14px;
             cursor: pointer;
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            gap: 10px;
-            transition: all 0.3s ease;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        .btn-primary {
-            background: #74271E;
-            color: white;
-            box-shadow: 0 8px 16px rgba(116, 39, 30, 0.2);
-        }
+        .btn-primary { background: #74271E; color: white; }
+        .btn-secondary { background: #C9A050; color: white; }
 
-        .btn-primary:hover {
-            background: #5c1f17;
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(116, 39, 30, 0.3);
-        }
-
-        .btn-secondary {
-            background: #C9A050;
-            color: white;
-            box-shadow: 0 8px 16px rgba(201, 160, 80, 0.2);
-        }
-
-        .btn-secondary:hover {
-            background: #b08a40;
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(201, 160, 80, 0.3);
-        }
-
-        /* ================= MOBILE RESPONSIVE ================= */
-
-        @media (max-width: 768px) {
-
-            body{
-                padding:10px;
-            }
-
-            .receipt-container{
-                max-width:100%;
-            }
-
-            .receipt{
-                border-radius:16px;
-            }
-
-            /* Header stack */
-            .receipt-header{
-                flex-direction:column;
-                align-items:flex-start;
-                gap:15px;
-                padding:20px;
-            }
-
-            .receipt-title-section{
-                text-align:left;
-            }
-
-            .institution-logo{
-                width:60px;
-                height:60px;
-            }
-
-            .institution-text h1{
-                font-size:20px;
-                white-space:normal; /* allow wrap on mobile */
-            }
-
-            /* Content padding */
-            .receipt-content{
-                padding:20px;
-            }
-
-            /* Info cards */
-            .info-grid{
-                grid-template-columns:1fr;
-                gap:15px;
-            }
-
-            /* Academic section */
-            .course-details{
-                grid-template-columns:1fr;
-                gap:15px;
-            }
-
-            /* Payment summary */
-            .payment-summary{
-                grid-template-columns:1fr;
-            }
-
-            /* Footer */
-            .receipt-footer{
-                grid-template-columns:1fr;
-                text-align:center;
-                gap:20px;
-            }
-
-            .footer-note{
-                text-align:center;
-            }
-
-            /* Table scroll */
-            .transaction-table{
-                display:block;
-                overflow-x:auto;
-                white-space:nowrap;
-            }
-
-        }
-
-        /* Print Styles */
         @media print {
-
-          body{
-              background:white;
-              padding:0;
-          }
-
-          .receipt-container{
-              width:794px;
-          }
-
-          .receipt{
-              border-radius:0;
-              box-shadow:none;
-              border:none;
-          }
-
-          .receipt-header{
-              page-break-inside:avoid;
-          }
-
-          .academic-details{
-              page-break-inside:avoid;
-          }
-
-          .fee-breakdown{
-              page-break-inside:avoid;
-          }
-
-          .payment-summary{
-              page-break-inside:avoid;
-          }
-
-          .receipt-footer{
-              page-break-inside:avoid;
-          }
-
-          .action-buttons{
-              display:none !important;
-          }
-      }
+            body { background: white; padding: 0; }
+            .receipt-container { margin: 0; border: none; box-shadow: none; width: 210mm; height: 297mm; }
+            .action-buttons { display: none !important; }
+            .receipt { border: none; }
+            .receipt-header, .academic-details, .fee-breakdown, .payment-summary, .receipt-footer {
+                page-break-inside: avoid;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="receipt-container">
+    <div class="receipt-container" id="receipt-container">
         <div class="receipt" id="receipt">
             <div class="academic-strip"></div>
             
@@ -1075,6 +794,7 @@ const FeePurchase = () => {
                     </div>
                     <div class="institution-text">
                         <h1>Kaumudi Sanskrit Academy</h1>
+                        <p>Education for Excellence</p>
                     </div>
                 </div>
                 
@@ -1089,203 +809,114 @@ const FeePurchase = () => {
             </div>
             
             <div class="receipt-content">
-                <!-- Student & Basic Info Grid -->
                 <div class="info-grid">
                     <div class="info-card">
-                        <div class="info-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                        </div>
                         <div class="info-label">Student Name</div>
                         <div class="info-value">${studentName}</div>
                     </div>
                     
                     <div class="info-card">
-                        <div class="info-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                <polyline points="22,6 12,13 2,6"></polyline>
-                            </svg>
-                        </div>
-                        <div class="info-label">Email & Phone</div>
-                        <div class="info-value">${studentEmail}</div>
-                        <div class="info-sub">${studentPhone}</div>
+                        <div class="info-label">Contact Details</div>
+                        <div class="info-value">${studentPhone}</div>
+                        <div class="info-sub">${studentEmail}</div>
                     </div>
                 </div>
                 
-                <!-- Academic Details -->
                 <div class="academic-details">
-                    <div class="section-title">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2l8 4.5v9L12 20l-8-4.5v-9L12 2z"></path>
-                            <path d="M12 12l4-2v4l-4 2-4-2v-4l4 2z"></path>
-                        </svg>
-                        Academic Information
-                    </div>
-                    
+                    <div class="section-title">Academic Information</div>
                     <div class="course-details">
                         <div class="course-item">
                             <span class="course-label">Course Enrolled</span>
                             <span class="course-value">${item.desc}</span>
                         </div>
                         <div class="course-item">
-                            <span class="course-label">Category</span>
-                            <span class="course-value">${item.type} <span class="course-badge">${item.paymentMode}</span></span>
-                        </div>
-                        <div class="course-item">
                             <span class="course-label">Enrollment ID</span>
                             <span class="course-value">${item.enrollmentId}</span>
                         </div>
                         <div class="course-item">
-                            <span class="course-label">Duration</span>
-                            <span class="course-value">${item.course?.duration || "12 Months"}</span>
+                            <span class="course-label">Payment Mode</span>
+                            <span class="course-value">${item.paymentMode}</span>
+                        </div>
+                        <div class="course-item">
+                            <span class="course-label">Course Category</span>
+                            <span class="course-value">${item.type}</span>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Transaction Table -->
                 <table class="transaction-table">
                     <thead>
                         <tr>
                             <th>Description</th>
-                            <th>Original Amount</th>
-                            <th>Discount</th>
-                            <th>Final Amount</th>
-                            <th>Status</th>
+                            <th style="text-align: right;">Original</th>
+                            <th style="text-align: right;">Discount</th>
+                            <th style="text-align: right;">Total</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="course-name">${item.desc}</td>
-                            <td>${formatINR(basePrice)}</td>
-                            <td class="discount-value">${discount > 0 ? "-" + formatINR(discount) : "—"}</td>
-                            <td>${formatINR(item.totalAmount)}</td>
-                            <td>
-                                <span class="status-badge ${status === "Paid" ? "status-paid" : status === "Partial" ? "status-partial" : "status-pending"}">
-                                    ${status === "Paid" ? "✓" : status === "Partial" ? "⏳" : "!"} ${status}
-                                </span>
-                            </td>
+                            <td style="font-weight: 700;">${item.desc}</td>
+                            <td style="text-align: right;">${formatINR(basePrice)}</td>
+                            <td style="text-align: right; color: #16a34a;">${discount > 0 ? "-" + formatINR(discount) : "—"}</td>
+                            <td style="text-align: right; font-weight: 700;">${formatINR(item.totalAmount)}</td>
                         </tr>
                     </tbody>
                 </table>
                 
-                <!-- Fee Breakdown -->
                 <div class="fee-breakdown">
-                    <div class="section-title">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <path d="M12 6v6l4 2"></path>
-                        </svg>
-                        Fee Breakdown
-                    </div>
-                    
+                    <div class="section-title">Fee Breakdown</div>
                     <div class="breakdown-row">
-                        <span class="breakdown-label">Course Fee</span>
-                        <span class="breakdown-value">${formatINR(basePrice)}</span>
+                        <span class="breakdown-label">Net Course Fee</span>
+                        <span class="breakdown-value">${formatINR(subtotalAfterDiscount)}</span>
                     </div>
-                    
-                    ${
-                      discount > 0
-                        ? `
-                    <div class="breakdown-row">
-                        <span class="breakdown-label">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 12H4M12 4v16"></path>
-                            </svg>
-                            Discount (${item.couponCode || "Applied"}) - ${discountPercentage}%
-                        </span>
-                        <span class="breakdown-value discount-value">-${formatINR(discount)}</span>
-                    </div>
-                    `
-                        : ""
-                    }
-                    
                     <div class="breakdown-row">
                         <span class="breakdown-label">Processing Fee</span>
                         <span class="breakdown-value">${formatINR(processingFee)}</span>
                     </div>
-                    
                     <div class="breakdown-row">
                         <span class="breakdown-label">GST (18%)</span>
                         <span class="breakdown-value">${formatINR(gstAmount)}</span>
                     </div>
-                    
                     <div class="breakdown-row total-row">
-                        <span class="breakdown-label">Total Amount</span>
+                        <span class="breakdown-label">Total Amount Payable</span>
                         <span class="breakdown-value">${formatINR(netTotal)}</span>
                     </div>
                 </div>
                 
-                <!-- Payment Summary -->
                 <div class="payment-summary">
                     <div class="summary-card paid">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" style="margin: 0 auto;">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                        </svg>
                         <div class="summary-amount">${formatINR(item.paidAmount)}</div>
                         <div class="summary-label">Amount Paid</div>
-                        <div style="font-size: 12px; color: #16a34a; margin-top: 8px;">${new Date().toLocaleDateString()}</div>
                     </div>
                     
                     <div class="summary-card due">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c2410c" stroke-width="2" style="margin: 0 auto;">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="12" y1="8" x2="12" y2="12"></line>
-                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                        </svg>
                         <div class="summary-amount">${formatINR(remaining)}</div>
                         <div class="summary-label">Balance Due</div>
-                        <div style="font-size: 12px; color: #c2410c; margin-top: 8px;">Due by: ${new Date(new Date().setMonth(new Date().getMonth() + 1)).toLocaleDateString()}</div>
                     </div>
                 </div>
+            </div>
+
+            <div class="receipt-footer">
+                <div class="footer-note">
+                    <p><strong>Generation Date:</strong> ${dateString}</p>
+                    <p><strong>Generation Time:</strong> ${timeString}</p>
+                    <p><strong>Transaction ID:</strong> ${item.id.slice(-12).toUpperCase()}</p>
+                    <p style="margin-top: 10px;">* This is a computer generated receipt and does not require a physical signature.</p>
+                </div>
                 
-                <!-- Footer with Signatures -->
-                <div class="receipt-footer">
-                    <div class="signature-area">
-                        <div class="signature-line"></div>
-                        <div class="signature-text">Student Signature</div>
-                        <div class="stamp">(दस्ताक्षर)</div>
-                    </div>
-                    
-                    <div class="signature-area">
-                        <div class="signature-line"></div>
-                        <div class="signature-text">Authorized Signatory</div>
-                        <div class="stamp">Kaumudi Academy</div>
-                    </div>
-                    
-                    <div class="footer-note">
-                        <p>Generated on: ${dateString} at ${timeString}</p>
-                        <p>For any queries, contact ksacademy@gmail.com</p>
-                    </div>
-                    
-                    <div class="footer-note" style="text-align: left;">
-                        <p>Payment Mode: <strong>${item.paymentMode}</strong></p>
-                        <p>Transaction ID: ${item.id.slice(-12).toUpperCase()}</p>
-                    </div>
+                <div class="signature-area">
+                    <div class="signature-line"></div>
+                    <div class="signature-text">Authorized Signatory</div>
+                    <div style="font-size: 11px; color: #74271E; font-weight: 800; margin-top: 5px;">KAUMUDI SANSKRIT ACADEMY</div>
                 </div>
             </div>
         </div>
         
-        <!-- Action Buttons -->
-        <div class="action-buttons no-print">
+        <div class="action-buttons">
             <button class="btn btn-primary" onclick="window.print()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-                    <path d="M6 9V3h12v6"></path>
-                    <rect x="6" y="15" width="12" height="6" rx="2"></rect>
-                </svg>
                 Print Receipt
             </button>
             <button class="btn btn-secondary" onclick="downloadPDF()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="7 10 12 15 17 10"></polyline>
-                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                </svg>
                 Download PDF
             </button>
         </div>
@@ -1293,13 +924,22 @@ const FeePurchase = () => {
 
     <script>
         function downloadPDF() {
-            const element = document.getElementById('receipt');
+            const element = document.getElementById('receipt-container');
             const opt = {
-                margin: [10, 10, 10, 10],
-                filename: 'Kaumudi_Receipt_${item.academicReceiptNumber}.pdf',
+                margin: 0,
+                filename: 'Kaumudi_Receipt_${item.paymentId ? item.paymentId.slice(-6) : "Receipt"}.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, logging: false },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                html2canvas: { 
+                    scale: 2, 
+                    useCORS: true, 
+                    logging: false,
+                    letterRendering: true
+                },
+                jsPDF: { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'portrait' 
+                }
             };
             html2pdf().set(opt).from(element).save();
         }
@@ -1505,7 +1145,9 @@ const FeePurchase = () => {
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-2 text-gray-600 font-mono text-xs">
                         <Hash size={12} className="text-[#c9a050]" />
-                        {item.paymentId ? item.paymentId.slice(-6) : item.academicReceiptNumber || "—"}
+                        {item.paymentId
+                          ? item.paymentId.slice(-6)
+                          : item.academicReceiptNumber || "—"}
                       </div>
                     </td>
 
