@@ -1,7 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Clock, Monitor, PlayCircle, Users } from "lucide-react";
-import { getMyEnrollments, getProfileEnrollments, getCourseProgress } from "../../lib/api";
+import {
+  getMyEnrollments,
+  getProfileEnrollments,
+  getCourseProgress,
+} from "../../lib/api";
 import { useNavigate } from "react-router-dom";
 
 const Courses = () => {
@@ -119,11 +123,10 @@ const Courses = () => {
               imageUrl: c.image?.url || "",
               raw: en,
             };
-          })
+          }),
         );
 
         setCourses(mapped);
-
       } catch (err) {
         console.error("Failed to load enrollments:", err);
       } finally {
@@ -147,7 +150,9 @@ const Courses = () => {
   }, [courses, activeFilter, search]);
 
   const goToCourse = (course) => {
-    { console.log(course) }
+    {
+      console.log(course);
+    }
     const id =
       course.id ||
       course.raw?.course?._id ||
@@ -166,12 +171,13 @@ const Courses = () => {
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
-            className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 ${notification.type === "success"
-              ? "bg-green-500"
-              : notification.type === "warning"
-                ? "bg-yellow-500"
-                : "bg-[#74271E]"
-              } text-white`}
+            className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 ${
+              notification.type === "success"
+                ? "bg-green-500"
+                : notification.type === "warning"
+                  ? "bg-yellow-500"
+                  : "bg-[#74271E]"
+            } text-white`}
           >
             <span className="text-sm font-medium">{notification.message}</span>
           </motion.div>
@@ -198,16 +204,17 @@ const Courses = () => {
             <motion.button
               key={status}
               onClick={() => setActiveFilter(status)}
-              className={`px-5 py-2 rounded-xl text-xs font-bold whitespace-nowrap shrink-0 transition-all ${activeFilter === status
-                ? "bg-[#74271E] text-white shadow-md"
-                : "bg-white text-gray-500 hover:bg-gray-100"
-                }`}
+              className={`px-5 py-2 rounded-xl text-xs font-bold whitespace-nowrap shrink-0 transition-all ${
+                activeFilter === status
+                  ? "bg-[#74271E] text-white shadow-md"
+                  : "bg-white text-gray-500 hover:bg-gray-100"
+              }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
               {status === "ALL"
                 ? "All"
-                : status?.charAt(0) + status.slice(1).toLowerCase()}
+                : status?.charAt(0) + status?.slice(1).toLowerCase()}
             </motion.button>
           ))}
         </div>
@@ -270,7 +277,7 @@ const Courses = () => {
                   </span>
                   <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
                     {course.status?.charAt(0) +
-                      course.status.slice(1).toLowerCase()}
+                      course.status?.slice(1).toLowerCase()}
                   </span>
                 </div>
 
