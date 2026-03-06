@@ -6,15 +6,22 @@ import { createNotification, notifyStudent, notifyAdmins } from "../services/not
 
 export const createEnrollment = async ({ studentId, courseId, paymentId }) => {
   try {
+    console.log("createEnrollment - studentId:", studentId, "courseId:", courseId, "paymentId:", paymentId);
+    
     const exists = await Enrollment.findOne({
       student: studentId,
       course: courseId,
     });
 
     if (exists) {
+      console.log("Enrollment already exists, updating payment:", exists._id);
+      // Update the existing enrollment with the new payment
+      exists.payment = paymentId;
+      await exists.save();
       return exists;
     }
 
+    console.log("Creating new enrollment...");
     const enrollment = await Enrollment.create({
       student: studentId,
       course: courseId,
@@ -33,6 +40,12 @@ export const createEnrollment = async ({ studentId, courseId, paymentId }) => {
         ? `${student.firstName} ${student.lastName}` 
         : (student.fullName || 'A student');
       
+      // Get payment details if available
+      let paymentData = null;
+      if (paymentId) {
+        paymentData = await Payment.findById(paymentId);
+      }
+      
       await notifyAdmins({
         title: "New Course Enrollment",
         message: `${studentName} enrolled in ${course.title}`,
@@ -44,7 +57,10 @@ export const createEnrollment = async ({ studentId, courseId, paymentId }) => {
           courseId, 
           courseName: course.title,
           enrollmentId: enrollment._id,
-          amount: paymentId ? (await Payment.findById(paymentId))?.finalAmount : null
+          totalPrice: paymentData?.originalAmount || course.price,
+          discountAmount: paymentData?.discountAmount,
+          paidPrice: paymentData?.finalAmount,
+          amount: paymentData?.finalAmount
         },
         userId: studentId,
         userRole: "STUDENT"

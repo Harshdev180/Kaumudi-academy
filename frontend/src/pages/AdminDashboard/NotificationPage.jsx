@@ -267,81 +267,39 @@ function NotificationsPage() {
   // Format notification details for display
   const formatDetails = (notification) => {
     const details = [];
-    const { metadata, type, subType, actionUrl } = notification;
+    const { metadata, subType, actionUrl } = notification;
 
-    // Add user details if available
-    if (metadata?.userDetails) {
-      const user = metadata.userDetails;
-      details.push({
-        label: "User Name",
-        value: user.name || "N/A",
-        isBold: true,
-      });
-      details.push({ label: "Email", value: user.email || "N/A" });
-      if (user.phone && user.phone !== "N/A") {
-        details.push({ label: "Phone", value: user.phone });
-      }
-      details.push({
-        label: "User ID",
-        value: user.id ? String(user.id).slice(-8) : "N/A",
-      });
-    }
-
-    // Add type info
-    details.push({
-      label: "Category",
-      value: type?.replace("_", " ").toUpperCase() || "N/A",
-    });
-    details.push({
-      label: "Type",
-      value: subType?.replace("_", " ") || "Notification",
-    });
-
-    // Add metadata fields
+    // Add course and payment details
     if (metadata) {
-      if (metadata.studentId)
-        details.push({
-          label: "Student ID",
-          value: String(metadata.studentId).slice(-8),
-        });
-      if (metadata.courseId)
-        details.push({
-          label: "Course ID",
-          value: String(metadata.courseId).slice(-8),
-        });
-      if (metadata.courseName)
-        details.push({
-          label: "Course Name",
-          value: metadata.courseName,
-          isBold: true,
-        });
-      if (metadata.paymentId)
-        details.push({
-          label: "Payment ID",
-          value: String(metadata.paymentId).slice(-8),
-        });
-      if (metadata.amount)
-        details.push({
-          label: "Amount Paid",
-          value: `₹${metadata.amount}`,
-          isBold: true,
-        });
-      if (metadata.email)
-        details.push({ label: "Email", value: metadata.email });
-      if (metadata.phone)
-        details.push({ label: "Phone", value: metadata.phone });
-      if (metadata.inquiryId)
-        details.push({
-          label: "Inquiry ID",
-          value: String(metadata.inquiryId).slice(-8),
-        });
-      if (metadata.enrollmentId)
-        details.push({
-          label: "Enrollment ID",
-          value: String(metadata.enrollmentId).slice(-8),
-        });
-      if (metadata.isTest)
-        details.push({ label: "Note", value: "Test Payment" });
+      if (metadata.courseName) details.push({ label: "Course Name", value: metadata.courseName, isBold: true });
+      
+      // Handle EMI/Installment payments - show total price, total paid, and remaining
+      if (metadata.totalPrice && (metadata.totalPaid !== undefined || metadata.remainingAmount !== undefined)) {
+        details.push({ label: "Total Price", value: `₹${metadata.totalPrice}`, isBold: true });
+        if (metadata.totalPaid !== undefined) {
+          details.push({ label: "Total Paid", value: `₹${metadata.totalPaid}`, isBold: true });
+        }
+        if (metadata.remainingAmount !== undefined && metadata.remainingAmount > 0) {
+          details.push({ label: "Remaining", value: `₹${metadata.remainingAmount.toFixed(2)}`, isBold: true });
+        }
+      } else if (metadata.totalPrice) {
+        // Regular payments - show total, paid, and remaining
+        details.push({ label: "Total Price", value: `₹${metadata.totalPrice}`, isBold: true });
+        // Calculate remaining amount
+        const paidAmount = metadata.paidPrice || metadata.paidAmount || metadata.amount || 0;
+        const remainingAmount = metadata.totalPrice - paidAmount;
+        if (remainingAmount > 0) {
+          details.push({ label: "Remaining Amount", value: `₹${remainingAmount.toFixed(2)}`, isBold: true });
+        }
+      }
+      
+      if (metadata.discountAmount) details.push({ label: "Discount", value: `₹${metadata.discountAmount}`, isBold: true });
+      if (metadata.paidPrice || metadata.paidAmount) details.push({ label: "Paid Price", value: `₹${metadata.paidPrice || metadata.paidAmount}`, isBold: true });
+      if (metadata.paymentId) details.push({ label: "Payment ID", value: String(metadata.paymentId).slice(-8) });
+      if (metadata.amount && !metadata.paidPrice && !metadata.paidAmount && !metadata.totalPaid) details.push({ label: "Amount Paid", value: `₹${metadata.amount}`, isBold: true });
+      if (metadata.inquiryId) details.push({ label: "Inquiry ID", value: String(metadata.inquiryId).slice(-8) });
+      if (metadata.enrollmentId) details.push({ label: "Enrollment ID", value: String(metadata.enrollmentId).slice(-8) });
+      if (metadata.isTest) details.push({ label: "Note", value: "Test Payment" });
     }
 
     // Add timestamp
@@ -360,37 +318,38 @@ function NotificationsPage() {
       {/* HEADER */}
       <div className="relative mb-10 rounded-3xl overflow-hidden bg-gradient-to-r from-[#74271E] via-[#8a2a1f] to-[#5a1b14] text-white px-6 md:px-10 py-8 shadow-lg">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.25),transparent_60%)]" />
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
           <div>
-            <h2 className="text-2xl md:text-3xl font-black tracking-wide">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-wide">
               Academy Notifications
             </h2>
-            <p className="text-sm text-white/80 mt-1">
+            <p className="text-xs sm:text-sm text-white/80 mt-1">
               Stay updated with academy activities & smart alerts
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => fetchNotifications()}
               disabled={loading}
               className="bg-white/10 hover:bg-white/20 text-white p-2 rounded-full transition"
               title="Refresh"
             >
-              <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
+              <RefreshCw size={14} sm:size={16} className={loading ? "animate-spin" : ""} />
             </button>
             <button
               onClick={handleMarkAllRead}
-              className="bg-[#D4AF37] hover:bg-[#c9a040] text-[#74271E] font-semibold text-xs px-4 py-2 rounded-full w-fit shadow-md flex items-center gap-2"
+              className="bg-[#D4AF37] hover:bg-[#c9a040] text-[#74271E] font-semibold text-[10px] sm:text-xs px-3 sm:px-4 py-1.5 sm:py-2 rounded-full w-fit shadow-md flex items-center gap-1.5 sm:gap-2"
             >
-              <CheckCircle size={14} />
-              Mark All Read
+              <CheckCircle size={12} sm:size={14} />
+              <span className="hidden xs:inline">Mark All Read</span>
+              <span className="xs:hidden">Mark All</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* FILTER BAR */}
-      <div className="flex flex-wrap gap-3 mb-6">
+      <div className="flex flex-wrap gap-2 sm:gap-3 mb-6">
         {categories.map((cat) => {
           const Icon = cat.icon;
 
@@ -398,13 +357,13 @@ function NotificationsPage() {
             <button
               key={cat.id}
               onClick={() => handleFilterChange(cat.id)}
-              className={`px-4 py-2 rounded-full text-xs font-semibold transition flex items-center gap-2 ${
+              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-semibold transition flex items-center gap-1.5 sm:gap-2 ${
                 activeFilter === cat.id
                   ? "bg-[#74271E] text-white"
                   : "bg-[#FBF4E2] text-[#74271E] border border-[#74271E]/20 hover:bg-[#74271E]/10"
               }`}
             >
-              <Icon size={14} />
+              <Icon size={12} sm:size={14} />
               {cat.label.toUpperCase()}
             </button>
           );
@@ -459,63 +418,48 @@ function NotificationsPage() {
                 }}
                 whileHover={{ y: -2 }}
                 onClick={() => handleNotificationClick(item)}
-                className={`border-l-4 ${getPriorityColor(item.priority)} rounded-xl p-5 flex justify-between items-start shadow-sm hover:shadow-md transition cursor-pointer ${
+                className={`border-l-4 ${getPriorityColor(item.priority)} rounded-xl p-3 sm:p-5 flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4 shadow-sm hover:shadow-md transition cursor-pointer ${
                   item.isRead ? "bg-[#FBF4E2]/50" : "bg-white"
                 }`}
               >
                 {/* LEFT */}
-                <div className="flex gap-4 flex-1">
+                <div className="flex gap-3 sm:gap-4 flex-1">
                   {/* Category Icon */}
-                  <div
-                    className={`mt-1 p-2 h-full rounded-lg ${getCategoryColor(item.type)} text-white`}
-                  >
+                  <div className={`mt-1 p-1.5 sm:p-2 rounded-lg ${getCategoryColor(item.type)} text-white flex-shrink-0`}>
                     {getCategoryIcon(item.type)}
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#74271E]/10 text-[#74271E] font-semibold uppercase">
+                      <span className="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded-full bg-[#74271E]/10 text-[#74271E] font-semibold uppercase">
                         {item.type.replace("_", " ")}
                       </span>
                       {item.priority === "HIGH" && (
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-600 font-semibold uppercase">
+                        <span className="text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full bg-red-100 text-red-600 font-semibold uppercase">
                           Urgent
                         </span>
                       )}
                       {!item.isRead && (
-                        <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                        <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"></span>
                       )}
                     </div>
 
-                    <p className="mt-2 text-sm md:text-base font-semibold text-[#5a1b14]">
+                    <p className="mt-1.5 sm:mt-2 text-sm font-semibold text-[#5a1b14] truncate">
                       {item.title}
                     </p>
 
                     {item.message && (
-                      <p className="text-xs md:text-sm text-[#74271E]/70 mt-1 max-w-xl">
+                      <p className="text-xs text-[#74271E]/70 mt-1 line-clamp-2 sm:line-clamp-none">
                         {item.message}
                       </p>
                     )}
 
-                    {/* Metadata display */}
-                    {item.metadata && Object.keys(item.metadata).length > 0 && (
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {item.metadata.studentId && (
-                          <span className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
-                            Student ID:{" "}
-                            {String(item.metadata.studentId).slice(-6)}
-                          </span>
-                        )}
-                        {item.metadata.amount && (
-                          <span className="text-[10px] bg-green-100 text-green-600 px-2 py-0.5 rounded">
-                            ₹{item.metadata.amount}
-                          </span>
-                        )}
-                        {item.metadata.courseId && (
-                          <span className="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded">
-                            Course
-                          </span>
-                        )}
+                    {/* Metadata display - only show amount, not studentId/courseId */}
+                    {item.metadata && item.metadata.amount && (
+                      <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
+                        <span className="text-[9px] sm:text-[10px] bg-green-100 text-green-600 px-1.5 sm:px-2 py-0.5 rounded">
+                          ₹{item.metadata.amount}
+                        </span>
                       </div>
                     )}
 
@@ -526,17 +470,17 @@ function NotificationsPage() {
                 </div>
 
                 {/* RIGHT */}
-                <div className="flex items-center gap-2 ml-4">
+                <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 ml-auto sm:ml-0">
                   {!item.isRead && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleMarkAsRead(item.id);
                       }}
-                      className="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center hover:bg-green-200 transition"
+                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center hover:bg-green-200 transition"
                       title="Mark as read"
                     >
-                      <CheckCircle size={14} />
+                      <CheckCircle size={12} sm:size={14} />
                     </button>
                   )}
 
@@ -546,12 +490,12 @@ function NotificationsPage() {
                       handleDelete(item.id);
                     }}
                     disabled={deletingId === item.id}
-                    className="w-8 h-8 rounded-lg bg-[#74271E]/10 text-[#74271E] flex items-center justify-center hover:bg-red-100 hover:text-red-500 transition disabled:opacity-50"
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#74271E]/10 text-[#74271E] flex items-center justify-center hover:bg-red-100 hover:text-red-500 transition disabled:opacity-50"
                   >
                     {deletingId === item.id ? (
-                      <Loader2 size={14} className="animate-spin" />
+                      <Loader2 size={12} sm:size={14} className="animate-spin" />
                     ) : (
-                      <Trash size={14} />
+                      <Trash size={12} sm:size={14} />
                     )}
                   </button>
                 </div>
@@ -573,10 +517,16 @@ function NotificationsPage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 sm:mx-auto overflow-hidden max-h-[90vh] flex flex-col"
             >
               {/* Modal Header */}
-              <div className="bg-gradient-to-r from-[#74271E] to-[#5a1b14] p-6 text-white">
+              <div className="bg-gradient-to-r from-[#74271E] to-[#5a1b14] p-4 sm:p-6 text-white flex-shrink-0">
+                {/* Type Badge at Top */}
+                <div className="mb-3">
+                  <span className="inline-block px-3 py-1 bg-[#D4AF37] text-[#74271E] text-xs font-bold rounded-full uppercase">
+                    {selectedNotification.type === "student_query" ? "New Registration" : selectedNotification.type?.replace("_", " ").toUpperCase()}
+                  </span>
+                </div>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div
@@ -584,20 +534,13 @@ function NotificationsPage() {
                     >
                       {getCategoryIcon(selectedNotification.type)}
                     </div>
-                    <div>
-                      <h3 className="text-lg font-bold">
-                        {selectedNotification.title}
-                      </h3>
-                      <p className="text-xs text-white/70 mt-0.5">
-                        {selectedNotification.type
-                          ?.replace("_", " ")
-                          .toUpperCase()}
-                      </p>
+                    <div className="min-w-0">
+                      <h3 className="text-base sm:text-lg font-bold truncate">{selectedNotification.title}</h3>
                     </div>
                   </div>
                   <button
                     onClick={() => setSelectedNotification(null)}
-                    className="p-2 hover:bg-white/10 rounded-lg transition"
+                    className="p-2 hover:bg-white/10 rounded-lg transition flex-shrink-0"
                   >
                     <X size={20} />
                   </button>
@@ -605,7 +548,7 @@ function NotificationsPage() {
               </div>
 
               {/* Modal Body */}
-              <div className="p-6">
+              <div className="p-4 sm:p-6 overflow-y-auto flex-1">
                 {/* User Info Section */}
                 {selectedNotification.metadata?.userDetails && (
                   <div className="mb-4 p-4 bg-gradient-to-r from-[#74271E]/5 to-[#D4AF37]/5 rounded-xl border border-[#74271E]/10">
@@ -613,37 +556,23 @@ function NotificationsPage() {
                       User Information
                     </p>
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#74271E] text-white flex items-center justify-center font-bold">
-                        {selectedNotification.metadata.userDetails.name?.charAt(
-                          0,
-                        ) || "U"}
+                      <div className="w-10 h-10 rounded-full bg-[#74271E] text-white flex items-center justify-center font-bold flex-shrink-0">
+                        {selectedNotification.metadata.userDetails.name?.charAt(0) || "U"}
                       </div>
-                      <div>
-                        <p className="font-bold text-gray-900">
-                          {selectedNotification.metadata.userDetails.name}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {selectedNotification.metadata.userDetails.email}
-                        </p>
-                        {selectedNotification.metadata.userDetails.phone &&
-                          selectedNotification.metadata.userDetails.phone !==
-                            "N/A" && (
-                            <p className="text-sm text-gray-500">
-                              {selectedNotification.metadata.userDetails.phone}
-                            </p>
-                          )}
+                      <div className="min-w-0">
+                        <p className="font-bold text-gray-900 truncate">{selectedNotification.metadata.userDetails.name}</p>
+                        <p className="text-sm text-gray-500 truncate">{selectedNotification.metadata.userDetails.email}</p>
+                        {selectedNotification.metadata.userDetails.phone && selectedNotification.metadata.userDetails.phone !== "N/A" && (
+                          <p className="text-sm text-gray-500">{selectedNotification.metadata.userDetails.phone}</p>
+                        )}
                       </div>
                     </div>
                   </div>
                 )}
 
                 <div className="mb-4">
-                  <p className="text-sm text-gray-600 mb-2 font-medium">
-                    Message
-                  </p>
-                  <p className="text-gray-800">
-                    {selectedNotification.message}
-                  </p>
+                  <p className="text-sm text-gray-600 mb-2 font-medium">Message</p>
+                  <p className="text-gray-800 break-words">{selectedNotification.message}</p>
                 </div>
 
                 {/* Details */}
@@ -652,32 +581,21 @@ function NotificationsPage() {
                     Additional Details
                   </p>
                   <div className="space-y-2">
-                    {formatDetails(selectedNotification).map(
-                      (detail, index) => (
-                        <div
-                          key={index}
-                          className={`flex justify-between items-center text-sm ${detail.isBold ? "bg-gray-50 -mx-2 px-2 py-1 rounded" : ""}`}
-                        >
-                          <span className="text-gray-500">{detail.label}</span>
-                          {detail.isAction ? (
-                            <button
-                              onClick={(e) =>
-                                handleActionClick(e, detail.value)
-                              }
-                              className="text-[#74271E] font-medium hover:underline flex items-center gap-1"
-                            >
-                              {detail.value} <ExternalLink size={12} />
-                            </button>
-                          ) : (
-                            <span
-                              className={`text-gray-800 font-medium ${detail.isBold ? "font-bold text-[#74271E]" : ""}`}
-                            >
-                              {detail.value}
-                            </span>
-                          )}
-                        </div>
-                      ),
-                    )}
+                    {formatDetails(selectedNotification).map((detail, index) => (
+                      <div key={index} className={`flex flex-col sm:flex-row sm:justify-between sm:items-center text-sm ${detail.isBold ? 'bg-gray-50 -mx-2 px-2 py-1 rounded' : ''}`}>
+                        <span className="text-gray-500">{detail.label}</span>
+                        {detail.isAction ? (
+                          <button
+                            onClick={(e) => handleActionClick(e, detail.value)}
+                            className="text-[#74271E] font-medium hover:underline flex items-center gap-1 mt-1 sm:mt-0"
+                          >
+                            {detail.value} <ExternalLink size={12} />
+                          </button>
+                        ) : (
+                          <span className={`text-gray-800 font-medium truncate ${detail.isBold ? 'font-bold text-[#74271E]' : ''}`}>{detail.value}</span>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </div>
 

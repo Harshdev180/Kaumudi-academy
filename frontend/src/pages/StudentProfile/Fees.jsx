@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   Download,
   History,
@@ -6,30 +6,14 @@ import {
   CheckCircle2,
   AlertCircle,
   Coins,
+  IndianRupee,
+  Calendar,
   ShieldCheck,
   Landmark,
   ChevronLeft,
   ChevronRight,
-  Receipt,
-  FileText,
-  Printer,
-  Mail,
-  Award,
+  RefreshCw,
   Hash,
-  Calendar,
-  Clock,
-  BookOpen,
-  GraduationCap,
-  User,
-  Phone,
-  Mail as MailIcon,
-  MapPin,
-  CreditCard,
-  TrendingUp,
-  Percent,
-  IndianRupee,
-  FileCheck,
-  QrCode,
 } from "lucide-react";
 import { useEffect } from "react";
 import {
@@ -45,90 +29,96 @@ import { formatEnrollmentId } from "../../lib/utils";
 const FeePurchase = () => {
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const loadFees = useCallback(async () => {
+    try {
+      // Add cache-busting timestamp
+      const res = await getProfileEnrollments();
+
+      console.log("Enrollment response:", res);
+      console.log("Enrollment data:", res.data);
+
+      // adjust if your backend structure differs abc
+      const formatted = res.data.map((item) => {
+        // Get payment info from enrollment
+        const payment = item.payment || {};
+
+        // Get course - it could be an object with _id or just an ObjectId
+        const courseData = item.course;
+        const courseId = courseData?._id || courseData;
+
+        // Get original amount and discount
+        const originalAmount = Number(payment.originalAmount) || 0;
+        const discountAmount = Number(payment.discountAmount) || 0;
+        const paidAmount = Number(payment.finalAmount) || 0;
+        let paymentMode = payment.paymentMode || "FULL";
+        const couponCode = payment.couponCode || null;
+
+        // Calculate discounted total (original - discount)
+        const discountedTotal = originalAmount - discountAmount;
+
+        // For EMI, remaining is the rest of the installments (70% remaining)
+        // For FULL, remaining is discountedTotal - paidAmount
+        let remaining = 0;
+        let isPaid = false;
+
+        // Detect EMI by payment pattern: if paidAmount is ~30% of discountedTotal, treat as EMI
+        // This handles cases where paymentMode was saved incorrectly as "FULL"
+        const paidPercentage =
+          discountedTotal > 0 ? (paidAmount / discountedTotal) * 100 : 0;
+        const isEmiPattern = paidPercentage > 0 && paidPercentage < 50; // Paid less than 50% suggests EMI
+
+        if (paymentMode === "EMI" || isEmiPattern) {
+          // For EMI, remaining is the remaining amount after first payment
+          paymentMode = "EMI"; // Force EMI mode for display
+          remaining = discountedTotal - paidAmount;
+          // console.log("EMI calculation:", { discountedTotal, paidAmount, remaining, paidPercentage });
+          // Only fully paid if remaining is 0 or negative
+          isPaid = remaining <= 0;
+        } else {
+          // For FULL payment
+          remaining = discountedTotal - paidAmount;
+          isPaid = remaining <= 0;
+        }
+
+        return {
+          id: item._id,
+          courseId: courseId,
+          course: courseData,
+          date: new Date(item.createdAt).toLocaleDateString(),
+          desc: courseData?.title || "Course",
+          type: courseData?.category || "Academic",
+          // Show discounted total instead of original
+          totalAmount: discountedTotal,
+          paidAmount: paidAmount,
+          remaining: Math.max(remaining, 0),
+          // Add payment mode and coupon info
+          paymentMode: paymentMode,
+          couponCode: couponCode,
+          discountAmount: discountAmount,
+          originalAmount: originalAmount,
+          isPaid: isPaid,
+        };
+      });
+
+      setPaymentHistory(formatted);
+    } catch (err) {
+      console.error("Failed to load fee data", err);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const loadFees = async () => {
-      try {
-        const res = await getProfileEnrollments();
-        console.log("enrollment data:", res.data);
-
-        const formatted = res.data.map((item) => {
-          const payment = item.payment || {};
-          const courseData = item.course;
-          const courseId = courseData?._id || courseData;
-
-          const originalAmount = Number(payment.originalAmount) || 0;
-          const discountAmount = Number(payment.discountAmount) || 0;
-          const paidAmount = Number(payment.finalAmount) || 0;
-          let paymentMode = payment.paymentMode || "FULL";
-          const couponCode = payment.couponCode || null;
-
-          const discountedTotal = originalAmount - discountAmount;
-
-          const paidPercentage =
-            discountedTotal > 0 ? (paidAmount / discountedTotal) * 100 : 0;
-          const isEmiPattern = paidPercentage > 0 && paidPercentage < 50;
-
-          let remaining = 0;
-          let isPaid = false;
-
-          if (paymentMode === "EMI" || isEmiPattern) {
-            paymentMode = "EMI";
-            remaining = discountedTotal - paidAmount;
-            isPaid = remaining <= 0;
-          } else {
-            remaining = discountedTotal - paidAmount;
-            isPaid = remaining <= 0;
-          }
-
-          // Generate academic receipt number
-          const year = new Date(item.createdAt).getFullYear();
-          const month = String(
-            new Date(item.createdAt).getMonth() + 1,
-          ).padStart(2, "0");
-          const randomNum = String(Math.floor(Math.random() * 10000)).padStart(
-            4,
-            "0",
-          );
-          const enrollmentCode = item._id.slice(-6).toUpperCase();
-
-          const academicReceiptNumber = `KAUM/${year}/${month}/${enrollmentCode}-${randomNum}`;
-
-          return {
-            id: item._id,
-            enrollmentId: formatEnrollmentId(item._id, item.createdAt),
-            academicReceiptNumber: academicReceiptNumber,
-            courseId: courseId,
-            course: courseData,
-            date: new Date(item.createdAt).toLocaleDateString("en-IN", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            }),
-            fullDate: new Date(item.createdAt),
-            desc: courseData?.title || "Course",
-            type: courseData?.category || "Academic",
-            totalAmount: discountedTotal,
-            paidAmount: paidAmount,
-            remaining: Math.max(remaining, 0),
-            paymentMode: paymentMode,
-            couponCode: couponCode,
-            discountAmount: discountAmount,
-            originalAmount: originalAmount,
-            isPaid: isPaid,
-          };
-        });
-
-        setPaymentHistory(formatted);
-      } catch (err) {
-        console.error("Failed to load fee data", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadFees();
-  }, []);
+  }, [loadFees]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadFees();
+  };
 
   const totalFee = paymentHistory.reduce(
     (sum, item) => sum + item.totalAmount,
@@ -300,6 +290,7 @@ const FeePurchase = () => {
                   ? "EMI installment payment successful!"
                   : "Payment successful!",
               );
+              // Force complete page reload with cache bypass
               window.location.reload();
             } else {
               alert("Payment verification failed.");
@@ -1308,6 +1299,22 @@ const FeePurchase = () => {
 
             <span className="text-xs font-semibold bg-[#74271E]/10 text-[#74271E] px-4 py-2 rounded-lg">
               {paymentHistory.length} Records
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-[#74271E] bg-white border border-[#e8dfd0] rounded-full hover:bg-[#faf7f2] transition disabled:opacity-50"
+            >
+              <RefreshCw
+                size={14}
+                className={refreshing ? "animate-spin" : ""}
+              />
+              {refreshing ? "Refreshing..." : "Refresh"}
+            </button>
+            <span className="text-xs font-semibold text-gray-400 bg-white px-4 py-2 rounded-full border border-[#eee3d2] whitespace-nowrap shrink-0">
+              {paymentHistory.length} Transactions
             </span>
           </div>
         </div>

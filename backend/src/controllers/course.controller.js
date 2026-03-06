@@ -5,16 +5,17 @@ import fs from "fs";
 import Enrollment from "../models/Enrollment.model.js";
 import Staff from "../models/Staff.model.js";
 /* =========================
-   HELPER: Parse language field
+   HELPER: Parse JSON fields safely
 ========================= */
-const parseLanguage = (language) => {
-  if (!language) return undefined;
-  if (Array.isArray(language)) return language;
+const parseJSON = (value, defaultValue = []) => {
+  if (!value) return defaultValue;
+  if (Array.isArray(value)) return value;
+  if (typeof value === 'object') return defaultValue; // Don't parse objects, return default
   try {
-    const parsed = JSON.parse(language);
-    return Array.isArray(parsed) ? parsed : [language];
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : defaultValue;
   } catch {
-    return [language];
+    return defaultValue;
   }
 };
 
@@ -73,10 +74,10 @@ export const createCourse = async (req, res) => {
       level: level || "Prathama (Beginner)",
       mode,
       price,
-      language: parseLanguage(language),
+      language: parseJSON(language, []),
       startDate: new Date(startDate),
       endDate: new Date(endDate),
-      batchSchedule: batchSchedule ? JSON.parse(batchSchedule) : [],
+      batchSchedule: parseJSON(batchSchedule, []),
       image: {
         public_id: upload.public_id,
         url: upload.secure_url,
@@ -92,6 +93,17 @@ export const createCourse = async (req, res) => {
     });
   } catch (error) {
     console.error("CREATE COURSE ERROR:", error);
+    
+    // Handle Mongoose validation errors
+    if (error.name === 'ValidationError') {
+      const validationMessages = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: validationMessages
+      });
+    }
+    
     return res.status(500).json({
       success: false,
       message: "Failed to create course",
@@ -135,7 +147,7 @@ export const updateCourse = async (req, res) => {
     ALLOWED_FIELDS.forEach((field) => {
       if (req.body[field] !== undefined) {
         if (field === "language") {
-          course.language = parseLanguage(req.body.language);
+          course.language = parseJSON(req.body.language, []);
         } else if (field === "startDate" || field === "endDate") {
           course[field] = new Date(req.body[field]);
         } else if (field === "instructor") {
@@ -150,14 +162,8 @@ export const updateCourse = async (req, res) => {
             course.instructor = undefined;
           }
         } else if (field === "batchSchedule") {
-          // Parse batchSchedule JSON string
-          try {
-            course.batchSchedule = typeof req.body.batchSchedule === "string" 
-              ? JSON.parse(req.body.batchSchedule) 
-              : req.body.batchSchedule;
-          } catch (e) {
-            console.error("Error parsing batchSchedule:", e);
-          }
+          // Parse batchSchedule JSON - handle both string and object
+          course.batchSchedule = parseJSON(req.body.batchSchedule, []);
         } else {
           course[field] = req.body[field];
         }
