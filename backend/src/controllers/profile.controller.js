@@ -1,12 +1,10 @@
 import Enrollment from "../models/Enrollment.model.js";
 import Certificate from "../models/Certificate.model.js";
 import bcrypt from "bcryptjs";
-import Payment from "../models/Payment.model.js"
+import Payment from "../models/Payment.model.js";
 
 /**
- * ==============================
  * 📊 DASHBOARD STATS
- * ==============================
  */
 export const getDashboardStats = async (req, res) => {
   try {
@@ -24,8 +22,8 @@ export const getDashboardStats = async (req, res) => {
       total === 0
         ? 0
         : Math.round(
-          enrollments.reduce((sum, e) => sum + e.progress, 0) / total,
-        );
+            enrollments.reduce((sum, e) => sum + e.progress, 0) / total,
+          );
 
     res.json({
       success: true,
@@ -107,80 +105,46 @@ export const getRecentEnrollments = async (req, res) => {
 // };
 export const getMyEnrollments = async (req, res) => {
   try {
-    const enrollments = await Enrollment.aggregate([
-      // 1. Match only this student's enrollments
-      {
-        $match: {
-          student: req.user._id,
-        },
-      },
+    const enrollments = await Enrollment.find({
+      student: req.user._id,
+    })
+      .populate(
+        "course",
+        "title image startDate endDate category instructor duration level mode",
+      )
+      .populate({
+        path: "payment",
+        select:
+          "originalAmount discountAmount finalAmount couponCode paymentMode status",
+      })
+      .sort({ createdAt: -1 });
 
-      // 2. Lookup course details
-      {
-        $lookup: {
-          from: "courses",
-          localField: "course",
-          foreignField: "_id",
-          as: "course",
-        },
-      },
-      {
-        $unwind: {
-          path: "$course",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
+    // Calculate remaining amount based on payment details
+    const enrollmentsWithRemaining = enrollments.map((enrollment) => {
+      const payment = enrollment.payment;
+      if (payment) {
+        // Calculate discounted total (original - discount)
+        const discountedTotal = payment.originalAmount - payment.discountAmount;
 
-      // 3. Lookup payment details
-      {
-        $lookup: {
-          from: "payments",
-          localField: "payment",
-          foreignField: "_id",
-          as: "payment",
-        },
-      },
-      {
-        $unwind: {
-          path: "$payment",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-
-      // 4. Shape the output — pick only needed fields
-      {
-        $project: {
-          _id: 1,
-          status: 1,
-          progress: 1,
-          enrolledAt: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          "course._id": 1,
-          "course.title": 1,
-          "course.image": 1,
-          "course.startDate": 1,
-          "course.endDate": 1,
-          "course.category": 1,
-          "course.instructor": 1,
-          "course.duration": 1,
-          "course.level": 1,
-          "course.mode": 1,
-          "payment._id": 1,
-          "payment.originalAmount": 1,
-          "payment.finalAmount": 1,
-          "payment.discountAmount": 1,
-          "payment.status": 1,
-        },
-      },
-
-      // 5. Sort newest first
-      { $sort: { createdAt: -1 } },
-    ]);
+        // For EMI, calculate remaining based on payment mode
+        let remainingAmount = 0;
+        if (payment.paymentMode === "EMI") {
+          // EMI: remaining is total after first payment (70% remaining)
+          remainingAmount = discountedTotal - payment.finalAmount;
+        } else {
+          remainingAmount = discountedTotal - payment.finalAmount;
+        }
+        return {
+          ...enrollment.toObject(),
+          remainingAmount: Math.max(remainingAmount, 0),
+        };
+      }
+      return enrollment;
+    });
 
     res.json({
       success: true,
-      data: enrollments,
+      data: enrollmentsWithRemaining,
     });
   } catch (error) {
     console.error("GET ENROLLMENTS ERROR:", error);

@@ -1,7 +1,7 @@
 import { Clock, Trash, Loader2, RefreshCw, Bell, CreditCard, GraduationCap, MessageCircle, MoreHorizontal, CheckCircle, X, ExternalLink, User, BookOpen, Mail, Phone, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { api } from "../../lib/api";
 
 function NotificationsPage() {
@@ -16,6 +16,7 @@ function NotificationsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   // Notification categories with icons and labels
   const categories = [
@@ -31,6 +32,19 @@ function NotificationsPage() {
     fetchNotifications();
     fetchStats();
   }, []);
+
+  // Handle highlight parameter from URL (when navigating from Smart Alerts)
+  useEffect(() => {
+    const highlightId = searchParams.get("highlight");
+    if (highlightId && notifications.length > 0) {
+      const notificationToHighlight = notifications.find(n => n.id === highlightId);
+      if (notificationToHighlight) {
+        setSelectedNotification(notificationToHighlight);
+        // Clear the URL parameter after opening
+        navigate("/admin/notifications", { replace: true });
+      }
+    }
+  }, [notifications, searchParams]);
 
   const fetchNotifications = async (filter = activeFilter, page = currentPage) => {
     try {

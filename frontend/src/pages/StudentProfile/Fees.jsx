@@ -1236,7 +1236,7 @@ const FeePurchase = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 pb-16 mt-8 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-7xl mx-auto space-y-8 pb-16 mt-8 px-4 sm:px-6 lg:px-2">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-gradient-to-r from-[#74271E] to-[#8b3d32] p-8 rounded-3xl text-white">
         <div>

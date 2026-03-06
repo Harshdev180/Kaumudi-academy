@@ -1,12 +1,15 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Bell, Settings, BellRing, X } from "lucide-react";
 import {
-  AlertTriangle,
-  TicketPercent,
+  Bell,
+  Settings,
+  BellRing,
+  X,
   CreditCard,
-  Tag,
-  Mail,
+  GraduationCap,
+  MessageCircle,
+  MoreHorizontal,
 } from "lucide-react";
+import { AlertTriangle, TicketPercent, Tag, Mail } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "../../lib/api";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -22,6 +25,16 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
 
   const [isMobile, setIsMobile] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [activeAlertFilter, setActiveAlertFilter] = useState("all");
+
+  // Alert categories
+  const alertCategories = [
+    { id: "all", label: "All", color: "bg-gray-500" },
+    { id: "payment", label: "Payments", color: "bg-green-500" },
+    { id: "enrollment", label: "Enrollment", color: "bg-blue-500" },
+    { id: "student_query", label: "Student Query", color: "bg-purple-500" },
+    { id: "others", label: "Others", color: "bg-orange-500" },
+  ];
 
   useEffect(() => {
     api
@@ -55,6 +68,12 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
         return <Tag className="w-4 h-4" />;
       case "inquiry":
         return <Mail className="w-4 h-4" />;
+      case "enrollment":
+        return <GraduationCap className="w-4 h-4" />;
+      case "student_query":
+        return <MessageCircle className="w-4 h-4" />;
+      case "others":
+        return <MoreHorizontal className="w-4 h-4" />;
       default:
         return <AlertTriangle className="w-4 h-4" />;
     }
@@ -175,10 +194,10 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
                     exit={{ opacity: 0, y: -20 }}
                     className="fixed left-1/2 -translate-x-1/2 top-20 w-[92vw] max-w-sm md:absolute md:left-auto md:translate-x-0 md:right-0 md:top-auto md:mt-3 md:w-80 rounded-3xl shadow-xl text-[#6b1d14] overflow-hidden z-[9999]"
                   >
-                    <div className="px-5 py-4  flex items-center bg-[#EFE3D5] justify-between">
-                      <div className="flex items-start  gap-3">
+                    <div className="px-5 py-4 flex items-center bg-[#EFE3D5] justify-between">
+                      <div className="flex items-start gap-3">
                         <BellRing className="w-5 h-5 text-[#6b1d14]" />
-                        <h4 className="font-semibold  text-[#6b1d14]">
+                        <h4 className="font-semibold text-[#6b1d14]">
                           Smart Alerts
                         </h4>
                       </div>
@@ -188,30 +207,57 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
                       </button>
                     </div>
 
-                    <div className=" px-3 py-2 space-y-2 max-h-72 bg-[#6b1d14]  overflow-y-auto">
-                      {latestAlerts.map((alert) => (
-                        <motion.div
-                          key={alert._id}
-                          whileHover={{ scale: 1.02 }}
-                          onClick={() => {
-                            setShowAlerts(false);
-                            navigate("/admin/notifications");
-                          }}
-                          className="flex items-start gap-3 p-3 rounded-2xl bg-white/80 hover:bg-[#D4AF37] hover:text-[#6b1d14] cursor-pointer"
+                    {/* Category Filter Buttons */}
+                    <div className="px-3 py-2 flex flex-wrap gap-2 bg-[#EFE3D5] border-t border-[#74271E]/10">
+                      {alertCategories.map((cat) => (
+                        <button
+                          key={cat.id}
+                          onClick={() => setActiveAlertFilter(cat.id)}
+                          className={`px-3 py-1 rounded-full text-[10px] font-semibold transition ${
+                            activeAlertFilter === cat.id
+                              ? "bg-[#74271E] text-white"
+                              : "bg-[#74271E]/10 text-[#74271E] hover:bg-[#74271E]/20"
+                          }`}
                         >
-                          <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-[#D4AF37]/20">
-                            {getAlertIcon((alert.type || "").toLowerCase())}
-                          </div>
-                          <div className="flex flex-col">
-                            <p className="text-sm font-semibold">
-                              {alert.title}
-                            </p>
-                            <p className="text-xs opacity-70 line-clamp-1">
-                              {alert.message}
-                            </p>
-                          </div>
-                        </motion.div>
+                          {cat.label.toUpperCase()}
+                        </button>
                       ))}
+                    </div>
+
+                    <div className="px-3 py-2 space-y-2 max-h-72 bg-[#6b1d14] overflow-y-auto">
+                      {notifications
+                        .filter(
+                          (n) =>
+                            activeAlertFilter === "all" ||
+                            (n.type || "").toUpperCase() ===
+                              activeAlertFilter.toUpperCase(),
+                        )
+                        .slice(0, 4)
+                        .map((alert) => (
+                          <motion.div
+                            key={alert._id}
+                            whileHover={{ scale: 1.02 }}
+                            onClick={() => {
+                              setShowAlerts(false);
+                              navigate(
+                                `/admin/notifications?highlight=${alert._id}`,
+                              );
+                            }}
+                            className="flex items-start gap-3 p-3 rounded-2xl bg-white/80 hover:bg-[#D4AF37] hover:text-[#6b1d14] cursor-pointer"
+                          >
+                            <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-[#D4AF37]/20">
+                              {getAlertIcon((alert.type || "").toLowerCase())}
+                            </div>
+                            <div className="flex flex-col">
+                              <p className="text-sm font-semibold">
+                                {alert.title}
+                              </p>
+                              <p className="text-xs opacity-70 line-clamp-1">
+                                {alert.message}
+                              </p>
+                            </div>
+                          </motion.div>
+                        ))}
                     </div>
                     <div
                       onClick={() => {
