@@ -369,6 +369,11 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
                         {selectedNotification.metadata.userDetails.phone && selectedNotification.metadata.userDetails.phone !== "N/A" && (
                           <p className="text-sm text-gray-500">{selectedNotification.metadata.userDetails.phone}</p>
                         )}
+                        {(selectedNotification.metadata.enrollmentId || selectedNotification.metadata.userDetails?.enrollmentId) && (
+                          <p className="text-xs text-[#74271E] font-semibold mt-1">
+                            Enrollment ID: {selectedNotification.metadata.enrollmentId || selectedNotification.metadata.userDetails?.enrollmentId}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>

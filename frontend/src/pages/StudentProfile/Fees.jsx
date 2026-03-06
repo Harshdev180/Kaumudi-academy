@@ -24,7 +24,6 @@ import {
   verifyEmiInstallment,
 } from "../../lib/api";
 import logo from "../../assets/logo-bgremove.webp";
-import { formatEnrollmentId } from "../../lib/utils";
 
 const FeePurchase = () => {
   const [paymentHistory, setPaymentHistory] = useState([]);
@@ -99,6 +98,10 @@ const FeePurchase = () => {
           discountAmount: discountAmount,
           originalAmount: originalAmount,
           isPaid: isPaid,
+          // Add payment ID for Receipt No. column
+          paymentId: payment._id || payment.id || null,
+          // Add enrollment ID for receipt
+          enrollmentId: item._id,
         };
       });
 
@@ -395,7 +398,7 @@ const FeePurchase = () => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic Receipt - ${item.academicReceiptNumber}</title>
+    <title>Academic Receipt - ${item.paymentId ? item.paymentId.slice(-6) : item.academicReceiptNumber || "—"}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -975,7 +978,7 @@ const FeePurchase = () => {
                 <div class="receipt-title-section">
                     <div class="receipt-title">ACADEMIC RECEIPT</div>
                     <div class="receipt-number">
-                        Receipt No: <span>${item.academicReceiptNumber}</span>
+                        Receipt No: <span>${item.paymentId ? item.paymentId.slice(-6) : item.academicReceiptNumber || "—"}</span>
                     </div>
                 </div>
                 
@@ -1403,7 +1406,7 @@ const FeePurchase = () => {
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-2 text-gray-600 font-mono text-xs">
                         <Hash size={12} className="text-[#c9a050]" />
-                        {item.academicReceiptNumber}
+                        {item.paymentId ? item.paymentId.slice(-6) : item.academicReceiptNumber || "—"}
                       </div>
                     </td>
 

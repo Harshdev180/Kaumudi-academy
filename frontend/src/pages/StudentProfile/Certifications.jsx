@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import { getProfileCertificates } from "../../lib/api";
 import logo from "../../assets/logo-bgremove.webp";
-import { formatEnrollmentId } from "../../lib/utils";
 
 const Certificates = () => {
   const [certificates, setCertificates] = useState([]);
@@ -22,10 +21,7 @@ const Certificates = () => {
     const studentLastName =
       localStorage.getItem("kaumudi_user_last_name") || "";
     const studentId = localStorage.getItem("kaumudi_user_id") || "";
-    const enrollmentId = formatEnrollmentId(
-      studentId,
-      cert.issuedAt || new Date(),
-    );
+    const enrollmentId = studentId;
 
     // Simple transliteration for demo purposes, in real app this would come from profile
     const sanskritName = "श्रद्धेय छात्र"; // Default placeholder if not available

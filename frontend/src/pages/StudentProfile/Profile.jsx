@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { getProfileMe, updateProfileMe } from "../../lib/api";
 import { useAuth } from "../../context/useAuthHook";
-import { formatEnrollmentId } from "../../lib/utils";
 
 const Profile = () => {
   const { user, updateUser } = useAuth();
@@ -228,10 +227,7 @@ const Profile = () => {
                 Enrollment ID
               </p>
               <p className="font-mono font-bold text-[#74271E] text-sm tracking-widest">
-                {formatEnrollmentId(
-                  profile.id || profile._id,
-                  profile.joinDate,
-                )}
+                {profile.id || profile._id}
               </p>
             </div>
           </div>
