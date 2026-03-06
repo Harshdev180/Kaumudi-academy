@@ -416,8 +416,7 @@ const FeePurchase = () => {
         }
 
         .receipt-container {
-            max-width: 900px;
-            width: 100%;
+            width: 794px;
             margin: 0 auto;
         }
 
@@ -442,7 +441,7 @@ const FeePurchase = () => {
             border-bottom: 2px solid #f0e9dc;
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
             position: relative;
         }
 
@@ -468,17 +467,19 @@ const FeePurchase = () => {
             width: 100%;
             height: 100%;
             object-fit: contain;
+            background: #74271E
         }
 
         .institution-text h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 800;
             background: linear-gradient(135deg, #74271E 0%, #C9A050 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 5px;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.3px;
+            white-space: nowrap;     /* keeps it in one line */
         }
 
         .institution-text p {
@@ -504,22 +505,22 @@ const FeePurchase = () => {
         .receipt-title {
             background: linear-gradient(135deg, #74271E 0%, #8B3D2F 100%);
             color: white;
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-weight: 800;
-            font-size: 24px;
-            letter-spacing: 2px;
+            padding: 8px 18px;        /* reduced height & width */
+            border-radius: 32px;
+            font-weight: 700;
+            font-size: 16px;          /* smaller text */
+            letter-spacing: 1.2px;    /* tighter spacing */
             display: inline-block;
-            box-shadow: 0 10px 20px -5px rgba(116, 39, 30, 0.3);
+            box-shadow: 0 6px 12px -3px rgba(116, 39, 30, 0.25);
         }
 
         .receipt-number {
-            margin-top: 15px;
-            font-size: 14px;
+            margin-top: 12px;
+            font-size: 12px;      /* smaller text */
             color: #4b5563;
             background: #f3f4f6;
-            padding: 8px 20px;
-            border-radius: 30px;
+            padding: 5px 14px;    /* smaller box */
+            border-radius: 20px;
             display: inline-block;
             font-weight: 600;
         }
@@ -528,8 +529,8 @@ const FeePurchase = () => {
             color: #74271E;
             font-weight: 700;
             font-family: monospace;
-            font-size: 16px;
-            margin-left: 8px;
+            font-size: 13px;   /* smaller number */
+            margin-left: 6px;
         }
 
         /* Watermark */
@@ -841,6 +842,7 @@ const FeePurchase = () => {
 
         .signature-area {
             text-align: center;
+            padding-top: 35px;
         }
 
         .signature-line {
@@ -856,10 +858,11 @@ const FeePurchase = () => {
             color: #4b5563;
             text-transform: uppercase;
             letter-spacing: 1px;
+            margin-bottom: 2px;
         }
 
         .stamp {
-            margin-top: 15px;
+            margin-top: 2px;
             color: #74271E;
             font-weight: 800;
             font-size: 14px;
@@ -933,26 +936,128 @@ const FeePurchase = () => {
             box-shadow: 0 12px 24px rgba(201, 160, 80, 0.3);
         }
 
+        /* ================= MOBILE RESPONSIVE ================= */
+
+        @media (max-width: 768px) {
+
+            body{
+                padding:10px;
+            }
+
+            .receipt-container{
+                max-width:100%;
+            }
+
+            .receipt{
+                border-radius:16px;
+            }
+
+            /* Header stack */
+            .receipt-header{
+                flex-direction:column;
+                align-items:flex-start;
+                gap:15px;
+                padding:20px;
+            }
+
+            .receipt-title-section{
+                text-align:left;
+            }
+
+            .institution-logo{
+                width:60px;
+                height:60px;
+            }
+
+            .institution-text h1{
+                font-size:20px;
+                white-space:normal; /* allow wrap on mobile */
+            }
+
+            /* Content padding */
+            .receipt-content{
+                padding:20px;
+            }
+
+            /* Info cards */
+            .info-grid{
+                grid-template-columns:1fr;
+                gap:15px;
+            }
+
+            /* Academic section */
+            .course-details{
+                grid-template-columns:1fr;
+                gap:15px;
+            }
+
+            /* Payment summary */
+            .payment-summary{
+                grid-template-columns:1fr;
+            }
+
+            /* Footer */
+            .receipt-footer{
+                grid-template-columns:1fr;
+                text-align:center;
+                gap:20px;
+            }
+
+            .footer-note{
+                text-align:center;
+            }
+
+            /* Table scroll */
+            .transaction-table{
+                display:block;
+                overflow-x:auto;
+                white-space:nowrap;
+            }
+
+        }
+
         /* Print Styles */
         @media print {
-            body {
-                background: white;
-                padding: 0;
-            }
-            
-            .receipt {
-                box-shadow: none;
-                border: 1px solid #e5e7eb;
-            }
-            
-            .action-buttons {
-                display: none;
-            }
-            
-            .no-print {
-                display: none;
-            }
-        }
+
+          body{
+              background:white;
+              padding:0;
+          }
+
+          .receipt-container{
+              width:794px;
+          }
+
+          .receipt{
+              border-radius:0;
+              box-shadow:none;
+              border:none;
+          }
+
+          .receipt-header{
+              page-break-inside:avoid;
+          }
+
+          .academic-details{
+              page-break-inside:avoid;
+          }
+
+          .fee-breakdown{
+              page-break-inside:avoid;
+          }
+
+          .payment-summary{
+              page-break-inside:avoid;
+          }
+
+          .receipt-footer{
+              page-break-inside:avoid;
+          }
+
+          .action-buttons{
+              display:none !important;
+          }
+      }
     </style>
 </head>
 <body>
@@ -967,8 +1072,6 @@ const FeePurchase = () => {
                     </div>
                     <div class="institution-text">
                         <h1>Kaumudi Sanskrit Academy</h1>
-                        <p>पुरातनं ज्ञानं नवीनं च दृष्टिकोणम्</p>
-                        <div class="sanskrit-motto">विद्या परं भूषणम्</div>
                     </div>
                 </div>
                 
@@ -994,7 +1097,6 @@ const FeePurchase = () => {
                         </div>
                         <div class="info-label">Student Name</div>
                         <div class="info-value">${studentName}</div>
-                        <div class="info-sub">ID: KDS${studentId.slice(-8) || "2024001"}</div>
                     </div>
                     
                     <div class="info-card">
@@ -1154,10 +1256,7 @@ const FeePurchase = () => {
                     
                     <div class="footer-note">
                         <p>Generated on: ${dateString} at ${timeString}</p>
-                        <p>For any queries, contact accounts@kaumudi.academy</p>
-                        <div class="verification-code">
-                            Verification: ${item.id.slice(-8).toUpperCase()}
-                        </div>
+                        <p>For any queries, contact ksacademy@gmail.com</p>
                     </div>
                     
                     <div class="footer-note" style="text-align: left;">
