@@ -873,10 +873,6 @@ const FeePurchase = () => {
                         <span class="breakdown-label">Processing Fee</span>
                         <span class="breakdown-value">${formatINR(processingFee)}</span>
                     </div>
-                    <div class="breakdown-row">
-                        <span class="breakdown-label">GST (18%)</span>
-                        <span class="breakdown-value">${formatINR(gstAmount)}</span>
-                    </div>
                     
                     <div class="breakdown-row total-row">
                         <span class="breakdown-label">Total Amount Paid</span>
