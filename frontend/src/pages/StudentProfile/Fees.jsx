@@ -375,7 +375,9 @@ const FeePurchase = () => {
       basePrice > 0 ? Math.round((discount / basePrice) * 100) : 0;
     const processingFee = 99;
     const subtotalAfterDiscount = basePrice - discount;
-    const netTotal = subtotalAfterDiscount + processingFee;
+    const taxableAmount = subtotalAfterDiscount + processingFee;
+    const gstAmount = Math.round(taxableAmount * 0.18);
+    const netTotal = taxableAmount + gstAmount;
 
     // Get current timestamp
     const now = new Date();
@@ -871,9 +873,13 @@ const FeePurchase = () => {
                         <span class="breakdown-label">Processing Fee</span>
                         <span class="breakdown-value">${formatINR(processingFee)}</span>
                     </div>
+                    <div class="breakdown-row">
+                        <span class="breakdown-label">GST (18%)</span>
+                        <span class="breakdown-value">${formatINR(gstAmount)}</span>
+                    </div>
                     
                     <div class="breakdown-row total-row">
-                        <span class="breakdown-label">Total Amount Payable</span>
+                        <span class="breakdown-label">Total Amount Paid</span>
                         <span class="breakdown-value">${formatINR(netTotal)}</span>
                     </div>
                 </div>

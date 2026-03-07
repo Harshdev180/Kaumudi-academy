@@ -156,7 +156,7 @@ const EnrollmentPage = () => {
     const years = Math.floor(months / 12);
     const remainingMonths = months % 12;
     if (remainingMonths === 0) return years === 1 ? "1 Year" : `${years} Years`;
-    return `${years} Year${years > 1 ? 's' : ''} ${remainingMonths} Month${remainingMonths > 1 ? 's' : ''}`;
+    return `${years} Year${years > 1 ? "s" : ""} ${remainingMonths} Month${remainingMonths > 1 ? "s" : ""}`;
   };
 
   const courseData = useMemo(() => {
@@ -173,7 +173,10 @@ const EnrollmentPage = () => {
       price: numericPrice, // always number now
       startDate: location.state?.startDate || null,
       endDate: location.state?.endDate || null,
-      duration: calculateDuration(location.state?.startDate, location.state?.endDate),
+      duration: calculateDuration(
+        location.state?.startDate,
+        location.state?.endDate,
+      ),
       level: location.state?.level || "Advanced",
       language: location.state?.language || "Sanskrit/Hindi",
       mode: location.state?.mode || "Live Online",
@@ -194,8 +197,9 @@ const EnrollmentPage = () => {
 
   // --- ADDITIONAL CHARGES ---
   const processingFee = 99;
-  const additionalChargesTotal = processingFee;
-  const finalPayable = Math.max(0, finalPrice + additionalChargesTotal);
+  const taxableAmount = finalPrice + processingFee;
+  const gstAmount = Math.round(taxableAmount * 0.18);
+  const finalPayable = taxableAmount + gstAmount;
 
   // --- COUPON HANDLER ---
   const applyCoupon = async () => {
@@ -792,8 +796,12 @@ const EnrollmentPage = () => {
                       className={`${editableInputStyle} appearance-none cursor-pointer bg-white/50`}
                     >
                       <option value="">Select Level</option>
-                      <option value="Beginner">Beginner (No prior knowledge)</option>
-                      <option value="Intermediate">Intermediate (Knows basics)</option>
+                      <option value="Beginner">
+                        Beginner (No prior knowledge)
+                      </option>
+                      <option value="Intermediate">
+                        Intermediate (Knows basics)
+                      </option>
                       <option value="Advanced">Advanced (Fluent)</option>
                     </select>
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#631D11]">
@@ -857,7 +865,8 @@ const EnrollmentPage = () => {
                       <div className="flex items-center gap-2 text-[#d6b15c]">
                         <Calendar size={14} />
                         <p className="font-bold text-sm capitalize">
-                          {formatDate(courseData.startDate)} - {formatDate(courseData.endDate)}
+                          {formatDate(courseData.startDate)} -{" "}
+                          {formatDate(courseData.endDate)}
                         </p>
                       </div>
                     </div>
@@ -952,22 +961,25 @@ const EnrollmentPage = () => {
                       ).toLocaleString("en-IN")}
                     </span>
                   </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center text-[#d6b15c] text-sm font-bold">
-                      <span>Processing Fee</span>
-                      <span>₹{processingFee.toLocaleString("en-IN")}</span>
-                    </div>
-                    {/* <div className="flex justify-between items-center text-[#d6b15c] text-sm font-bold">
-                      <span>Platform Fee</span>
-                      <span>₹{platformFee.toLocaleString("en-IN")}</span>
-                    </div> */}
-                  </div>
+
                   {Discount > 0 && (
                     <div className="flex justify-between items-center text-green-400 text-sm font-bold">
                       <span>Coupon Discount</span>
                       <span>-₹{Discount.toLocaleString("en-IN")}</span>
                     </div>
                   )}
+
+                  <div className="space-y-2 pt-2 border-t border-white/5">
+                    <div className="flex justify-between items-center text-stone-300 text-sm">
+                      <span>Processing Fee</span>
+                      <span>₹{processingFee.toLocaleString("en-IN")}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-stone-300 text-sm">
+                      <span>GST (18%)</span>
+                      <span>₹{gstAmount.toLocaleString("en-IN")}</span>
+                    </div>
+                  </div>
+
                   {paymentType === "EMI" && orderResponse?.emiDetails && (
                     <div className="flex justify-between items-center text-blue-400 text-sm font-bold">
                       <span>EMI (First of 3)</span>
@@ -981,9 +993,9 @@ const EnrollmentPage = () => {
                       <span className="text-[10px] uppercase font-bold tracking-widest text-stone-300">
                         {paymentType === "EMI" && orderResponse?.emiDetails
                           ? "First Payment"
-                          : "Net Payable"}
+                          : "Total Payable"}
                       </span>
-                      <span className="text-3xl font-black text-white">
+                      <span className="text-3xl font-black text-[#d6b15c]">
                         ₹
                         {paymentType === "EMI" && orderResponse?.emiDetails
                           ? orderResponse.emiDetails.firstPayment.toFixed(2)
