@@ -6,10 +6,16 @@ export default function TermsCondition() {
   return (
     <section className="bg-[#FBF4E2] min-h-screen py-10 mb-[-70px]">
       <SEO
-        title="Terms & Conditions | Kaumudi Sanskrit Academy"
-        description="Read the terms and conditions for using Kaumudi Sanskrit Academy services."
+        title="Terms & Conditions | Kaumudi Sanskrit Academy by Graphura India"
+        description="Read the terms and conditions for using Kaumudi Sanskrit Academy services, a venture of Graphura India Private Limited."
         canonicalPath="/terms"
         og={{ type: "website" }}
+        keywords={[
+          "Terms and Conditions",
+          "Kaumudi Academy terms",
+          "Graphura India Private Limited legal",
+          "Academy service agreement",
+        ]}
         jsonLd={[
           {
             "@context": "https://schema.org",

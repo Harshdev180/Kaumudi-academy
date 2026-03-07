@@ -6,10 +6,16 @@ export default function PrivacyPolicy() {
   return (
     <section className="bg-[#FBF4E2] min-h-screen py-10 mb-[-70px]">
       <SEO
-        title="Privacy Policy | Kaumudi Sanskrit Academy"
-        description="Read how Kaumudi Sanskrit Academy collects, uses, and protects your information."
+        title="Privacy Policy | Kaumudi Sanskrit Academy by Graphura India"
+        description="Read how Kaumudi Sanskrit Academy, a venture of Graphura India Private Limited, collects, uses, and protects your information."
         canonicalPath="/privacy"
         og={{ type: "website" }}
+        keywords={[
+          "Privacy Policy",
+          "Kaumudi Academy Privacy",
+          "Graphura India Private Limited data protection",
+          "Sanskrit Academy terms",
+        ]}
         jsonLd={[
           {
             "@context": "https://schema.org",

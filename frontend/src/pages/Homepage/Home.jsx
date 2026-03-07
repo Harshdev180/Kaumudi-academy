@@ -55,10 +55,23 @@ export default function Home() {
   return (
     <main className="bg-[#f1e4c8] text-neutral-900 overflow-x-hidden">
       <SEO
-        title="Kaumudi Sanskrit Academy | Learn Sanskrit with Scholars"
-        description="Study Sanskrit with expert Acharyas: Paninian Grammar, Kavya, Vedanta and more. Live online courses, structured curriculum, and certifications."
+        title="Kaumudi Sanskrit Academy | Learn Sanskrit with Experts"
+        description="Kaumudi Sanskrit Academy, a venture of Graphura India Private Limited, offers authentic Sanskrit learning in Paninian Grammar, Vedanta, and Kavya. Join our live online courses today."
         canonicalPath="/"
         og={{ type: "website" }}
+        keywords={[
+          "Kaumudi Sanskrit Academy",
+          "Graphura India Private Limited",
+          "Sanskrit learning platform",
+          "Paninian Grammar",
+          "Vedic studies online",
+          "Sanskrit certifications India",
+          "Ashtadhyayi courses",
+          "Sanskrit for beginners",
+          "Advanced Sanskrit grammar",
+          "Sanskrit scholars academy",
+          "Graphura India education",
+        ]}
         jsonLd={[
           {
             "@context": "https://schema.org",

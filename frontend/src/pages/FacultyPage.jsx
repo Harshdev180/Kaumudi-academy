@@ -52,10 +52,19 @@ const FacultyPage = () => {
   ];
   const seo = (
     <SEO
-      title="Faculty | Kaumudi Sanskrit Academy"
-      description="Meet our Acharyas and faculty who guide students across Vyakarana, Vedanta, Kavya and more."
+      title="Our Acharyas | Faculty of Kaumudi Sanskrit Academy"
+      description="Meet our team of scholars at Kaumudi Sanskrit Academy, a venture of Graphura India Private Limited. Experts in Paninian Grammar, Vedanta, and Kavya."
       canonicalPath="/faculty"
       og={{ type: "website" }}
+      keywords={[
+        "Sanskrit scholars India",
+        "Acharya Ananth Narayan",
+        "Sanskrit teachers",
+        "Kaumudi Academy faculty",
+        "Graphura India education team",
+        "Vedanta experts online",
+        "Vyakarana instructors",
+      ]}
       jsonLd={[
         {
           "@context": "https://schema.org",

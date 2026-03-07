@@ -297,10 +297,22 @@ const AllCoursesPage = () => {
   return (
     <div className="min-h-screen bg-[#f1e4c8] font-serif text-[#2D2417] selection:bg-[#B38B3F] selection:text-white antialiased">
       <SEO
-        title="All Courses | Kaumudi Sanskrit Academy"
-        description="Explore Sanskrit courses across Grammar, Kavya, Vedanta and more. Learn live online with expert Acharyas."
+        title="Sanskrit Courses | Kaumudi Sanskrit Academy by Graphura India"
+        description="Explore authentic Sanskrit courses at Kaumudi Sanskrit Academy, a venture of Graphura India Private Limited. From Paninian Grammar to Vedic studies, learn from experts."
         canonicalPath="/allcourses"
         og={{ type: "website" }}
+        keywords={[
+          "Sanskrit courses online",
+          "Learn Sanskrit grammar",
+          "Kaumudi Sanskrit Academy courses",
+          "Graphura India education",
+          "Paninian Vyakarana",
+          "Vedic studies India",
+          "Ashtadhyayi classes",
+          "Sanskrit certification",
+          "Vyakaran Shastra",
+          "Shloks and Spoken Sanskrit",
+        ]}
       />
       {/* --- REFINED HERO SECTION --- */}
       <header className="px-4 lg:px-10 pt-6 pb-14 max-w-screen-2xl mx-auto">

@@ -117,10 +117,17 @@ export default function Contact() {
   return (
     <>
       <SEO
-        title="Contact | Kaumudi Sanskrit Academy"
-        description="Reach out for course inquiries, admissions, or collaborations with Kaumudi Sanskrit Academy."
+        title="Contact Us | Kaumudi Sanskrit Academy by Graphura India"
+        description="Connect with Kaumudi Sanskrit Academy, a venture of Graphura India Private Limited, for admissions, scholarly inquiries, and Vedic learning support."
         canonicalPath="/contact"
         og={{ type: "website" }}
+        keywords={[
+          "Contact Kaumudi Academy",
+          "Graphura India Private Limited contact",
+          "Sanskrit admission inquiries",
+          "Academy location India",
+          "Vedic education support",
+        ]}
         jsonLd={[
           {
             "@context": "https://schema.org",

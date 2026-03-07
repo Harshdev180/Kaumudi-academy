@@ -44,10 +44,16 @@ export default function CookiePolicy() {
     >
       <div className="max-w-5xl mx-auto">
         <SEO
-          title="Cookie Policy | Kaumudi Sanskrit Academy"
-          description="Learn how Kaumudi Sanskrit Academy uses cookies and how you can control them."
+          title="Cookie Policy | Kaumudi Sanskrit Academy by Graphura India"
+          description="Learn how Kaumudi Sanskrit Academy, a venture of Graphura India Private Limited, uses cookies and how you can control them."
           canonicalPath="/cookies"
           og={{ type: "website" }}
+          keywords={[
+            "Cookie Policy",
+            "Kaumudi Academy cookies",
+            "Graphura India Private Limited privacy",
+            "Website tracking policy",
+          ]}
           jsonLd={[
             {
               "@context": "https://schema.org",

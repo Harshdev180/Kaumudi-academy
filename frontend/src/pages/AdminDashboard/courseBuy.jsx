@@ -197,9 +197,8 @@ const EnrollmentPage = () => {
 
   // --- ADDITIONAL CHARGES ---
   const processingFee = 99;
-  const taxableAmount = finalPrice + processingFee;
-  const gstAmount = Math.round(taxableAmount * 0.18);
-  const finalPayable = taxableAmount + gstAmount;
+  const additionalChargesTotal = processingFee;
+  const finalPayable = Math.max(0, finalPrice + additionalChargesTotal);
 
   // --- COUPON HANDLER ---
   const applyCoupon = async () => {
@@ -961,25 +960,22 @@ const EnrollmentPage = () => {
                       ).toLocaleString("en-IN")}
                     </span>
                   </div>
-
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center text-[#d6b15c] text-sm font-bold">
+                      <span>Processing Fee</span>
+                      <span>₹{processingFee.toLocaleString("en-IN")}</span>
+                    </div>
+                    {/* <div className="flex justify-between items-center text-[#d6b15c] text-sm font-bold">
+                      <span>Platform Fee</span>
+                      <span>₹{platformFee.toLocaleString("en-IN")}</span>
+                    </div> */}
+                  </div>
                   {Discount > 0 && (
                     <div className="flex justify-between items-center text-green-400 text-sm font-bold">
                       <span>Coupon Discount</span>
                       <span>-₹{Discount.toLocaleString("en-IN")}</span>
                     </div>
                   )}
-
-                  <div className="space-y-2 pt-2 border-t border-white/5">
-                    <div className="flex justify-between items-center text-stone-300 text-sm">
-                      <span>Processing Fee</span>
-                      <span>₹{processingFee.toLocaleString("en-IN")}</span>
-                    </div>
-                    <div className="flex justify-between items-center text-stone-300 text-sm">
-                      <span>GST (18%)</span>
-                      <span>₹{gstAmount.toLocaleString("en-IN")}</span>
-                    </div>
-                  </div>
-
                   {paymentType === "EMI" && orderResponse?.emiDetails && (
                     <div className="flex justify-between items-center text-blue-400 text-sm font-bold">
                       <span>EMI (First of 3)</span>
@@ -993,9 +989,9 @@ const EnrollmentPage = () => {
                       <span className="text-[10px] uppercase font-bold tracking-widest text-stone-300">
                         {paymentType === "EMI" && orderResponse?.emiDetails
                           ? "First Payment"
-                          : "Total Payable"}
+                          : "Net Payable"}
                       </span>
-                      <span className="text-3xl font-black text-[#d6b15c]">
+                      <span className="text-3xl font-black text-white">
                         ₹
                         {paymentType === "EMI" && orderResponse?.emiDetails
                           ? orderResponse.emiDetails.firstPayment.toFixed(2)
