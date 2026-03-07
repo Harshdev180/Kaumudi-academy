@@ -30,7 +30,7 @@ export default function About() {
     },
   ];
   return (
-    <div className="pt-20">
+    <div className="">
       <SEO
         title="About Us | Kaumudi Sanskrit Academy by Graphura India"
         description="Learn more about Kaumudi Sanskrit Academy and our mission to spread Sanskrit education. A premier venture of Graphura India Private Limited."
