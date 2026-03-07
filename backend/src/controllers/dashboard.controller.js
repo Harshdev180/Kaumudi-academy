@@ -2,6 +2,7 @@ import Course from "../models/Course.model.js";
 import Enrollment from "../models/Enrollment.model.js";
 import Payment from "../models/Payment.model.js"
 import Inquiry from "../models/Inquiry.model.js";
+import { formatEnrollmentId } from "../utils/enrollment.utils.js";
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
 const startOfMonth = (date) => new Date(date.getFullYear(), date.getMonth(), 1);
@@ -293,30 +294,37 @@ export const getDashboardStats = async (req, res) => {
     );
 
     // ── 5. RECENT ORDERS ───────────────────────────────────────────────────────
-    const recentOrders = await Payment.find({ status: { $in: ["SUCCESS", "PENDING", "FAILED"] } })
-      .sort({ createdAt: -1 })
+    // Fetch enrollments instead of payments to get proper enrollment IDs
+    const recentEnrollmentsForOrders = await Enrollment.find()
+      .sort({ enrolledAt: -1 })
       .limit(10)
-      .populate("user", "firstName lastName email")
+      .populate("student", "firstName lastName email createdAt")
+      .populate({
+        path: "payment",
+        select: "originalAmount discountAmount finalAmount status couponCode"
+      })
       .populate("course", "title")
       .lean();
 
-    const formattedOrders = recentOrders.map((p) => ({
-      id: `#${p._id.toString().slice(-4).toUpperCase()}`,
-      customer: p.user
-        ? `${p.user.firstName || ""} ${p.user.lastName || ""}`.trim() ||
-          p.user.email
-        : "N/A",
-      course: p.course?.title || "N/A",
-      amount: `₹${p.finalAmount?.toLocaleString("en-IN") || 0}`,
-      status:
-        p.status === "SUCCESS"
-          ? "completed"
-          : p.status === "PENDING"
-          ? "pending"
-          : "cancelled",
-      date: p.createdAt?.toISOString().split("T")[0],
-      couponUsed: !!p.couponCode,
-    }));
+    const formattedOrders = recentEnrollmentsForOrders.map((enrollment) => {
+      // Generate proper enrollment ID using formatEnrollmentId
+      const enrollmentId = enrollment.student?._id 
+        ? formatEnrollmentId(enrollment.student._id, enrollment.student.createdAt)
+        : `KSA-${new Date().getFullYear()}-ENR${enrollment._id.toString().slice(-4).toUpperCase()}`;
+      
+      return {
+        id: enrollmentId,
+        customer: enrollment.student
+          ? `${enrollment.student.firstName || ""} ${enrollment.student.lastName || ""}`.trim() ||
+            enrollment.student.email
+          : "N/A",
+        course: enrollment.course?.title || "N/A",
+        amount: `₹${enrollment.payment?.finalAmount?.toLocaleString("en-IN") || 0}`,
+        status: enrollment.status === "ACTIVE" ? "completed" : enrollment.status === "COMPLETED" ? "completed" : "pending",
+        date: enrollment.enrolledAt?.toISOString().split("T")[0] || enrollment.createdAt?.toISOString().split("T")[0],
+        enrollmentId: enrollment._id,
+      };
+    });
 
     // ── 6. RECENT INQUIRIES ────────────────────────────────────────────────────
     const recentInquiries = await Inquiry.find()

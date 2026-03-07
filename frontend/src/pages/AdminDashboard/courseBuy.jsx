@@ -1052,7 +1052,7 @@ const EnrollmentPage = () => {
                 {orderResponse?.emiDetails ? (
                   <p>₹{orderResponse.emiDetails.firstPayment.toFixed(2)} × 3</p>
                 ) : (
-                  <p>₹{(finalPayable / 3).toFixed(2)} × 3</p>
+                  <p>₹{((finalPayable - 99) / 3).toFixed(2)} × 3 + ₹99 fee</p>
                 )}
               </div>
             </div>

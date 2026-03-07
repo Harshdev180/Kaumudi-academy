@@ -18,6 +18,7 @@ import {
 import { useEffect } from "react";
 import {
   getProfileEnrollments,
+  getProfileMe,
   createPaymentOrder,
   verifyPayment,
   createEmiInstallment,
@@ -29,11 +30,31 @@ const FeePurchase = () => {
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [studentEnrollmentId, setStudentEnrollmentId] = useState("");
+  const [studentPhone, setStudentPhone] = useState("");
 
   const loadFees = useCallback(async () => {
     try {
       // Add cache-busting timestamp
       const res = await getProfileEnrollments();
+      
+      // Also fetch profile to get student's enrollment ID and phone
+      let enrollmentId = "";
+      let studentPhone = "";
+      try {
+        const profileRes = await getProfileMe();
+        if (profileRes.data?.enrollmentId) {
+          enrollmentId = profileRes.data.enrollmentId;
+          setStudentEnrollmentId(enrollmentId);
+        }
+        // Get phone from profile
+        if (profileRes.data?.phone || profileRes.data?.phoneNumber) {
+          studentPhone = profileRes.data.phone || profileRes.data.phoneNumber;
+          setStudentPhone(studentPhone);
+        }
+      } catch (profileErr) {
+        console.log("Could not fetch profile for enrollment ID:", profileErr);
+      }
 
       console.log("Enrollment response:", res);
       console.log("Enrollment data:", res.data);
@@ -88,10 +109,11 @@ const FeePurchase = () => {
           date: new Date(item.createdAt).toLocaleDateString(),
           desc: courseData?.title || "Course",
           type: courseData?.category || "Academic",
-          // Show discounted total instead of original
-          totalAmount: discountedTotal,
+          // Total includes processing fee (discountedTotal + 99)
+          totalAmount: discountedTotal + 99,
           paidAmount: paidAmount,
-          remaining: Math.max(remaining, 0),
+          // Remaining is course amount without processing fee
+          remaining: Math.max(discountedTotal - paidAmount, 0),
           // Add payment mode and coupon info
           paymentMode: paymentMode,
           couponCode: couponCode,
@@ -100,8 +122,12 @@ const FeePurchase = () => {
           isPaid: isPaid,
           // Add payment ID for Receipt No. column
           paymentId: payment._id || payment.id || null,
-          // Add enrollment ID for receipt
-          enrollmentId: item._id,
+          // Add enrollment ID for receipt - use student's fixed enrollment ID
+          enrollmentId: enrollmentId || (item._id 
+            ? `KSA-${new Date(item.createdAt).getFullYear()}-${String(item._id).slice(-6).toUpperCase()}` 
+            : '-'),
+          // Store the raw enrollment ID
+          rawEnrollmentId: item._id,
         };
       });
 
@@ -124,19 +150,24 @@ const FeePurchase = () => {
   };
 
   const totalFee = paymentHistory.reduce(
-    (sum, item) => sum + item.totalAmount,
+    (sum, item) => {
+      // Total enrollment = discounted course price + processing fee (99)
+      // item.totalAmount already includes processing fee
+      return sum + item.totalAmount;
+    },
     0,
   );
 
   const totalPaid = paymentHistory.reduce(
-    (sum, item) => sum + item.paidAmount,
+    (sum, item) => {
+      // Paid amount includes processing fee (99) if payment was made
+      const processingFee = item.paidAmount > 0 ? 99 : 0;
+      return sum + item.paidAmount + processingFee;
+    },
     0,
   );
 
-  const totalPending = paymentHistory.reduce(
-    (sum, item) => sum + (item.remaining || 0),
-    0,
-  );
+  const totalPending = totalFee - totalPaid;
 
   const feeSummary = [
     {
@@ -361,7 +392,8 @@ const FeePurchase = () => {
       "Student";
     const studentEmail = localStorage.getItem("kaumudi_user_email") || "";
     const studentId = localStorage.getItem("kaumudi_user_id") || "";
-    const studentPhone =
+    // Use studentPhone from state (fetched from profile), fallback to localStorage
+    const phone = studentPhone || 
       localStorage.getItem("kaumudi_user_phone") ||
       localStorage.getItem("kaumudi_user_whatsapp") ||
       "-";
@@ -817,7 +849,7 @@ const FeePurchase = () => {
                     
                     <div class="info-card">
                         <div class="info-label">Contact Details</div>
-                        <div class="info-value">${studentPhone}</div>
+                        <div class="info-value">${phone}</div>
                         <div class="info-sub">${studentEmail}</div>
                     </div>
                 </div>
@@ -882,7 +914,7 @@ const FeePurchase = () => {
                 
                 <div class="payment-summary">
                     <div class="summary-card paid">
-                        <div class="summary-amount">${formatINR(item.paidAmount)}</div>
+                        <div class="summary-amount">${formatINR(item.paidAmount > 0 ? item.paidAmount + 99 : 0)}</div>
                         <div class="summary-label">Amount Paid</div>
                     </div>
                     

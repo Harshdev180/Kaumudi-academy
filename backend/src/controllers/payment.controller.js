@@ -120,18 +120,22 @@ export const createRazorpayOrder = async (req, res) => {
     // Calculate discounted amount AFTER coupon is applied
     const discountedAmount = Math.max(originalAmount - discountAmount, 0);
 
+    // Add processing fee - only once (for full payment or first EMI installment)
+    const processingFee = 99;
+
     // Calculate payable amount based on payment mode
-    // For EMI: First payment = 1/3 of discounted amount (after coupon)
-    // For FULL: Pay the full discounted amount
+    // For EMI: First payment = 1/3 of discounted amount + processing fee (only once)
+    // For FULL: Pay the full discounted amount + processing fee
     // Use 2 decimal places precision
     let finalAmount = discountedAmount;
     if (paymentMode === "EMI") {
-      finalAmount = Math.round((discountedAmount / 3) * 100) / 100; // First payment = 1/3 with 2 decimal places
+      // First EMI payment includes processing fee
+      const emiBase = Math.round((discountedAmount / 3) * 100) / 100;
+      finalAmount = emiBase + processingFee;
+    } else {
+      // Full payment includes processing fee
+      finalAmount = discountedAmount + processingFee;
     }
-
-    // Add processing fee
-    const processingFee = 99;
-    finalAmount = finalAmount + processingFee;
 
     // 4. Razorpay Order
     // Validate amount before creating order (Razorpay max: 10,00,000 INR)
@@ -170,12 +174,18 @@ export const createRazorpayOrder = async (req, res) => {
     // 5. Payment Create
     console.log("Creating payment for user:", req.user._id, "course:", courseId);
     
+    // For EMI, store the base amount without processing fee
+    const paymentFinalAmount = paymentMode === "EMI" 
+      ? Math.round((discountedAmount / 3) * 100) / 100  // Base EMI without processing fee
+      : finalAmount;
+    
     const payment = await Payment.create({
       user: req.user._id,
       course: courseId,
       originalAmount,
       discountAmount,
-      finalAmount,
+      finalAmount: paymentFinalAmount,
+      processingFee: paymentMode === "EMI" ? processingFee : (paymentMode === "FULL" ? processingFee : 0),
       paymentMode: paymentMode || "FULL",
       couponCode: appliedCoupon,
       razorpayOrderId: order.id,
@@ -205,15 +215,16 @@ export const createRazorpayOrder = async (req, res) => {
     });
 
     // Build EMI details if EMI mode is selected
+    const emiBase = Math.round((discountedAmount / 3) * 100) / 100;
     const emiDetails = paymentMode === "EMI" ? {
       isEmi: true,
       totalAmount: discountedAmount,
-      firstPayment: finalAmount, // First payment = 1/3 of discounted amount + processing fee
-      remainingAmount: Math.round((discountedAmount - (finalAmount - processingFee)) * 100) / 100, // Remaining = 2/3 without processing fee
+      processingFee: processingFee,
+      firstPayment: emiBase + processingFee, // First payment includes processing fee
+      remainingAmount: discountedAmount - emiBase, // Remaining 2/3 without processing fee
       installments: 3,
-      installmentAmount: Math.round(((discountedAmount - (finalAmount - processingFee)) / 2) * 100) / 100, // Remaining / 2 without processing fee
-      perMonth: finalAmount, // Same as firstPayment since it's divided by 3
-      processingFee: processingFee
+      installmentAmount: emiBase, // Each subsequent installment is just the base amount (without processing fee)
+      perMonth: emiBase // Without processing fee
     } : null;
 
     res.json({
@@ -225,7 +236,8 @@ export const createRazorpayOrder = async (req, res) => {
       originalAmount,
       discountAmount,
       discountedAmount,
-      finalAmount,
+      finalAmount: paymentFinalAmount, // Base amount without processing fee
+      processingFee: paymentMode === "EMI" ? processingFee : processingFee,
       emiDetails
     });
   } catch (error) {
@@ -517,15 +529,17 @@ export const createEmiInstallment = async (req, res) => {
     }
 
     // Count how many EMI installments have already been paid
-    // parentPayment.finalAmount starts with the first payment (1/3), then increases with each installment
+    // parentPayment.finalAmount starts with the first payment (1/3 + processing fee), then increases with each installment
+    // Note: First payment includes processing fee, subsequent installments don't
     const firstPaymentAmount = Math.round((discountedTotal / 3) * 100) / 100;
+    const processingFee = 99;
     const expectedPerInstallment = Math.round((discountedTotal - firstPaymentAmount) / 2 * 100) / 100;
     
     // Calculate how many installments have been paid (excluding the initial first payment)
-    // After first payment (enrollment): paid = firstPaymentAmount (1/3)
-    // After second payment: paid = firstPaymentAmount + installmentAmount (2/3)
-    // After third payment: paid = firstPaymentAmount + 2*installmentAmount (3/3)
-    const amountPaidBeyondFirst = totalPaidSoFar - firstPaymentAmount;
+    // After first payment (enrollment): paid = firstPaymentAmount + processingFee (includes processing fee)
+    // After second payment: paid = firstPaymentAmount + processingFee + installmentAmount (2/3)
+    // After third payment: paid = firstPaymentAmount + processingFee + 2*installmentAmount (3/3)
+    const amountPaidBeyondFirst = totalPaidSoFar - firstPaymentAmount - processingFee;
     let installmentsPaid = 0;
     if (amountPaidBeyondFirst > 0) {
       installmentsPaid = Math.round(amountPaidBeyondFirst / expectedPerInstallment);
