@@ -376,8 +376,8 @@ const FeePurchase = () => {
     const processingFee = 99;
     const subtotalAfterDiscount = basePrice - discount;
     const taxableAmount = subtotalAfterDiscount + processingFee;
-    const gstAmount = Math.round(taxableAmount * 0.18);
-    const netTotal = taxableAmount + gstAmount;
+    // const gstAmount = Math.round(taxableAmount * 0.18);
+    const netTotal = taxableAmount;
 
     // Get current timestamp
     const now = new Date();
