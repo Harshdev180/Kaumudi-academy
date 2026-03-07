@@ -29,6 +29,11 @@ const paymentSchema = new mongoose.Schema(
       required: true,
     },
 
+    processingFee: {
+      type: Number,
+      default: 0,
+    },
+
     couponCode: {
       type: String,
       default: null,
