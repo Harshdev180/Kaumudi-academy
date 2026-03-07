@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MdClose, MdVideocam, MdImage, MdAdd, MdDelete, MdEdit, MdArrowUpward, MdArrowDownward } from "react-icons/md";
+import {
+  MdClose,
+  MdVideocam,
+  MdImage,
+  MdAdd,
+  MdDelete,
+  MdEdit,
+  MdArrowUpward,
+  MdArrowDownward,
+} from "react-icons/md";
 
 const AddCourse = ({
   open,
@@ -37,7 +46,12 @@ const AddCourse = ({
 
   // BATCH SCHEDULE STATE
   const [batchSchedules, setBatchSchedules] = useState([]);
-  const [newBatch, setNewBatch] = useState({ batchType: "", days: "", startTime: "", endTime: "" });
+  const [newBatch, setNewBatch] = useState({
+    batchType: "",
+    days: "",
+    startTime: "",
+    endTime: "",
+  });
   const [editingBatchIndex, setEditingBatchIndex] = useState(null);
 
   const handleAddBatch = () => {
@@ -81,7 +95,14 @@ const AddCourse = ({
 
   // Initialize curriculum items only when the drawer opens for edit
   useEffect(() => {
-    console.log("AddCourse useEffect - open:", open, "form.curriculumText:", form?.curriculumText, "form.batchSchedule:", form?.batchSchedule);
+    console.log(
+      "AddCourse useEffect - open:",
+      open,
+      "form.curriculumText:",
+      form?.curriculumText,
+      "form.batchSchedule:",
+      form?.batchSchedule,
+    );
     if (open) {
       // Always initialize on open
       if (form?.curriculumText) {
@@ -140,7 +161,7 @@ const AddCourse = ({
 
   const handleAddCurriculumItem = () => {
     if (!newItemTitle.trim()) return;
-    
+
     const contentArray = newItemContent
       .split("\n")
       .map((item) => item.trim())
@@ -206,14 +227,20 @@ const AddCourse = ({
   const moveCurriculumItemUp = (index) => {
     if (index === 0) return;
     const newItems = [...curriculumItems];
-    [newItems[index - 1], newItems[index]] = [newItems[index], newItems[index - 1]];
+    [newItems[index - 1], newItems[index]] = [
+      newItems[index],
+      newItems[index - 1],
+    ];
     setCurriculumItems(newItems);
   };
 
   const moveCurriculumItemDown = (index) => {
     if (index === curriculumItems.length - 1) return;
     const newItems = [...curriculumItems];
-    [newItems[index], newItems[index + 1]] = [newItems[index + 1], newItems[index]];
+    [newItems[index], newItems[index + 1]] = [
+      newItems[index + 1],
+      newItems[index],
+    ];
     setCurriculumItems(newItems);
   };
 
@@ -289,7 +316,12 @@ const AddCourse = ({
                     <span className="text-xs mt-1">Upload Image</span>
                   </div>
                 )}
-                <input type="file" accept="image/*" hidden onChange={handleImage} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={handleImage}
+                />
               </label>
             </div>
 
@@ -324,7 +356,7 @@ const AddCourse = ({
             </div>
 
             {/* SYLLABUS */}
-            <div>
+            {/* <div>
               <p className="text-xs font-bold text-[#856966] mb-2 uppercase">
                 Syllabus
               </p>
@@ -336,28 +368,31 @@ const AddCourse = ({
                 }
                 className="w-full p-3 rounded-xl bg-[#EFE3D5] h-28 outline-none focus:ring-2 focus:ring-[#D1B062] resize-none"
               />
-            </div>
+            </div> */}
 
             {/* CURRICULUM */}
             <div>
               <p className="text-xs font-bold text-[#856966] mb-2 uppercase">
                 Curriculum
               </p>
-              
+
               {/* Error message from parent */}
-              {curriculumError && (newItemTitle.trim() || newItemContent.trim()) && (
-                <div className="bg-red-100 text-red-700 border border-red-300 px-3 py-2 rounded-lg mb-3 text-sm">
-                  {curriculumError}
-                </div>
-              )}
+              {curriculumError &&
+                (newItemTitle.trim() || newItemContent.trim()) && (
+                  <div className="bg-red-100 text-red-700 border border-red-300 px-3 py-2 rounded-lg mb-3 text-sm">
+                    {curriculumError}
+                  </div>
+                )}
 
               {/* Warning when there's content but no title */}
-              {!curriculumError && newItemContent.trim() && !newItemTitle.trim() && (
-                <div className="bg-amber-100 text-amber-700 border border-amber-300 px-3 py-2 rounded-lg mb-3 text-sm">
-                  Please add a module title to save the topics
-                </div>
-              )}
-              
+              {!curriculumError &&
+                newItemContent.trim() &&
+                !newItemTitle.trim() && (
+                  <div className="bg-amber-100 text-amber-700 border border-amber-300 px-3 py-2 rounded-lg mb-3 text-sm">
+                    Please add a module title to save the topics
+                  </div>
+                )}
+
               {/* Add New Item Form */}
               <div className="bg-[#EFE3D5] rounded-xl p-4 mb-4 space-y-3">
                 <input
@@ -479,37 +514,49 @@ const AddCourse = ({
               <p className="text-xs font-bold text-[#856966] mb-2 uppercase">
                 Batch Schedule
               </p>
-              
+
               {/* Add New Batch Form */}
               <div className="bg-[#EFE3D5] rounded-xl p-4 mb-4 space-y-3">
                 <input
                   placeholder="Batch Type (e.g., Weekday Batch, Weekend Intensive)"
                   value={newBatch.batchType}
-                  onChange={(e) => setNewBatch({ ...newBatch, batchType: e.target.value })}
+                  onChange={(e) =>
+                    setNewBatch({ ...newBatch, batchType: e.target.value })
+                  }
                   className="w-full p-3 rounded-lg bg-white outline-none focus:ring-2 focus:ring-[#D1B062]"
                 />
                 <input
                   placeholder="Days (e.g., Mon, Wed, Fri or Sat, Sun)"
                   value={newBatch.days}
-                  onChange={(e) => setNewBatch({ ...newBatch, days: e.target.value })}
+                  onChange={(e) =>
+                    setNewBatch({ ...newBatch, days: e.target.value })
+                  }
                   className="w-full p-3 rounded-lg bg-white outline-none focus:ring-2 focus:ring-[#D1B062]"
                 />
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-gray-600 mb-1 block">Start Time</label>
+                    <label className="text-xs text-gray-600 mb-1 block">
+                      Start Time
+                    </label>
                     <input
                       type="time"
                       value={newBatch.startTime || ""}
-                      onChange={(e) => setNewBatch({ ...newBatch, startTime: e.target.value })}
+                      onChange={(e) =>
+                        setNewBatch({ ...newBatch, startTime: e.target.value })
+                      }
                       className="w-full p-3 rounded-lg bg-white outline-none focus:ring-2 focus:ring-[#D1B062]"
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-600 mb-1 block">End Time</label>
+                    <label className="text-xs text-gray-600 mb-1 block">
+                      End Time
+                    </label>
                     <input
                       type="time"
                       value={newBatch.endTime || ""}
-                      onChange={(e) => setNewBatch({ ...newBatch, endTime: e.target.value })}
+                      onChange={(e) =>
+                        setNewBatch({ ...newBatch, endTime: e.target.value })
+                      }
                       className="w-full p-3 rounded-lg bg-white outline-none focus:ring-2 focus:ring-[#D1B062]"
                     />
                   </div>
@@ -555,10 +602,12 @@ const AddCourse = ({
                           {batch.batchType}
                         </h4>
                         <p className="text-xs text-gray-600 mt-1">
-                          <span className="font-medium">Days:</span> {batch.days}
+                          <span className="font-medium">Days:</span>{" "}
+                          {batch.days}
                         </p>
                         <p className="text-xs text-gray-600">
-                          <span className="font-medium">Time:</span> {batch.startTime} - {batch.endTime}
+                          <span className="font-medium">Time:</span>{" "}
+                          {batch.startTime} - {batch.endTime}
                         </p>
                       </div>
                       <div className="flex gap-1 ml-2">
@@ -599,7 +648,10 @@ const AddCourse = ({
                   <select
                     value={form.instructor || ""}
                     onChange={(e) =>
-                      setForm((prev) => ({ ...prev, instructor: e.target.value }))
+                      setForm((prev) => ({
+                        ...prev,
+                        instructor: e.target.value,
+                      }))
                     }
                     className="w-full p-3 rounded-xl bg-[#EFE3D5] outline-none focus:ring-2 focus:ring-[#D1B062]"
                     required
@@ -622,8 +674,12 @@ const AddCourse = ({
                     }
                     className="w-full p-3 rounded-xl bg-[#EFE3D5] outline-none focus:ring-2 focus:ring-[#D1B062]"
                   >
-                    <option value="Prathama (Beginner)">Prathama (Beginner)</option>
-                    <option value="Madhyama (Intermediate)">Madhyama (Intermediate)</option>
+                    <option value="Prathama (Beginner)">
+                      Prathama (Beginner)
+                    </option>
+                    <option value="Madhyama (Intermediate)">
+                      Madhyama (Intermediate)
+                    </option>
                     <option value="Kovida (Advanced)">Kovida (Advanced)</option>
                   </select>
                 </div>
@@ -702,7 +758,10 @@ const AddCourse = ({
                     value={form.startDate || ""}
                     min={todayStr}
                     onChange={(e) =>
-                      setForm((prev) => ({ ...prev, startDate: e.target.value }))
+                      setForm((prev) => ({
+                        ...prev,
+                        startDate: e.target.value,
+                      }))
                     }
                     className="w-full p-3 rounded-xl bg-[#EFE3D5] outline-none focus:ring-2 focus:ring-[#D1B062]"
                   />
@@ -802,7 +861,12 @@ const AddCourse = ({
                   {form.videoName || "Upload additional video"}
                 </span>
                 <MdVideocam size={22} className="text-[#6b1d14]" />
-                <input type="file" accept="video/*" hidden onChange={handleVideo} />
+                <input
+                  type="file"
+                  accept="video/*"
+                  hidden
+                  onChange={handleVideo}
+                />
               </label>
             </div>
           </div>
@@ -826,7 +890,11 @@ const AddCourse = ({
                 <span className="flex items-center justify-center gap-2">
                   <motion.span
                     animate={{ rotate: 360 }}
-                    transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 1,
+                      ease: "linear",
+                    }}
                     className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full"
                   />
                   SAVING...
@@ -854,7 +922,11 @@ const AddCourse = ({
                 >
                   <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 1.2,
+                      ease: "linear",
+                    }}
                     className="w-12 h-12 rounded-full border-4 border-[#D1B062] border-t-[#6b1d14]"
                   />
                   <motion.p

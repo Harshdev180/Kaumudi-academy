@@ -30,12 +30,18 @@ export default function About() {
     },
   ];
   return (
-    <>
+    <div className="pt-20">
       <SEO
-        title="About | Kaumudi Sanskrit Academy"
-        description="Kaumudi Sanskrit Academy blends guru–śiṣya parampara with modern pedagogy to nurture Sanskrit scholars worldwide."
+        title="About Us | Kaumudi Sanskrit Academy by Graphura India"
+        description="Learn more about Kaumudi Sanskrit Academy and our mission to spread Sanskrit education. A premier venture of Graphura India Private Limited."
         canonicalPath="/about"
         og={{ type: "website" }}
+        keywords={[
+          "About Kaumudi Academy",
+          "Graphura India Private Limited",
+          "Sanskrit education mission",
+          "Sanskrit scholars India",
+        ]}
       />
       <section
         id="hero"
@@ -385,6 +391,6 @@ export default function About() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

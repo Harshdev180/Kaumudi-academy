@@ -139,7 +139,11 @@ const CourseManagement = () => {
     if (course.curriculum) {
       if (typeof course.curriculum === "string") {
         try {
-          curriculumText = JSON.stringify(JSON.parse(course.curriculum), null, 2);
+          curriculumText = JSON.stringify(
+            JSON.parse(course.curriculum),
+            null,
+            2,
+          );
         } catch (e) {
           curriculumText = course.curriculum;
         }
@@ -150,7 +154,7 @@ const CourseManagement = () => {
     }
     console.log("curriculumText:", curriculumText);
     console.log("batchSchedule:", course.batchSchedule);
-    
+
     // First set the form data
     setForm({
       ...initialForm,
@@ -159,7 +163,7 @@ const CourseManagement = () => {
       curriculumText: curriculumText,
       batchSchedule: course.batchSchedule || [],
     });
-    
+
     // Then open the drawer after a small delay to ensure state is updated
     setTimeout(() => {
       setDrawerOpen(true);
@@ -330,8 +334,12 @@ const CourseManagement = () => {
       console.error("Save course error:", err);
       const validationErrors = err?.response?.data?.errors;
       let msg;
-      if (validationErrors && Array.isArray(validationErrors) && validationErrors.length > 0) {
-        msg = validationErrors.join(', ');
+      if (
+        validationErrors &&
+        Array.isArray(validationErrors) &&
+        validationErrors.length > 0
+      ) {
+        msg = validationErrors.join(", ");
       } else {
         msg =
           err?.response?.data?.message ||

@@ -56,20 +56,62 @@ import Certificates from "./pages/StudentProfile/Certifications.jsx";
 // Public site layout with shared navbar/footer
 function PublicLayout() {
   const location = useLocation();
+
+  // Define structured data (JSON-LD) for Kaumudi Academy & Graphura India
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "EducationalOrganization",
+        "@id": "https://kaumudiacademy.in/#organization",
+        name: "Kaumudi Sanskrit Academy",
+        url: "https://kaumudiacademy.in",
+        logo: {
+          "@type": "ImageObject",
+          url: "https://kaumudiacademy.in/assets/logo-bgremove.webp",
+        },
+        description:
+          "Premier institute for Sanskrit education, specializing in Paninian Grammar, Vedanta, and Vedic studies.",
+        parentOrganization: {
+          "@type": "Organization",
+          name: "Graphura India Private Limited",
+          url: "https://graphura.com",
+        },
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://kaumudiacademy.in/#website",
+        url: "https://kaumudiacademy.in",
+        name: "Kaumudi Sanskrit Academy",
+        publisher: { "@id": "https://kaumudiacademy.in/#organization" },
+      },
+    ],
+  };
+
   return (
     <>
       <SEO
-        title="Kaumudi Sanskrit Academy | Sanskrit Courses & Scholars"
-        description="Learn Sanskrit with Kaumudi Sanskrit Academy: Paninian Grammar, Vedanta, Kavya and more. Live online courses guided by experienced Acharyas."
+        title="Kaumudi Sanskrit Academy | Learn Sanskrit with Experts"
+        description="Kaumudi Sanskrit Academy, a venture of Graphura India Private Limited, offers authentic Sanskrit learning in Paninian Grammar, Vedanta, and Kavya. Join our live online courses today."
         canonicalPath={location.pathname}
-        og={{ type: "website", image: logo }}
+        og={{
+          type: "website",
+          image: logo,
+          site_name: "Kaumudi Sanskrit Academy",
+        }}
+        jsonLd={jsonLd}
         keywords={[
-          "Sanskrit courses",
-          "Vyakarana",
-          "Paninian grammar",
-          "Vedanta",
-          "Kavya",
           "Kaumudi Sanskrit Academy",
+          "Graphura India Private Limited",
+          "Sanskrit learning platform",
+          "Paninian Grammar",
+          "Vedic studies online",
+          "Sanskrit certifications India",
+          "Ashtadhyayi courses",
+          "Sanskrit for beginners",
+          "Advanced Sanskrit grammar",
+          "Sanskrit scholars academy",
+          "Graphura India education",
         ]}
       />
       <ScrollToTop />

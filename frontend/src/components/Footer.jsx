@@ -506,12 +506,12 @@ export default function Footer() {
           <p>© {year} Kaumudi Sanskrit Academy. All Wisdom Reserved.</p>
 
           <p className="opacity-70">
-            Designed & Developed by{" "}
+            A Venture of{" "}
             <a
-              href="https://graphura.in"
+              href="https://graphura.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#d6b15c] transition"
+              className="hover:text-[#d6b15c] transition font-bold"
             >
               Graphura India Private Limited
             </a>
