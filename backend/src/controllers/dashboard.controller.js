@@ -109,9 +109,8 @@ export const getDashboardStats = async (req, res) => {
       "Jul","Aug","Sep","Oct","Nov","Dec",
     ];
     
-    // Get current year and month for filling missing months
+    // Get current year
     const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1;
     
     // Create a map of existing data
     const revenueDataMap = new Map();
@@ -124,13 +123,10 @@ export const getDashboardStats = async (req, res) => {
       });
     });
     
-    // Generate last 12 months with data (or zeros for missing months)
+    // Generate months in calendar order (Jan to Dec) for current year
     const formattedRevenueChart = [];
-    for (let i = 11; i >= 0; i--) {
-      const date = new Date(currentYear, currentMonth - 1 - i, 1);
-      const year = date.getFullYear();
-      const month = date.getMonth() + 1;
-      const key = `${year}-${month}`;
+    for (let month = 1; month <= 12; month++) {
+      const key = `${currentYear}-${month}`;
       
       if (revenueDataMap.has(key)) {
         formattedRevenueChart.push(revenueDataMap.get(key));
@@ -172,13 +168,10 @@ export const getDashboardStats = async (req, res) => {
       });
     });
     
-    // Generate last 12 months with data
+    // Generate months in calendar order (Jan to Dec) for current year
     const formattedSalesChart = [];
-    for (let i = 11; i >= 0; i--) {
-      const date = new Date(currentYear, currentMonth - 1 - i, 1);
-      const year = date.getFullYear();
-      const month = date.getMonth() + 1;
-      const key = `${year}-${month}`;
+    for (let month = 1; month <= 12; month++) {
+      const key = `${currentYear}-${month}`;
       
       if (salesDataMap.has(key)) {
         formattedSalesChart.push(salesDataMap.get(key));
