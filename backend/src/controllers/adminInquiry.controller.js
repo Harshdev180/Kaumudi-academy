@@ -1,6 +1,6 @@
 import Inquiry from "../models/Inquiry.model.js";
 import { notifyStudent } from "../services/notification.service.js";
-
+//this is inquery
 /**
  * @desc Get all inquiries (Admin)
  * @route GET /api/admin/inquiries
