@@ -40,30 +40,37 @@ const Layout = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // REPLACE WITH this
-  const [notifications, setNotifications] = useState([]);
+  const [hasUnread, setHasUnread] = useState(false);
 
   useEffect(() => {
-    api.get("/student/notifications")
-      .then(res => {
+    api
+      .get("/student/notifications")
+      .then((res) => {
         const raw = res.data?.data || [];
         const normalized = raw.map((n) => ({
           id: n._id,
           title: n.title,
           subtitle: n.message,
           time: (() => {
-            const diff = Math.floor((Date.now() - new Date(n.createdAt)) / 1000);
+            const diff = Math.floor(
+              (Date.now() - new Date(n.createdAt)) / 1000,
+            );
             if (diff < 60) return "Just now";
             if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
             if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
             return `${Math.floor(diff / 86400)}d ago`;
           })(),
           isRead: n.isRead,
-          details: { type: n.type, message: n.message, date: new Date(n.createdAt).toLocaleDateString() },
+          details: {
+            type: n.type,
+            message: n.message,
+            date: new Date(n.createdAt).toLocaleDateString(),
+          },
         }));
         setNotifications(normalized);
+        setHasUnread(normalized.some((n) => !n.isRead));
       })
-      .catch(err => console.error("Failed to fetch notifications:", err));
+      .catch((err) => console.error("Failed to fetch notifications:", err));
   }, []);
 
   const pageTitle = location.pathname.split("/").pop() || "Overview";
@@ -142,7 +149,7 @@ const Layout = () => {
                   className="relative p-2 text-[#74271E] hover:bg-[#c9a050]/10 rounded-xl transition-colors"
                 >
                   <Bell size={22} />
-                  {notifications.some(n => !n.isRead) && (
+                  {hasUnread && (
                     <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#FBF4E2]"></span>
                   )}
                 </button>
@@ -191,7 +198,9 @@ const Layout = () => {
                   className="relative p-2 text-[#74271E] hover:bg-[#c9a050]/10 rounded-xl transition-colors"
                 >
                   <Bell size={22} />
-                  <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#FBF4E2]"></span>
+                  {hasUnread && (
+                    <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#FBF4E2]"></span>
+                  )}
                 </button>
               </div>
 
@@ -234,7 +243,9 @@ const Layout = () => {
                           Notifications
                         </h3>
                         <p className="text-[10px] text-gray-400 font-medium">
-                          You have {notifications.filter(n => !n.isRead).length} unread updates
+                          You have{" "}
+                          {notifications.filter((n) => !n.isRead).length} unread
+                          updates
                         </p>
                       </div>
                       <button
@@ -328,19 +339,31 @@ const Layout = () => {
                   </h3>
                   <div className="mt-6 bg-[#f7f1e3]/30 border border-[#e6d5b8]/30 rounded-2xl p-6">
                     <div className="space-y-3 text-sm">
-                      {Object.entries(selectedNotification.details).map(([key, value]) => (
-                        key === "message" ? (
-                          <div className="flex flex-col items-start" key={key}>
-                            <span className="capitalize text-gray-400 mb-1">{key}:</span>
-                            <span className="font-bold text-gray-700 block w-full text-left wrap-break-word whitespace-pre-line leading-relaxed p-2 bg-gray-50 rounded-md border border-gray-100">{value}</span>
-                          </div>
-                        ) : (
-                          <div className="flex justify-between" key={key}>
-                            <span className="capitalize text-gray-400">{key}:</span>
-                            <span className="font-bold text-gray-700">{value}</span>
-                          </div>
-                        )
-                      ))}
+                      {Object.entries(selectedNotification.details).map(
+                        ([key, value]) =>
+                          key === "message" ? (
+                            <div
+                              className="flex flex-col items-start"
+                              key={key}
+                            >
+                              <span className="capitalize text-gray-400 mb-1">
+                                {key}:
+                              </span>
+                              <span className="font-bold text-gray-700 block w-full text-left wrap-break-word whitespace-pre-line leading-relaxed p-2 bg-gray-50 rounded-md border border-gray-100">
+                                {value}
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="flex justify-between" key={key}>
+                              <span className="capitalize text-gray-400">
+                                {key}:
+                              </span>
+                              <span className="font-bold text-gray-700">
+                                {value}
+                              </span>
+                            </div>
+                          ),
+                      )}
                     </div>
                   </div>
                   <div className="mt-8 flex gap-3">

@@ -508,7 +508,7 @@ export default function Footer() {
           <p className="opacity-70">
             A Venture of{" "}
             <a
-              href="https://graphura.com"
+              href="https://graphura.in"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-[#d6b15c] transition font-bold"

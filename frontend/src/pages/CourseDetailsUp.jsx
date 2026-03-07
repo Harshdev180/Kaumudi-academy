@@ -205,16 +205,16 @@ const CourseDetails = () => {
             endDate: apiCourse.endDate,
             instructor: hasValidInstructor
               ? {
-                name: instructorData.name || "Instructor",
-                qualification: instructorData.role || "Faculty",
-                bio:
-                  (instructorData.description &&
-                    instructorData.description.trim()) ||
-                  instructorData.bio ||
-                  "No biography available",
-                tags: [],
-                image: instructorData.image || null,
-              }
+                  name: instructorData.name || "Instructor",
+                  qualification: instructorData.role || "Faculty",
+                  bio:
+                    (instructorData.description &&
+                      instructorData.description.trim()) ||
+                    instructorData.bio ||
+                    "No biography available",
+                  tags: [],
+                  image: instructorData.image || null,
+                }
               : defaultCourse.instructor,
             curriculum: apiCourse.curriculum || defaultCourse.curriculum,
             // syllabus: apiCourse.syllabus || "",
@@ -297,22 +297,22 @@ const CourseDetails = () => {
           language: incomingData.language,
           instructor: incomingData.instructor
             ? {
-              name: incomingData.instructor.name || "Instructor TBA",
-              qualification:
-                incomingData.instructor.qualification ||
-                "Qualification not listed",
-              bio:
-                incomingData.instructor.bio || "Instructor bio coming soon.",
-              tags: incomingData.instructor.tags || [],
-              image: incomingData.instructor.image || null,
-            }
+                name: incomingData.instructor.name || "Instructor TBA",
+                qualification:
+                  incomingData.instructor.qualification ||
+                  "Qualification not listed",
+                bio:
+                  incomingData.instructor.bio || "Instructor bio coming soon.",
+                tags: incomingData.instructor.tags || [],
+                image: incomingData.instructor.image || null,
+              }
             : {
-              name: "Instructor TBA",
-              qualification: "To be announced",
-              bio: "An expert instructor will be assigned to this course soon.",
-              tags: [],
-              image: null,
-            },
+                name: "Instructor TBA",
+                qualification: "To be announced",
+                bio: "An expert instructor will be assigned to this course soon.",
+                tags: [],
+                image: null,
+              },
           curriculum: incomingData.curriculum || defaultCourse.curriculum,
           syllabus: incomingData.syllabus || "",
           schedule: incomingData.schedule || defaultCourse.schedule,
@@ -481,57 +481,62 @@ const CourseDetails = () => {
             <h1>${courseData.title}</h1>
           </div>
           <div class="meta">
-            <div><div class="lab">Level</div><div class="val">${courseData.level || "All Levels"
-      }</div></div>
-            <div><div class="lab">Duration</div><div class="val">${courseData.duration || "-"
-      }</div></div>
-            <div><div class="lab">Language</div><div class="val">${courseData.language || "-"
-      }</div></div>
-            <div><div class="lab">Mode</div><div class="val">${courseData.mode || "ONLINE"
-      }</div></div>
-            <div><div class="lab">Instructor</div><div class="val">${courseData.instructor?.name || "Instructor TBA"
-      }</div></div>
+            <div><div class="lab">Level</div><div class="val">${
+              courseData.level || "All Levels"
+            }</div></div>
+            <div><div class="lab">Duration</div><div class="val">${
+              courseData.duration || "-"
+            }</div></div>
+            <div><div class="lab">Language</div><div class="val">${
+              courseData.language || "-"
+            }</div></div>
+            <div><div class="lab">Mode</div><div class="val">${
+              courseData.mode || "ONLINE"
+            }</div></div>
+            <div><div class="lab">Instructor</div><div class="val">${
+              courseData.instructor?.name || "Instructor TBA"
+            }</div></div>
             <div><div class="lab">Fee</div><div class="val">${formatINR(
-        courseData.price,
-      )}</div></div>
-          </div>
-          <div class="hero">
-            <img class="poster" src="${posterUrl}" alt="${courseData.title} Poster"/>
+              courseData.price,
+            )}</div></div>
           </div>
           <div class="section"><h2>About The Course</h2></div>
           <div class="desc">${(courseData.description || "")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")}</div>
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")}</div>
           <div class="section"><h2>Syllabus</h2></div>
           <div class="syllabus">
-            ${syllabus.length
-        ? syllabus
-          .map((m, idx) => {
-            const items = Array.isArray(m?.content) ? m.content : [];
-            const list =
-              items.length > 0
-                ? `<ul>${items
-                  .map(
-                    (li) =>
-                      `<li>${String(li)
-                        .replace(/</g, "&lt;")
-                        .replace(/>/g, "&gt;")}</li>`,
-                  )
-                  .join("")}</ul>`
-                : "";
-            return `<div class="module">
+            ${
+              syllabus.length
+                ? syllabus
+                    .map((m, idx) => {
+                      const items = Array.isArray(m?.content) ? m.content : [];
+                      const list =
+                        items.length > 0
+                          ? `<ul>${items
+                              .map(
+                                (li) =>
+                                  `<li>${String(li)
+                                    .replace(/</g, "&lt;")
+                                    .replace(/>/g, "&gt;")}</li>`,
+                              )
+                              .join("")}</ul>`
+                          : "";
+                      return `<div class="module">
                         <div class="module-h">
-                          <div class="module-title">${idx + 1}. ${m?.title || "Module"
-              }</div>
-                          <div style="font-size:11px;color:#8c7a56;">${m?.isLocked ? "Preview" : "Open"
-              }</div>
+                          <div class="module-title">${idx + 1}. ${
+                            m?.title || "Module"
+                          }</div>
+                          <div style="font-size:11px;color:#8c7a56;">${
+                            m?.isLocked ? "Preview" : "Open"
+                          }</div>
                         </div>
                         <div class="module-body">${list}</div>
                       </div>`;
-          })
-          .join("")
-        : '<div style="font-size:13px;color:#6b4b3e;">Syllabus will be updated soon.</div>'
-      }
+                    })
+                    .join("")
+                : '<div style="font-size:13px;color:#6b4b3e;">Syllabus will be updated soon.</div>'
+            }
           </div>
           <div class="footer">
             <div>© Kaumudi Sanskrit Academy</div>
