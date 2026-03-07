@@ -14,13 +14,19 @@ import {
   X,
   BookUser,
   UserStar,
-  Image
+  Image,
 } from "lucide-react";
 import logo from "../../assets/logo-bgremove.webp";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuthHook";
 
-function Sidebar({ collapsed, setCollapsed, isMobile, mobileOpen, setMobileOpen }) {
+function Sidebar({
+  collapsed,
+  setCollapsed,
+  isMobile,
+  mobileOpen,
+  setMobileOpen,
+}) {
   const location = useLocation();
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
@@ -116,11 +122,11 @@ function Sidebar({ collapsed, setCollapsed, isMobile, mobileOpen, setMobileOpen 
       label: "Student Fees ",
       icon: <BookUser size={18} />,
     },
-    {
-      path: "/admin/gallery",
-      label: "Gallery",
-      icon: <Image size={18} />,
-    },
+    // {
+    //   path: "/admin/gallery",
+    //   label: "Gallery",
+    //   icon: <Image size={18} />,
+    // },
   ];
 
   useEffect(() => {
@@ -135,7 +141,6 @@ function Sidebar({ collapsed, setCollapsed, isMobile, mobileOpen, setMobileOpen 
 
   return (
     <>
-
       {/* MOBILE OVERLAY */}
       <AnimatePresence>
         {mobileOpen && (
@@ -251,10 +256,11 @@ function Sidebar({ collapsed, setCollapsed, isMobile, mobileOpen, setMobileOpen 
                   setMobileOpen(false);
                 }}
                 className={`relative group flex items-center px-4 py-3 rounded-2xl transition-all duration-300
-                ${isActive
+                ${
+                  isActive
                     ? "bg-[#6b1d14] text-[#D4AF37]"
                     : "hover:bg-[#F3E6C9] text-[#6b1d14]/70"
-                  }`}
+                }`}
               >
                 <div>{item.icon}</div>
 
