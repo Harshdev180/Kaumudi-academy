@@ -40,7 +40,8 @@ const Layout = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const [hasUnread, setHasUnread] = useState(false);
+  // REPLACE WITH this
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     api
@@ -68,7 +69,6 @@ const Layout = () => {
           },
         }));
         setNotifications(normalized);
-        setHasUnread(normalized.some((n) => !n.isRead));
       })
       .catch((err) => console.error("Failed to fetch notifications:", err));
   }, []);
@@ -149,7 +149,7 @@ const Layout = () => {
                   className="relative p-2 text-[#74271E] hover:bg-[#c9a050]/10 rounded-xl transition-colors"
                 >
                   <Bell size={22} />
-                  {hasUnread && (
+                  {notifications.some((n) => !n.isRead) && (
                     <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#FBF4E2]"></span>
                   )}
                 </button>
@@ -198,9 +198,7 @@ const Layout = () => {
                   className="relative p-2 text-[#74271E] hover:bg-[#c9a050]/10 rounded-xl transition-colors"
                 >
                   <Bell size={22} />
-                  {hasUnread && (
-                    <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#FBF4E2]"></span>
-                  )}
+                  <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#FBF4E2]"></span>
                 </button>
               </div>
 

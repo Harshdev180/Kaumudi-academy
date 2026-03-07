@@ -75,7 +75,7 @@ function PublicLayout() {
         parentOrganization: {
           "@type": "Organization",
           name: "Graphura India Private Limited",
-          url: "https://graphura.in",
+          url: "https://graphura.com",
         },
       },
       {

@@ -1,8 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { Bell, Check, CheckCircle, Search, Calendar, Inbox, Loader2, CreditCard, GraduationCap, MessageCircle, MoreHorizontal, X, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { api } from '../../lib/api';
+import React, { useState, useEffect } from "react";
+import {
+  Bell,
+  Check,
+  CheckCircle,
+  Search,
+  Calendar,
+  Inbox,
+  Loader2,
+  CreditCard,
+  GraduationCap,
+  MessageCircle,
+  MoreHorizontal,
+  X,
+  ExternalLink,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { api } from "../../lib/api";
 
 const Notifications = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -23,7 +39,7 @@ const Notifications = () => {
     { id: "payment", label: "Payments" },
     { id: "enrollment", label: "Enrollment" },
     { id: "student_query", label: "Queries" },
-    { id: "others", label: "Others" }
+    { id: "others", label: "Others" },
   ];
 
   // Get category icon
@@ -66,7 +82,7 @@ const Notifications = () => {
       const params = new URLSearchParams();
       params.append("limit", "10");
       params.append("page", page.toString());
-      
+
       const res = await api.get(`/student/notifications?${params.toString()}`);
       // Backend returns: { success: true, data: [...] }
       const raw = res.data?.data || [];
@@ -110,7 +126,7 @@ const Notifications = () => {
 
     // Optimistic UI update
     setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, unread: !n.unread } : n))
+      prev.map((n) => (n.id === id ? { ...n, unread: !n.unread } : n)),
     );
 
     try {
@@ -122,7 +138,7 @@ const Notifications = () => {
       console.error("Failed to update notification:", err);
       // Revert optimistic update on failure
       setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, unread: notif.unread } : n))
+        prev.map((n) => (n.id === id ? { ...n, unread: notif.unread } : n)),
       );
     }
   };
@@ -163,18 +179,18 @@ const Notifications = () => {
     const matchesSearch =
       n.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       n.msg?.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     const matchesCategory =
       activeCategory === "all" || n.type === activeCategory;
-    
+
     const matchesTab =
       activeTab === "All" || (activeTab === "Unread" && n.unread);
-    
+
     return matchesSearch && matchesCategory && matchesTab;
   });
 
   // Get unread count
-  const unreadCount = notifications.filter(n => n.unread).length;
+  const unreadCount = notifications.filter((n) => n.unread).length;
 
   // ── Relative time helper ─────────────────────────────────────────
   const timeAgo = (dateStr) => {
@@ -202,21 +218,44 @@ const Notifications = () => {
     }
 
     // Add type info
-    details.push({ label: "Category", value: type?.replace("_", " ").toUpperCase() || "N/A" });
-    details.push({ label: "Type", value: subType?.replace("_", " ") || "Notification" });
-    
+    details.push({
+      label: "Category",
+      value: type?.replace("_", " ").toUpperCase() || "N/A",
+    });
+    details.push({
+      label: "Type",
+      value: subType?.replace("_", " ") || "Notification",
+    });
+
     // Add metadata fields
     if (metadata) {
-      if (metadata.courseId) details.push({ label: "Course ID", value: String(metadata.courseId).slice(-8) });
-      if (metadata.paymentId) details.push({ label: "Payment ID", value: String(metadata.paymentId).slice(-8) });
-      if (metadata.amount) details.push({ label: "Amount", value: `₹${metadata.amount}` });
-      if (metadata.enrollmentId) details.push({ label: "Enrollment ID", value: String(metadata.enrollmentId) });
-      if (metadata.response) details.push({ label: "Response", value: metadata.response });
+      if (metadata.courseId)
+        details.push({
+          label: "Course ID",
+          value: String(metadata.courseId).slice(-8),
+        });
+      if (metadata.paymentId)
+        details.push({
+          label: "Payment ID",
+          value: String(metadata.paymentId).slice(-8),
+        });
+      if (metadata.amount)
+        details.push({ label: "Amount", value: `₹${metadata.amount}` });
+      if (metadata.enrollmentId)
+        details.push({
+          label: "Enrollment ID",
+          value: String(metadata.enrollmentId),
+        });
+      if (metadata.response)
+        details.push({ label: "Response", value: metadata.response });
     }
 
     // Add timestamp
     if (notification.createdAt) {
-      details.push({ label: "Received", value: new Date(notification.createdAt).toLocaleString() });
+      details.push({
+        label: "Received",
+        value: new Date(notification.createdAt).toLocaleString(),
+      });
     }
 
     return details;
@@ -228,9 +267,13 @@ const Notifications = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-5">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold text-[#74271E]">My Notifications</h1>
+          <h1 className="text-2xl font-bold text-[#74271E]">
+            My Notifications
+          </h1>
           <p className="text-sm text-gray-500">
-            {unreadCount > 0 ? `You have ${unreadCount} unread notifications` : "You're all caught up!"}
+            {unreadCount > 0
+              ? `You have ${unreadCount} unread notifications`
+              : "You're all caught up!"}
           </p>
         </div>
         <button
@@ -353,7 +396,11 @@ const Notifications = () => {
                         : "bg-gray-100 text-gray-400"
                     }`}
                   >
-                    {notif.unread ? getCategoryIcon(notif.type) : <Bell size={22} />}
+                    {notif.unread ? (
+                      getCategoryIcon(notif.type)
+                    ) : (
+                      <Bell size={22} />
+                    )}
                   </div>
 
                   <div className="flex-1 min-w-0">
@@ -370,17 +417,17 @@ const Notifications = () => {
                             </span>
                           )}
                         </div>
-                        
+
                         <h3 className="font-bold text-gray-900 text-sm md:text-base">
                           {notif.title}
                         </h3>
                       </div>
-                      
+
                       <span className="text-xs text-gray-400 whitespace-nowrap">
                         {timeAgo(notif.createdAt)}
                       </span>
                     </div>
-                    
+
                     {notif.msg && (
                       <p className="text-sm text-gray-500 mt-1 line-clamp-2">
                         {notif.msg}
@@ -404,12 +451,13 @@ const Notifications = () => {
             ) : (
               <div className="py-24 flex flex-col items-center justify-center gap-3 text-gray-400">
                 <Inbox size={48} className="opacity-30" />
-                <p className="text-base font-semibold text-gray-500">No notifications</p>
+                <p className="text-base font-semibold text-gray-500">
+                  No notifications
+                </p>
                 <p className="text-sm">
-                  {activeCategory !== "all" || searchQuery 
-                    ? "Try adjusting your filters" 
-                    : "You're all caught up!"
-                  }
+                  {activeCategory !== "all" || searchQuery
+                    ? "Try adjusting your filters"
+                    : "You're all caught up!"}
                 </p>
               </div>
             )}
@@ -420,7 +468,7 @@ const Notifications = () => {
       {/* NOTIFICATION DETAILS MODAL */}
       <AnimatePresence>
         {selectedNotification && (
-          <div 
+          <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
             onClick={() => setSelectedNotification(null)}
           >
@@ -435,13 +483,19 @@ const Notifications = () => {
               <div className="bg-gradient-to-r from-[#74271E] to-[#5a1b14] p-6 text-white">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${getCategoryColor(selectedNotification.type)} text-white`}>
+                    <div
+                      className={`p-2 rounded-lg ${getCategoryColor(selectedNotification.type)} text-white`}
+                    >
                       {getCategoryIcon(selectedNotification.type)}
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold">{selectedNotification.title}</h3>
+                      <h3 className="text-lg font-bold">
+                        {selectedNotification.title}
+                      </h3>
                       <p className="text-xs text-white/70 mt-0.5">
-                        {selectedNotification.type?.replace("_", " ").toUpperCase()}
+                        {selectedNotification.type
+                          ?.replace("_", " ")
+                          .toUpperCase()}
                       </p>
                     </div>
                   </div>
@@ -457,29 +511,44 @@ const Notifications = () => {
               {/* Modal Body */}
               <div className="p-6">
                 <div className="mb-4">
-                  <p className="text-sm text-gray-600 mb-2 font-medium">Message</p>
-                  <p className="text-gray-800">{selectedNotification.msg || selectedNotification.message}</p>
+                  <p className="text-sm text-gray-600 mb-2 font-medium">
+                    Message
+                  </p>
+                  <p className="text-gray-800">
+                    {selectedNotification.msg || selectedNotification.message}
+                  </p>
                 </div>
 
                 {/* Details */}
                 <div className="border-t border-gray-100 pt-4">
-                  <p className="text-sm text-gray-600 mb-3 font-medium">Details</p>
+                  <p className="text-sm text-gray-600 mb-3 font-medium">
+                    Details
+                  </p>
                   <div className="space-y-2">
-                    {formatDetails(selectedNotification).map((detail, index) => (
-                      <div key={index} className="flex justify-between items-center text-sm">
-                        <span className="text-gray-500">{detail.label}</span>
-                        {detail.isAction ? (
-                          <button
-                            onClick={(e) => handleActionClick(e, detail.value)}
-                            className="text-[#74271E] font-medium hover:underline flex items-center gap-1"
-                          >
-                            {detail.value} <ExternalLink size={12} />
-                          </button>
-                        ) : (
-                          <span className="text-gray-800 font-medium">{detail.value}</span>
-                        )}
-                      </div>
-                    ))}
+                    {formatDetails(selectedNotification).map(
+                      (detail, index) => (
+                        <div
+                          key={index}
+                          className="flex justify-between items-center text-sm"
+                        >
+                          <span className="text-gray-500">{detail.label}</span>
+                          {detail.isAction ? (
+                            <button
+                              onClick={(e) =>
+                                handleActionClick(e, detail.value)
+                              }
+                              className="text-[#74271E] font-medium hover:underline flex items-center gap-1"
+                            >
+                              {detail.value} <ExternalLink size={12} />
+                            </button>
+                          ) : (
+                            <span className="text-gray-800 font-medium">
+                              {detail.value}
+                            </span>
+                          )}
+                        </div>
+                      ),
+                    )}
                   </div>
                 </div>
 
@@ -502,7 +571,8 @@ const Notifications = () => {
       {!loading && !error && totalPages > 1 && (
         <div className="flex items-center justify-between mt-6 px-2">
           <div className="text-sm text-gray-500">
-            Showing {((currentPage - 1) * 10) + 1} to {Math.min(currentPage * 10, total)} of {total} notifications
+            Showing {(currentPage - 1) * 10 + 1} to{" "}
+            {Math.min(currentPage * 10, total)} of {total} notifications
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -520,25 +590,27 @@ const Notifications = () => {
             >
               <ChevronLeft size={20} />
             </button>
-            
+
             {/* Page numbers */}
             <div className="flex items-center gap-1">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  onClick={() => {
-                    setCurrentPage(page);
-                    fetchNotifications(page);
-                  }}
-                  className={`w-10 h-10 rounded-lg text-sm font-medium transition ${
-                    page === currentPage
-                      ? "bg-[#74271E] text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <button
+                    key={page}
+                    onClick={() => {
+                      setCurrentPage(page);
+                      fetchNotifications(page);
+                    }}
+                    className={`w-10 h-10 rounded-lg text-sm font-medium transition ${
+                      page === currentPage
+                        ? "bg-[#74271E] text-white"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ),
+              )}
             </div>
 
             <button
