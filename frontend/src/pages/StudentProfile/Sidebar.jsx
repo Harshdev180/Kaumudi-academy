@@ -44,12 +44,7 @@ const Sidebar = () => {
   const { logout } = useAuth();
 
   const handleLogout = () => {
-    navigate("/", { replace: true });
-
-    // Delay logout slightly to ensure route change completes
-    setTimeout(() => {
-      logout();
-    }, 50);
+    logout("/");
   };
 
   const handleDeleteAccount = async () => {

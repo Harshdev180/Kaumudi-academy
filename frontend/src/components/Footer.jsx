@@ -24,6 +24,7 @@ export default function Footer() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [courses, setCourses] = useState([]); // State to store courses
   const mapUrl =
     "https://www.google.com/maps/search/?api=1&query=Kadi%2C%20Mehsana%2C%20Gujarat%2C%20India";
@@ -44,24 +45,40 @@ export default function Footer() {
   }, []);
 
   const submitEmail = async () => {
-    const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    if (!ok) {
+    // Robust email regex
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const isValid = emailRegex.test(email.trim());
+
+    if (!email) {
       setSent(false);
-      setError("Please enter a valid email");
+      setError("Email is required");
+      return;
+    }
+
+    if (!isValid) {
+      setSent(false);
+      setError("Please enter a valid academic email address");
       return;
     }
 
     setError("");
+    setIsSubmitting(true);
 
     try {
-      await subscribeToNewsletter(email);
+      await subscribeToNewsletter(email.trim());
       setSent(true);
+      setError("");
       setEmail("");
+      // Reset success message after 5 seconds
+      setTimeout(() => setSent(false), 5000);
     } catch (err) {
       const msg =
-        err?.response?.data?.message || "Subscription failed. Try again.";
+        err?.response?.data?.message ||
+        "Subscription failed. Please try again.";
       setError(msg);
       setSent(false);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -441,12 +458,13 @@ export default function Footer() {
                 <div className="relative">
                   <input
                     type="email"
-                    placeholder="Your email"
-                    className="w-full bg-[#74271E]/90 border border-[#d6b15c]/30
-                      rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm
+                    placeholder="Your academic email"
+                    className={`w-full bg-[#74271E]/90 border ${
+                      error ? "border-red-500" : "border-[#d6b15c]/30"
+                    } rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm
                       text-[#ecd9c5] placeholder-[#ecd9c5]/40
                       focus:outline-none focus:ring-2 focus:ring-[#d6b15c]/40
-                      transition-all duration-300"
+                      transition-all duration-300`}
                     value={email}
                     onChange={(e) => {
                       setEmail(e.target.value);
@@ -454,6 +472,7 @@ export default function Footer() {
                       setError("");
                     }}
                     onKeyPress={(e) => e.key === "Enter" && submitEmail()}
+                    disabled={isSubmitting}
                   />
 
                   <motion.button
@@ -461,11 +480,16 @@ export default function Footer() {
                     whileTap={{ scale: 0.95 }}
                     className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2
                       p-1.5 sm:p-2 bg-[#d6b15c] rounded-lg text-[#74271E]
-                      hover:shadow-lg transition-shadow"
+                      hover:shadow-lg transition-shadow disabled:opacity-50"
                     onClick={submitEmail}
+                    disabled={isSubmitting}
                     aria-label="Subscribe to newsletter"
                   >
-                    <ArrowRight size={14} />
+                    {isSubmitting ? (
+                      <div className="w-4 h-4 border-2 border-[#74271E] border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <ArrowRight size={14} />
+                    )}
                   </motion.button>
                 </div>
 
@@ -475,9 +499,9 @@ export default function Footer() {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="mt-2 text-[#f3c0b7] text-[10px] sm:text-xs"
+                      className="mt-2 text-[#f3c0b7] text-[10px] sm:text-xs font-bold"
                     >
-                      {error}
+                      ⚠ {error}
                     </motion.div>
                   )}
                   {sent && !error && (
@@ -485,7 +509,7 @@ export default function Footer() {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="mt-2 text-[#d6b15c] text-[10px] sm:text-xs"
+                      className="mt-2 text-[#d6b15c] text-[10px] sm:text-xs font-bold"
                     >
                       ✓ Subscribed successfully!
                     </motion.div>

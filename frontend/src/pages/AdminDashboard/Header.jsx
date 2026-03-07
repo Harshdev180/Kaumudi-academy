@@ -49,8 +49,10 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
     try {
       if (!notification.isRead) {
         await api.patch(`/admin/notifications/${notification._id}/read`);
-        setNotifications(prev => 
-          prev.map(n => n._id === notification._id ? { ...n, isRead: true } : n)
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n._id === notification._id ? { ...n, isRead: true } : n,
+          ),
         );
       }
     } catch (err) {
@@ -253,24 +255,28 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
                         )
                         .slice(0, 4)
                         .map((alert) => (
-                        <motion.div
-                          key={alert._id}
-                          whileHover={{ scale: 1.02 }}
-                          onClick={() => handleNotificationClick(alert)}
-                          className="flex items-start gap-3 p-3 rounded-2xl bg-white/80 hover:bg-[#D4AF37] hover:text-[#6b1d14] cursor-pointer"
-                        >
-                          <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-[#D4AF37]/20">
-                            {getAlertIcon((alert.type || "").toLowerCase())}
-                          </div>
-                          <div className="flex flex-col flex-1">
-                            <p className="text-sm font-semibold">{alert.title}</p>
-                            <p className="text-xs opacity-70 line-clamp-1">{alert.message}</p>
-                          </div>
-                          {!alert.isRead && (
-                            <span className="w-2 h-2 rounded-full bg-[#D4AF37] flex-shrink-0 mt-1" />
-                          )}
-                        </motion.div>
-                      ))}
+                          <motion.div
+                            key={alert._id}
+                            whileHover={{ scale: 1.02 }}
+                            onClick={() => handleNotificationClick(alert)}
+                            className="flex items-start gap-3 p-3 rounded-2xl bg-white/80 hover:bg-[#D4AF37] hover:text-[#6b1d14] cursor-pointer"
+                          >
+                            <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-[#D4AF37]/20">
+                              {getAlertIcon((alert.type || "").toLowerCase())}
+                            </div>
+                            <div className="flex flex-col flex-1">
+                              <p className="text-sm font-semibold">
+                                {alert.title}
+                              </p>
+                              <p className="text-xs opacity-70 line-clamp-1">
+                                {alert.message}
+                              </p>
+                            </div>
+                            {!alert.isRead && (
+                              <span className="w-2 h-2 rounded-full bg-[#D4AF37] flex-shrink-0 mt-1" />
+                            )}
+                          </motion.div>
+                        ))}
                     </div>
                     <div
                       onClick={() => {
@@ -287,12 +293,12 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
             </div>
 
             {/* ⚙️ Settings */}
-            <button
+            {/* <button
               onClick={() => navigate("/admin/settings")}
               className="p-2.5 rounded-xl text-[#D4AF37] bg-white/5 hover:bg-[#D4AF37] hover:text-[#74271E] transition"
             >
               <Settings className="w-5 h-5" />
-            </button>
+            </button> */}
 
             {/* ⭐ PROFILE AVATAR */}
             <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-xl">
@@ -323,7 +329,7 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
           >
             {/* Backdrop */}
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-            
+
             {/* Popup Content */}
             <motion.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -336,12 +342,17 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
               <div className="px-6 py-5 bg-gradient-to-r from-[#74271E] to-[#8a2a1f] flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
-                    {getAlertIcon((selectedNotification.type || "").toLowerCase())}
+                    {getAlertIcon(
+                      (selectedNotification.type || "").toLowerCase(),
+                    )}
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-white">{selectedNotification.title}</h3>
+                    <h3 className="text-lg font-bold text-white">
+                      {selectedNotification.title}
+                    </h3>
                     <p className="text-xs text-white/70">
-                      {selectedNotification.subType?.replace(/_/g, " ") || selectedNotification.type}
+                      {selectedNotification.subType?.replace(/_/g, " ") ||
+                        selectedNotification.type}
                     </p>
                   </div>
                 </div>
@@ -358,20 +369,37 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
                 {/* User Information Section */}
                 {selectedNotification.metadata?.userDetails && (
                   <div className="mb-4 p-4 bg-gradient-to-r from-[#74271E]/5 to-[#D4AF37]/5 rounded-xl border border-[#74271E]/10">
-                    <p className="text-xs text-[#74271E] font-semibold uppercase mb-2">User Information</p>
+                    <p className="text-xs text-[#74271E] font-semibold uppercase mb-2">
+                      User Information
+                    </p>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-[#74271E] text-white flex items-center justify-center font-bold flex-shrink-0">
-                        {selectedNotification.metadata.userDetails.name?.charAt(0) || "U"}
+                        {selectedNotification.metadata.userDetails.name?.charAt(
+                          0,
+                        ) || "U"}
                       </div>
                       <div className="min-w-0">
-                        <p className="font-bold text-gray-900 truncate">{selectedNotification.metadata.userDetails.name}</p>
-                        <p className="text-sm text-gray-500 truncate">{selectedNotification.metadata.userDetails.email}</p>
-                        {selectedNotification.metadata.userDetails.phone && selectedNotification.metadata.userDetails.phone !== "N/A" && (
-                          <p className="text-sm text-gray-500">{selectedNotification.metadata.userDetails.phone}</p>
-                        )}
-                        {(selectedNotification.metadata.enrollmentId || selectedNotification.metadata.userDetails?.enrollmentId) && (
+                        <p className="font-bold text-gray-900 truncate">
+                          {selectedNotification.metadata.userDetails.name}
+                        </p>
+                        <p className="text-sm text-gray-500 truncate">
+                          {selectedNotification.metadata.userDetails.email}
+                        </p>
+                        {selectedNotification.metadata.userDetails.phone &&
+                          selectedNotification.metadata.userDetails.phone !==
+                            "N/A" && (
+                            <p className="text-sm text-gray-500">
+                              {selectedNotification.metadata.userDetails.phone}
+                            </p>
+                          )}
+                        {(selectedNotification.metadata.enrollmentId ||
+                          selectedNotification.metadata.userDetails
+                            ?.enrollmentId) && (
                           <p className="text-xs text-[#74271E] font-semibold mt-1">
-                            Enrollment ID: {selectedNotification.metadata.enrollmentId || selectedNotification.metadata.userDetails?.enrollmentId}
+                            Enrollment ID:{" "}
+                            {selectedNotification.metadata.enrollmentId ||
+                              selectedNotification.metadata.userDetails
+                                ?.enrollmentId}
                           </p>
                         )}
                       </div>
@@ -382,22 +410,38 @@ function Header({ showAlerts, setShowAlerts, mobileOpen, setMobileOpen }) {
                 <p className="text-[#6b1d14] text-sm leading-relaxed mb-4">
                   {selectedNotification.message}
                 </p>
-                
-                {selectedNotification.metadata && Object.keys(selectedNotification.metadata).length > 0 && (
-                  <div className="mb-6 p-4 bg-[#EFE3D5] rounded-2xl">
-                    <p className="text-xs font-bold text-[#74271E] mb-3 uppercase tracking-wide">Details</p>
-                    {Object.entries(selectedNotification.metadata)
-                      .filter(([key]) => key !== "studentId" && key !== "courseId" && key !== "userDetails")
-                      .map(([key, value]) => (
-                      <div key={key} className="flex justify-between py-1.5 border-b border-[#74271E]/10 last:border-0">
-                        <span className="text-[#74271E]/70 text-sm">
-                          {key.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase()).trim()}
-                        </span>
-                        <span className="font-semibold text-[#6b1d14] text-sm">{String(value)}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+
+                {selectedNotification.metadata &&
+                  Object.keys(selectedNotification.metadata).length > 0 && (
+                    <div className="mb-6 p-4 bg-[#EFE3D5] rounded-2xl">
+                      <p className="text-xs font-bold text-[#74271E] mb-3 uppercase tracking-wide">
+                        Details
+                      </p>
+                      {Object.entries(selectedNotification.metadata)
+                        .filter(
+                          ([key]) =>
+                            key !== "studentId" &&
+                            key !== "courseId" &&
+                            key !== "userDetails",
+                        )
+                        .map(([key, value]) => (
+                          <div
+                            key={key}
+                            className="flex justify-between py-1.5 border-b border-[#74271E]/10 last:border-0"
+                          >
+                            <span className="text-[#74271E]/70 text-sm">
+                              {key
+                                .replace(/([A-Z])/g, " $1")
+                                .replace(/^./, (str) => str.toUpperCase())
+                                .trim()}
+                            </span>
+                            <span className="font-semibold text-[#6b1d14] text-sm">
+                              {String(value)}
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  )}
 
                 {/* Actions */}
                 <div className="flex gap-3">

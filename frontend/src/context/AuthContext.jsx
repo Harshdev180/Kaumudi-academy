@@ -111,13 +111,25 @@ export function AuthProvider({ children }) {
   const logout = (redirectTo = "/") => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem("kaumudi_token");
-    localStorage.removeItem("kaumudi_user_email");
-    localStorage.removeItem("kaumudi_user_id");
-    localStorage.removeItem("kaumudi_role");
-    localStorage.removeItem("kaumudi_user_first_name");
-    localStorage.removeItem("kaumudi_user_last_name");
-    localStorage.removeItem("kaumudi_user_name");
+    // Clear all possible localStorage keys
+    const keysToRemove = [
+      "kaumudi_token",
+      "kaumudi_user_email",
+      "kaumudi_user_id",
+      "kaumudi_role",
+      "kaumudi_user_first_name",
+      "kaumudi_user_last_name",
+      "kaumudi_user_name",
+      "kaumudi_user_name_hindi",
+      "kaumudi_user_name_sanskrit",
+      "kaumudi_user_phone",
+      "kaumudi_user_whatsapp",
+      "kaumudi_user_address",
+      "token", // Just in case admin keys are mixed
+    ];
+    keysToRemove.forEach((key) => localStorage.removeItem(key));
+    sessionStorage.removeItem("kaumudi_session_started");
+
     setAuthToken(null);
     try {
       navigate(redirectTo || "/");
