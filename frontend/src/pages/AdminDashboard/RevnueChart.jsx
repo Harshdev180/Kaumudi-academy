@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   BarChart,
   Bar,
@@ -10,35 +10,44 @@ import {
 } from "recharts";
 import { motion } from "framer-motion";
 
-function RevnueChart({ data: incoming }) {
-  const fallback = [
-    { month: "Jan", revenue: 45000, expenses: 32000 },
-    { month: "Feb", revenue: 52000, expenses: 38000 },
-    { month: "Mar", revenue: 48000, expenses: 35000 },
-    { month: "Apr", revenue: 61000, expenses: 42000 },
-    { month: "May", revenue: 55000, expenses: 40000 },
-    { month: "Jun", revenue: 67000, expenses: 45000 },
-    { month: "Jul", revenue: 72000, expenses: 48000 },
-    { month: "Aug", revenue: 69000, expenses: 46000 },
-    { month: "Sep", revenue: 78000, expenses: 52000 },
-    { month: "Oct", revenue: 74000, expenses: 50000 },
-    { month: "Nov", revenue: 82000, expenses: 55000 },
-    { month: "Dec", revenue: 89000, expenses: 58000 },
-  ];
+// Fallback data when no API data is available
+const fallbackData = [
+  { month: "Jan", revenue: 0 },
+  { month: "Feb", revenue: 0 },
+  { month: "Mar", revenue: 0 },
+  { month: "Apr", revenue: 0 },
+  { month: "May", revenue: 0 },
+  { month: "Jun", revenue: 0 },
+  { month: "Jul", revenue: 0 },
+  { month: "Aug", revenue: 0 },
+  { month: "Sep", revenue: 0 },
+  { month: "Oct", revenue: 0 },
+  { month: "Nov", revenue: 0 },
+  { month: "Dec", revenue: 0 },
+];
 
-  const parsed =
-    Array.isArray(incoming) && incoming.length
-      ? incoming.map((d) => {
-          const month = d.month || d.label || d.name || "";
-          let revenue = d.revenue ?? d.value ?? d.amount ?? 0;
-          let expenses = d.expenses ?? d.cost ?? 0;
-          if (typeof revenue === "string")
-            revenue = parseInt(revenue.replace(/[^0-9]/g, "")) || 0;
-          if (typeof expenses === "string")
-            expenses = parseInt(expenses.replace(/[^0-9]/g, "")) || 0;
-          return { month, revenue, expenses };
-        })
-      : fallback;
+function RevnueChart({ data: incoming }) {
+  // Parse and transform incoming data from backend
+  // Backend returns: { month: "Jan", revenue: 50000, orders: 10 }
+  const chartData = useMemo(() => {
+    if (!incoming || !Array.isArray(incoming) || incoming.length === 0) {
+      return fallbackData;
+    }
+    
+    return incoming.map((item) => {
+      const month = item.month || "";
+      // Handle various possible field names from backend
+      const revenue = Number(item.revenue) || Number(item.value) || Number(item.amount) || 0;
+      
+      return {
+        month,
+        revenue,
+      };
+    });
+  }, [incoming]);
+
+  // Calculate if we're showing real data or fallback
+  const hasRealData = incoming && Array.isArray(incoming) && incoming.length > 0 && incoming.some(item => (item.revenue || 0) > 0);
 
   return (
     <motion.div
@@ -59,7 +68,7 @@ function RevnueChart({ data: incoming }) {
             Revenue Chart
           </h3>
           <p className="text-xs md:text-sm text-slate-500">
-            Monthly revenue and expenses
+            {hasRealData ? "Monthly revenue from payments" : "No revenue data available"}
           </p>
         </div>
 
@@ -72,14 +81,6 @@ function RevnueChart({ data: incoming }) {
             <div className="w-3 h-3 bg-gradient-to-r from-[#6b1d14] to-[#8a2a1f] rounded-full" />
             <span className="text-xs md:text-sm text-slate-600">Revenue</span>
           </motion.div>
-
-          {/* <motion.div
-                        whileHover={{ scale: 1.1 }}
-                        className="flex items-center space-x-2"
-                    >
-                        <div className="w-3 h-3 bg-gradient-to-r from-[#b8973d] to-[#d4af37] rounded-full" />
-                        <span className="text-xs md:text-sm text-slate-600">Expenses</span>
-                    </motion.div> */}
         </div>
       </motion.div>
 
@@ -92,7 +93,7 @@ function RevnueChart({ data: incoming }) {
       >
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
-            data={parsed}
+            data={chartData}
             barGap={4}
             margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
           >
@@ -127,15 +128,11 @@ function RevnueChart({ data: incoming }) {
               contentStyle={{ fontSize: "12px" }}
             />
 
-            <Bar
+          <Bar
               dataKey="revenue"
               fill="url(#revenueGradient)"
               radius={[6, 6, 0, 0]}
-            />
-            <Bar
-              dataKey="expenses"
-              fill="url(#expensesGradient)"
-              radius={[6, 6, 0, 0]}
+              name="Revenue"
             />
           </BarChart>
         </ResponsiveContainer>
