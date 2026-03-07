@@ -80,9 +80,15 @@ export const getDashboardStats = async (req, res) => {
         }),
       ]);
 
-    // ── 2. REVENUE CHART (last 6 months) ──────────────────────────────────────
+    // ── 2. REVENUE CHART (last 12 months) ─────────────────────────────────────
+    const twelveMonthsAgo = new Date(now);
+    twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
+    
     const revenueChart = await Payment.aggregate([
-      { $match: { status: "SUCCESS" } },
+      { $match: { 
+        status: "SUCCESS",
+        createdAt: { $gte: twelveMonthsAgo }
+      }},
       {
         $group: {
           _id: {
@@ -94,21 +100,55 @@ export const getDashboardStats = async (req, res) => {
         },
       },
       { $sort: { "_id.year": 1, "_id.month": 1 } },
-      { $limit: 6 },
+      // Don't limit - return all months with data
     ]);
 
     const monthNames = [
       "Jan","Feb","Mar","Apr","May","Jun",
       "Jul","Aug","Sep","Oct","Nov","Dec",
     ];
-    const formattedRevenueChart = revenueChart.map((item) => ({
-      month: monthNames[item._id.month - 1],
-      revenue: item.revenue,
-      orders: item.orders,
-    }));
+    
+    // Get current year and month for filling missing months
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+    
+    // Create a map of existing data
+    const revenueDataMap = new Map();
+    revenueChart.forEach(item => {
+      const key = `${item._id.year}-${item._id.month}`;
+      revenueDataMap.set(key, {
+        month: monthNames[item._id.month - 1],
+        revenue: item.revenue,
+        orders: item.orders
+      });
+    });
+    
+    // Generate last 12 months with data (or zeros for missing months)
+    const formattedRevenueChart = [];
+    for (let i = 11; i >= 0; i--) {
+      const date = new Date(currentYear, currentMonth - 1 - i, 1);
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const key = `${year}-${month}`;
+      
+      if (revenueDataMap.has(key)) {
+        formattedRevenueChart.push(revenueDataMap.get(key));
+      } else {
+        formattedRevenueChart.push({
+          month: monthNames[month - 1],
+          revenue: 0,
+          orders: 0
+        });
+      }
+    }
 
-    // ── 3. SALES / ENROLLMENT CHART (last 6 months) ───────────────────────────
+    // ── 3. SALES / ENROLLMENT CHART (last 12 months) ───────────────────────────
     const salesChart = await Enrollment.aggregate([
+      {
+        $match: {
+          enrolledAt: { $gte: twelveMonthsAgo }
+        }
+      },
       {
         $group: {
           _id: {
@@ -119,13 +159,35 @@ export const getDashboardStats = async (req, res) => {
         },
       },
       { $sort: { "_id.year": 1, "_id.month": 1 } },
-      { $limit: 6 },
     ]);
 
-    const formattedSalesChart = salesChart.map((item) => ({
-      month: monthNames[item._id.month - 1],
-      enrollments: item.enrollments,
-    }));
+    // Create a map of existing sales data
+    const salesDataMap = new Map();
+    salesChart.forEach(item => {
+      const key = `${item._id.year}-${item._id.month}`;
+      salesDataMap.set(key, {
+        month: monthNames[item._id.month - 1],
+        enrollments: item.enrollments
+      });
+    });
+    
+    // Generate last 12 months with data
+    const formattedSalesChart = [];
+    for (let i = 11; i >= 0; i--) {
+      const date = new Date(currentYear, currentMonth - 1 - i, 1);
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const key = `${year}-${month}`;
+      
+      if (salesDataMap.has(key)) {
+        formattedSalesChart.push(salesDataMap.get(key));
+      } else {
+        formattedSalesChart.push({
+          month: monthNames[month - 1],
+          enrollments: 0
+        });
+      }
+    }
 
     // ── 3.1 SALES BY CATEGORY (Course Distribution) ─────────────────────────────
     // Grouping by instructor/faculty name instead of category
