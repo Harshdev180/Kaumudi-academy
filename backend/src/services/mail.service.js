@@ -1094,3 +1094,139 @@ export const sendSubscriptionAdminNotification = async ({ email }) => {
     html,
   });
 };
+
+/**
+ * Send acknowledgment email to user after inquiry submission
+ */
+export const sendInquiryAcknowledgementToUser = async (inquiry) => {
+  const LOGO_URL = getLogoUrl();
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Thank You for Your Inquiry - Kaumudi Sanskrit Academy</title>
+      <style>
+        @media only screen and (max-width: 600px) {
+          .container { width: 100% !important; }
+          .content { padding: 20px !important; }
+        }
+      </style>
+    </head>
+    <body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f5;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 30px 20px;">
+        <tr>
+          <td align="center">
+            <table class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px; width:100%; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+              
+              <!-- Header with Logo -->
+              <tr>
+                <td style="background: linear-gradient(135deg, #3b120e 0%, #5a1e17 50%, #2a0b08 100%); padding: 30px; text-align: center; border-bottom: 2px solid #d6b15c;">
+                  <table cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
+                    <tr>
+                      <td style="background: #74271E; width: 70px; height: 70px; border-radius: 16px; text-align: center; vertical-align: middle; box-shadow: 0 0 25px rgba(214,177,92,0.55);">
+                        <img src="${LOGO_URL}" alt="Kaumudi Sanskrit Academy" style="width: 60px; height: 60px; object-fit: contain; display: block; margin: 0 auto; border-radius: 12px;">
+                      </td>
+                    </tr>
+                  </table>
+                  <h1 style="color: #ffffff; margin: 15px 0 5px; font-size: 28px; font-weight: 900; letter-spacing: 2px;">KAUMUDI</h1>
+                  <p style="color: #d6b15c; margin: 0; font-size: 16px; letter-spacing: 0.18em;">SANSKRIT ACADEMY</p>
+                </td>
+              </tr>
+              
+              <!-- Content -->
+              <tr>
+                <td class="content" style="padding: 40px 30px;">
+                  <h2 style="color: #74271E; margin: 0 0 20px; font-size: 24px; font-weight: 700; border-left: 4px solid #d6b15c; padding-left: 15px;">Thank You for Your Inquiry</h2>
+                  
+                  <p style="color: #2a0b08; line-height: 1.8; font-size: 16px; margin-bottom: 25px;">
+                    Namaste <strong style="color: #74271E;">${inquiry.fullName || inquiry.name || "Student"}</strong>,
+                  </p>
+                  
+                  <p style="color: #2a0b08; line-height: 1.8; font-size: 16px; margin-bottom: 25px;">
+                    We have received your inquiry regarding <strong style="color: #74271E;">${inquiry.subject || inquiry.preferredLevel || "Sanskrit courses"}</strong>. Our team will review your message and get back to you within 24-48 hours.
+                  </p>
+                  
+                  <!-- Inquiry Summary Box -->
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #fdf8f0 0%, #f9f0e3 100%); border-radius: 12px; padding: 25px; margin: 30px 0; border: 2px solid #dccbb4;">
+                    <tr>
+                      <td>
+                        <h3 style="color: #74271E; margin: 0 0 15px; font-size: 18px; font-weight: 700;">📋 Inquiry Summary:</h3>
+                        <table width="100%">
+                          <tr>
+                            <td style="padding: 5px 0; color: #74271E; width: 40%;">Full Name:</td>
+                            <td style="padding: 5px 0; color: #2a0b08;">${inquiry.fullName || inquiry.name || "Not provided"}</td>
+                          </tr>
+                          ${
+                            inquiry.vedicName
+                              ? `
+                          <tr>
+                            <td style="padding: 5px 0; color: #74271E;">Vedic Name:</td>
+                            <td style="padding: 5px 0; color: #2a0b08;">${inquiry.vedicName}</td>
+                          </tr>`
+                              : ""
+                          }
+                          <tr>
+                            <td style="padding: 5px 0; color: #74271E;">Email:</td>
+                            <td style="padding: 5px 0; color: #2a0b08;">${inquiry.email}</td>
+                          </tr>
+                          <tr>
+                            <td style="padding: 5px 0; color: #74271E;">Phone:</td>
+                            <td style="padding: 5px 0; color: #2a0b08;">${inquiry.whatsappNumber || inquiry.phone || "Not provided"}</td>
+                          </tr>
+                          <tr>
+                            <td style="padding: 5px 0; color: #74271E;">Course Interest:</td>
+                            <td style="padding: 5px 0; color: #2a0b08;">${inquiry.preferredLevel || inquiry.subject || "General inquiry"}</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  
+                  <p style="color: #2a0b08; line-height: 1.8; font-size: 16px; margin-bottom: 20px;">
+                    In the meantime, you can explore our courses and learning materials:
+                  </p>
+                  
+                  <!-- CTA Buttons -->
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td align="center" style="padding: 5px;">
+                        <a href="${config.FRONTEND_URL}/courses" style="display: inline-block; background: #d6b15c; color: #74271E; padding: 14px 30px; border-radius: 50px; text-decoration: none; font-weight: 600; margin: 5px; border: 1px solid #74271E;">EXPLORE COURSES</a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td align="center" style="padding: 5px;">
+                        <a href="${config.FRONTEND_URL}/contact" style="display: inline-block; background: #74271E; color: #ffffff; padding: 14px 30px; border-radius: 50px; text-decoration: none; font-weight: 600; margin: 5px; border: 1px solid #d6b15c;">CONTACT SUPPORT</a>
+                      </td>
+                    </tr>
+                  </table>
+                  
+                  <p style="color: #5a1e17; line-height: 1.6; font-size: 14px; margin-top: 30px; text-align: center; font-style: italic;">
+                    "Knowledge is the ultimate wealth" - Ancient Sanskrit Proverb
+                  </p>
+                </td>
+              </tr>
+              
+              <!-- Footer -->
+              <tr>
+                <td style="background: linear-gradient(135deg, #2a0b08 0%, #3b120e 100%); padding: 25px; text-align: center; border-top: 2px solid #d6b15c;">
+                  <p style="color: #e6d0bd; margin: 0; font-size: 13px;">Kaumudi Sanskrit Academy</p>
+                  <p style="color: #d6b15c; margin: 5px 0 0; font-size: 12px;">Kadi, Mehsana, Gujarat, India</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+
+  await sendEmail({
+    to: inquiry.email,
+    subject: "Thank You for Your Inquiry - Kaumudi Sanskrit Academy",
+    html,
+  });
+};
