@@ -129,6 +129,10 @@ export const createRazorpayOrder = async (req, res) => {
       finalAmount = Math.round((discountedAmount / 3) * 100) / 100; // First payment = 1/3 with 2 decimal places
     }
 
+    // Add processing fee
+    const processingFee = 99;
+    finalAmount = finalAmount + processingFee;
+
     // 4. Razorpay Order
     // Validate amount before creating order (Razorpay max: 10,00,000 INR)
     const maxRazorpayAmount = 1000000; // 10 lakh INR in rupees
@@ -204,11 +208,12 @@ export const createRazorpayOrder = async (req, res) => {
     const emiDetails = paymentMode === "EMI" ? {
       isEmi: true,
       totalAmount: discountedAmount,
-      firstPayment: finalAmount, // First payment = 1/3 of discounted amount (with 2 decimal places)
-      remainingAmount: Math.round((discountedAmount - finalAmount) * 100) / 100, // Remaining = 2/3 with 2 decimal places
+      firstPayment: finalAmount, // First payment = 1/3 of discounted amount + processing fee
+      remainingAmount: Math.round((discountedAmount - (finalAmount - processingFee)) * 100) / 100, // Remaining = 2/3 without processing fee
       installments: 3,
-      installmentAmount: Math.round(((discountedAmount - finalAmount) / 2) * 100) / 100, // Remaining / 2 with 2 decimal places
-      perMonth: finalAmount // Same as firstPayment since it's divided by 3
+      installmentAmount: Math.round(((discountedAmount - (finalAmount - processingFee)) / 2) * 100) / 100, // Remaining / 2 without processing fee
+      perMonth: finalAmount, // Same as firstPayment since it's divided by 3
+      processingFee: processingFee
     } : null;
 
     res.json({
